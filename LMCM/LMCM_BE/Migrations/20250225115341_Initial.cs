@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LMCM_BE.Migrations
 {
     /// <inheritdoc />
-    public partial class _Initial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,7 +30,15 @@ namespace LMCM_BE.Migrations
                 columns: table => new
                 {
                     Curriculum_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
+                    Curriculum_Code = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Curriculum_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Curriculum_Name_English = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Curriculum_Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Vocational_Code = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Vocational_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    English_Vocational_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Decision_No = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Approved_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                         .Annotation("SqlServer:TemporalIsPeriodStartColumn", true),
@@ -39,7 +47,7 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Curriculums", x => x.Curriculum_ID);
+                    table.PrimaryKey("PK__Curricul__2F88E2C21CA8612E", x => x.Curriculum_ID);
                 })
                 .Annotation("SqlServer:IsTemporal", true)
                 .Annotation("SqlServer:TemporalHistoryTableName", "Curriculums_History")
@@ -124,8 +132,23 @@ namespace LMCM_BE.Migrations
                 columns: table => new
                 {
                     Syllabus_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
-                    Syllabus_Code = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Syllabus_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Program_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Decision_No = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Course_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Course_Name_English = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Course_Code = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Learning_Teaching_Method = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    No_of_Credits = table.Column<int>(type: "int", nullable: false),
+                    Degree_Level = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Time_Allocation = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Pre_requisite = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Student_Task = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Tools = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Note = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Min_GPA_to_Pass = table.Column<decimal>(type: "decimal(19,2)", nullable: true),
+                    Scoring_Scale = table.Column<decimal>(type: "decimal(19,2)", nullable: true),
+                    Approved_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                         .Annotation("SqlServer:TemporalIsPeriodStartColumn", true),
@@ -147,6 +170,8 @@ namespace LMCM_BE.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Picture = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -194,6 +219,9 @@ namespace LMCM_BE.Migrations
                 {
                     Curriculum_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Subject_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Term_No = table.Column<int>(type: "int", nullable: false),
+                    Credit = table.Column<int>(type: "int", nullable: false),
+                    Options = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                         .Annotation("SqlServer:TemporalIsPeriodStartColumn", true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -217,6 +245,175 @@ namespace LMCM_BE.Migrations
                 })
                 .Annotation("SqlServer:IsTemporal", true)
                 .Annotation("SqlServer:TemporalHistoryTableName", "Curriculums_Subjects_History")
+                .Annotation("SqlServer:TemporalHistoryTableSchema", "dbo")
+                .Annotation("SqlServer:TemporalPeriodEndColumnName", "UpdatedAt")
+                .Annotation("SqlServer:TemporalPeriodStartColumnName", "CreatedAt");
+
+            migrationBuilder.CreateTable(
+                name: "PLO",
+                columns: table => new
+                {
+                    PLO_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
+                    Curriculum_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Subject_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PLO_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    PLO_Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                        .Annotation("SqlServer:TemporalIsPeriodStartColumn", true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                        .Annotation("SqlServer:TemporalIsPeriodEndColumn", true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__PLO__3BEF007EC7EFD1E5", x => x.PLO_ID);
+                    table.ForeignKey(
+                        name: "FK__PLO__Curriculum___59FA5E80",
+                        column: x => x.Curriculum_ID,
+                        principalTable: "Curriculums",
+                        principalColumn: "Curriculum_ID");
+                    table.ForeignKey(
+                        name: "FK__PLO__Subject_ID__5AEE82B9",
+                        column: x => x.Subject_ID,
+                        principalTable: "Subjects",
+                        principalColumn: "Subject_ID");
+                })
+                .Annotation("SqlServer:IsTemporal", true)
+                .Annotation("SqlServer:TemporalHistoryTableName", "PLO_History")
+                .Annotation("SqlServer:TemporalHistoryTableSchema", "dbo")
+                .Annotation("SqlServer:TemporalPeriodEndColumnName", "UpdatedAt")
+                .Annotation("SqlServer:TemporalPeriodStartColumnName", "CreatedAt");
+
+            migrationBuilder.CreateTable(
+                name: "CLO",
+                columns: table => new
+                {
+                    CLO_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
+                    CLO_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    CLO_Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Syllabus_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                        .Annotation("SqlServer:TemporalIsPeriodStartColumn", true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                        .Annotation("SqlServer:TemporalIsPeriodEndColumn", true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__CLO__C3755EAD5A32F777", x => x.CLO_ID);
+                    table.ForeignKey(
+                        name: "FK__CLO__Syllabus_ID__0F624AF8",
+                        column: x => x.Syllabus_ID,
+                        principalTable: "Syllabus",
+                        principalColumn: "Syllabus_ID");
+                })
+                .Annotation("SqlServer:IsTemporal", true)
+                .Annotation("SqlServer:TemporalHistoryTableName", "CLO_History")
+                .Annotation("SqlServer:TemporalHistoryTableSchema", "dbo")
+                .Annotation("SqlServer:TemporalPeriodEndColumnName", "UpdatedAt")
+                .Annotation("SqlServer:TemporalPeriodStartColumnName", "CreatedAt");
+
+            migrationBuilder.CreateTable(
+                name: "Constructivist_Question",
+                columns: table => new
+                {
+                    Question_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
+                    Session_No = table.Column<int>(type: "int", nullable: false),
+                    Question_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Question_Detail = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Syllabus_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                        .Annotation("SqlServer:TemporalIsPeriodStartColumn", true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                        .Annotation("SqlServer:TemporalIsPeriodEndColumn", true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Construc__B0B2E4C62AEA54F9", x => x.Question_ID);
+                    table.ForeignKey(
+                        name: "FK__Construct__Sylla__08B54D69",
+                        column: x => x.Syllabus_ID,
+                        principalTable: "Syllabus",
+                        principalColumn: "Syllabus_ID");
+                })
+                .Annotation("SqlServer:IsTemporal", true)
+                .Annotation("SqlServer:TemporalHistoryTableName", "Constructivist_Question_History")
+                .Annotation("SqlServer:TemporalHistoryTableSchema", "dbo")
+                .Annotation("SqlServer:TemporalPeriodEndColumnName", "UpdatedAt")
+                .Annotation("SqlServer:TemporalPeriodStartColumnName", "CreatedAt");
+
+            migrationBuilder.CreateTable(
+                name: "Grading_Structure",
+                columns: table => new
+                {
+                    Structure_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
+                    Structure_No = table.Column<int>(type: "int", nullable: false),
+                    Assessment_Component = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Assessment_Type = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Weight = table.Column<decimal>(type: "decimal(19,2)", nullable: false),
+                    Part = table.Column<int>(type: "int", nullable: true),
+                    Min_Value = table.Column<decimal>(type: "decimal(19,2)", nullable: true),
+                    Duration = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    CLO = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Question_Type = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Question_No = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Scope = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    How = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Note = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Session_No = table.Column<int>(type: "int", nullable: true),
+                    Reference = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Syllabus_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                        .Annotation("SqlServer:TemporalIsPeriodStartColumn", true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                        .Annotation("SqlServer:TemporalIsPeriodEndColumn", true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Grading___71D721C6B560AAF0", x => x.Structure_ID);
+                    table.ForeignKey(
+                        name: "FK__Grading_S__Sylla__02084FDA",
+                        column: x => x.Syllabus_ID,
+                        principalTable: "Syllabus",
+                        principalColumn: "Syllabus_ID");
+                })
+                .Annotation("SqlServer:IsTemporal", true)
+                .Annotation("SqlServer:TemporalHistoryTableName", "Grading_Structure_History")
+                .Annotation("SqlServer:TemporalHistoryTableSchema", "dbo")
+                .Annotation("SqlServer:TemporalPeriodEndColumnName", "UpdatedAt")
+                .Annotation("SqlServer:TemporalPeriodStartColumnName", "CreatedAt");
+
+            migrationBuilder.CreateTable(
+                name: "Schedule",
+                columns: table => new
+                {
+                    Schedule_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
+                    Schedule_No = table.Column<int>(type: "int", nullable: false),
+                    Method = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    CLO = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    ITU = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Student_Material = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Student_Task = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Student_Material_Url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Lecturer_Material = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Lecturer_Task = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Lecturer_Material_Url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Syllabus_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                        .Annotation("SqlServer:TemporalIsPeriodStartColumn", true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                        .Annotation("SqlServer:TemporalIsPeriodEndColumn", true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Schedule__8C4D3BBB0610810D", x => x.Schedule_ID);
+                    table.ForeignKey(
+                        name: "FK__Schedule__Syllab__7B5B524B",
+                        column: x => x.Syllabus_ID,
+                        principalTable: "Syllabus",
+                        principalColumn: "Syllabus_ID");
+                })
+                .Annotation("SqlServer:IsTemporal", true)
+                .Annotation("SqlServer:TemporalHistoryTableName", "Schedule_History")
                 .Annotation("SqlServer:TemporalHistoryTableSchema", "dbo")
                 .Annotation("SqlServer:TemporalPeriodEndColumnName", "UpdatedAt")
                 .Annotation("SqlServer:TemporalPeriodStartColumnName", "CreatedAt");
@@ -529,6 +726,16 @@ namespace LMCM_BE.Migrations
                 column: "Author_ID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CLO_Syllabus_ID",
+                table: "CLO",
+                column: "Syllabus_ID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Constructivist_Question_Syllabus_ID",
+                table: "Constructivist_Question",
+                column: "Syllabus_ID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Contracts_Contractor_ID",
                 table: "Contracts",
                 column: "Contractor_ID");
@@ -544,9 +751,29 @@ namespace LMCM_BE.Migrations
                 column: "Author_ID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Grading_Structure_Syllabus_ID",
+                table: "Grading_Structure",
+                column: "Syllabus_ID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Notification_User_ID",
                 table: "Notification",
                 column: "User_ID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PLO_Curriculum_ID",
+                table: "PLO",
+                column: "Curriculum_ID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PLO_Subject_ID",
+                table: "PLO",
+                column: "Subject_ID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Schedule_Syllabus_ID",
+                table: "Schedule",
+                column: "Syllabus_ID");
 
             migrationBuilder.CreateIndex(
                 name: "UQ__Subjects__4A7C5769EA153DC8",
@@ -560,9 +787,9 @@ namespace LMCM_BE.Migrations
                 column: "Syllabus_ID");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Syllabus__DAF08DF2B8572EA1",
+                name: "UQ__Syllabus__1AE5B24D9C85777D",
                 table: "Syllabus",
-                column: "Syllabus_Code",
+                column: "Course_Code",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -608,6 +835,22 @@ namespace LMCM_BE.Migrations
                 name: "Budget_Proposals");
 
             migrationBuilder.DropTable(
+                name: "CLO")
+                .Annotation("SqlServer:IsTemporal", true)
+                .Annotation("SqlServer:TemporalHistoryTableName", "CLO_History")
+                .Annotation("SqlServer:TemporalHistoryTableSchema", "dbo")
+                .Annotation("SqlServer:TemporalPeriodEndColumnName", "UpdatedAt")
+                .Annotation("SqlServer:TemporalPeriodStartColumnName", "CreatedAt");
+
+            migrationBuilder.DropTable(
+                name: "Constructivist_Question")
+                .Annotation("SqlServer:IsTemporal", true)
+                .Annotation("SqlServer:TemporalHistoryTableName", "Constructivist_Question_History")
+                .Annotation("SqlServer:TemporalHistoryTableSchema", "dbo")
+                .Annotation("SqlServer:TemporalPeriodEndColumnName", "UpdatedAt")
+                .Annotation("SqlServer:TemporalPeriodStartColumnName", "CreatedAt");
+
+            migrationBuilder.DropTable(
                 name: "Curriculums_Subjects")
                 .Annotation("SqlServer:IsTemporal", true)
                 .Annotation("SqlServer:TemporalHistoryTableName", "Curriculums_Subjects_History")
@@ -619,10 +862,34 @@ namespace LMCM_BE.Migrations
                 name: "Document_Templates");
 
             migrationBuilder.DropTable(
+                name: "Grading_Structure")
+                .Annotation("SqlServer:IsTemporal", true)
+                .Annotation("SqlServer:TemporalHistoryTableName", "Grading_Structure_History")
+                .Annotation("SqlServer:TemporalHistoryTableSchema", "dbo")
+                .Annotation("SqlServer:TemporalPeriodEndColumnName", "UpdatedAt")
+                .Annotation("SqlServer:TemporalPeriodStartColumnName", "CreatedAt");
+
+            migrationBuilder.DropTable(
                 name: "Notification");
 
             migrationBuilder.DropTable(
                 name: "Permissions");
+
+            migrationBuilder.DropTable(
+                name: "PLO")
+                .Annotation("SqlServer:IsTemporal", true)
+                .Annotation("SqlServer:TemporalHistoryTableName", "PLO_History")
+                .Annotation("SqlServer:TemporalHistoryTableSchema", "dbo")
+                .Annotation("SqlServer:TemporalPeriodEndColumnName", "UpdatedAt")
+                .Annotation("SqlServer:TemporalPeriodStartColumnName", "CreatedAt");
+
+            migrationBuilder.DropTable(
+                name: "Schedule")
+                .Annotation("SqlServer:IsTemporal", true)
+                .Annotation("SqlServer:TemporalHistoryTableName", "Schedule_History")
+                .Annotation("SqlServer:TemporalHistoryTableSchema", "dbo")
+                .Annotation("SqlServer:TemporalPeriodEndColumnName", "UpdatedAt")
+                .Annotation("SqlServer:TemporalPeriodStartColumnName", "CreatedAt");
 
             migrationBuilder.DropTable(
                 name: "Subjects_Syllabus")

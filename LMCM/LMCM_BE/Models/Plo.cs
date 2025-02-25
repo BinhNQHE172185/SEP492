@@ -3,17 +3,19 @@ using System.Collections.Generic;
 
 namespace LMCM_BE.Models;
 
-public partial class CurriculumsSubject
+public partial class Plo
 {
+    public Guid PloId { get; set; }
+
     public Guid CurriculumId { get; set; }
 
     public Guid SubjectId { get; set; }
 
-    public int TermNo { get; set; }
+    public string PloName { get; set; } = null!;
 
-    public int Credit { get; set; }
+    public string? PloDescription { get; set; }
 
-    public int Options { get; set; }
+    public string? Status { get; set; }
 
     public virtual Curriculum Curriculum { get; set; } = null!;
 

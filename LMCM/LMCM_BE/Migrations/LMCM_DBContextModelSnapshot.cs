@@ -22,7 +22,7 @@ namespace LMCM_BE.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BusinessObject.Models.AcceptanceRecord", b =>
+            modelBuilder.Entity("LMCM_BE.Models.AcceptanceRecord", b =>
                 {
                     b.Property<Guid>("AcceptanceId")
                         .ValueGeneratedOnAdd()
@@ -68,7 +68,7 @@ namespace LMCM_BE.Migrations
                     b.ToTable("Acceptance_Record", (string)null);
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.BudgetProposal", b =>
+            modelBuilder.Entity("LMCM_BE.Models.BudgetProposal", b =>
                 {
                     b.Property<Guid>("ProposalId")
                         .ValueGeneratedOnAdd()
@@ -110,7 +110,113 @@ namespace LMCM_BE.Migrations
                     b.ToTable("Budget_Proposals", (string)null);
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.Contract", b =>
+            modelBuilder.Entity("LMCM_BE.Models.Clo", b =>
+                {
+                    b.Property<Guid>("CloId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CLO_ID")
+                        .HasDefaultValueSql("(newid())");
+
+                    b.Property<string>("CloDescription")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("CLO_Description");
+
+                    b.Property<string>("CloName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("CLO_Name");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedAt");
+
+                    b.Property<Guid>("SyllabusId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Syllabus_ID");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedAt");
+
+                    b.HasKey("CloId")
+                        .HasName("PK__CLO__C3755EAD5A32F777");
+
+                    b.HasIndex("SyllabusId");
+
+                    b.ToTable("CLO", (string)null);
+
+                    b.ToTable(tb => tb.IsTemporal(ttb =>
+                            {
+                                ttb.UseHistoryTable("CLO_History", "dbo");
+                                ttb
+                                    .HasPeriodStart("CreatedAt")
+                                    .HasColumnName("CreatedAt");
+                                ttb
+                                    .HasPeriodEnd("UpdatedAt")
+                                    .HasColumnName("UpdatedAt");
+                            }));
+                });
+
+            modelBuilder.Entity("LMCM_BE.Models.ConstructivistQuestion", b =>
+                {
+                    b.Property<Guid>("QuestionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Question_ID")
+                        .HasDefaultValueSql("(newid())");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedAt");
+
+                    b.Property<string>("QuestionDetail")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Question_Detail");
+
+                    b.Property<string>("QuestionName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Question_Name");
+
+                    b.Property<int>("SessionNo")
+                        .HasColumnType("int")
+                        .HasColumnName("Session_No");
+
+                    b.Property<Guid>("SyllabusId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Syllabus_ID");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedAt");
+
+                    b.HasKey("QuestionId")
+                        .HasName("PK__Construc__B0B2E4C62AEA54F9");
+
+                    b.HasIndex("SyllabusId");
+
+                    b.ToTable("Constructivist_Question", (string)null);
+
+                    b.ToTable(tb => tb.IsTemporal(ttb =>
+                            {
+                                ttb.UseHistoryTable("Constructivist_Question_History", "dbo");
+                                ttb
+                                    .HasPeriodStart("CreatedAt")
+                                    .HasColumnName("CreatedAt");
+                                ttb
+                                    .HasPeriodEnd("UpdatedAt")
+                                    .HasColumnName("UpdatedAt");
+                            }));
+                });
+
+            modelBuilder.Entity("LMCM_BE.Models.Contract", b =>
                 {
                     b.Property<Guid>("ContractId")
                         .ValueGeneratedOnAdd()
@@ -161,7 +267,7 @@ namespace LMCM_BE.Migrations
                     b.ToTable("Contracts");
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.Curriculum", b =>
+            modelBuilder.Entity("LMCM_BE.Models.Curriculum", b =>
                 {
                     b.Property<Guid>("CurriculumId")
                         .ValueGeneratedOnAdd()
@@ -169,16 +275,46 @@ namespace LMCM_BE.Migrations
                         .HasColumnName("Curriculum_ID")
                         .HasDefaultValueSql("(newid())");
 
+                    b.Property<DateTime?>("ApprovedDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("Approved_Date");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2")
                         .HasColumnName("CreatedAt");
+
+                    b.Property<string>("CurriculumCode")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Curriculum_Code");
+
+                    b.Property<string>("CurriculumDescription")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Curriculum_Description");
 
                     b.Property<string>("CurriculumName")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("Curriculum_Name");
+
+                    b.Property<string>("CurriculumNameEnglish")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Curriculum_Name_English");
+
+                    b.Property<string>("DecisionNo")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Decision_No");
+
+                    b.Property<string>("EnglishVocationalName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("English_Vocational_Name");
 
                     b.Property<string>("Status")
                         .HasMaxLength(255)
@@ -189,7 +325,18 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("UpdatedAt");
 
-                    b.HasKey("CurriculumId");
+                    b.Property<string>("VocationalCode")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Vocational_Code");
+
+                    b.Property<string>("VocationalName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Vocational_Name");
+
+                    b.HasKey("CurriculumId")
+                        .HasName("PK__Curricul__2F88E2C21CA8612E");
 
                     b.ToTable("Curriculums");
 
@@ -205,7 +352,7 @@ namespace LMCM_BE.Migrations
                             }));
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.CurriculumsSubject", b =>
+            modelBuilder.Entity("LMCM_BE.Models.CurriculumsSubject", b =>
                 {
                     b.Property<Guid>("CurriculumId")
                         .HasColumnType("uniqueidentifier")
@@ -219,6 +366,16 @@ namespace LMCM_BE.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2")
                         .HasColumnName("CreatedAt");
+
+                    b.Property<int>("Credit")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Options")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TermNo")
+                        .HasColumnType("int")
+                        .HasColumnName("Term_No");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()
@@ -243,7 +400,7 @@ namespace LMCM_BE.Migrations
                             }));
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.DocumentTemplate", b =>
+            modelBuilder.Entity("LMCM_BE.Models.DocumentTemplate", b =>
                 {
                     b.Property<Guid>("TemplateId")
                         .ValueGeneratedOnAdd()
@@ -292,7 +449,111 @@ namespace LMCM_BE.Migrations
                     b.ToTable("Document_Templates", (string)null);
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.LearningMaterial", b =>
+            modelBuilder.Entity("LMCM_BE.Models.GradingStructure", b =>
+                {
+                    b.Property<Guid>("StructureId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Structure_ID")
+                        .HasDefaultValueSql("(newid())");
+
+                    b.Property<string>("AssessmentComponent")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Assessment_Component");
+
+                    b.Property<string>("AssessmentType")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Assessment_Type");
+
+                    b.Property<string>("Clo")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("CLO");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedAt");
+
+                    b.Property<string>("Duration")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("How")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<decimal?>("MinValue")
+                        .HasColumnType("decimal(19, 2)")
+                        .HasColumnName("Min_Value");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("Part")
+                        .HasColumnType("int");
+
+                    b.Property<string>("QuestionNo")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Question_No");
+
+                    b.Property<string>("QuestionType")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Question_Type");
+
+                    b.Property<string>("Reference")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Scope")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("SessionNo")
+                        .HasColumnType("int")
+                        .HasColumnName("Session_No");
+
+                    b.Property<int>("StructureNo")
+                        .HasColumnType("int")
+                        .HasColumnName("Structure_No");
+
+                    b.Property<Guid>("SyllabusId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Syllabus_ID");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedAt");
+
+                    b.Property<decimal>("Weight")
+                        .HasColumnType("decimal(19, 2)");
+
+                    b.HasKey("StructureId")
+                        .HasName("PK__Grading___71D721C6B560AAF0");
+
+                    b.HasIndex("SyllabusId");
+
+                    b.ToTable("Grading_Structure", (string)null);
+
+                    b.ToTable(tb => tb.IsTemporal(ttb =>
+                            {
+                                ttb.UseHistoryTable("Grading_Structure_History", "dbo");
+                                ttb
+                                    .HasPeriodStart("CreatedAt")
+                                    .HasColumnName("CreatedAt");
+                                ttb
+                                    .HasPeriodEnd("UpdatedAt")
+                                    .HasColumnName("UpdatedAt");
+                            }));
+                });
+
+            modelBuilder.Entity("LMCM_BE.Models.LearningMaterial", b =>
                 {
                     b.Property<Guid>("MaterialId")
                         .ValueGeneratedOnAdd()
@@ -375,7 +636,7 @@ namespace LMCM_BE.Migrations
                             }));
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.Notification", b =>
+            modelBuilder.Entity("LMCM_BE.Models.Notification", b =>
                 {
                     b.Property<Guid>("NotificationId")
                         .ValueGeneratedOnAdd()
@@ -413,7 +674,7 @@ namespace LMCM_BE.Migrations
                     b.ToTable("Notification", (string)null);
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.Permission", b =>
+            modelBuilder.Entity("LMCM_BE.Models.Permission", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -433,7 +694,158 @@ namespace LMCM_BE.Migrations
                     b.ToTable("Permissions");
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.Subject", b =>
+            modelBuilder.Entity("LMCM_BE.Models.Plo", b =>
+                {
+                    b.Property<Guid>("PloId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("PLO_ID")
+                        .HasDefaultValueSql("(newid())");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedAt");
+
+                    b.Property<Guid>("CurriculumId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Curriculum_ID");
+
+                    b.Property<string>("PloDescription")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("PLO_Description");
+
+                    b.Property<string>("PloName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("PLO_Name");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Subject_ID");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedAt");
+
+                    b.HasKey("PloId")
+                        .HasName("PK__PLO__3BEF007EC7EFD1E5");
+
+                    b.HasIndex("CurriculumId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.ToTable("PLO", (string)null);
+
+                    b.ToTable(tb => tb.IsTemporal(ttb =>
+                            {
+                                ttb.UseHistoryTable("PLO_History", "dbo");
+                                ttb
+                                    .HasPeriodStart("CreatedAt")
+                                    .HasColumnName("CreatedAt");
+                                ttb
+                                    .HasPeriodEnd("UpdatedAt")
+                                    .HasColumnName("UpdatedAt");
+                            }));
+                });
+
+            modelBuilder.Entity("LMCM_BE.Models.Schedule", b =>
+                {
+                    b.Property<Guid>("ScheduleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Schedule_ID")
+                        .HasDefaultValueSql("(newid())");
+
+                    b.Property<string>("Clo")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("CLO");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedAt");
+
+                    b.Property<string>("Itu")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("ITU");
+
+                    b.Property<string>("LecturerMaterial")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Lecturer_Material");
+
+                    b.Property<string>("LecturerMaterialUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Lecturer_Material_Url");
+
+                    b.Property<string>("LecturerTask")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Lecturer_Task");
+
+                    b.Property<string>("Method")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("ScheduleNo")
+                        .HasColumnType("int")
+                        .HasColumnName("Schedule_No");
+
+                    b.Property<string>("StudentMaterial")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Student_Material");
+
+                    b.Property<string>("StudentMaterialUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Student_Material_Url");
+
+                    b.Property<string>("StudentTask")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Student_Task");
+
+                    b.Property<Guid>("SyllabusId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Syllabus_ID");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedAt");
+
+                    b.HasKey("ScheduleId")
+                        .HasName("PK__Schedule__8C4D3BBB0610810D");
+
+                    b.HasIndex("SyllabusId");
+
+                    b.ToTable("Schedule", (string)null);
+
+                    b.ToTable(tb => tb.IsTemporal(ttb =>
+                            {
+                                ttb.UseHistoryTable("Schedule_History", "dbo");
+                                ttb
+                                    .HasPeriodStart("CreatedAt")
+                                    .HasColumnName("CreatedAt");
+                                ttb
+                                    .HasPeriodEnd("UpdatedAt")
+                                    .HasColumnName("UpdatedAt");
+                            }));
+                });
+
+            modelBuilder.Entity("LMCM_BE.Models.Subject", b =>
                 {
                     b.Property<Guid>("SubjectId")
                         .ValueGeneratedOnAdd()
@@ -505,7 +917,7 @@ namespace LMCM_BE.Migrations
                             }));
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.SubjectsSyllabus", b =>
+            modelBuilder.Entity("LMCM_BE.Models.SubjectsSyllabus", b =>
                 {
                     b.Property<Guid>("SubjectId")
                         .HasColumnType("uniqueidentifier")
@@ -543,7 +955,7 @@ namespace LMCM_BE.Migrations
                             }));
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.Syllabus", b =>
+            modelBuilder.Entity("LMCM_BE.Models.Syllabus", b =>
                 {
                     b.Property<Guid>("SyllabusId")
                         .ValueGeneratedOnAdd()
@@ -551,26 +963,95 @@ namespace LMCM_BE.Migrations
                         .HasColumnName("Syllabus_ID")
                         .HasDefaultValueSql("(newid())");
 
+                    b.Property<DateTime?>("ApprovedDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("Approved_Date");
+
+                    b.Property<string>("CourseCode")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Course_Code");
+
+                    b.Property<string>("CourseName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Course_Name");
+
+                    b.Property<string>("CourseNameEnglish")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Course_Name_English");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2")
                         .HasColumnName("CreatedAt");
 
+                    b.Property<string>("DecisionNo")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Decision_No");
+
+                    b.Property<string>("DegreeLevel")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Degree_Level");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("LearningTeachingMethod")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Learning_Teaching_Method");
+
+                    b.Property<decimal?>("MinGpaToPass")
+                        .HasColumnType("decimal(19, 2)")
+                        .HasColumnName("Min_GPA_to_Pass");
+
+                    b.Property<int>("NoOfCredits")
+                        .HasColumnType("int")
+                        .HasColumnName("No_of_Credits");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("PreRequisite")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Pre_requisite");
+
+                    b.Property<string>("ProgramName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Program_Name");
+
+                    b.Property<decimal?>("ScoringScale")
+                        .HasColumnType("decimal(19, 2)")
+                        .HasColumnName("Scoring_Scale");
+
                     b.Property<string>("Status")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("SyllabusCode")
-                        .IsRequired()
+                    b.Property<string>("StudentTask")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
-                        .HasColumnName("Syllabus_Code");
+                        .HasColumnName("Student_Task");
 
-                    b.Property<string>("SyllabusName")
-                        .IsRequired()
+                    b.Property<string>("TimeAllocation")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
-                        .HasColumnName("Syllabus_Name");
+                        .HasColumnName("Time_Allocation");
+
+                    b.Property<string>("Tools")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()
@@ -579,7 +1060,7 @@ namespace LMCM_BE.Migrations
 
                     b.HasKey("SyllabusId");
 
-                    b.HasIndex(new[] { "SyllabusCode" }, "UQ__Syllabus__DAF08DF2B8572EA1")
+                    b.HasIndex(new[] { "CourseCode" }, "UQ__Syllabus__1AE5B24D9C85777D")
                         .IsUnique();
 
                     b.ToTable("Syllabus", (string)null);
@@ -596,7 +1077,7 @@ namespace LMCM_BE.Migrations
                             }));
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.SyllabusLearningMaterial", b =>
+            modelBuilder.Entity("LMCM_BE.Models.SyllabusLearningMaterial", b =>
                 {
                     b.Property<Guid>("SyllabusId")
                         .HasColumnType("uniqueidentifier")
@@ -634,7 +1115,7 @@ namespace LMCM_BE.Migrations
                             }));
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.User", b =>
+            modelBuilder.Entity("LMCM_BE.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -662,7 +1143,8 @@ namespace LMCM_BE.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -683,7 +1165,8 @@ namespace LMCM_BE.Migrations
 
                     b.Property<string>("Picture")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -839,9 +1322,9 @@ namespace LMCM_BE.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.AcceptanceRecord", b =>
+            modelBuilder.Entity("LMCM_BE.Models.AcceptanceRecord", b =>
                 {
-                    b.HasOne("BusinessObject.Models.Contract", "Contract")
+                    b.HasOne("LMCM_BE.Models.Contract", "Contract")
                         .WithMany("AcceptanceRecords")
                         .HasForeignKey("ContractId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -851,9 +1334,9 @@ namespace LMCM_BE.Migrations
                     b.Navigation("Contract");
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.BudgetProposal", b =>
+            modelBuilder.Entity("LMCM_BE.Models.BudgetProposal", b =>
                 {
-                    b.HasOne("BusinessObject.Models.User", "Author")
+                    b.HasOne("LMCM_BE.Models.User", "Author")
                         .WithMany("BudgetProposals")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -863,9 +1346,31 @@ namespace LMCM_BE.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.Contract", b =>
+            modelBuilder.Entity("LMCM_BE.Models.Clo", b =>
                 {
-                    b.HasOne("BusinessObject.Models.User", "Contractor")
+                    b.HasOne("LMCM_BE.Models.Syllabus", "Syllabus")
+                        .WithMany("Clos")
+                        .HasForeignKey("SyllabusId")
+                        .IsRequired()
+                        .HasConstraintName("FK__CLO__Syllabus_ID__0F624AF8");
+
+                    b.Navigation("Syllabus");
+                });
+
+            modelBuilder.Entity("LMCM_BE.Models.ConstructivistQuestion", b =>
+                {
+                    b.HasOne("LMCM_BE.Models.Syllabus", "Syllabus")
+                        .WithMany("ConstructivistQuestions")
+                        .HasForeignKey("SyllabusId")
+                        .IsRequired()
+                        .HasConstraintName("FK__Construct__Sylla__08B54D69");
+
+                    b.Navigation("Syllabus");
+                });
+
+            modelBuilder.Entity("LMCM_BE.Models.Contract", b =>
+                {
+                    b.HasOne("LMCM_BE.Models.User", "Contractor")
                         .WithMany("Contracts")
                         .HasForeignKey("ContractorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -875,16 +1380,16 @@ namespace LMCM_BE.Migrations
                     b.Navigation("Contractor");
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.CurriculumsSubject", b =>
+            modelBuilder.Entity("LMCM_BE.Models.CurriculumsSubject", b =>
                 {
-                    b.HasOne("BusinessObject.Models.Curriculum", "Curriculum")
+                    b.HasOne("LMCM_BE.Models.Curriculum", "Curriculum")
                         .WithMany()
                         .HasForeignKey("CurriculumId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK__Curriculu__Curri__534D60F1");
 
-                    b.HasOne("BusinessObject.Models.Subject", "Subject")
+                    b.HasOne("LMCM_BE.Models.Subject", "Subject")
                         .WithMany()
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -896,9 +1401,9 @@ namespace LMCM_BE.Migrations
                     b.Navigation("Subject");
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.DocumentTemplate", b =>
+            modelBuilder.Entity("LMCM_BE.Models.DocumentTemplate", b =>
                 {
-                    b.HasOne("BusinessObject.Models.User", "Author")
+                    b.HasOne("LMCM_BE.Models.User", "Author")
                         .WithMany("DocumentTemplates")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -908,9 +1413,20 @@ namespace LMCM_BE.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.Notification", b =>
+            modelBuilder.Entity("LMCM_BE.Models.GradingStructure", b =>
                 {
-                    b.HasOne("BusinessObject.Models.User", "User")
+                    b.HasOne("LMCM_BE.Models.Syllabus", "Syllabus")
+                        .WithMany("GradingStructures")
+                        .HasForeignKey("SyllabusId")
+                        .IsRequired()
+                        .HasConstraintName("FK__Grading_S__Sylla__02084FDA");
+
+                    b.Navigation("Syllabus");
+                });
+
+            modelBuilder.Entity("LMCM_BE.Models.Notification", b =>
+                {
+                    b.HasOne("LMCM_BE.Models.User", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -920,16 +1436,46 @@ namespace LMCM_BE.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.SubjectsSyllabus", b =>
+            modelBuilder.Entity("LMCM_BE.Models.Plo", b =>
                 {
-                    b.HasOne("BusinessObject.Models.Subject", "Subject")
+                    b.HasOne("LMCM_BE.Models.Curriculum", "Curriculum")
+                        .WithMany("Plos")
+                        .HasForeignKey("CurriculumId")
+                        .IsRequired()
+                        .HasConstraintName("FK__PLO__Curriculum___59FA5E80");
+
+                    b.HasOne("LMCM_BE.Models.Subject", "Subject")
+                        .WithMany("Plos")
+                        .HasForeignKey("SubjectId")
+                        .IsRequired()
+                        .HasConstraintName("FK__PLO__Subject_ID__5AEE82B9");
+
+                    b.Navigation("Curriculum");
+
+                    b.Navigation("Subject");
+                });
+
+            modelBuilder.Entity("LMCM_BE.Models.Schedule", b =>
+                {
+                    b.HasOne("LMCM_BE.Models.Syllabus", "Syllabus")
+                        .WithMany("Schedules")
+                        .HasForeignKey("SyllabusId")
+                        .IsRequired()
+                        .HasConstraintName("FK__Schedule__Syllab__7B5B524B");
+
+                    b.Navigation("Syllabus");
+                });
+
+            modelBuilder.Entity("LMCM_BE.Models.SubjectsSyllabus", b =>
+                {
+                    b.HasOne("LMCM_BE.Models.Subject", "Subject")
                         .WithMany()
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK__Subjects___Subje__60A75C0F");
 
-                    b.HasOne("BusinessObject.Models.Syllabus", "Syllabus")
+                    b.HasOne("LMCM_BE.Models.Syllabus", "Syllabus")
                         .WithMany()
                         .HasForeignKey("SyllabusId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -941,16 +1487,16 @@ namespace LMCM_BE.Migrations
                     b.Navigation("Syllabus");
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.SyllabusLearningMaterial", b =>
+            modelBuilder.Entity("LMCM_BE.Models.SyllabusLearningMaterial", b =>
                 {
-                    b.HasOne("BusinessObject.Models.LearningMaterial", "Material")
+                    b.HasOne("LMCM_BE.Models.LearningMaterial", "Material")
                         .WithMany()
                         .HasForeignKey("MaterialId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK__Syllabus___Mater__6E01572D");
 
-                    b.HasOne("BusinessObject.Models.Syllabus", "Syllabus")
+                    b.HasOne("LMCM_BE.Models.Syllabus", "Syllabus")
                         .WithMany()
                         .HasForeignKey("SyllabusId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -973,7 +1519,7 @@ namespace LMCM_BE.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("BusinessObject.Models.User", null)
+                    b.HasOne("LMCM_BE.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -982,7 +1528,7 @@ namespace LMCM_BE.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("BusinessObject.Models.User", null)
+                    b.HasOne("LMCM_BE.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -997,7 +1543,7 @@ namespace LMCM_BE.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BusinessObject.Models.User", null)
+                    b.HasOne("LMCM_BE.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1006,19 +1552,40 @@ namespace LMCM_BE.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("BusinessObject.Models.User", null)
+                    b.HasOne("LMCM_BE.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.Contract", b =>
+            modelBuilder.Entity("LMCM_BE.Models.Contract", b =>
                 {
                     b.Navigation("AcceptanceRecords");
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.User", b =>
+            modelBuilder.Entity("LMCM_BE.Models.Curriculum", b =>
+                {
+                    b.Navigation("Plos");
+                });
+
+            modelBuilder.Entity("LMCM_BE.Models.Subject", b =>
+                {
+                    b.Navigation("Plos");
+                });
+
+            modelBuilder.Entity("LMCM_BE.Models.Syllabus", b =>
+                {
+                    b.Navigation("Clos");
+
+                    b.Navigation("ConstructivistQuestions");
+
+                    b.Navigation("GradingStructures");
+
+                    b.Navigation("Schedules");
+                });
+
+            modelBuilder.Entity("LMCM_BE.Models.User", b =>
                 {
                     b.Navigation("BudgetProposals");
 

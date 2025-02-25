@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace BusinessObject.Models
+namespace LMCM_BE.Models
 {
     public partial class User : IdentityUser<Guid>
     {

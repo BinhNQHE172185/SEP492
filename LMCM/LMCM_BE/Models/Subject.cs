@@ -23,5 +23,13 @@ public partial class Subject
 
     public string? Status { get; set; }
 
-    public virtual ICollection<Plo> Plos { get; set; } = new List<Plo>();
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+
+    public virtual ICollection<CurriculumsSubject> CurriculumsSubjects { get; set; } = new List<CurriculumsSubject>();
+
+    public virtual ICollection<PloSubject> PloSubjects { get; set; } = new List<PloSubject>();
+
+    public virtual ICollection<SubjectsSyllabus> SubjectsSyllabi { get; set; } = new List<SubjectsSyllabus>();
 }

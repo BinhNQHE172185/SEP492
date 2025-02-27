@@ -27,5 +27,11 @@ public partial class Curriculum
 
     public string? Status { get; set; }
 
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+
+    public virtual ICollection<CurriculumsSubject> CurriculumsSubjects { get; set; } = new List<CurriculumsSubject>();
+
     public virtual ICollection<Plo> Plos { get; set; } = new List<Plo>();
 }

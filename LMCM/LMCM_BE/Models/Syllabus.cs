@@ -43,11 +43,21 @@ public partial class Syllabus
 
     public string? Status { get; set; }
 
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+
     public virtual ICollection<Clo> Clos { get; set; } = new List<Clo>();
 
     public virtual ICollection<ConstructivistQuestion> ConstructivistQuestions { get; set; } = new List<ConstructivistQuestion>();
 
     public virtual ICollection<GradingStructure> GradingStructures { get; set; } = new List<GradingStructure>();
 
+    public virtual ICollection<ImportedLearningMaterial> ImportedLearningMaterials { get; set; } = new List<ImportedLearningMaterial>();
+
     public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
+
+    public virtual ICollection<SubjectsSyllabus> SubjectsSyllabi { get; set; } = new List<SubjectsSyllabus>();
+
+    public virtual ICollection<SyllabusReferencedLearningMaterial> SyllabusReferencedLearningMaterials { get; set; } = new List<SyllabusReferencedLearningMaterial>();
 }

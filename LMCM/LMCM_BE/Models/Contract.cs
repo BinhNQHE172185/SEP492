@@ -21,11 +21,13 @@ public partial class Contract
 
     public string? Status { get; set; }
 
-    public DateTime CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; }
 
-    public DateTime UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 
     public virtual ICollection<AcceptanceRecord> AcceptanceRecords { get; set; } = new List<AcceptanceRecord>();
 
-    public virtual User Contractor { get; set; } = null!;
+    public virtual ICollection<BudgetProposal> BudgetProposals { get; set; } = new List<BudgetProposal>();
+
+    public virtual Contractor Contractor { get; set; } = null!;
 }

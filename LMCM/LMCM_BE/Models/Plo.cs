@@ -9,15 +9,17 @@ public partial class Plo
 
     public Guid CurriculumId { get; set; }
 
-    public Guid SubjectId { get; set; }
-
     public string PloName { get; set; } = null!;
 
     public string? PloDescription { get; set; }
 
     public string? Status { get; set; }
 
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+
     public virtual Curriculum Curriculum { get; set; } = null!;
 
-    public virtual Subject Subject { get; set; } = null!;
+    public virtual ICollection<PloSubject> PloSubjects { get; set; } = new List<PloSubject>();
 }

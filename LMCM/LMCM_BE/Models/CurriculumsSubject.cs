@@ -9,11 +9,11 @@ public partial class CurriculumsSubject
 
     public Guid SubjectId { get; set; }
 
-    public int TermNo { get; set; }
+    public int? TermNo { get; set; }
 
-    public int Credit { get; set; }
+    public int? Credit { get; set; }
 
-    public int Options { get; set; }
+    public int? Options { get; set; }
 
     public string? Status { get; set; }
 

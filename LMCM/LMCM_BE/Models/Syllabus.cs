@@ -19,7 +19,7 @@ public partial class Syllabus
 
     public string? LearningTeachingMethod { get; set; }
 
-    public int NoOfCredits { get; set; }
+    public int? NoOfCredits { get; set; }
 
     public string? DegreeLevel { get; set; }
 

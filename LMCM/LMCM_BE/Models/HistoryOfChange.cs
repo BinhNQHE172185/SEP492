@@ -7,6 +7,8 @@ public partial class HistoryOfChange
 {
     public Guid HistoryId { get; set; }
 
+    public Guid UserId { get; set; }
+
     public string? Description { get; set; }
 
     public string? ItemType { get; set; }
@@ -16,4 +18,6 @@ public partial class HistoryOfChange
     public Guid? ItemIdOld { get; set; }
 
     public DateTime? CreatedAt { get; set; }
+
+    public virtual User User { get; set; } = null!;
 }

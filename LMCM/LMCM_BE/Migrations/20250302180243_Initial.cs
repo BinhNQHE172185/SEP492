@@ -47,7 +47,7 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Contract__61C4678DC17AEF97", x => x.Contractor_ID);
+                    table.PrimaryKey("PK__Contract__61C4678D256FC32C", x => x.Contractor_ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -70,36 +70,7 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Curricul__2F88E2C2833996B8", x => x.Curriculum_ID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "History_Of_Changes",
-                columns: table => new
-                {
-                    History_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Item_Type = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Item_ID_New = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Item_ID_Old = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__History___A6BABA37CB1AD5F5", x => x.History_ID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Permissions",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
-                    Type = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Item_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__Permissi__3214EC072C2E5CB1", x => x.Id);
+                    table.PrimaryKey("PK__Curricul__2F88E2C2DDD1C7CD", x => x.Curriculum_ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -123,7 +94,7 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Referenc__3A09B0FD1BA50115", x => x.Material_ID);
+                    table.PrimaryKey("PK__Referenc__3A09B0FD0650C74A", x => x.Material_ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -144,7 +115,7 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Subjects__D98F54D65461C76D", x => x.Subject_ID);
+                    table.PrimaryKey("PK__Subjects__D98F54D6147D1214", x => x.Subject_ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -158,7 +129,7 @@ namespace LMCM_BE.Migrations
                     Course_Name_English = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Course_Code = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Learning_Teaching_Method = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    No_of_Credits = table.Column<int>(type: "int", nullable: false),
+                    No_of_Credits = table.Column<int>(type: "int", nullable: true),
                     Degree_Level = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Time_Allocation = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Pre_requisite = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
@@ -175,7 +146,7 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Syllabus__2F9B4950E783D5C2", x => x.Syllabus_ID);
+                    table.PrimaryKey("PK__Syllabus__2F9B4950EDEC93C4", x => x.Syllabus_ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -183,8 +154,9 @@ namespace LMCM_BE.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Picture = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Picture = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -227,31 +199,6 @@ namespace LMCM_BE.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Contracts",
-                columns: table => new
-                {
-                    Contract_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
-                    Contract_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Contractor_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Contract_Value = table.Column<decimal>(type: "decimal(19,2)", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())"),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__Contract__5E2E73DAA7081C7B", x => x.Contract_ID);
-                    table.ForeignKey(
-                        name: "FK__Contracts__Contr__1BC821DD",
-                        column: x => x.Contractor_ID,
-                        principalTable: "Contractor",
-                        principalColumn: "Contractor_ID");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PLO",
                 columns: table => new
                 {
@@ -265,9 +212,9 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__PLO__3BEF007EFE658749", x => x.PLO_ID);
+                    table.PrimaryKey("PK__PLO__3BEF007E5C645D1B", x => x.PLO_ID);
                     table.ForeignKey(
-                        name: "FK__PLO__Curriculum___5441852A",
+                        name: "FK__PLO__Curriculum___5629CD9C",
                         column: x => x.Curriculum_ID,
                         principalTable: "Curriculums",
                         principalColumn: "Curriculum_ID");
@@ -280,22 +227,22 @@ namespace LMCM_BE.Migrations
                     Curriculum_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Subject_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
-                    Term_No = table.Column<int>(type: "int", nullable: false),
-                    Credit = table.Column<int>(type: "int", nullable: false),
-                    Options = table.Column<int>(type: "int", nullable: false),
+                    Term_No = table.Column<int>(type: "int", nullable: true),
+                    Credit = table.Column<int>(type: "int", nullable: true),
+                    Options = table.Column<int>(type: "int", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Curricul__39754AB284BC4AC1", x => new { x.Curriculum_ID, x.Subject_ID, x.CreatedAt });
+                    table.PrimaryKey("PK__Curricul__39754AB2695E79B8", x => new { x.Curriculum_ID, x.Subject_ID, x.CreatedAt });
                     table.ForeignKey(
-                        name: "FK__Curriculu__Curri__4D94879B",
+                        name: "FK__Curriculu__Curri__4F7CD00D",
                         column: x => x.Curriculum_ID,
                         principalTable: "Curriculums",
                         principalColumn: "Curriculum_ID");
                     table.ForeignKey(
-                        name: "FK__Curriculu__Subje__4E88ABD4",
+                        name: "FK__Curriculu__Subje__5070F446",
                         column: x => x.Subject_ID,
                         principalTable: "Subjects",
                         principalColumn: "Subject_ID");
@@ -315,9 +262,9 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__CLO__C3755EAD98282D65", x => x.CLO_ID);
+                    table.PrimaryKey("PK__CLO__C3755EADFC6252E1", x => x.CLO_ID);
                     table.ForeignKey(
-                        name: "FK__CLO__Syllabus_ID__06CD04F7",
+                        name: "FK__CLO__Syllabus_ID__08B54D69",
                         column: x => x.Syllabus_ID,
                         principalTable: "Syllabus",
                         principalColumn: "Syllabus_ID");
@@ -338,9 +285,9 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Construc__B0B2E4C616BF6D17", x => x.Question_ID);
+                    table.PrimaryKey("PK__Construc__B0B2E4C68854F403", x => x.Question_ID);
                     table.ForeignKey(
-                        name: "FK__Construct__Sylla__01142BA1",
+                        name: "FK__Construct__Sylla__02FC7413",
                         column: x => x.Syllabus_ID,
                         principalTable: "Syllabus",
                         principalColumn: "Syllabus_ID");
@@ -373,9 +320,9 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Grading___71D721C6E3213E63", x => x.Structure_ID);
+                    table.PrimaryKey("PK__Grading___71D721C6B7F84F08", x => x.Structure_ID);
                     table.ForeignKey(
-                        name: "FK__Grading_S__Sylla__7B5B524B",
+                        name: "FK__Grading_S__Sylla__7D439ABD",
                         column: x => x.Syllabus_ID,
                         principalTable: "Syllabus",
                         principalColumn: "Syllabus_ID");
@@ -400,9 +347,9 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Imported__3A09B0FD5110BD93", x => x.Material_ID);
+                    table.PrimaryKey("PK__Imported__3A09B0FD1A975944", x => x.Material_ID);
                     table.ForeignKey(
-                        name: "FK__Imported___Sylla__0C85DE4D",
+                        name: "FK__Imported___Sylla__0E6E26BF",
                         column: x => x.Syllabus_ID,
                         principalTable: "Syllabus",
                         principalColumn: "Syllabus_ID");
@@ -430,9 +377,9 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Schedule__8C4D3BBB5DCC3D6E", x => x.Schedule_ID);
+                    table.PrimaryKey("PK__Schedule__8C4D3BBB6DB1D353", x => x.Schedule_ID);
                     table.ForeignKey(
-                        name: "FK__Schedule__Syllab__75A278F5",
+                        name: "FK__Schedule__Syllab__778AC167",
                         column: x => x.Syllabus_ID,
                         principalTable: "Syllabus",
                         principalColumn: "Syllabus_ID");
@@ -450,14 +397,14 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Subjects__A013BD7E2D6623F4", x => new { x.Subject_ID, x.Syllabus_ID, x.CreatedAt });
+                    table.PrimaryKey("PK__Subjects__A013BD7EDF24DB5C", x => new { x.Subject_ID, x.Syllabus_ID, x.CreatedAt });
                     table.ForeignKey(
-                        name: "FK__Subjects___Subje__6477ECF3",
+                        name: "FK__Subjects___Subje__66603565",
                         column: x => x.Subject_ID,
                         principalTable: "Subjects",
                         principalColumn: "Subject_ID");
                     table.ForeignKey(
-                        name: "FK__Subjects___Sylla__656C112C",
+                        name: "FK__Subjects___Sylla__6754599E",
                         column: x => x.Syllabus_ID,
                         principalTable: "Syllabus",
                         principalColumn: "Syllabus_ID");
@@ -475,14 +422,14 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Syllabus__875E8F62998A0BCA", x => new { x.Syllabus_ID, x.Material_ID, x.CreatedAt });
+                    table.PrimaryKey("PK__Syllabus__875E8F62706FE2CF", x => new { x.Syllabus_ID, x.Material_ID, x.CreatedAt });
                     table.ForeignKey(
-                        name: "FK__Syllabus___Mater__6FE99F9F",
+                        name: "FK__Syllabus___Mater__71D1E811",
                         column: x => x.Material_ID,
                         principalTable: "Referenced_Learning_Materials",
                         principalColumn: "Material_ID");
                     table.ForeignKey(
-                        name: "FK__Syllabus___Sylla__6EF57B66",
+                        name: "FK__Syllabus___Sylla__70DDC3D8",
                         column: x => x.Syllabus_ID,
                         principalTable: "Syllabus",
                         principalColumn: "Syllabus_ID");
@@ -574,6 +521,38 @@ namespace LMCM_BE.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Contracts",
+                columns: table => new
+                {
+                    Contract_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
+                    Author_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Contractor_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Contract_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Contract_Value = table.Column<decimal>(type: "decimal(19,2)", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Contract__5E2E73DAD1BA4757", x => x.Contract_ID);
+                    table.ForeignKey(
+                        name: "FK__Contracts__Autho__1DB06A4F",
+                        column: x => x.Author_ID,
+                        principalTable: "User",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK__Contracts__Contr__1EA48E88",
+                        column: x => x.Contractor_ID,
+                        principalTable: "Contractor",
+                        principalColumn: "Contractor_ID");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Document_Templates",
                 columns: table => new
                 {
@@ -588,10 +567,32 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Document__E7FB8F0169989A10", x => x.Template_ID);
+                    table.PrimaryKey("PK__Document__E7FB8F01D8F4157A", x => x.Template_ID);
                     table.ForeignKey(
-                        name: "FK__Document___Updat__2DE6D218",
+                        name: "FK__Document___Updat__31B762FC",
                         column: x => x.Author_ID,
+                        principalTable: "User",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "History_Of_Changes",
+                columns: table => new
+                {
+                    History_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
+                    User_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Item_Type = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Item_ID_New = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Item_ID_Old = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__History___A6BABA37565A3C0A", x => x.History_ID);
+                    table.ForeignKey(
+                        name: "FK__History_O__User___403A8C7D",
+                        column: x => x.User_ID,
                         principalTable: "User",
                         principalColumn: "Id");
                 });
@@ -610,63 +611,31 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Notifica__8C1160B5B03230B9", x => x.Notification_ID);
+                    table.PrimaryKey("PK__Notifica__8C1160B5A00C5A40", x => x.Notification_ID);
                     table.ForeignKey(
-                        name: "FK__Notificat__User___114A936A",
+                        name: "FK__Notificat__User___1332DBDC",
                         column: x => x.User_ID,
                         principalTable: "User",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Acceptance_Record",
+                name: "Permissions",
                 columns: table => new
                 {
-                    Acceptance_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
-                    Contract_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Acceptance_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Final_Price = table.Column<decimal>(type: "decimal(19,2)", nullable: true),
-                    Url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())"),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())")
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
+                    User_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Item_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Acceptan__FC008882B335D583", x => x.Acceptance_ID);
+                    table.PrimaryKey("PK__Permissi__3214EC0703CFB5EB", x => x.Id);
                     table.ForeignKey(
-                        name: "FK__Acceptanc__Contr__282DF8C2",
-                        column: x => x.Contract_ID,
-                        principalTable: "Contracts",
-                        principalColumn: "Contract_ID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Budget_Proposals",
-                columns: table => new
-                {
-                    Proposal_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
-                    Author_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Contract_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Proposal_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())"),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__Budget_P__C9D0461F0E26CF3B", x => x.Proposal_ID);
-                    table.ForeignKey(
-                        name: "FK__Budget_Pr__Autho__2180FB33",
-                        column: x => x.Author_ID,
+                        name: "FK__Permissio__User___3B75D760",
+                        column: x => x.User_ID,
                         principalTable: "User",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK__Budget_Pr__Contr__22751F6C",
-                        column: x => x.Contract_ID,
-                        principalTable: "Contracts",
-                        principalColumn: "Contract_ID");
                 });
 
             migrationBuilder.CreateTable(
@@ -681,18 +650,82 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__PLO_Subj__2D12A80EB8A2C766", x => new { x.PLO_ID, x.Subject_ID, x.CreatedAt });
+                    table.PrimaryKey("PK__PLO_Subj__2D12A80E1F6E32B3", x => new { x.PLO_ID, x.Subject_ID, x.CreatedAt });
                     table.ForeignKey(
-                        name: "FK__PLO_Subje__PLO_I__59063A47",
+                        name: "FK__PLO_Subje__PLO_I__5AEE82B9",
                         column: x => x.PLO_ID,
                         principalTable: "PLO",
                         principalColumn: "PLO_ID");
                     table.ForeignKey(
-                        name: "FK__PLO_Subje__Subje__59FA5E80",
+                        name: "FK__PLO_Subje__Subje__5BE2A6F2",
                         column: x => x.Subject_ID,
                         principalTable: "Subjects",
                         principalColumn: "Subject_ID");
                 });
+
+            migrationBuilder.CreateTable(
+                name: "Acceptance_Record",
+                columns: table => new
+                {
+                    Acceptance_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
+                    Author_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Contract_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Acceptance_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Final_Price = table.Column<decimal>(type: "decimal(19,2)", nullable: true),
+                    Url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Acceptan__FC008882EF9E8026", x => x.Acceptance_ID);
+                    table.ForeignKey(
+                        name: "FK__Acceptanc__Autho__2B0A656D",
+                        column: x => x.Author_ID,
+                        principalTable: "User",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK__Acceptanc__Contr__2BFE89A6",
+                        column: x => x.Contract_ID,
+                        principalTable: "Contracts",
+                        principalColumn: "Contract_ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Budget_Proposals",
+                columns: table => new
+                {
+                    Proposal_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
+                    Author_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Contract_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Proposal_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Budget_P__C9D0461FBC7862BC", x => x.Proposal_ID);
+                    table.ForeignKey(
+                        name: "FK__Budget_Pr__Autho__245D67DE",
+                        column: x => x.Author_ID,
+                        principalTable: "User",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK__Budget_Pr__Contr__25518C17",
+                        column: x => x.Contract_ID,
+                        principalTable: "Contracts",
+                        principalColumn: "Contract_ID");
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Acceptance_Record_Author_ID",
+                table: "Acceptance_Record",
+                column: "Author_ID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Acceptance_Record_Contract_ID",
@@ -747,6 +780,11 @@ namespace LMCM_BE.Migrations
                 column: "Syllabus_ID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Contracts_Author_ID",
+                table: "Contracts",
+                column: "Author_ID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Contracts_Contractor_ID",
                 table: "Contracts",
                 column: "Contractor_ID");
@@ -767,6 +805,11 @@ namespace LMCM_BE.Migrations
                 column: "Syllabus_ID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_History_Of_Changes_User_ID",
+                table: "History_Of_Changes",
+                column: "User_ID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Imported_Learning_Materials_Syllabus_ID",
                 table: "Imported_Learning_Materials",
                 column: "Syllabus_ID");
@@ -774,6 +817,11 @@ namespace LMCM_BE.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Notification_User_ID",
                 table: "Notification",
+                column: "User_ID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Permissions_User_ID",
+                table: "Permissions",
                 column: "User_ID");
 
             migrationBuilder.CreateIndex(
@@ -792,7 +840,7 @@ namespace LMCM_BE.Migrations
                 column: "Syllabus_ID");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Subjects__4A7C5769A05FD9C7",
+                name: "UQ__Subjects__4A7C5769645477BE",
                 table: "Subjects",
                 column: "Subject_Code",
                 unique: true);
@@ -803,7 +851,7 @@ namespace LMCM_BE.Migrations
                 column: "Syllabus_ID");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Syllabus__1AE5B24D8229B1C8",
+                name: "UQ__Syllabus__1AE5B24DCA10A798",
                 table: "Syllabus",
                 column: "Course_Code",
                 unique: true);
@@ -896,9 +944,6 @@ namespace LMCM_BE.Migrations
                 name: "Contracts");
 
             migrationBuilder.DropTable(
-                name: "User");
-
-            migrationBuilder.DropTable(
                 name: "PLO");
 
             migrationBuilder.DropTable(
@@ -909,6 +954,9 @@ namespace LMCM_BE.Migrations
 
             migrationBuilder.DropTable(
                 name: "Syllabus");
+
+            migrationBuilder.DropTable(
+                name: "User");
 
             migrationBuilder.DropTable(
                 name: "Contractor");

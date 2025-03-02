@@ -11,6 +11,8 @@ public partial class BudgetProposal
 
     public Guid ContractId { get; set; }
 
+    public string Title { get; set; } = null!;
+
     public DateTime? ProposalDate { get; set; }
 
     public string? Url { get; set; }

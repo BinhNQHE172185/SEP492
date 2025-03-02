@@ -34,6 +34,10 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("Acceptance_Date");
 
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Author_ID");
+
                     b.Property<Guid>("ContractId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("Contract_ID");
@@ -51,6 +55,11 @@ namespace LMCM_BE.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -61,7 +70,9 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.HasKey("AcceptanceId")
-                        .HasName("PK__Acceptan__FC008882B335D583");
+                        .HasName("PK__Acceptan__FC008882EF9E8026");
+
+                    b.HasIndex("AuthorId");
 
                     b.HasIndex("ContractId");
 
@@ -97,6 +108,11 @@ namespace LMCM_BE.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -107,7 +123,7 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.HasKey("ProposalId")
-                        .HasName("PK__Budget_P__C9D0461F0E26CF3B");
+                        .HasName("PK__Budget_P__C9D0461FBC7862BC");
 
                     b.HasIndex("AuthorId");
 
@@ -153,7 +169,7 @@ namespace LMCM_BE.Migrations
                         .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.HasKey("CloId")
-                        .HasName("PK__CLO__C3755EAD98282D65");
+                        .HasName("PK__CLO__C3755EADFC6252E1");
 
                     b.HasIndex("SyllabusId");
 
@@ -201,7 +217,7 @@ namespace LMCM_BE.Migrations
                         .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.HasKey("QuestionId")
-                        .HasName("PK__Construc__B0B2E4C616BF6D17");
+                        .HasName("PK__Construc__B0B2E4C68854F403");
 
                     b.HasIndex("SyllabusId");
 
@@ -215,6 +231,10 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("Contract_ID")
                         .HasDefaultValueSql("(newid())");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Author_ID");
 
                     b.Property<DateTime?>("ContractDate")
                         .HasColumnType("datetime2")
@@ -243,6 +263,11 @@ namespace LMCM_BE.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -253,7 +278,9 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.HasKey("ContractId")
-                        .HasName("PK__Contract__5E2E73DAA7081C7B");
+                        .HasName("PK__Contract__5E2E73DAD1BA4757");
+
+                    b.HasIndex("AuthorId");
 
                     b.HasIndex("ContractorId");
 
@@ -295,8 +322,7 @@ namespace LMCM_BE.Migrations
 
                     b.Property<string>("Email")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("Email");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("EmployeeCode")
                         .HasMaxLength(255)
@@ -337,7 +363,7 @@ namespace LMCM_BE.Migrations
                         .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.HasKey("ContractorId")
-                        .HasName("PK__Contract__61C4678DC17AEF97");
+                        .HasName("PK__Contract__61C4678D256FC32C");
 
                     b.ToTable("Contractor", (string)null);
                 });
@@ -411,7 +437,7 @@ namespace LMCM_BE.Migrations
                         .HasColumnName("Vocational_Name");
 
                     b.HasKey("CurriculumId")
-                        .HasName("PK__Curricul__2F88E2C2833996B8");
+                        .HasName("PK__Curricul__2F88E2C2DDD1C7CD");
 
                     b.ToTable("Curriculums");
                 });
@@ -431,17 +457,17 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("(sysutcdatetime())");
 
-                    b.Property<int>("Credit")
+                    b.Property<int?>("Credit")
                         .HasColumnType("int");
 
-                    b.Property<int>("Options")
+                    b.Property<int?>("Options")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("TermNo")
+                    b.Property<int?>("TermNo")
                         .HasColumnType("int")
                         .HasColumnName("Term_No");
 
@@ -451,7 +477,7 @@ namespace LMCM_BE.Migrations
                         .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.HasKey("CurriculumId", "SubjectId", "CreatedAt")
-                        .HasName("PK__Curricul__39754AB284BC4AC1");
+                        .HasName("PK__Curricul__39754AB2695E79B8");
 
                     b.HasIndex("SubjectId");
 
@@ -500,7 +526,7 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.HasKey("TemplateId")
-                        .HasName("PK__Document__E7FB8F0169989A10");
+                        .HasName("PK__Document__E7FB8F01D8F4157A");
 
                     b.HasIndex("AuthorId");
 
@@ -597,7 +623,7 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("decimal(19, 2)");
 
                     b.HasKey("StructureId")
-                        .HasName("PK__Grading___71D721C6E3213E63");
+                        .HasName("PK__Grading___71D721C6B7F84F08");
 
                     b.HasIndex("SyllabusId");
 
@@ -634,8 +660,14 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("Item_Type");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("User_ID");
+
                     b.HasKey("HistoryId")
-                        .HasName("PK__History___A6BABA37CB1AD5F5");
+                        .HasName("PK__History___A6BABA37565A3C0A");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("History_Of_Changes", (string)null);
                 });
@@ -697,7 +729,7 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.HasKey("MaterialId")
-                        .HasName("PK__Imported__3A09B0FD5110BD93");
+                        .HasName("PK__Imported__3A09B0FD1A975944");
 
                     b.HasIndex("SyllabusId");
 
@@ -740,7 +772,7 @@ namespace LMCM_BE.Migrations
                         .HasColumnName("User_ID");
 
                     b.HasKey("NotificationId")
-                        .HasName("PK__Notifica__8C1160B5B03230B9");
+                        .HasName("PK__Notifica__8C1160B5A00C5A40");
 
                     b.HasIndex("UserId");
 
@@ -762,8 +794,14 @@ namespace LMCM_BE.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("User_ID");
+
                     b.HasKey("Id")
-                        .HasName("PK__Permissi__3214EC072C2E5CB1");
+                        .HasName("PK__Permissi__3214EC0703CFB5EB");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Permissions");
                 });
@@ -806,7 +844,7 @@ namespace LMCM_BE.Migrations
                         .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.HasKey("PloId")
-                        .HasName("PK__PLO__3BEF007EFE658749");
+                        .HasName("PK__PLO__3BEF007E5C645D1B");
 
                     b.HasIndex("CurriculumId");
 
@@ -838,7 +876,7 @@ namespace LMCM_BE.Migrations
                         .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.HasKey("PloId", "SubjectId", "CreatedAt")
-                        .HasName("PK__PLO_Subj__2D12A80EB8A2C766");
+                        .HasName("PK__PLO_Subj__2D12A80E1F6E32B3");
 
                     b.HasIndex("SubjectId");
 
@@ -912,7 +950,7 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.HasKey("MaterialId")
-                        .HasName("PK__Referenc__3A09B0FD1BA50115");
+                        .HasName("PK__Referenc__3A09B0FD0650C74A");
 
                     b.ToTable("Referenced_Learning_Materials", (string)null);
                 });
@@ -992,7 +1030,7 @@ namespace LMCM_BE.Migrations
                         .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.HasKey("ScheduleId")
-                        .HasName("PK__Schedule__8C4D3BBB5DCC3D6E");
+                        .HasName("PK__Schedule__8C4D3BBB6DB1D353");
 
                     b.HasIndex("SyllabusId");
 
@@ -1053,9 +1091,9 @@ namespace LMCM_BE.Migrations
                         .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.HasKey("SubjectId")
-                        .HasName("PK__Subjects__D98F54D65461C76D");
+                        .HasName("PK__Subjects__D98F54D6147D1214");
 
-                    b.HasIndex(new[] { "SubjectCode" }, "UQ__Subjects__4A7C5769A05FD9C7")
+                    b.HasIndex(new[] { "SubjectCode" }, "UQ__Subjects__4A7C5769645477BE")
                         .IsUnique();
 
                     b.ToTable("Subjects");
@@ -1086,7 +1124,7 @@ namespace LMCM_BE.Migrations
                         .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.HasKey("SubjectId", "SyllabusId", "CreatedAt")
-                        .HasName("PK__Subjects__A013BD7E2D6623F4");
+                        .HasName("PK__Subjects__A013BD7EDF24DB5C");
 
                     b.HasIndex("SyllabusId");
 
@@ -1150,7 +1188,7 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("decimal(19, 2)")
                         .HasColumnName("Min_GPA_to_Pass");
 
-                    b.Property<int>("NoOfCredits")
+                    b.Property<int?>("NoOfCredits")
                         .HasColumnType("int")
                         .HasColumnName("No_of_Credits");
 
@@ -1197,9 +1235,9 @@ namespace LMCM_BE.Migrations
                         .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.HasKey("SyllabusId")
-                        .HasName("PK__Syllabus__2F9B4950E783D5C2");
+                        .HasName("PK__Syllabus__2F9B4950EDEC93C4");
 
-                    b.HasIndex(new[] { "CourseCode" }, "UQ__Syllabus__1AE5B24D8229B1C8")
+                    b.HasIndex(new[] { "CourseCode" }, "UQ__Syllabus__1AE5B24DCA10A798")
                         .IsUnique();
 
                     b.ToTable("Syllabus", (string)null);
@@ -1230,7 +1268,7 @@ namespace LMCM_BE.Migrations
                         .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.HasKey("SyllabusId", "MaterialId", "CreatedAt")
-                        .HasName("PK__Syllabus__875E8F62998A0BCA");
+                        .HasName("PK__Syllabus__875E8F62706FE2CF");
 
                     b.HasIndex("MaterialId");
 
@@ -1264,7 +1302,6 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -1286,12 +1323,15 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Picture")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
@@ -1446,11 +1486,19 @@ namespace LMCM_BE.Migrations
 
             modelBuilder.Entity("LMCM_BE.Models.AcceptanceRecord", b =>
                 {
+                    b.HasOne("LMCM_BE.Models.User", "Author")
+                        .WithMany("AcceptanceRecords")
+                        .HasForeignKey("AuthorId")
+                        .IsRequired()
+                        .HasConstraintName("FK__Acceptanc__Autho__2B0A656D");
+
                     b.HasOne("LMCM_BE.Models.Contract", "Contract")
                         .WithMany("AcceptanceRecords")
                         .HasForeignKey("ContractId")
                         .IsRequired()
-                        .HasConstraintName("FK__Acceptanc__Contr__282DF8C2");
+                        .HasConstraintName("FK__Acceptanc__Contr__2BFE89A6");
+
+                    b.Navigation("Author");
 
                     b.Navigation("Contract");
                 });
@@ -1461,13 +1509,13 @@ namespace LMCM_BE.Migrations
                         .WithMany("BudgetProposals")
                         .HasForeignKey("AuthorId")
                         .IsRequired()
-                        .HasConstraintName("FK__Budget_Pr__Autho__2180FB33");
+                        .HasConstraintName("FK__Budget_Pr__Autho__245D67DE");
 
                     b.HasOne("LMCM_BE.Models.Contract", "Contract")
                         .WithMany("BudgetProposals")
                         .HasForeignKey("ContractId")
                         .IsRequired()
-                        .HasConstraintName("FK__Budget_Pr__Contr__22751F6C");
+                        .HasConstraintName("FK__Budget_Pr__Contr__25518C17");
 
                     b.Navigation("Author");
 
@@ -1480,7 +1528,7 @@ namespace LMCM_BE.Migrations
                         .WithMany("Clos")
                         .HasForeignKey("SyllabusId")
                         .IsRequired()
-                        .HasConstraintName("FK__CLO__Syllabus_ID__06CD04F7");
+                        .HasConstraintName("FK__CLO__Syllabus_ID__08B54D69");
 
                     b.Navigation("Syllabus");
                 });
@@ -1491,18 +1539,26 @@ namespace LMCM_BE.Migrations
                         .WithMany("ConstructivistQuestions")
                         .HasForeignKey("SyllabusId")
                         .IsRequired()
-                        .HasConstraintName("FK__Construct__Sylla__01142BA1");
+                        .HasConstraintName("FK__Construct__Sylla__02FC7413");
 
                     b.Navigation("Syllabus");
                 });
 
             modelBuilder.Entity("LMCM_BE.Models.Contract", b =>
                 {
+                    b.HasOne("LMCM_BE.Models.User", "Author")
+                        .WithMany("Contracts")
+                        .HasForeignKey("AuthorId")
+                        .IsRequired()
+                        .HasConstraintName("FK__Contracts__Autho__1DB06A4F");
+
                     b.HasOne("LMCM_BE.Models.Contractor", "Contractor")
                         .WithMany("Contracts")
                         .HasForeignKey("ContractorId")
                         .IsRequired()
-                        .HasConstraintName("FK__Contracts__Contr__1BC821DD");
+                        .HasConstraintName("FK__Contracts__Contr__1EA48E88");
+
+                    b.Navigation("Author");
 
                     b.Navigation("Contractor");
                 });
@@ -1513,13 +1569,13 @@ namespace LMCM_BE.Migrations
                         .WithMany("CurriculumsSubjects")
                         .HasForeignKey("CurriculumId")
                         .IsRequired()
-                        .HasConstraintName("FK__Curriculu__Curri__4D94879B");
+                        .HasConstraintName("FK__Curriculu__Curri__4F7CD00D");
 
                     b.HasOne("LMCM_BE.Models.Subject", "Subject")
                         .WithMany("CurriculumsSubjects")
                         .HasForeignKey("SubjectId")
                         .IsRequired()
-                        .HasConstraintName("FK__Curriculu__Subje__4E88ABD4");
+                        .HasConstraintName("FK__Curriculu__Subje__5070F446");
 
                     b.Navigation("Curriculum");
 
@@ -1532,7 +1588,7 @@ namespace LMCM_BE.Migrations
                         .WithMany("DocumentTemplates")
                         .HasForeignKey("AuthorId")
                         .IsRequired()
-                        .HasConstraintName("FK__Document___Updat__2DE6D218");
+                        .HasConstraintName("FK__Document___Updat__31B762FC");
 
                     b.Navigation("Author");
                 });
@@ -1543,9 +1599,20 @@ namespace LMCM_BE.Migrations
                         .WithMany("GradingStructures")
                         .HasForeignKey("SyllabusId")
                         .IsRequired()
-                        .HasConstraintName("FK__Grading_S__Sylla__7B5B524B");
+                        .HasConstraintName("FK__Grading_S__Sylla__7D439ABD");
 
                     b.Navigation("Syllabus");
+                });
+
+            modelBuilder.Entity("LMCM_BE.Models.HistoryOfChange", b =>
+                {
+                    b.HasOne("LMCM_BE.Models.User", "User")
+                        .WithMany("HistoryOfChanges")
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK__History_O__User___403A8C7D");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("LMCM_BE.Models.ImportedLearningMaterial", b =>
@@ -1554,7 +1621,7 @@ namespace LMCM_BE.Migrations
                         .WithMany("ImportedLearningMaterials")
                         .HasForeignKey("SyllabusId")
                         .IsRequired()
-                        .HasConstraintName("FK__Imported___Sylla__0C85DE4D");
+                        .HasConstraintName("FK__Imported___Sylla__0E6E26BF");
 
                     b.Navigation("Syllabus");
                 });
@@ -1565,7 +1632,18 @@ namespace LMCM_BE.Migrations
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .IsRequired()
-                        .HasConstraintName("FK__Notificat__User___114A936A");
+                        .HasConstraintName("FK__Notificat__User___1332DBDC");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LMCM_BE.Models.Permission", b =>
+                {
+                    b.HasOne("LMCM_BE.Models.User", "User")
+                        .WithMany("Permissions")
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK__Permissio__User___3B75D760");
 
                     b.Navigation("User");
                 });
@@ -1576,7 +1654,7 @@ namespace LMCM_BE.Migrations
                         .WithMany("Plos")
                         .HasForeignKey("CurriculumId")
                         .IsRequired()
-                        .HasConstraintName("FK__PLO__Curriculum___5441852A");
+                        .HasConstraintName("FK__PLO__Curriculum___5629CD9C");
 
                     b.Navigation("Curriculum");
                 });
@@ -1587,13 +1665,13 @@ namespace LMCM_BE.Migrations
                         .WithMany("PloSubjects")
                         .HasForeignKey("PloId")
                         .IsRequired()
-                        .HasConstraintName("FK__PLO_Subje__PLO_I__59063A47");
+                        .HasConstraintName("FK__PLO_Subje__PLO_I__5AEE82B9");
 
                     b.HasOne("LMCM_BE.Models.Subject", "Subject")
                         .WithMany("PloSubjects")
                         .HasForeignKey("SubjectId")
                         .IsRequired()
-                        .HasConstraintName("FK__PLO_Subje__Subje__59FA5E80");
+                        .HasConstraintName("FK__PLO_Subje__Subje__5BE2A6F2");
 
                     b.Navigation("Plo");
 
@@ -1606,7 +1684,7 @@ namespace LMCM_BE.Migrations
                         .WithMany("Schedules")
                         .HasForeignKey("SyllabusId")
                         .IsRequired()
-                        .HasConstraintName("FK__Schedule__Syllab__75A278F5");
+                        .HasConstraintName("FK__Schedule__Syllab__778AC167");
 
                     b.Navigation("Syllabus");
                 });
@@ -1617,13 +1695,13 @@ namespace LMCM_BE.Migrations
                         .WithMany("SubjectsSyllabi")
                         .HasForeignKey("SubjectId")
                         .IsRequired()
-                        .HasConstraintName("FK__Subjects___Subje__6477ECF3");
+                        .HasConstraintName("FK__Subjects___Subje__66603565");
 
                     b.HasOne("LMCM_BE.Models.Syllabus", "Syllabus")
                         .WithMany("SubjectsSyllabi")
                         .HasForeignKey("SyllabusId")
                         .IsRequired()
-                        .HasConstraintName("FK__Subjects___Sylla__656C112C");
+                        .HasConstraintName("FK__Subjects___Sylla__6754599E");
 
                     b.Navigation("Subject");
 
@@ -1636,13 +1714,13 @@ namespace LMCM_BE.Migrations
                         .WithMany("SyllabusReferencedLearningMaterials")
                         .HasForeignKey("MaterialId")
                         .IsRequired()
-                        .HasConstraintName("FK__Syllabus___Mater__6FE99F9F");
+                        .HasConstraintName("FK__Syllabus___Mater__71D1E811");
 
                     b.HasOne("LMCM_BE.Models.Syllabus", "Syllabus")
                         .WithMany("SyllabusReferencedLearningMaterials")
                         .HasForeignKey("SyllabusId")
                         .IsRequired()
-                        .HasConstraintName("FK__Syllabus___Sylla__6EF57B66");
+                        .HasConstraintName("FK__Syllabus___Sylla__70DDC3D8");
 
                     b.Navigation("Material");
 
@@ -1757,11 +1835,19 @@ namespace LMCM_BE.Migrations
 
             modelBuilder.Entity("LMCM_BE.Models.User", b =>
                 {
+                    b.Navigation("AcceptanceRecords");
+
                     b.Navigation("BudgetProposals");
+
+                    b.Navigation("Contracts");
 
                     b.Navigation("DocumentTemplates");
 
+                    b.Navigation("HistoryOfChanges");
+
                     b.Navigation("Notifications");
+
+                    b.Navigation("Permissions");
                 });
 #pragma warning restore 612, 618
         }

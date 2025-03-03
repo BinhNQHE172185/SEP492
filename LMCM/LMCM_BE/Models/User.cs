@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
 
 namespace LMCM_BE.Models;
 
@@ -21,7 +21,7 @@ public partial class User : IdentityUser<Guid>
 
     public virtual ICollection<DocumentTemplate> DocumentTemplates { get; set; } = new List<DocumentTemplate>();
 
-    public virtual ICollection<HistoryOfChange> HistoryOfChanges { get; set; } = new List<HistoryOfChange>();
+    public virtual ICollection<LearningMaterialChangesHistory> LearningMaterialChangesHistories { get; set; } = new List<LearningMaterialChangesHistory>();
 
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 

@@ -7,6 +7,10 @@ public partial class Syllabus
 {
     public Guid SyllabusId { get; set; }
 
+    public Guid SubjectId { get; set; }
+
+    public Guid? PreviousVersionId { get; set; }
+
     public string ProgramName { get; set; } = null!;
 
     public string? DecisionNo { get; set; }
@@ -55,9 +59,13 @@ public partial class Syllabus
 
     public virtual ICollection<ImportedLearningMaterial> ImportedLearningMaterials { get; set; } = new List<ImportedLearningMaterial>();
 
+    public virtual ICollection<Syllabus> InversePreviousVersion { get; set; } = new List<Syllabus>();
+
+    public virtual Syllabus? PreviousVersion { get; set; }
+
     public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
 
-    public virtual ICollection<SubjectsSyllabus> SubjectsSyllabi { get; set; } = new List<SubjectsSyllabus>();
+    public virtual Subject Subject { get; set; } = null!;
 
     public virtual ICollection<SyllabusReferencedLearningMaterial> SyllabusReferencedLearningMaterials { get; set; } = new List<SyllabusReferencedLearningMaterial>();
 }

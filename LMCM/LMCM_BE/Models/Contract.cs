@@ -7,6 +7,8 @@ public partial class Contract
 {
     public Guid ContractId { get; set; }
 
+    public Guid ProposalId { get; set; }
+
     public Guid AuthorId { get; set; }
 
     public Guid ContractorId { get; set; }
@@ -33,7 +35,9 @@ public partial class Contract
 
     public virtual User Author { get; set; } = null!;
 
-    public virtual ICollection<BudgetProposal> BudgetProposals { get; set; } = new List<BudgetProposal>();
-
     public virtual Contractor Contractor { get; set; } = null!;
+
+    public virtual ICollection<LearningMaterialChangesHistory> LearningMaterialChangesHistories { get; set; } = new List<LearningMaterialChangesHistory>();
+
+    public virtual BudgetProposal Proposal { get; set; } = null!;
 }

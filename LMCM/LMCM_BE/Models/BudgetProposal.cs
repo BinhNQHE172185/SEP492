@@ -9,8 +9,6 @@ public partial class BudgetProposal
 
     public Guid AuthorId { get; set; }
 
-    public Guid ContractId { get; set; }
-
     public string Title { get; set; } = null!;
 
     public DateTime? ProposalDate { get; set; }
@@ -25,5 +23,5 @@ public partial class BudgetProposal
 
     public virtual User Author { get; set; } = null!;
 
-    public virtual Contract Contract { get; set; } = null!;
+    public virtual ICollection<Contract> Contracts { get; set; } = new List<Contract>();
 }

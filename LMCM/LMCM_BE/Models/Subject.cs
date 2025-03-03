@@ -31,5 +31,5 @@ public partial class Subject
 
     public virtual ICollection<PloSubject> PloSubjects { get; set; } = new List<PloSubject>();
 
-    public virtual ICollection<SubjectsSyllabus> SubjectsSyllabi { get; set; } = new List<SubjectsSyllabus>();
+    public virtual ICollection<Syllabus> Syllabi { get; set; } = new List<Syllabus>();
 }

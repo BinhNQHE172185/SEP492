@@ -284,7 +284,7 @@ namespace LMCM_BE.Migrations
 
                     b.HasIndex("ProposalId");
 
-                    b.ToTable("Contracts");
+                    b.ToTable("Contracts", (string)null);
                 });
 
             modelBuilder.Entity("LMCM_BE.Models.Contractor", b =>
@@ -439,7 +439,7 @@ namespace LMCM_BE.Migrations
                     b.HasKey("CurriculumId")
                         .HasName("PK__Curricul__2F88E2C279D7E077");
 
-                    b.ToTable("Curriculums");
+                    b.ToTable("Curriculums", (string)null);
                 });
 
             modelBuilder.Entity("LMCM_BE.Models.CurriculumsSubject", b =>
@@ -826,7 +826,7 @@ namespace LMCM_BE.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Permissions");
+                    b.ToTable("Permissions", (string)null);
                 });
 
             modelBuilder.Entity("LMCM_BE.Models.Plo", b =>
@@ -1119,7 +1119,7 @@ namespace LMCM_BE.Migrations
                     b.HasIndex(new[] { "SubjectCode" }, "UQ__Subjects__4A7C5769222B0F9A")
                         .IsUnique();
 
-                    b.ToTable("Subjects");
+                    b.ToTable("Subjects", (string)null);
                 });
 
             modelBuilder.Entity("LMCM_BE.Models.Syllabus", b =>

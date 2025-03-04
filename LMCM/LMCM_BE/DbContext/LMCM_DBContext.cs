@@ -9,10 +9,6 @@ namespace LMCM_BE.DbContext;
 
 public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
 {
-    public LMCM_DBContext()
-    {
-    }
-
     public LMCM_DBContext(DbContextOptions<LMCM_DBContext> options)
         : base(options)
     {

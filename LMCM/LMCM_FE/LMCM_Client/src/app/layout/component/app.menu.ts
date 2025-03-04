@@ -44,6 +44,7 @@ export class AppMenu {
                     {
                         label: 'Quản lý bộ môn',
                         icon: 'pi pi-fw pi-book',
+                        routerLink: ['user/listsubject']
                     },
                     {
                         label: 'Quản lý chương trình',

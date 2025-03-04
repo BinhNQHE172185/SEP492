@@ -7,6 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using LMCM_BE.Models;
+using LMCM_BE.DTOs.UserDtos;
 
 namespace LMCM_BE.Controllers.UserControllers
 {
@@ -25,6 +26,11 @@ namespace LMCM_BE.Controllers.UserControllers
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Login By Google
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("google-login")]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request)
         {
@@ -59,6 +65,34 @@ namespace LMCM_BE.Controllers.UserControllers
             catch (Exception ex)
             {
                 return Unauthorized(new { success = false, message = "Invalid Google Token", error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Get User Profile Information
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        [HttpPost("profile")]
+        public async Task<IActionResult> ProfileAsync([FromBody] string email)
+        {
+            try
+            {
+                var data = await _userManager.FindByEmailAsync(email);
+                if (data != null)
+                {
+                    var response = new UserProfileResponseDto{
+                        Email = data.Email,
+                        Name = data.Name,
+                        Picture = data.Picture
+                    };
+                    return Ok(response);
+                }
+                return NotFound(new { message = "User not found" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
             }
         }
 

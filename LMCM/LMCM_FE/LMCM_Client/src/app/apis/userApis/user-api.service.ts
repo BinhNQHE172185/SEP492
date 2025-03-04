@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
+// import { environment } from '../../../environments/environment.prod';
 
 interface LoginResponse {
   message: string;
@@ -12,13 +14,12 @@ interface LoginResponse {
   providedIn: 'root'
 })
 export class UserApiService {
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 
-  private apiUrl = 'http://localhost:5035/api/User';
-
   login(token: string): Observable<LoginResponse> {
     const loginData = { token };
-    return this.http.post<any>(`${this.apiUrl}/google-login`, loginData);
+    return this.http.post<any>(`${this.apiUrl}/User/google-login`, loginData);
   }
 }

@@ -25,6 +25,44 @@ export class AppMenu {
                 items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }]
             },
             {
+                label: 'Nhân sự',
+                icon: 'pi pi-fw pi-briefcase',
+                routerLink: ['/user'],
+                items: [
+                    {
+                        label: 'Quản lý nhân sự',
+                        icon: 'pi pi-fw pi-id-card',
+                        routerLink: ['user/staff']
+                    },
+                ]
+            },
+            {
+                label: 'Quản lý học liệu',
+                icon: 'pi pi-fw pi-briefcase',
+                routerLink: ['/user'],
+                items: [
+                    {
+                        label: 'Quản lý bộ môn',
+                        icon: 'pi pi-fw pi-book',
+                    },
+                    {
+                        label: 'Quản lý chương trình',
+                        icon: 'pi pi-fw pi-book',
+                    },
+                ]
+            },
+            {
+                label: 'Quản lý tài liệu',
+                icon: 'pi pi-fw pi-briefcase',
+                routerLink: ['/user'],
+                items: [
+                    {
+                        label: 'Quản lý hợp đồng',
+                        icon: 'pi pi-fw pi-print',
+                    },
+                ]
+            },
+            {
                 label: 'UI Components',
                 items: [
                     { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/uikit/formlayout'] },
@@ -54,6 +92,7 @@ export class AppMenu {
                         icon: 'pi pi-fw pi-globe',
                         routerLink: ['/landing']
                     },
+                    
                     {
                         label: 'Auth',
                         icon: 'pi pi-fw pi-user',

@@ -5,6 +5,7 @@ import { Documentation } from './app/pages/documentation/documentation';
 import { Landing } from './app/pages/landing/landing';
 import { Notfound } from './app/pages/notfound/notfound';
 
+
 export const appRoutes: Routes = [
     {
         path: '',
@@ -15,6 +16,7 @@ export const appRoutes: Routes = [
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },
             { path: 'user', loadChildren: () => import('./app/pages/user/user.route') },
+           
         ]
     },
     { path: 'landing', component: Landing },

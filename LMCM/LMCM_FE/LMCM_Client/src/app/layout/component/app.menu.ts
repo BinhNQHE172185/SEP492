@@ -51,6 +51,11 @@ export class AppMenu {
                         icon: 'pi pi-fw pi-book',
                         routerLink: ['user/listcurriculumn']
                     },
+                    {
+                        label: 'Quản lý giáo trình',
+                        icon: 'pi pi-fw pi-book',
+                        routerLink: ['user/listsyllabus']
+                    },
                 ]
             },
             {

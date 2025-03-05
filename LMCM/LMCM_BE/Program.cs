@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using LMCM_BE.Repositories.SubjectRepository.SubjectRepository;
 using LMCM_BE.Services.SubjectService;
+using LMCM_BE.AutoMapper.SubjectProfile;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +49,8 @@ builder.Services.AddCors(options =>
                         .AllowAnyHeader()
                         .AllowAnyMethod());
 });
+//AutoMapper
+builder.Services.AddAutoMapper(typeof(SubjectProfile));
 
 //DI
 builder.Services.AddScoped<UserManager<User>>();

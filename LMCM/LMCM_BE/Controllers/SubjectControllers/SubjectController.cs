@@ -1,4 +1,5 @@
-﻿using LMCM_BE.Services.SubjectService;
+﻿using LMCM_BE.DTOs.ShareDtos;
+using LMCM_BE.Services.SubjectService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static LMCM_BE.Controllers.UserControllers.UserController;
@@ -16,17 +17,17 @@ namespace LMCM_BE.Controllers.SubjectControllers
             _subjectService = subjectService;
         }
 
-        [HttpPost("getSubjectList")] //Demo
-        public async Task<IActionResult> GetSubjectAsync([FromBody] string id)
+        [HttpPost("getSubjectList")]
+        public async Task<IActionResult> GetSubjectAsync([FromBody] PagingRequest request)
         {
             try
             {
-                var data = await _subjectService.GetSubjectAsync(id);
+                var data = await _subjectService.GetSubjectsAsync(request.SearchKey, request.pageIndex, request.PageSize);
                 if (data != null)
                 {
                     return Ok(data);
                 }
-                return NotFound(new { message = "User not found" });
+                return NotFound(new { message = "Data not found." });
             }
             catch (Exception ex)
             {

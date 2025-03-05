@@ -25,7 +25,7 @@ export class SubjectApiService {
   
   constructor(private http: HttpClient) { }
 
-  getProducts(request: PagingRequest): Observable<PagedResult<any>> {
-    return this.http.post<PagedResult<any>>(this.apiUrl, request);
+  getSubjects(request: PagingRequest): Observable<PagedResult<any>> {
+    return this.http.post<PagedResult<any>>(`${this.apiUrl}/Subject/getSubjectList`, request);
   }
 }

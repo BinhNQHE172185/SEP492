@@ -9,22 +9,22 @@
 <div class="mt-3">
     <p-inputgroup class="w-full">
         <p-button label="Search" />
-        <input [(ngModel)]="searchKeyword" pInputText placeholder="Keyword" />
+        <input [(ngModel)]="searchKey" pInputText placeholder="Keyword" />
     </p-inputgroup>
 </div>
 
     <div class="mt-4">
-        <p-table [value]="filteredSubjects" [rows]="10" [paginator]="true" class="w-full">
+        <p-table [value]="subjects" [rows]="10" [paginator]="true" class="w-full">
             <ng-template pTemplate="header">
                 <tr>
-                    <th>SubjectCode</th>
-                    <th>SubjectName</th>
-                    <th>English SubjectName</th>
-                    <th>PreviousCode</th>
+                    <th>Mã Môn</th>
+                    <th>Tên môn</th>
+                    <th>Tên Môn (Tiếng anh)</th>
+                    <th>Mã môn trước đó</th>
                     <th>Is Constructivist</th>
-                    <th>Method</th>
-                    <th>Duration</th>
-                    <th>Reality</th>
+                    <th>Phương pháp</th>
+                    <th>Thời lượng</th>
+                    <th>Thực tế</th>
                     <th>Hành động</th>
                 </tr>
             </ng-template>

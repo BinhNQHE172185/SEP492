@@ -9,6 +9,7 @@ namespace LMCM_BE.AutoMapper.SubjectProfile
         public SubjectProfile()
         {
             CreateMap<Subject, SubjectViewDto>();
+            CreateMap<Subject, SubjectInsertDto>();
         }
     }
 }

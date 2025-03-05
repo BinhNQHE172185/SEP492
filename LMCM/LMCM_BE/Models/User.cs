@@ -24,6 +24,4 @@ public partial class User : IdentityUser<Guid>
     public virtual ICollection<LearningMaterialChangesHistory> LearningMaterialChangesHistories { get; set; } = new List<LearningMaterialChangesHistory>();
 
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
-
-    public virtual ICollection<Permission> Permissions { get; set; } = new List<Permission>();
 }

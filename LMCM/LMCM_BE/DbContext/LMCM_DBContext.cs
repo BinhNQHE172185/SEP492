@@ -38,27 +38,23 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
 
     public virtual DbSet<GradingStructure> GradingStructures { get; set; }
 
-    public virtual DbSet<ImportedLearningMaterial> ImportedLearningMaterials { get; set; }
+    public virtual DbSet<LearningMaterial> LearningMaterials { get; set; }
 
     public virtual DbSet<LearningMaterialChangesHistory> LearningMaterialChangesHistories { get; set; }
 
-    public virtual DbSet<Notification> Notifications { get; set; }
+    public virtual DbSet<LearningMaterialDetail> LearningMaterialDetails { get; set; }
 
-    public virtual DbSet<Permission> Permissions { get; set; }
+    public virtual DbSet<Notification> Notifications { get; set; }
 
     public virtual DbSet<Plo> Plos { get; set; }
 
     public virtual DbSet<PloSubject> PloSubjects { get; set; }
 
-    public virtual DbSet<ReferencedLearningMaterial> ReferencedLearningMaterials { get; set; }
-
     public virtual DbSet<Schedule> Schedules { get; set; }
 
     public virtual DbSet<Subject> Subjects { get; set; }
 
-    public virtual DbSet<Syllabus> Syllabi { get; set; }
-
-    public virtual DbSet<SyllabusReferencedLearningMaterial> SyllabusReferencedLearningMaterials { get; set; }
+    public virtual DbSet<Syllabus> Syllabus { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -75,7 +71,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<AcceptanceRecord>(entity =>
         {
-            entity.HasKey(e => e.AcceptanceId).HasName("PK__Acceptan__FC008882157AA898");
+            entity.HasKey(e => e.AcceptanceId).HasName("PK__Acceptan__FC008882C329FB76");
 
             entity.ToTable("Acceptance_Record");
 
@@ -97,17 +93,17 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.HasOne(d => d.Author).WithMany(p => p.AcceptanceRecords)
                 .HasForeignKey(d => d.AuthorId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Acceptanc__Autho__22751F6C");
+                .HasConstraintName("FK__Acceptanc__Autho__19DFD96B");
 
             entity.HasOne(d => d.Contract).WithMany(p => p.AcceptanceRecords)
                 .HasForeignKey(d => d.ContractId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Acceptanc__Contr__236943A5");
+                .HasConstraintName("FK__Acceptanc__Contr__1AD3FDA4");
         });
 
         modelBuilder.Entity<BudgetProposal>(entity =>
         {
-            entity.HasKey(e => e.ProposalId).HasName("PK__Budget_P__C9D0461F515BE8A9");
+            entity.HasKey(e => e.ProposalId).HasName("PK__Budget_P__C9D0461F9553543D");
 
             entity.ToTable("Budget_Proposals");
 
@@ -125,12 +121,12 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.HasOne(d => d.Author).WithMany(p => p.BudgetProposals)
                 .HasForeignKey(d => d.AuthorId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Budget_Pr__Autho__151B244E");
+                .HasConstraintName("FK__Budget_Pr__Autho__0C85DE4D");
         });
 
         modelBuilder.Entity<Clo>(entity =>
         {
-            entity.HasKey(e => e.CloId).HasName("PK__CLO__C3755EAD29554F84");
+            entity.HasKey(e => e.CloId).HasName("PK__CLO__C3755EADCB5474B3");
 
             entity.ToTable("CLO");
 
@@ -151,12 +147,12 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.HasOne(d => d.Syllabus).WithMany(p => p.Clos)
                 .HasForeignKey(d => d.SyllabusId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__CLO__Syllabus_ID__00200768");
+                .HasConstraintName("FK__CLO__Syllabus_ID__7D439ABD");
         });
 
         modelBuilder.Entity<ConstructivistQuestion>(entity =>
         {
-            entity.HasKey(e => e.QuestionId).HasName("PK__Construc__B0B2E4C6488BFAB9");
+            entity.HasKey(e => e.QuestionId).HasName("PK__Construc__B0B2E4C62C9AF47D");
 
             entity.ToTable("Constructivist_Question");
 
@@ -178,12 +174,12 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.HasOne(d => d.Syllabus).WithMany(p => p.ConstructivistQuestions)
                 .HasForeignKey(d => d.SyllabusId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Construct__Sylla__7A672E12");
+                .HasConstraintName("FK__Construct__Sylla__778AC167");
         });
 
         modelBuilder.Entity<Contract>(entity =>
         {
-            entity.HasKey(e => e.ContractId).HasName("PK__Contract__5E2E73DAEDA2E168");
+            entity.HasKey(e => e.ContractId).HasName("PK__Contract__5E2E73DA08AE6527");
 
             entity.Property(e => e.ContractId)
                 .HasDefaultValueSql("(newid())")
@@ -204,22 +200,22 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.HasOne(d => d.Author).WithMany(p => p.Contracts)
                 .HasForeignKey(d => d.AuthorId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Contracts__Autho__1BC821DD");
+                .HasConstraintName("FK__Contracts__Autho__1332DBDC");
 
             entity.HasOne(d => d.Contractor).WithMany(p => p.Contracts)
                 .HasForeignKey(d => d.ContractorId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Contracts__Contr__1CBC4616");
+                .HasConstraintName("FK__Contracts__Contr__14270015");
 
             entity.HasOne(d => d.Proposal).WithMany(p => p.Contracts)
                 .HasForeignKey(d => d.ProposalId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Contracts__Propo__1AD3FDA4");
+                .HasConstraintName("FK__Contracts__Propo__123EB7A3");
         });
 
         modelBuilder.Entity<Contractor>(entity =>
         {
-            entity.HasKey(e => e.ContractorId).HasName("PK__Contract__61C4678DDD41C6C5");
+            entity.HasKey(e => e.ContractorId).HasName("PK__Contract__61C4678D31963763");
 
             entity.ToTable("Contractor");
 
@@ -260,7 +256,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
 
         modelBuilder.Entity<Curriculum>(entity =>
         {
-            entity.HasKey(e => e.CurriculumId).HasName("PK__Curricul__2F88E2C279D7E077");
+            entity.HasKey(e => e.CurriculumId).HasName("PK__Curricul__2F88E2C215B9DA93");
 
             entity.Property(e => e.CurriculumId)
                 .HasDefaultValueSql("(newid())")
@@ -297,7 +293,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
 
         modelBuilder.Entity<CurriculumsSubject>(entity =>
         {
-            entity.HasKey(e => new { e.CurriculumId, e.SubjectId, e.CreatedAt }).HasName("PK__Curricul__39754AB27598164C");
+            entity.HasKey(e => new { e.CurriculumId, e.SubjectId, e.CreatedAt }).HasName("PK__Curricul__39754AB27565F259");
 
             entity.ToTable("Curriculums_Subjects");
 
@@ -311,17 +307,17 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.HasOne(d => d.Curriculum).WithMany(p => p.CurriculumsSubjects)
                 .HasForeignKey(d => d.CurriculumId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Curriculu__Curri__4AB81AF0");
+                .HasConstraintName("FK__Curriculu__Curri__46E78A0C");
 
             entity.HasOne(d => d.Subject).WithMany(p => p.CurriculumsSubjects)
                 .HasForeignKey(d => d.SubjectId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Curriculu__Subje__4BAC3F29");
+                .HasConstraintName("FK__Curriculu__Subje__47DBAE45");
         });
 
         modelBuilder.Entity<DocumentTemplate>(entity =>
         {
-            entity.HasKey(e => e.TemplateId).HasName("PK__Document__E7FB8F01F3346854");
+            entity.HasKey(e => e.TemplateId).HasName("PK__Document__E7FB8F01453EB5C0");
 
             entity.ToTable("Document_Templates");
 
@@ -343,12 +339,12 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.HasOne(d => d.Author).WithMany(p => p.DocumentTemplates)
                 .HasForeignKey(d => d.AuthorId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Document___Updat__29221CFB");
+                .HasConstraintName("FK__Document___Updat__208CD6FA");
         });
 
         modelBuilder.Entity<GradingStructure>(entity =>
         {
-            entity.HasKey(e => e.StructureId).HasName("PK__Grading___71D721C6DB6130A4");
+            entity.HasKey(e => e.StructureId).HasName("PK__Grading___71D721C6418A3D83");
 
             entity.ToTable("Grading_Structure");
 
@@ -389,19 +385,21 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.HasOne(d => d.Syllabus).WithMany(p => p.GradingStructures)
                 .HasForeignKey(d => d.SyllabusId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Grading_S__Sylla__74AE54BC");
+                .HasConstraintName("FK__Grading_S__Sylla__71D1E811");
         });
 
-        modelBuilder.Entity<ImportedLearningMaterial>(entity =>
+        modelBuilder.Entity<LearningMaterial>(entity =>
         {
-            entity.HasKey(e => e.MaterialId).HasName("PK__Imported__3A09B0FD89507A0F");
+            entity.HasKey(e => e.MaterialId).HasName("PK__Learning__3A09B0FDDC2985A2");
 
-            entity.ToTable("Imported_Learning_Materials");
+            entity.ToTable("Learning_Materials");
 
             entity.Property(e => e.MaterialId)
                 .HasDefaultValueSql("(newid())")
                 .HasColumnName("Material_ID");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.IsMainMaterial).HasColumnName("is_Main_Material");
+            entity.Property(e => e.MaterialDetailId).HasColumnName("Material_Detail_ID");
             entity.Property(e => e.MaterialName)
                 .HasMaxLength(255)
                 .HasColumnName("Material_Name");
@@ -417,15 +415,20 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.Url).HasMaxLength(255);
 
-            entity.HasOne(d => d.Syllabus).WithMany(p => p.ImportedLearningMaterials)
+            entity.HasOne(d => d.MaterialDetail).WithMany(p => p.LearningMaterials)
+                .HasForeignKey(d => d.MaterialDetailId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Learning___Mater__66603565");
+
+            entity.HasOne(d => d.Syllabus).WithMany(p => p.LearningMaterials)
                 .HasForeignKey(d => d.SyllabusId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Imported___Sylla__05D8E0BE");
+                .HasConstraintName("FK__Learning___Sylla__656C112C");
         });
 
         modelBuilder.Entity<LearningMaterialChangesHistory>(entity =>
         {
-            entity.HasKey(e => e.HistoryId).HasName("PK__Learning__A6BABA377EF62FFA");
+            entity.HasKey(e => e.HistoryId).HasName("PK__Learning__A6BABA375282CF16");
 
             entity.ToTable("Learning_Material_Changes_History");
 
@@ -451,113 +454,28 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.StartTerm)
                 .HasMaxLength(255)
                 .HasColumnName("Start_Term");
+            entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.UserId).HasColumnName("User_ID");
 
             entity.HasOne(d => d.Contract).WithMany(p => p.LearningMaterialChangesHistories)
                 .HasForeignKey(d => d.ContractId)
-                .HasConstraintName("FK__Learning___Contr__2DE6D218");
+                .HasConstraintName("FK__Learning___Contr__25518C17");
 
             entity.HasOne(d => d.User).WithMany(p => p.LearningMaterialChangesHistories)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Learning___User___2CF2ADDF");
+                .HasConstraintName("FK__Learning___User___245D67DE");
         });
 
-        modelBuilder.Entity<Notification>(entity =>
+        modelBuilder.Entity<LearningMaterialDetail>(entity =>
         {
-            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__8C1160B52FF047B0");
+            entity.HasKey(e => e.MaterialDetailId).HasName("PK__Learning__700CBEE1C557F788");
 
-            entity.ToTable("Notification");
+            entity.ToTable("Learning_Material_Detail");
 
-            entity.Property(e => e.NotificationId)
+            entity.Property(e => e.MaterialDetailId)
                 .HasDefaultValueSql("(newid())")
-                .HasColumnName("Notification_ID");
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.Message).HasMaxLength(255);
-            entity.Property(e => e.Status).HasMaxLength(255);
-            entity.Property(e => e.Title).HasMaxLength(255);
-            entity.Property(e => e.Url).HasMaxLength(255);
-            entity.Property(e => e.UserId).HasColumnName("User_ID");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Notifications)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Notificat__User___0A9D95DB");
-        });
-
-        modelBuilder.Entity<Permission>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Permissi__3214EC079928F72B");
-
-            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
-            entity.Property(e => e.ItemId).HasColumnName("Item_ID");
-            entity.Property(e => e.Type).HasMaxLength(255);
-            entity.Property(e => e.UserId).HasColumnName("User_ID");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Permissions)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Permissio__User___3B75D760");
-        });
-
-        modelBuilder.Entity<Plo>(entity =>
-        {
-            entity.HasKey(e => e.PloId).HasName("PK__PLO__3BEF007E3D145C77");
-
-            entity.ToTable("PLO");
-
-            entity.Property(e => e.PloId)
-                .HasDefaultValueSql("(newid())")
-                .HasColumnName("PLO_ID");
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.CurriculumId).HasColumnName("Curriculum_ID");
-            entity.Property(e => e.PloDescription)
-                .HasMaxLength(255)
-                .HasColumnName("PLO_Description");
-            entity.Property(e => e.PloName)
-                .HasMaxLength(255)
-                .HasColumnName("PLO_Name");
-            entity.Property(e => e.Status).HasMaxLength(255);
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
-
-            entity.HasOne(d => d.Curriculum).WithMany(p => p.Plos)
-                .HasForeignKey(d => d.CurriculumId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__PLO__Curriculum___5165187F");
-        });
-
-        modelBuilder.Entity<PloSubject>(entity =>
-        {
-            entity.HasKey(e => new { e.PloId, e.SubjectId, e.CreatedAt }).HasName("PK__PLO_Subj__2D12A80EB49AFFDC");
-
-            entity.ToTable("PLO_Subjects");
-
-            entity.Property(e => e.PloId).HasColumnName("PLO_ID");
-            entity.Property(e => e.SubjectId).HasColumnName("Subject_ID");
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.Status).HasMaxLength(255);
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
-
-            entity.HasOne(d => d.Plo).WithMany(p => p.PloSubjects)
-                .HasForeignKey(d => d.PloId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__PLO_Subje__PLO_I__5629CD9C");
-
-            entity.HasOne(d => d.Subject).WithMany(p => p.PloSubjects)
-                .HasForeignKey(d => d.SubjectId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__PLO_Subje__Subje__571DF1D5");
-        });
-
-        modelBuilder.Entity<ReferencedLearningMaterial>(entity =>
-        {
-            entity.HasKey(e => e.MaterialId).HasName("PK__Referenc__3A09B0FD6A28AF49");
-
-            entity.ToTable("Referenced_Learning_Materials");
-
-            entity.Property(e => e.MaterialId)
-                .HasDefaultValueSql("(newid())")
-                .HasColumnName("Material_ID");
+                .HasColumnName("Material_Detail_ID");
             entity.Property(e => e.Author).HasMaxLength(255);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.Edition).HasMaxLength(255);
@@ -579,9 +497,80 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.Url).HasMaxLength(255);
         });
 
+        modelBuilder.Entity<Notification>(entity =>
+        {
+            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__8C1160B5E7DB044A");
+
+            entity.ToTable("Notification");
+
+            entity.Property(e => e.NotificationId)
+                .HasDefaultValueSql("(newid())")
+                .HasColumnName("Notification_ID");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.Message).HasMaxLength(255);
+            entity.Property(e => e.Status).HasMaxLength(255);
+            entity.Property(e => e.Title).HasMaxLength(255);
+            entity.Property(e => e.Url).HasMaxLength(255);
+            entity.Property(e => e.UserId).HasColumnName("User_ID");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Notifications)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Notificat__User___02084FDA");
+        });
+
+        modelBuilder.Entity<Plo>(entity =>
+        {
+            entity.HasKey(e => e.PloId).HasName("PK__PLO__3BEF007EF96FBDCC");
+
+            entity.ToTable("PLO");
+
+            entity.Property(e => e.PloId)
+                .HasDefaultValueSql("(newid())")
+                .HasColumnName("PLO_ID");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.CurriculumId).HasColumnName("Curriculum_ID");
+            entity.Property(e => e.PloDescription)
+                .HasMaxLength(255)
+                .HasColumnName("PLO_Description");
+            entity.Property(e => e.PloName)
+                .HasMaxLength(255)
+                .HasColumnName("PLO_Name");
+            entity.Property(e => e.Status).HasMaxLength(255);
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
+
+            entity.HasOne(d => d.Curriculum).WithMany(p => p.Plos)
+                .HasForeignKey(d => d.CurriculumId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__PLO__Curriculum___4D94879B");
+        });
+
+        modelBuilder.Entity<PloSubject>(entity =>
+        {
+            entity.HasKey(e => new { e.PloId, e.SubjectId, e.CreatedAt }).HasName("PK__PLO_Subj__2D12A80ECEB98055");
+
+            entity.ToTable("PLO_Subjects");
+
+            entity.Property(e => e.PloId).HasColumnName("PLO_ID");
+            entity.Property(e => e.SubjectId).HasColumnName("Subject_ID");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.Status).HasMaxLength(255);
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
+
+            entity.HasOne(d => d.Plo).WithMany(p => p.PloSubjects)
+                .HasForeignKey(d => d.PloId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__PLO_Subje__PLO_I__52593CB8");
+
+            entity.HasOne(d => d.Subject).WithMany(p => p.PloSubjects)
+                .HasForeignKey(d => d.SubjectId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__PLO_Subje__Subje__534D60F1");
+        });
+
         modelBuilder.Entity<Schedule>(entity =>
         {
-            entity.HasKey(e => e.ScheduleId).HasName("PK__Schedule__8C4D3BBBF298C27A");
+            entity.HasKey(e => e.ScheduleId).HasName("PK__Schedule__8C4D3BBBEF8E0EE6");
 
             entity.ToTable("Schedule");
 
@@ -622,14 +611,14 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.HasOne(d => d.Syllabus).WithMany(p => p.Schedules)
                 .HasForeignKey(d => d.SyllabusId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Schedule__Syllab__6EF57B66");
+                .HasConstraintName("FK__Schedule__Syllab__6C190EBB");
         });
 
         modelBuilder.Entity<Subject>(entity =>
         {
-            entity.HasKey(e => e.SubjectId).HasName("PK__Subjects__D98F54D68388CEB8");
+            entity.HasKey(e => e.SubjectId).HasName("PK__Subjects__D98F54D69CFFB5AE");
 
-            entity.HasIndex(e => e.SubjectCode, "UQ__Subjects__4A7C5769222B0F9A").IsUnique();
+            entity.HasIndex(e => e.SubjectCode, "UQ__Subjects__4A7C5769891B3439").IsUnique();
 
             entity.Property(e => e.SubjectId)
                 .HasDefaultValueSql("(newid())")
@@ -652,11 +641,11 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
 
         modelBuilder.Entity<Syllabus>(entity =>
         {
-            entity.HasKey(e => e.SyllabusId).HasName("PK__Syllabus__2F9B495028311941");
+            entity.HasKey(e => e.SyllabusId).HasName("PK__Syllabus__2F9B49501A14500F");
 
             entity.ToTable("Syllabus");
 
-            entity.HasIndex(e => e.CourseCode, "UQ__Syllabus__1AE5B24D4FFC6ACA").IsUnique();
+            entity.HasIndex(e => e.CourseCode, "UQ__Syllabus__1AE5B24D3BC7ACD5").IsUnique();
 
             entity.Property(e => e.SyllabusId)
                 .HasDefaultValueSql("(newid())")
@@ -710,35 +699,12 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
 
             entity.HasOne(d => d.PreviousVersion).WithMany(p => p.InversePreviousVersion)
                 .HasForeignKey(d => d.PreviousVersionId)
-                .HasConstraintName("FK__Syllabus__Previo__5EBF139D");
+                .HasConstraintName("FK__Syllabus__Previo__5AEE82B9");
 
-            entity.HasOne(d => d.Subject).WithMany(p => p.Syllabi)
+            entity.HasOne(d => d.Subject).WithMany(p => p.Syllabus)
                 .HasForeignKey(d => d.SubjectId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Syllabus__Subjec__5DCAEF64");
-        });
-
-        modelBuilder.Entity<SyllabusReferencedLearningMaterial>(entity =>
-        {
-            entity.HasKey(e => new { e.SyllabusId, e.MaterialId, e.CreatedAt }).HasName("PK__Syllabus__875E8F626D76336E");
-
-            entity.ToTable("Syllabus_Referenced_Learning_Materials");
-
-            entity.Property(e => e.SyllabusId).HasColumnName("Syllabus_ID");
-            entity.Property(e => e.MaterialId).HasColumnName("Material_ID");
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.Status).HasMaxLength(255);
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
-
-            entity.HasOne(d => d.Material).WithMany(p => p.SyllabusReferencedLearningMaterials)
-                .HasForeignKey(d => d.MaterialId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Syllabus___Mater__693CA210");
-
-            entity.HasOne(d => d.Syllabus).WithMany(p => p.SyllabusReferencedLearningMaterials)
-                .HasForeignKey(d => d.SyllabusId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Syllabus___Sylla__68487DD7");
+                .HasConstraintName("FK__Syllabus__Subjec__59FA5E80");
         });
 
         modelBuilder.Entity<User>(entity =>

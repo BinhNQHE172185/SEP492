@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using LMCM_BE.Repositories.SubjectRepository.SubjectRepository;
+using LMCM_BE.Services.SubjectService;
+using LMCM_BE.AutoMapper.SubjectProfile;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,11 +17,9 @@ builder.Services.AddDbContext<LMCM_DBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyDB")));
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -48,9 +49,14 @@ builder.Services.AddCors(options =>
                         .AllowAnyHeader()
                         .AllowAnyMethod());
 });
+//AutoMapper
+builder.Services.AddAutoMapper(typeof(SubjectProfile));
 
+//DI
 builder.Services.AddScoped<UserManager<User>>();
 builder.Services.AddScoped<SignInManager<User>>();
+builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
+builder.Services.AddScoped<ISubjectService, SubjectService>();
 
 builder.Services.AddAuthorization();
 

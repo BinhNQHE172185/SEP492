@@ -104,7 +104,7 @@ export class AppTopbar {
       ];
     
       goToProfile() {
-        this.router.navigate(['/profile']);
+        this.router.navigate(['/user/profile']);
       }
     
       logout() {

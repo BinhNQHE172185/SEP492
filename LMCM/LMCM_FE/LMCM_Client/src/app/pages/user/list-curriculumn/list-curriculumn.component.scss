@@ -1,0 +1,48 @@
+.p-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .p-table {
+    th {
+      background: #ff6600 !important;
+      color: white;
+      text-align: left;
+    }
+  
+    td {
+      padding: 10px;
+    }
+  
+    a {
+      color: #007bff;
+      text-decoration: none;
+  
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+  
+  .p-button {
+    &.p-button-warning {
+      background: #ff6600;
+      border: none;
+    }
+  
+    &.p-button-danger {
+      color: red;
+    }
+  
+    &.p-button-secondary {
+      background: #ffcc80;
+      color: black;
+    }
+  
+    &.p-button-outlined {
+      border: 1px solid #ff6600;
+      color: #ff6600;
+    }
+  }
+  

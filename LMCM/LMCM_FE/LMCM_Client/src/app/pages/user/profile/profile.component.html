@@ -1,0 +1,39 @@
+<p-card class="p-6 shadow-lg rounded-lg">
+    <h2 class="text-2xl font-bold text-orange-500 mb-6">Hồ Sơ Cá Nhân</h2>
+
+    <!-- Ảnh đại diện -->
+    <div class="flex flex-col items-center mb-8">
+        <label for="fileInput"
+            class="w-36 h-36 bg-gray-300 rounded-full flex justify-center items-center cursor-pointer overflow-hidden border border-gray-400">
+            <img *ngIf="user.avatar" [src]="user.avatar" alt="Avatar" class="w-full h-full object-cover" />
+            <span *ngIf="!user.avatar" class="text-gray-500 text-sm"></span>
+        </label>
+        <input id="fileInput" type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden" />
+    </div>
+
+    <!-- Form chỉnh sửa trực tiếp -->
+    <div class="flex flex-col items-center align-items-center">
+        <div class="w-400">
+            <table class="w-full border-separate border-spacing-y-4">
+                <tr>
+                    <td class="text-orange-500 font-semibold pr-4 w-1/3">Họ và tên:</td>
+                    <td>
+                        <input type="text" pInputText [(ngModel)]="user.name" class="w-full px-3 py-2 border rounded-lg">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-orange-500 font-semibold pr-4">Email:</td>
+                    <td>
+                        <input type="text" pInputText [(ngModel)]="user.email" class="w-full px-3 py-2 border rounded-lg">
+                        <small class="text-red-500" *ngIf="submitted && !user.email">Email không được để trống.</small>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Nút lưu -->
+    <div class="mt-6 text-right">
+        <p-button label="Lưu" icon="pi pi-check" (click)="saveUser()"></p-button>
+    </div>
+</p-card>

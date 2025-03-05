@@ -3,3 +3,13 @@
 @use './assets/layout/layout.scss';
 @use 'primeicons/primeicons.css';
 @use './assets/demo/demo.scss';
+
+/* Đổi font mặc định cho toàn bộ ứng dụng */
+body {
+    font-family: 'Inter', sans-serif !important;
+}
+
+/* Nếu PrimeNG dùng biến CSS, ghi đè */
+:root {
+    --font-family: 'Inter', sans-serif !important;
+}

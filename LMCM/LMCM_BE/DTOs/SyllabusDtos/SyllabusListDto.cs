@@ -13,7 +13,5 @@ namespace LMCM_BE.DTOs.SyllabusDtos
         public string? DecisionNo { get; set; }
         public bool? IsApproved { get; set; }
         public bool? IsActive { get; set; }
-        public string SubjectName { get; set; } = null!;
-        public string SubjectCode { get; set; } = null!;
     }
 }

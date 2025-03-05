@@ -10,6 +10,9 @@ using System.Text;
 using LMCM_BE.Repositories.SubjectRepository.SubjectRepository;
 using LMCM_BE.Services.SubjectService;
 using LMCM_BE.AutoMapper.SubjectProfile;
+using LMCM_BE.Repositories.SyllabusRepository;
+using LMCM_BE.Services.SyllabusService;
+using LMCM_BE.AutoMapper.SyllabusProfiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,12 +54,15 @@ builder.Services.AddCors(options =>
 });
 //AutoMapper
 builder.Services.AddAutoMapper(typeof(SubjectProfile));
+builder.Services.AddAutoMapper(typeof(SyllabusProfile));
 
 //DI
 builder.Services.AddScoped<UserManager<User>>();
 builder.Services.AddScoped<SignInManager<User>>();
 builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();
+builder.Services.AddScoped<ISyllabusRepository, SyllabusRepository>();
+builder.Services.AddScoped<ISyllabusService, SyllabusService>();
 
 builder.Services.AddAuthorization();
 

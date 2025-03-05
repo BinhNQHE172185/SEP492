@@ -27,6 +27,8 @@ public partial class LearningMaterialChangesHistory
 
     public string? CourseCode { get; set; }
 
+    public string? Status { get; set; }
+
     public virtual Contract? Contract { get; set; }
 
     public virtual User User { get; set; } = null!;

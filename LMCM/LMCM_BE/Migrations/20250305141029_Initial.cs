@@ -47,7 +47,7 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Contract__61C4678DDD41C6C5", x => x.Contractor_ID);
+                    table.PrimaryKey("PK__Contract__61C4678D31963763", x => x.Contractor_ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -70,14 +70,14 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Curricul__2F88E2C279D7E077", x => x.Curriculum_ID);
+                    table.PrimaryKey("PK__Curricul__2F88E2C215B9DA93", x => x.Curriculum_ID);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Referenced_Learning_Materials",
+                name: "Learning_Material_Detail",
                 columns: table => new
                 {
-                    Material_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
+                    Material_Detail_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
                     Material_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Material_Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     ISBN = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
@@ -94,7 +94,7 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Referenc__3A09B0FD6A28AF49", x => x.Material_ID);
+                    table.PrimaryKey("PK__Learning__700CBEE1C557F788", x => x.Material_Detail_ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -115,7 +115,7 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Subjects__D98F54D68388CEB8", x => x.Subject_ID);
+                    table.PrimaryKey("PK__Subjects__D98F54D69CFFB5AE", x => x.Subject_ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -181,9 +181,9 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__PLO__3BEF007E3D145C77", x => x.PLO_ID);
+                    table.PrimaryKey("PK__PLO__3BEF007EF96FBDCC", x => x.PLO_ID);
                     table.ForeignKey(
-                        name: "FK__PLO__Curriculum___5165187F",
+                        name: "FK__PLO__Curriculum___4D94879B",
                         column: x => x.Curriculum_ID,
                         principalTable: "Curriculums",
                         principalColumn: "Curriculum_ID");
@@ -204,14 +204,14 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Curricul__39754AB27598164C", x => new { x.Curriculum_ID, x.Subject_ID, x.CreatedAt });
+                    table.PrimaryKey("PK__Curricul__39754AB27565F259", x => new { x.Curriculum_ID, x.Subject_ID, x.CreatedAt });
                     table.ForeignKey(
-                        name: "FK__Curriculu__Curri__4AB81AF0",
+                        name: "FK__Curriculu__Curri__46E78A0C",
                         column: x => x.Curriculum_ID,
                         principalTable: "Curriculums",
                         principalColumn: "Curriculum_ID");
                     table.ForeignKey(
-                        name: "FK__Curriculu__Subje__4BAC3F29",
+                        name: "FK__Curriculu__Subje__47DBAE45",
                         column: x => x.Subject_ID,
                         principalTable: "Subjects",
                         principalColumn: "Subject_ID");
@@ -247,14 +247,14 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Syllabus__2F9B495028311941", x => x.Syllabus_ID);
+                    table.PrimaryKey("PK__Syllabus__2F9B49501A14500F", x => x.Syllabus_ID);
                     table.ForeignKey(
-                        name: "FK__Syllabus__Previo__5EBF139D",
+                        name: "FK__Syllabus__Previo__5AEE82B9",
                         column: x => x.Previous_Version_ID,
                         principalTable: "Syllabus",
                         principalColumn: "Syllabus_ID");
                     table.ForeignKey(
-                        name: "FK__Syllabus__Subjec__5DCAEF64",
+                        name: "FK__Syllabus__Subjec__59FA5E80",
                         column: x => x.Subject_ID,
                         principalTable: "Subjects",
                         principalColumn: "Subject_ID");
@@ -360,9 +360,9 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Budget_P__C9D0461F515BE8A9", x => x.Proposal_ID);
+                    table.PrimaryKey("PK__Budget_P__C9D0461F9553543D", x => x.Proposal_ID);
                     table.ForeignKey(
-                        name: "FK__Budget_Pr__Autho__151B244E",
+                        name: "FK__Budget_Pr__Autho__0C85DE4D",
                         column: x => x.Author_ID,
                         principalTable: "User",
                         principalColumn: "Id");
@@ -383,9 +383,9 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Document__E7FB8F01F3346854", x => x.Template_ID);
+                    table.PrimaryKey("PK__Document__E7FB8F01453EB5C0", x => x.Template_ID);
                     table.ForeignKey(
-                        name: "FK__Document___Updat__29221CFB",
+                        name: "FK__Document___Updat__208CD6FA",
                         column: x => x.Author_ID,
                         principalTable: "User",
                         principalColumn: "Id");
@@ -405,28 +405,9 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Notifica__8C1160B52FF047B0", x => x.Notification_ID);
+                    table.PrimaryKey("PK__Notifica__8C1160B5E7DB044A", x => x.Notification_ID);
                     table.ForeignKey(
-                        name: "FK__Notificat__User___0A9D95DB",
-                        column: x => x.User_ID,
-                        principalTable: "User",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Permissions",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
-                    User_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Item_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__Permissi__3214EC079928F72B", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK__Permissio__User___3B75D760",
+                        name: "FK__Notificat__User___02084FDA",
                         column: x => x.User_ID,
                         principalTable: "User",
                         principalColumn: "Id");
@@ -444,14 +425,14 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__PLO_Subj__2D12A80EB49AFFDC", x => new { x.PLO_ID, x.Subject_ID, x.CreatedAt });
+                    table.PrimaryKey("PK__PLO_Subj__2D12A80ECEB98055", x => new { x.PLO_ID, x.Subject_ID, x.CreatedAt });
                     table.ForeignKey(
-                        name: "FK__PLO_Subje__PLO_I__5629CD9C",
+                        name: "FK__PLO_Subje__PLO_I__52593CB8",
                         column: x => x.PLO_ID,
                         principalTable: "PLO",
                         principalColumn: "PLO_ID");
                     table.ForeignKey(
-                        name: "FK__PLO_Subje__Subje__571DF1D5",
+                        name: "FK__PLO_Subje__Subje__534D60F1",
                         column: x => x.Subject_ID,
                         principalTable: "Subjects",
                         principalColumn: "Subject_ID");
@@ -471,9 +452,9 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__CLO__C3755EAD29554F84", x => x.CLO_ID);
+                    table.PrimaryKey("PK__CLO__C3755EADCB5474B3", x => x.CLO_ID);
                     table.ForeignKey(
-                        name: "FK__CLO__Syllabus_ID__00200768",
+                        name: "FK__CLO__Syllabus_ID__7D439ABD",
                         column: x => x.Syllabus_ID,
                         principalTable: "Syllabus",
                         principalColumn: "Syllabus_ID");
@@ -494,9 +475,9 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Construc__B0B2E4C6488BFAB9", x => x.Question_ID);
+                    table.PrimaryKey("PK__Construc__B0B2E4C62C9AF47D", x => x.Question_ID);
                     table.ForeignKey(
-                        name: "FK__Construct__Sylla__7A672E12",
+                        name: "FK__Construct__Sylla__778AC167",
                         column: x => x.Syllabus_ID,
                         principalTable: "Syllabus",
                         principalColumn: "Syllabus_ID");
@@ -529,25 +510,27 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Grading___71D721C6DB6130A4", x => x.Structure_ID);
+                    table.PrimaryKey("PK__Grading___71D721C6418A3D83", x => x.Structure_ID);
                     table.ForeignKey(
-                        name: "FK__Grading_S__Sylla__74AE54BC",
+                        name: "FK__Grading_S__Sylla__71D1E811",
                         column: x => x.Syllabus_ID,
                         principalTable: "Syllabus",
                         principalColumn: "Syllabus_ID");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Imported_Learning_Materials",
+                name: "Learning_Materials",
                 columns: table => new
                 {
                     Material_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
-                    Material_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Type = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Material_Quantity = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Material_No = table.Column<int>(type: "int", nullable: true),
-                    Url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Syllabus_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Material_Detail_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    is_Main_Material = table.Column<bool>(type: "bit", nullable: true),
+                    Material_No = table.Column<int>(type: "int", nullable: true),
+                    Material_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Material_Quantity = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Purpose = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Note = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
@@ -556,9 +539,14 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Imported__3A09B0FD89507A0F", x => x.Material_ID);
+                    table.PrimaryKey("PK__Learning__3A09B0FDDC2985A2", x => x.Material_ID);
                     table.ForeignKey(
-                        name: "FK__Imported___Sylla__05D8E0BE",
+                        name: "FK__Learning___Mater__66603565",
+                        column: x => x.Material_Detail_ID,
+                        principalTable: "Learning_Material_Detail",
+                        principalColumn: "Material_Detail_ID");
+                    table.ForeignKey(
+                        name: "FK__Learning___Sylla__656C112C",
                         column: x => x.Syllabus_ID,
                         principalTable: "Syllabus",
                         principalColumn: "Syllabus_ID");
@@ -586,34 +574,9 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Schedule__8C4D3BBBF298C27A", x => x.Schedule_ID);
+                    table.PrimaryKey("PK__Schedule__8C4D3BBBEF8E0EE6", x => x.Schedule_ID);
                     table.ForeignKey(
-                        name: "FK__Schedule__Syllab__6EF57B66",
-                        column: x => x.Syllabus_ID,
-                        principalTable: "Syllabus",
-                        principalColumn: "Syllabus_ID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Syllabus_Referenced_Learning_Materials",
-                columns: table => new
-                {
-                    Syllabus_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Material_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
-                    Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__Syllabus__875E8F626D76336E", x => new { x.Syllabus_ID, x.Material_ID, x.CreatedAt });
-                    table.ForeignKey(
-                        name: "FK__Syllabus___Mater__693CA210",
-                        column: x => x.Material_ID,
-                        principalTable: "Referenced_Learning_Materials",
-                        principalColumn: "Material_ID");
-                    table.ForeignKey(
-                        name: "FK__Syllabus___Sylla__68487DD7",
+                        name: "FK__Schedule__Syllab__6C190EBB",
                         column: x => x.Syllabus_ID,
                         principalTable: "Syllabus",
                         principalColumn: "Syllabus_ID");
@@ -639,19 +602,19 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Contract__5E2E73DAEDA2E168", x => x.Contract_ID);
+                    table.PrimaryKey("PK__Contract__5E2E73DA08AE6527", x => x.Contract_ID);
                     table.ForeignKey(
-                        name: "FK__Contracts__Autho__1BC821DD",
+                        name: "FK__Contracts__Autho__1332DBDC",
                         column: x => x.Author_ID,
                         principalTable: "User",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK__Contracts__Contr__1CBC4616",
+                        name: "FK__Contracts__Contr__14270015",
                         column: x => x.Contractor_ID,
                         principalTable: "Contractor",
                         principalColumn: "Contractor_ID");
                     table.ForeignKey(
-                        name: "FK__Contracts__Propo__1AD3FDA4",
+                        name: "FK__Contracts__Propo__123EB7A3",
                         column: x => x.Proposal_ID,
                         principalTable: "Budget_Proposals",
                         principalColumn: "Proposal_ID");
@@ -674,14 +637,14 @@ namespace LMCM_BE.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Acceptan__FC008882157AA898", x => x.Acceptance_ID);
+                    table.PrimaryKey("PK__Acceptan__FC008882C329FB76", x => x.Acceptance_ID);
                     table.ForeignKey(
-                        name: "FK__Acceptanc__Autho__22751F6C",
+                        name: "FK__Acceptanc__Autho__19DFD96B",
                         column: x => x.Author_ID,
                         principalTable: "User",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK__Acceptanc__Contr__236943A5",
+                        name: "FK__Acceptanc__Contr__1AD3FDA4",
                         column: x => x.Contract_ID,
                         principalTable: "Contracts",
                         principalColumn: "Contract_ID");
@@ -701,18 +664,19 @@ namespace LMCM_BE.Migrations
                     Change_Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Completion_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Start_Term = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Course_Code = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
+                    Course_Code = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Learning__A6BABA377EF62FFA", x => x.History_ID);
+                    table.PrimaryKey("PK__Learning__A6BABA375282CF16", x => x.History_ID);
                     table.ForeignKey(
-                        name: "FK__Learning___Contr__2DE6D218",
+                        name: "FK__Learning___Contr__25518C17",
                         column: x => x.Contract_ID,
                         principalTable: "Contracts",
                         principalColumn: "Contract_ID");
                     table.ForeignKey(
-                        name: "FK__Learning___User___2CF2ADDF",
+                        name: "FK__Learning___User___245D67DE",
                         column: x => x.User_ID,
                         principalTable: "User",
                         principalColumn: "Id");
@@ -801,11 +765,6 @@ namespace LMCM_BE.Migrations
                 column: "Syllabus_ID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Imported_Learning_Materials_Syllabus_ID",
-                table: "Imported_Learning_Materials",
-                column: "Syllabus_ID");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Learning_Material_Changes_History_Contract_ID",
                 table: "Learning_Material_Changes_History",
                 column: "Contract_ID");
@@ -816,13 +775,18 @@ namespace LMCM_BE.Migrations
                 column: "User_ID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Notification_User_ID",
-                table: "Notification",
-                column: "User_ID");
+                name: "IX_Learning_Materials_Material_Detail_ID",
+                table: "Learning_Materials",
+                column: "Material_Detail_ID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Permissions_User_ID",
-                table: "Permissions",
+                name: "IX_Learning_Materials_Syllabus_ID",
+                table: "Learning_Materials",
+                column: "Syllabus_ID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notification_User_ID",
+                table: "Notification",
                 column: "User_ID");
 
             migrationBuilder.CreateIndex(
@@ -841,7 +805,7 @@ namespace LMCM_BE.Migrations
                 column: "Syllabus_ID");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Subjects__4A7C5769222B0F9A",
+                name: "UQ__Subjects__4A7C5769891B3439",
                 table: "Subjects",
                 column: "Subject_Code",
                 unique: true);
@@ -857,15 +821,10 @@ namespace LMCM_BE.Migrations
                 column: "Subject_ID");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Syllabus__1AE5B24D4FFC6ACA",
+                name: "UQ__Syllabus__1AE5B24D3BC7ACD5",
                 table: "Syllabus",
                 column: "Course_Code",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Syllabus_Referenced_Learning_Materials_Material_ID",
-                table: "Syllabus_Referenced_Learning_Materials",
-                column: "Material_ID");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
@@ -917,16 +876,13 @@ namespace LMCM_BE.Migrations
                 name: "Grading_Structure");
 
             migrationBuilder.DropTable(
-                name: "Imported_Learning_Materials");
-
-            migrationBuilder.DropTable(
                 name: "Learning_Material_Changes_History");
 
             migrationBuilder.DropTable(
-                name: "Notification");
+                name: "Learning_Materials");
 
             migrationBuilder.DropTable(
-                name: "Permissions");
+                name: "Notification");
 
             migrationBuilder.DropTable(
                 name: "PLO_Subjects");
@@ -935,19 +891,16 @@ namespace LMCM_BE.Migrations
                 name: "Schedule");
 
             migrationBuilder.DropTable(
-                name: "Syllabus_Referenced_Learning_Materials");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Contracts");
 
             migrationBuilder.DropTable(
-                name: "PLO");
+                name: "Learning_Material_Detail");
 
             migrationBuilder.DropTable(
-                name: "Referenced_Learning_Materials");
+                name: "PLO");
 
             migrationBuilder.DropTable(
                 name: "Syllabus");

@@ -3,21 +3,25 @@ using System.Collections.Generic;
 
 namespace LMCM_BE.Models;
 
-public partial class ImportedLearningMaterial
+public partial class LearningMaterial
 {
     public Guid MaterialId { get; set; }
 
-    public string? MaterialName { get; set; }
+    public Guid SyllabusId { get; set; }
+
+    public Guid MaterialDetailId { get; set; }
 
     public string? Type { get; set; }
 
-    public string? MaterialQuantity { get; set; }
+    public bool? IsMainMaterial { get; set; }
 
     public int? MaterialNo { get; set; }
 
-    public string? Url { get; set; }
+    public string? MaterialName { get; set; }
 
-    public Guid SyllabusId { get; set; }
+    public string? MaterialQuantity { get; set; }
+
+    public string? Url { get; set; }
 
     public string? Purpose { get; set; }
 
@@ -28,6 +32,8 @@ public partial class ImportedLearningMaterial
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
+
+    public virtual LearningMaterialDetail MaterialDetail { get; set; } = null!;
 
     public virtual Syllabus Syllabus { get; set; } = null!;
 }

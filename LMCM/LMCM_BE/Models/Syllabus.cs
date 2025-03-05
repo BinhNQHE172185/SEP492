@@ -57,15 +57,13 @@ public partial class Syllabus
 
     public virtual ICollection<GradingStructure> GradingStructures { get; set; } = new List<GradingStructure>();
 
-    public virtual ICollection<ImportedLearningMaterial> ImportedLearningMaterials { get; set; } = new List<ImportedLearningMaterial>();
-
     public virtual ICollection<Syllabus> InversePreviousVersion { get; set; } = new List<Syllabus>();
+
+    public virtual ICollection<LearningMaterial> LearningMaterials { get; set; } = new List<LearningMaterial>();
 
     public virtual Syllabus? PreviousVersion { get; set; }
 
     public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
 
     public virtual Subject Subject { get; set; } = null!;
-
-    public virtual ICollection<SyllabusReferencedLearningMaterial> SyllabusReferencedLearningMaterials { get; set; } = new List<SyllabusReferencedLearningMaterial>();
 }

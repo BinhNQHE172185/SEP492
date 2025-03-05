@@ -19,7 +19,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
 
         public async Task<PagedResult<SyllabusListViewDto>> GetSyllabusesAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
-            var query = _dbContext.Syllabi.AsQueryable();
+            var query = _dbContext.Syllabus.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {

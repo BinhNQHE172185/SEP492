@@ -44,6 +44,137 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
                 PageSize = pageSize
             };
         }
+        public async Task<bool> InsertSubject(SubjectInsertDto subjectDto)
+        {
+            if (subjectDto == null) throw new ArgumentNullException(nameof(subjectDto));
 
+            try
+            {
+                var subject = new Subject
+                {
+                    SubjectId = Guid.NewGuid(),
+                    SubjectCode = subjectDto.SubjectCode,
+                    SubjectName = subjectDto.SubjectName,
+                    SubjectNameEnglish = subjectDto.EnglishSubjectName,
+                    IsConstructivist = subjectDto.IsConstructivistSubject,
+                    Method = subjectDto.Method,
+                    Duration = subjectDto.Duration,
+                    Reality = subjectDto.Reality,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                await _dbContext.Subjects.AddAsync(subject);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException dbEx)
+            {
+                return false;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+        public async Task<bool> ImportSubjectsAsync(List<SubjectInsertDto> subjects)
+        {
+            if (subjects == null || subjects.Count == 0)
+                throw new ArgumentNullException(nameof(subjects));
+
+            try
+            {
+                // Get existing subjects from DB (as a dictionary for fast lookup)
+                var existingSubjects = await _dbContext.Subjects
+                    .ToDictionaryAsync(s => s.SubjectCode);
+
+                var newSubjects = new List<Subject>();
+                var updatedSubjects = new List<Subject>();
+
+                foreach (var subjectDto in subjects)
+                {
+                    if (existingSubjects.TryGetValue(subjectDto.SubjectCode, out var existingSubject))
+                    {
+                        // Update fields only if values have changed
+                        bool isUpdated = false;
+
+                        if (existingSubject.SubjectName != subjectDto.SubjectName)
+                        {
+                            existingSubject.SubjectName = subjectDto.SubjectName;
+                            isUpdated = true;
+                        }
+                        if (existingSubject.SubjectNameEnglish != subjectDto.EnglishSubjectName)
+                        {
+                            existingSubject.SubjectNameEnglish = subjectDto.EnglishSubjectName;
+                            isUpdated = true;
+                        }
+                        if (existingSubject.IsConstructivist != subjectDto.IsConstructivistSubject)
+                        {
+                            existingSubject.IsConstructivist = subjectDto.IsConstructivistSubject;
+                            isUpdated = true;
+                        }
+                        if (existingSubject.Method != subjectDto.Method)
+                        {
+                            existingSubject.Method = subjectDto.Method;
+                            isUpdated = true;
+                        }
+                        if (existingSubject.Duration != subjectDto.Duration)
+                        {
+                            existingSubject.Duration = subjectDto.Duration;
+                            isUpdated = true;
+                        }
+                        if (existingSubject.Reality != subjectDto.Reality)
+                        {
+                            existingSubject.Reality = subjectDto.Reality;
+                            isUpdated = true;
+                        }
+
+                        if (isUpdated)
+                        {
+                            existingSubject.UpdatedAt = DateTime.UtcNow;
+                            updatedSubjects.Add(existingSubject);
+                        }
+                    }
+                    else
+                    {
+                        // Create new subject if it doesn't exist
+                        newSubjects.Add(new Subject
+                        {
+                            SubjectId = Guid.NewGuid(),
+                            SubjectCode = subjectDto.SubjectCode,
+                            SubjectName = subjectDto.SubjectName,
+                            SubjectNameEnglish = subjectDto.EnglishSubjectName,
+                            IsConstructivist = subjectDto.IsConstructivistSubject,
+                            Method = subjectDto.Method,
+                            Duration = subjectDto.Duration,
+                            Reality = subjectDto.Reality,
+                            Status = "Active",
+                            CreatedAt = DateTime.UtcNow,
+                            UpdatedAt = DateTime.UtcNow
+                        });
+                    }
+                }
+
+                // Apply updates and inserts
+                if (updatedSubjects.Any())
+                    _dbContext.Subjects.UpdateRange(updatedSubjects);
+
+                if (newSubjects.Any())
+                    await _dbContext.Subjects.AddRangeAsync(newSubjects);
+
+                if (updatedSubjects.Any() || newSubjects.Any())
+                    await _dbContext.SaveChangesAsync();
+
+                return true;
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

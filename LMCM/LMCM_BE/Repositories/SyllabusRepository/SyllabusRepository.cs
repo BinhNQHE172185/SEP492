@@ -26,9 +26,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
                 string search = searchKey.Trim().ToLower();
                 query = query.Where(s => s.CourseCode.ToLower().Contains(search) ||
                                          s.CourseNameEnglish.ToLower().Contains(search)||
-                                         s.CourseName.ToLower().Contains(search)||
-                                         s.Subject.SubjectCode.ToLower().Contains(search)||
-                                         s.Subject.SubjectName.ToLower().Contains(search));
+                                         s.CourseName.ToLower().Contains(search));
             }
 
             int totalCount = await query.CountAsync();

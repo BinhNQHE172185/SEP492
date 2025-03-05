@@ -36,24 +36,14 @@ namespace LMCM_BE.Repositories.SyllabusRepository
             var items = await query
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
-                .Select(s => new SyllabusListViewDto
-                {
-                    SyllabusId = s.SyllabusId,
-                    SubjectId = s.SubjectId,
-                    CourseCode = s.CourseCode,
-                    CourseName = s.CourseName,
-                    CourseNameEnglish = s.CourseNameEnglish,
-                    DecisionNo = s.DecisionNo,
-                    IsApproved = s.ApprovedDate.HasValue,
-                    IsActive = s.Status.ToLower() == "active", 
-                    SubjectName = s.Subject.SubjectName,
-                    SubjectCode = s.Subject.SubjectCode
-                })
+                .Include(s => s.Subject)
                 .ToListAsync();
+
+            var data = _mapper.Map<List<SyllabusListViewDto>>(items);
 
             return new PagedResult<SyllabusListViewDto>
             {
-                Items = items,
+                Items = data,
                 TotalCount = totalCount,
                 CurrentPage = pageIndex,
                 PageSize = pageSize

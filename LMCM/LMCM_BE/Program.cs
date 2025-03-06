@@ -17,6 +17,7 @@ using LMCM_BE.Repositories.CLORepository;
 using LMCM_BE.Services.CLOServices;
 using LMCM_BE.Repositories.CurriculumRepository;
 using LMCM_BE.Services.CurriculumService;
+using LMCM_BE.AutoMapper.CLOProfiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +60,7 @@ builder.Services.AddCors(options =>
 //AutoMapper
 builder.Services.AddAutoMapper(typeof(SubjectProfile));
 builder.Services.AddAutoMapper(typeof(SyllabusProfile));
+builder.Services.AddAutoMapper(typeof(CLOProfile));
 
 //DI
 builder.Services.AddScoped<UserManager<User>>();

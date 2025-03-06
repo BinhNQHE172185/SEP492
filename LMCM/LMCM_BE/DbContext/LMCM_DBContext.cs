@@ -573,9 +573,12 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.ScheduleId)
                 .HasDefaultValueSql("(newid())")
                 .HasColumnName("Schedule_ID");
-            entity.Property(e => e.Clo)
+            entity.Property(e => e.Clos)
                 .HasMaxLength(255)
                 .HasColumnName("CLO");
+            entity.Property(e => e.Content)
+                .HasColumnType("nvarchar(max)")
+                .HasColumnName("Content");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.Itu)
                 .HasMaxLength(255)

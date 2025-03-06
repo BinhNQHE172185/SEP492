@@ -15,7 +15,8 @@ export default [
     { path: 'profile', component: ProfileComponent },
     { path: 'listsubject', component: ListSubjectsComponent },
     {path:'listcurriculumn',component:ListCurriculumnComponent},
-    {path:'curriculumn',component:CurriculumDetailComponent},
+    {path:'curriculum',component:CurriculumDetailComponent},
+    {path:'curriculum/:code',component:CurriculumDetailComponent},
     {path:'plo',component:PloComponent},
 
     {path:'listsyllabus',component:ListSyllabusComponent},

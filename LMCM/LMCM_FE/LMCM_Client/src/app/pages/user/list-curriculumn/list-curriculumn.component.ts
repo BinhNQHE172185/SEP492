@@ -9,6 +9,7 @@ import { TagModule } from 'primeng/tag';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-list-curriculumn',
@@ -22,7 +23,8 @@ import { ConfirmationService } from 'primeng/api';
     CardModule,
     TagModule,
     InputGroupModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    RouterLink
   ],
   templateUrl: './list-curriculumn.component.html',
   styleUrls: ['./list-curriculumn.component.scss'],

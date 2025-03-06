@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { TableModule } from 'primeng/table';
 
 interface MenuItem {
   label: string;
@@ -14,7 +16,7 @@ interface MenuItem {
   templateUrl: './syllabus-detail.component.html',
   styleUrl: './syllabus-detail.component.scss',
     standalone: true,
-    imports: [CommonModule, ButtonModule,RouterLink]
+    imports: [CommonModule, ButtonModule,RouterLink,TableModule,CardModule]
 })
 
 export class SyllabusDetailComponent {
@@ -47,4 +49,56 @@ export class SyllabusDetailComponent {
       link: '/curriculum/history'
     }
   ];
+
+  materials = [
+    { 
+      no: 1, 
+      description: 'Web Development Guide', 
+      purpose: 'Main textbook',
+      isbn: '978-0136151323',
+      type: 'Book',
+      note: 'Required',
+      author: 'John Smith',
+      publisher: 'Pearson',
+      publishedDate: '2023',
+      edition: '3rd'
+    }
+  ];
+
+  // Course Learning Outcomes data
+  clos = [
+    {
+      no: 1,
+      name: 'Web Architecture',
+      description: 'Understand and implement modern web architectures'
+    }
+  ];
+
+  // Constructivist Questions data
+  constructivistQuestions = [
+    {
+      no: 1,
+      sessionNo: 1,
+      name: 'Web Architecture',
+      detail: 'How do modern web frameworks improve development efficiency?'
+    }
+  ];
+
+  // Schedule data
+  scheduleData = [
+    {
+      session: '',
+      learningTeachingMethod: '',
+      content: '',
+      clo: '',
+      itu: '',
+      studentsMaterials: '',
+      studentsTask: '',
+      lecturersMaterials: '',
+      lecturersTask: '',
+      studentsLink: '',
+      lecturersLink: ''
+    }
+  ];
+
 }

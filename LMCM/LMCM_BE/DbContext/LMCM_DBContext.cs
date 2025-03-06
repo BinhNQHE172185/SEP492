@@ -614,8 +614,6 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
         {
             entity.HasKey(e => e.SubjectId).HasName("PK__Subjects__D98F54D69CFFB5AE");
 
-            entity.HasIndex(e => e.SubjectCode, "UQ__Subjects__4A7C5769891B3439").IsUnique();
-
             entity.Property(e => e.SubjectId)
                 .HasDefaultValueSql("(newid())")
                 .HasColumnName("Subject_ID");
@@ -640,8 +638,6 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.HasKey(e => e.SyllabusId).HasName("PK__Syllabus__2F9B49501A14500F");
 
             entity.ToTable("Syllabus");
-
-            entity.HasIndex(e => e.CourseCode, "UQ__Syllabus__1AE5B24D3BC7ACD5").IsUnique();
 
             entity.Property(e => e.SyllabusId)
                 .HasDefaultValueSql("(newid())")

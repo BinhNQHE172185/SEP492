@@ -26,7 +26,7 @@ namespace LMCM_BE.Services.SyllabusService
             return data;
         }
 
-        public async Task<bool> ImportSyllabusAsync(SyllabusInsertDto syllabus)
+        public async Task<Syllabus> ImportSyllabusAsync(SyllabusInsertDto syllabus)
         {
             return await _syllabusRepository.ImportSyllabusAsync(syllabus);
         }

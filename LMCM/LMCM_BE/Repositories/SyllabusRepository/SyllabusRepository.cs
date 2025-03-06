@@ -62,7 +62,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
                 PageSize = pageSize
             };
         }
-        public async Task<bool> ImportSyllabusAsync(SyllabusInsertDto syllabus)
+        public async Task<Syllabus> ImportSyllabusAsync(SyllabusInsertDto syllabus)
         {
             if (syllabus == null)
                 throw new ArgumentNullException(nameof(syllabus));
@@ -77,6 +77,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
 
                 if (existingSyllabus != null)
                 {
+                    // Add new version and delete old version
                     await DeleteSyllabusAsync(existingSyllabus.SyllabusId);
                     previousVersionId=existingSyllabus.SyllabusId;
                 }
@@ -102,7 +103,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
                     MinGpaToPass = syllabus.MinGpaToPass,
                     ScoringScale = syllabus.ScoringScale,
                     ApprovedDate = syllabus.ApprovedDate,
-                    Status = "active",
+                    Status = "Active",
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 };
@@ -110,15 +111,15 @@ namespace LMCM_BE.Repositories.SyllabusRepository
                 await _dbContext.Syllabus.AddAsync(newSyllabus);
                 await _dbContext.SaveChangesAsync();
 
-                return true;
+                return newSyllabus;
             }
             catch (DbUpdateException)
             {
-                return false;
+                return null;
             }
             catch (Exception)
             {
-                return false;
+                return null;
             }
         }
 

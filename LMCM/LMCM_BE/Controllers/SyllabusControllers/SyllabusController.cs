@@ -39,6 +39,26 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             }
         }
 
+        [HttpPost("deleteSyllabus")]
+        public async Task<IActionResult> DeleteSyllabusAsync([FromBody] Guid syllabusId)
+        {
+            try
+            {
+                bool result = await _syllabusService.DeleteSyllabusAsync(syllabusId);
+
+                if (result)
+                {
+                    return Ok(new { message = "Syllabus deleted successfully." });
+                }
+                return NotFound(new { message = "Syllabus not found or already inactive." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
+
         [HttpPost("importSyllabus")]
         public async Task<IActionResult> ImportSyllabusFromExcel(IFormFile file)
         {

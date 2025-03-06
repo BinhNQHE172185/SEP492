@@ -15,6 +15,11 @@ namespace LMCM_BE.Services.SyllabusService
             _syllabusRepository = syllabusRepository;
         }
 
+        public async Task<bool> DeleteSyllabusAsync(Guid id)
+        {
+            return await _syllabusRepository.DeleteSyllabusAsync(id);
+        }
+
         public async Task<PagedResult<SyllabusListViewDto>> GetSyllabusesAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var data = await _syllabusRepository.GetSyllabusesAsync(searchKey, pageIndex, pageSize);

@@ -1,4 +1,5 @@
-﻿using LMCM_BE.DTOs.CLODtos;
+﻿using LMCM_BE.DbContext;
+using LMCM_BE.DTOs.CLODtos;
 using LMCM_BE.DTOs.ScheduleDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
@@ -8,6 +9,7 @@ using LMCM_BE.Services.ScheduleService;
 using LMCM_BE.Services.SubjectService;
 using LMCM_BE.Services.SyllabusService;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 
 namespace LMCM_BE.Controllers.SyllabusControllers
@@ -16,13 +18,15 @@ namespace LMCM_BE.Controllers.SyllabusControllers
     [ApiController]
     public class SyllabusController : ControllerBase
     {
+        private readonly LMCM_DBContext _dbContext;
         private readonly ISyllabusService _syllabusService;
         private readonly ISubjectService _subjectService;
         private readonly ICLOService _cloService;
         private readonly IScheduleService _scheduleService;
 
-        public SyllabusController(ISyllabusService syllabusService, ISubjectService subjectService, ICLOService cloService, IScheduleService scheduleService)
+        public SyllabusController(LMCM_DBContext dBContext,ISyllabusService syllabusService, ISubjectService subjectService, ICLOService cloService, IScheduleService scheduleService)
         {
+            _dbContext = dBContext;
             _syllabusService = syllabusService;
             _subjectService = subjectService;
             _cloService = cloService;
@@ -72,52 +76,52 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             if (file == null || file.Length == 0)
                 return BadRequest(new { message = "Vui lòng tải lên tệp Excel hợp lệ." });
 
-            try
+            using (var transaction = await _dbContext.Database.BeginTransactionAsync())  // Start a database transaction
             {
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-                using (var stream = new MemoryStream())
+                try
                 {
-                    await file.CopyToAsync(stream);
-                    using (var package = new ExcelPackage(stream))
+                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+                    using (var stream = new MemoryStream())
                     {
-                        var requiredSheets = new List<string> { "Syllabus", "Schedule", "CLO" };
-                        var availableSheets = package.Workbook.Worksheets.Select(sheet => sheet.Name).ToList();
-                        var missingSheets = requiredSheets.Except(availableSheets).ToList();
-
-                        if (missingSheets.Any())
+                        await file.CopyToAsync(stream);
+                        using (var package = new ExcelPackage(stream))
                         {
-                            return BadRequest(new { message = $"Tệp Excel bị thiếu các trang sau: {string.Join(", ", missingSheets)}." });
-                        }
+                            var requiredSheets = new List<string> { "Syllabus", "Schedule", "CLO" };
+                            var availableSheets = package.Workbook.Worksheets.Select(sheet => sheet.Name).ToList();
+                            var missingSheets = requiredSheets.Except(availableSheets).ToList();
 
-                        // Import Syllabus
-                        Syllabus syllabus = await ImportSyllabusSheet(package.Workbook.Worksheets["Syllabus"]);
-                        if (syllabus == null)
-                        {
-                            return BadRequest(new { message = "Nhập giáo trình thất bại." });
-                        }
+                            if (missingSheets.Any())
+                            {
+                                return BadRequest(new { message = $"Tệp Excel bị thiếu các trang sau: {string.Join(", ", missingSheets)}." });
+                            }
 
-                        // Import CLOs
-                        var isCLOSuccess = await ImportCLOSheet(package.Workbook.Worksheets["CLO"], syllabus);
-                        if (!isCLOSuccess)
-                        {
-                            return BadRequest(new { message = "Nhập CLO thất bại." });
-                        }
+                            // Import Syllabus
+                            Syllabus syllabus = await ImportSyllabusSheet(package.Workbook.Worksheets["Syllabus"]);
+                            if (syllabus == null)
+                                throw new Exception("Nhập giáo trình thất bại.");
 
-                        // Import Schedule
-                        var isScheduleSuccess = await ImportScheduleSheet(package.Workbook.Worksheets["Schedule"], syllabus);
-                        if (!isScheduleSuccess)
-                        {
-                            return BadRequest(new { message = "Nhập lịch học thất bại." });
-                        }
+                            // Import CLOs
+                            var isCLOSuccess = await ImportCLOSheet(package.Workbook.Worksheets["CLO"], syllabus);
+                            if (!isCLOSuccess)
+                                throw new Exception("Nhập CLO thất bại.");
 
-                        return Ok(new { message = "Nhập vào hệ thống thành công." });
+                            // Import Schedule
+                            var isScheduleSuccess = await ImportScheduleSheet(package.Workbook.Worksheets["Schedule"], syllabus);
+                            if (!isScheduleSuccess)
+                                throw new Exception("Nhập lịch học thất bại.");
+
+                            await _dbContext.SaveChangesAsync(); 
+                            await transaction.CommitAsync();
+                            return Ok(new { message = "Nhập vào hệ thống thành công." });
+                        }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = ex.Message });
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync(); // Rollback if any step fails
+                    return StatusCode(500, new { message = "Lỗi xảy ra: " + ex.Message });
+                }
             }
         }
 

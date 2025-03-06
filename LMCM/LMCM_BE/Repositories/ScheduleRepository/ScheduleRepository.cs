@@ -59,44 +59,28 @@ namespace LMCM_BE.Repositories.ScheduleRepository
             if (schedules == null || !schedules.Any())
                 throw new ArgumentNullException(nameof(schedules));
 
-            try
+            var newSchedules = schedules.Select(scheduleDto => new Schedule
             {
-                var newSchedules = schedules.Select(scheduleDto => new Schedule
-                {
-                    ScheduleId = Guid.NewGuid(),
-                    SyllabusId = scheduleDto.SyllabusId,
-                    ScheduleNo = scheduleDto.ScheduleNo,
-                    Method = scheduleDto.Method,
-                    Content = scheduleDto.Content,  
-                    Clos=scheduleDto.Clos,
-                    Itu = scheduleDto.Itu,
-                    StudentMaterial = scheduleDto.StudentMaterial,
-                    StudentTask = scheduleDto.StudentTask,
-                    LecturerMaterial = scheduleDto.LecturerMaterial,
-                    LecturerTask = scheduleDto.LecturerTask,
-                    StudentMaterialUrl = scheduleDto.StudentMaterialUrl,
-                    LecturerMaterialUrl = scheduleDto.LecturerMaterialUrl,
-                    Status = "Active",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                }).ToList();
+                ScheduleId = Guid.NewGuid(),
+                SyllabusId = scheduleDto.SyllabusId,
+                ScheduleNo = scheduleDto.ScheduleNo,
+                Method = scheduleDto.Method,
+                Content = scheduleDto.Content,
+                Clos = scheduleDto.Clos,
+                Itu = scheduleDto.Itu,
+                StudentMaterial = scheduleDto.StudentMaterial,
+                StudentTask = scheduleDto.StudentTask,
+                LecturerMaterial = scheduleDto.LecturerMaterial,
+                LecturerTask = scheduleDto.LecturerTask,
+                StudentMaterialUrl = scheduleDto.StudentMaterialUrl,
+                LecturerMaterialUrl = scheduleDto.LecturerMaterialUrl,
+                Status = "Active",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            }).ToList();
 
-                await _dbContext.Schedules.AddRangeAsync(newSchedules);
-                await _dbContext.SaveChangesAsync();
-
-                return true;
-            }
-            catch (DbUpdateException dbEx)
-            {
-                Console.WriteLine(dbEx.Message);
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
+            await _dbContext.Schedules.AddRangeAsync(newSchedules);
+            return true;  
         }
-
     }
 }

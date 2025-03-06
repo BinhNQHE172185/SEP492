@@ -1,6 +1,4 @@
-﻿using LMCM_BE.DTOs.SubjectDtos;
-using LMCM_BE.Models;
-
+﻿
 namespace LMCM_BE.DTOs.SyllabusDtos
 {
     public class SyllabusListViewDto

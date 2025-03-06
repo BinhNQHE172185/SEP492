@@ -130,7 +130,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasDefaultValueSql("(newid())")
                 .HasColumnName("CLO_ID");
             entity.Property(e => e.CloDescription)
-                .HasMaxLength(255)
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("CLO_Description");
             entity.Property(e => e.CloName)
                 .HasMaxLength(255)
@@ -157,7 +157,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasColumnName("Question_ID");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.QuestionDetail)
-                .HasMaxLength(255)
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("Question_Detail");
             entity.Property(e => e.QuestionName)
                 .HasMaxLength(255)
@@ -263,7 +263,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasMaxLength(255)
                 .HasColumnName("Curriculum_Code");
             entity.Property(e => e.CurriculumDescription)
-                .HasMaxLength(255)
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("Curriculum_Description");
             entity.Property(e => e.CurriculumName)
                 .HasMaxLength(255)
@@ -358,11 +358,11 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasColumnName("CLO");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.Duration).HasMaxLength(255);
-            entity.Property(e => e.How).HasMaxLength(255);
+            entity.Property(e => e.How).HasColumnType("nvarchar(max)");
             entity.Property(e => e.MinValue)
                 .HasColumnType("decimal(19, 2)")
                 .HasColumnName("Min_Value");
-            entity.Property(e => e.Note).HasMaxLength(255);
+            entity.Property(e => e.Note).HasColumnType("nvarchar(max)");
             entity.Property(e => e.QuestionNo)
                 .HasMaxLength(255)
                 .HasColumnName("Question_No");
@@ -370,7 +370,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasMaxLength(255)
                 .HasColumnName("Question_Type");
             entity.Property(e => e.Reference).HasMaxLength(255);
-            entity.Property(e => e.Scope).HasMaxLength(255);
+            entity.Property(e => e.Scope).HasColumnType("nvarchar(max)");
             entity.Property(e => e.SessionNo).HasColumnName("Session_No");
             entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.StructureNo).HasColumnName("Structure_No");
@@ -403,7 +403,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.MaterialQuantity)
                 .HasMaxLength(255)
                 .HasColumnName("Material_Quantity");
-            entity.Property(e => e.Note).HasMaxLength(255);
+            entity.Property(e => e.Note).HasColumnType("nvarchar(max)");
             entity.Property(e => e.Purpose).HasMaxLength(255);
             entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.SyllabusId).HasColumnName("Syllabus_ID");
@@ -432,7 +432,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasDefaultValueSql("(newid())")
                 .HasColumnName("History_ID");
             entity.Property(e => e.ChangeDescription)
-                .HasMaxLength(500)
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("Change_Description");
             entity.Property(e => e.ChangeType)
                 .HasMaxLength(255)
@@ -479,12 +479,12 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasMaxLength(255)
                 .HasColumnName("ISBN");
             entity.Property(e => e.MaterialDescription)
-                .HasMaxLength(255)
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("Material_Description");
             entity.Property(e => e.MaterialName)
                 .HasMaxLength(255)
                 .HasColumnName("Material_Name");
-            entity.Property(e => e.Note).HasMaxLength(255);
+            entity.Property(e => e.Note).HasColumnType("nvarchar(max)");
             entity.Property(e => e.PublishedDate).HasColumnName("Published_Date");
             entity.Property(e => e.Publisher).HasMaxLength(255);
             entity.Property(e => e.Status).HasMaxLength(255);
@@ -503,10 +503,10 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasDefaultValueSql("(newid())")
                 .HasColumnName("Notification_ID");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.Message).HasMaxLength(255);
+            entity.Property(e => e.Message).HasColumnType("nvarchar(max)");
             entity.Property(e => e.Status).HasMaxLength(255);
-            entity.Property(e => e.Title).HasMaxLength(255);
-            entity.Property(e => e.Url).HasMaxLength(255);
+            entity.Property(e => e.Title).HasColumnType("nvarchar(max)");
+            entity.Property(e => e.Url).HasColumnType("nvarchar(max)");
             entity.Property(e => e.UserId).HasColumnName("User_ID");
 
             entity.HasOne(d => d.User).WithMany(p => p.Notifications)
@@ -527,7 +527,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.CurriculumId).HasColumnName("Curriculum_ID");
             entity.Property(e => e.PloDescription)
-                .HasMaxLength(255)
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("PLO_Description");
             entity.Property(e => e.PloName)
                 .HasMaxLength(255)
@@ -581,25 +581,25 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasMaxLength(255)
                 .HasColumnName("ITU");
             entity.Property(e => e.LecturerMaterial)
-                .HasMaxLength(255)
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("Lecturer_Material");
             entity.Property(e => e.LecturerMaterialUrl)
-                .HasMaxLength(255)
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("Lecturer_Material_Url");
             entity.Property(e => e.LecturerTask)
-                .HasMaxLength(255)
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("Lecturer_Task");
-            entity.Property(e => e.Method).HasMaxLength(255);
+            entity.Property(e => e.Method).HasColumnType("nvarchar(max)");
             entity.Property(e => e.ScheduleNo).HasColumnName("Schedule_No");
             entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.StudentMaterial)
-                .HasMaxLength(255)
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("Student_Material");
             entity.Property(e => e.StudentMaterialUrl)
-                .HasMaxLength(255)
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("Student_Material_Url");
             entity.Property(e => e.StudentTask)
-                .HasMaxLength(255)
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("Student_Task");
             entity.Property(e => e.SyllabusId).HasColumnName("Syllabus_ID");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
@@ -669,7 +669,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.NoOfCredits).HasColumnName("No_of_Credits");
             entity.Property(e => e.Note).HasColumnType("nvarchar(max)");
             entity.Property(e => e.PreRequisite)
-                .HasMaxLength(255)
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("Pre_requisite");
             entity.Property(e => e.PreviousVersionId).HasColumnName("Previous_Version_ID");
             entity.Property(e => e.ProgramName)

@@ -15,6 +15,8 @@ using LMCM_BE.Services.SyllabusService;
 using LMCM_BE.AutoMapper.SyllabusProfiles;
 using LMCM_BE.Repositories.CLORepository;
 using LMCM_BE.Services.CLOServices;
+using LMCM_BE.Repositories.CurriculumRepository;
+using LMCM_BE.Services.CurriculumService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +63,8 @@ builder.Services.AddAutoMapper(typeof(SyllabusProfile));
 //DI
 builder.Services.AddScoped<UserManager<User>>();
 builder.Services.AddScoped<SignInManager<User>>();
+builder.Services.AddScoped<ICurriculumRepository, CurriculumRepository>();
+builder.Services.AddScoped<ICurriculumService, CurriculumService>();
 builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<ISyllabusRepository, SyllabusRepository>();

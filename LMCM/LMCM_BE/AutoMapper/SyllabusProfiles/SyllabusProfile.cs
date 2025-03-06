@@ -11,6 +11,7 @@ namespace LMCM_BE.AutoMapper.SyllabusProfiles
             CreateMap<Syllabus, SyllabusListViewDto>()
                         .ForMember(dest => dest.IsApproved, opt => opt.MapFrom(src => src.ApprovedDate.HasValue))
                         .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.Status.ToLower() == "active"));
+            CreateMap<Syllabus, SyllabusInsertDto>();
         }
     }
 }

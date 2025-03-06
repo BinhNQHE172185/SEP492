@@ -614,8 +614,6 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
         {
             entity.HasKey(e => e.SubjectId).HasName("PK__Subjects__D98F54D69CFFB5AE");
 
-            entity.HasIndex(e => e.SubjectCode, "UQ__Subjects__4A7C5769891B3439").IsUnique();
-
             entity.Property(e => e.SubjectId)
                 .HasDefaultValueSql("(newid())")
                 .HasColumnName("Subject_ID");
@@ -641,8 +639,6 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
 
             entity.ToTable("Syllabus");
 
-            entity.HasIndex(e => e.CourseCode, "UQ__Syllabus__1AE5B24D3BC7ACD5").IsUnique();
-
             entity.Property(e => e.SyllabusId)
                 .HasDefaultValueSql("(newid())")
                 .HasColumnName("Syllabus_ID");
@@ -663,7 +659,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.DegreeLevel)
                 .HasMaxLength(255)
                 .HasColumnName("Degree_Level");
-            entity.Property(e => e.Description).HasMaxLength(255);
+            entity.Property(e => e.Description).HasColumnType("nvarchar(max)");
             entity.Property(e => e.LearningTeachingMethod)
                 .HasMaxLength(255)
                 .HasColumnName("Learning_Teaching_Method");
@@ -671,7 +667,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasColumnType("decimal(19, 2)")
                 .HasColumnName("Min_GPA_to_Pass");
             entity.Property(e => e.NoOfCredits).HasColumnName("No_of_Credits");
-            entity.Property(e => e.Note).HasMaxLength(255);
+            entity.Property(e => e.Note).HasColumnType("nvarchar(max)");
             entity.Property(e => e.PreRequisite)
                 .HasMaxLength(255)
                 .HasColumnName("Pre_requisite");
@@ -684,13 +680,13 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasColumnName("Scoring_Scale");
             entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.StudentTask)
-                .HasMaxLength(255)
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("Student_Task");
             entity.Property(e => e.SubjectId).HasColumnName("Subject_ID");
             entity.Property(e => e.TimeAllocation)
-                .HasMaxLength(255)
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("Time_Allocation");
-            entity.Property(e => e.Tools).HasMaxLength(255);
+            entity.Property(e => e.Tools).HasColumnType("nvarchar(max)");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
 
             entity.HasOne(d => d.PreviousVersion).WithMany(p => p.InversePreviousVersion)

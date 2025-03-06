@@ -4,6 +4,7 @@ using LMCM_BE.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMCM_BE.Migrations
 {
     [DbContext(typeof(LMCM_DBContext))]
-    partial class LMCM_DBContextModelSnapshot : ModelSnapshot
+    [Migration("20250306125458_V1.1")]
+    partial class V11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1103,6 +1106,9 @@ namespace LMCM_BE.Migrations
                     b.HasKey("SubjectId")
                         .HasName("PK__Subjects__D98F54D69CFFB5AE");
 
+                    b.HasIndex(new[] { "SubjectCode" }, "UQ__Subjects__4A7C5769891B3439")
+                        .IsUnique();
+
                     b.ToTable("Subjects");
                 });
 
@@ -1218,6 +1224,9 @@ namespace LMCM_BE.Migrations
                     b.HasIndex("PreviousVersionId");
 
                     b.HasIndex("SubjectId");
+
+                    b.HasIndex(new[] { "CourseCode" }, "UQ__Syllabus__1AE5B24D3BC7ACD5")
+                        .IsUnique();
 
                     b.ToTable("Syllabus", (string)null);
                 });

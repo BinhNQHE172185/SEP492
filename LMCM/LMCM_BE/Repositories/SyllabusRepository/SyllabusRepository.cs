@@ -18,20 +18,6 @@ namespace LMCM_BE.Repositories.SyllabusRepository
             _mapper = mapper;
         }
 
-        public async Task<bool> DeleteSyllabusAsync(Guid id)
-        {
-            var syllabus = await _dbContext.Syllabus.FindAsync(id);
-            if (syllabus == null)
-                return false; // Syllabus not found
-
-            syllabus.Status = "Inactive";
-            syllabus.UpdatedAt = DateTime.UtcNow;
-
-            await _dbContext.SaveChangesAsync();
-            return true;
-        }
-
-
         public async Task<PagedResult<SyllabusListViewDto>> GetSyllabusesAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.Syllabus.AsQueryable();
@@ -40,7 +26,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
             {
                 string search = searchKey.Trim().ToLower();
                 query = query.Where(s => s.CourseCode.ToLower().Contains(search) ||
-                                         s.CourseNameEnglish.ToLower().Contains(search) ||
+                                         s.CourseNameEnglish.ToLower().Contains(search)||
                                          s.CourseName.ToLower().Contains(search));
             }
 
@@ -70,45 +56,44 @@ namespace LMCM_BE.Repositories.SyllabusRepository
             try
             {
                 var existingSyllabus = await _dbContext.Syllabus
-                    .SingleOrDefaultAsync(s => s.CourseCode == syllabus.CourseCode &&
-                                                               s.Status != null && s.Status.ToLower() == "active");
-
-                Guid? previousVersionId = null;
+                    .SingleOrDefaultAsync(s => s.CourseCode == syllabus.CourseCode);
 
                 if (existingSyllabus != null)
                 {
-                    await DeleteSyllabusAsync(existingSyllabus.SyllabusId);
-                    previousVersionId=existingSyllabus.SyllabusId;
+                    // Update existing syllabus
+                    return await UpdateSyllabusAsync(existingSyllabus, syllabus);
                 }
-                // Insert new syllabus
-                var newSyllabus = new Syllabus
+                else
                 {
-                    SyllabusId = Guid.NewGuid(),
-                    SubjectId = syllabus.SubjectId,
-                    PreviousVersionId = previousVersionId,
-                    ProgramName = syllabus.ProgramName,
-                    CourseCode = syllabus.CourseCode,
-                    CourseName = syllabus.CourseName,
-                    CourseNameEnglish = syllabus.CourseNameEnglish,
-                    LearningTeachingMethod = syllabus.LearningTeachingMethod,
-                    NoOfCredits = syllabus.NoOfCredits,
-                    DegreeLevel = syllabus.DegreeLevel,
-                    TimeAllocation = syllabus.TimeAllocation,
-                    PreRequisite = syllabus.PreRequisite,
-                    Description = syllabus.Description,
-                    StudentTask = syllabus.StudentTask,
-                    Tools = syllabus.Tools,
-                    Note = syllabus.Note,
-                    MinGpaToPass = syllabus.MinGpaToPass,
-                    ScoringScale = syllabus.ScoringScale,
-                    ApprovedDate = syllabus.ApprovedDate,
-                    Status = "active",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                };
+                    // Insert new syllabus
+                    var newSyllabus = new Syllabus
+                    {
+                        SyllabusId = Guid.NewGuid(),
+                        SubjectId = syllabus.SubjectId,
+                        ProgramName = syllabus.ProgramName,
+                        CourseCode = syllabus.CourseCode,
+                        CourseName = syllabus.CourseName,
+                        CourseNameEnglish = syllabus.CourseNameEnglish,
+                        LearningTeachingMethod = syllabus.LearningTeachingMethod,
+                        NoOfCredits = syllabus.NoOfCredits,
+                        DegreeLevel = syllabus.DegreeLevel,
+                        TimeAllocation = syllabus.TimeAllocation,
+                        PreRequisite = syllabus.PreRequisite,
+                        Description = syllabus.Description,
+                        StudentTask = syllabus.StudentTask,
+                        Tools = syllabus.Tools,
+                        Note = syllabus.Note,
+                        MinGpaToPass = syllabus.MinGpaToPass,
+                        ScoringScale = syllabus.ScoringScale,
+                        ApprovedDate = syllabus.ApprovedDate,
+                        Status = "active",
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow
+                    };
 
-                await _dbContext.Syllabus.AddAsync(newSyllabus);
-                await _dbContext.SaveChangesAsync();
+                    await _dbContext.Syllabus.AddAsync(newSyllabus);
+                    await _dbContext.SaveChangesAsync();
+                }
 
                 return true;
             }

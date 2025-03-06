@@ -17,6 +17,7 @@ using LMCM_BE.Repositories.CLORepository;
 using LMCM_BE.Services.CLOServices;
 using LMCM_BE.Repositories.CurriculumRepository;
 using LMCM_BE.Services.CurriculumService;
+using LMCM_BE;
 using LMCM_BE.AutoMapper.CLOProfiles;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,7 +40,7 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YOUR_SECRET_KEY")),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("F-JaNdRfUserjd89#5*6Xn2r5usErw8x/A?D(G+KbPeShV")),
         ValidateIssuer = false,
         ValidateAudience = false,
         ClockSkew = TimeSpan.Zero
@@ -63,6 +64,7 @@ builder.Services.AddAutoMapper(typeof(SyllabusProfile));
 builder.Services.AddAutoMapper(typeof(CLOProfile));
 
 //DI
+builder.Services.AddScoped<RoleManager<IdentityRole<Guid>>>();
 builder.Services.AddScoped<UserManager<User>>();
 builder.Services.AddScoped<SignInManager<User>>();
 builder.Services.AddScoped<ICurriculumRepository, CurriculumRepository>();
@@ -84,9 +86,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await SeedData.Initialize(services);
+}
+
 app.UseCors("AllowAngularApp");
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

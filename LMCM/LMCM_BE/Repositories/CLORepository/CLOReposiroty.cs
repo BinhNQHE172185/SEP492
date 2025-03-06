@@ -58,35 +58,21 @@ namespace LMCM_BE.Repositories.CLORepository
             if (cLOs == null || !cLOs.Any())
                 throw new ArgumentNullException(nameof(cLOs));
 
-            try
+            var newCLOs = cLOs.Select(cloDto => new Clo
             {
-                var newCLOs = cLOs.Select(cloDto => new Clo
-                {
-                    CloId = Guid.NewGuid(),
-                    CloName = cloDto.CloName,
-                    CloDescription = cloDto.CloDescription,
-                    SyllabusId = cloDto.SyllabusId,
-                    Status = "Active",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                }).ToList();
+                CloId = Guid.NewGuid(),
+                CloName = cloDto.CloName,
+                CloDescription = cloDto.CloDescription,
+                SyllabusId = cloDto.SyllabusId,
+                Status = "Active",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            }).ToList();
 
-                await _dbContext.Clos.AddRangeAsync(newCLOs);
-                await _dbContext.SaveChangesAsync();
-
-                return true;
-            }
-            catch (DbUpdateException dbEx)
-            {
-                Console.WriteLine(dbEx.Message);
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
+            await _dbContext.Clos.AddRangeAsync(newCLOs);
+            return true;  
         }
+
 
         public Task<bool> UpdateCLOAsync(Clo existingCLO, CLOInsertDto CLODto)
         {

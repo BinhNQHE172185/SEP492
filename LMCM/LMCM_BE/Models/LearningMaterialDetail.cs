@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace LMCM_BE.Models;
 
-public partial class ReferencedLearningMaterial
+public partial class LearningMaterialDetail
 {
-    public Guid MaterialId { get; set; }
+    public Guid MaterialDetailId { get; set; }
 
     public string MaterialName { get; set; } = null!;
 
@@ -33,5 +33,5 @@ public partial class ReferencedLearningMaterial
 
     public DateTime? UpdatedAt { get; set; }
 
-    public virtual ICollection<SyllabusReferencedLearningMaterial> SyllabusReferencedLearningMaterials { get; set; } = new List<SyllabusReferencedLearningMaterial>();
+    public virtual ICollection<LearningMaterial> LearningMaterials { get; set; } = new List<LearningMaterial>();
 }

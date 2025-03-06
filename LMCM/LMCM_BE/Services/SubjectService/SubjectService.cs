@@ -2,6 +2,7 @@
 using LMCM_BE.DTOs.SubjectDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.SubjectRepository.SubjectRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Services.SubjectService
 {
@@ -18,5 +19,15 @@ namespace LMCM_BE.Services.SubjectService
             var data = await _subjectRepository.GetSubjectsAsync(searchKey, pageIndex, pageSize);
             return data;
         }
+
+        public async Task<bool> InsertSubject(SubjectInsertDto subjectDto)
+        {
+            return await _subjectRepository.InsertSubject(subjectDto);
+        }
+        public async Task<bool> ImportSubjectsAsync(List<SubjectInsertDto> subjects)
+        {
+            return await _subjectRepository.ImportSubjectsAsync(subjects);
+        }
+
     }
 }

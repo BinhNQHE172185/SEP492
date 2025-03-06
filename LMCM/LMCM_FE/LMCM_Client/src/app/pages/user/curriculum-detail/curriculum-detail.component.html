@@ -1,0 +1,93 @@
+<div class="surface-card p-5 shadow-3 border-round bg-white">
+
+  <div class="flex gap-4 mt-3 md:mt-0 justify-end">
+    <button pButton *ngFor="let item of menuItems" 
+      [label]="item.label" 
+      [routerLink]="item.link"
+      [icon]="item.icon"
+      class="p-button-outlined p-button-warning p-3 text-lg">
+    </button>
+  </div>
+  
+  
+
+  <!-- Header with buttons -->
+  <div class="flex justify-content-between align-items-center flex-wrap mb-5">
+    <h1 class="text-orange-500 text-3xl font-bold m-0">Chi tiết chương trình giảng dạy</h1>
+    
+  </div>
+
+  <div class="flex flex-column md:flex-row">
+    <!-- Left Column -->
+    <div class="flex-1 pr-0 md:pr-4">
+      <div class="field mb-5">
+        <label class="block text-700 text-lg mb-2">Mã Chương trình</label>
+        <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2 text-lg">
+          {{ curriculumDetail.code }}
+        </div>
+      </div>
+
+      <div class="field mb-5">
+        <label class="block text-700 text-lg mb-2">Tên chương trình</label>
+        <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2 text-lg">
+          {{ curriculumDetail.name }}
+        </div>
+      </div>
+
+      <div class="field mb-5">
+        <label class="block text-700 text-lg mb-2">English Curriculum Name</label>
+        <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2 text-lg">
+          {{ curriculumDetail.engCurriculumName }}
+        </div>
+      </div>
+
+      <div class="field mb-5">
+        <label class="block text-700 text-lg mb-2">Mã chuyên ngành</label>
+        <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2 text-lg">
+          {{ curriculumDetail.majorCode }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="flex-1 pl-0 md:pl-4">
+      <div class="field mb-5">
+        <label class="block text-700 text-lg mb-2">Tên chuyên ngành</label>
+        <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2 text-lg">
+          {{ curriculumDetail.majorName }}
+        </div>
+      </div>
+
+      <div class="field mb-5">
+        <label class="block text-700 text-lg mb-2">English Vocational Name</label>
+        <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2 text-lg">
+          {{ curriculumDetail.engName }}
+        </div>
+      </div>
+
+      <div class="field mb-5">
+        <label class="block text-700 text-lg mb-2">Quyết định số</label>
+        <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2 text-lg ">
+          {{ curriculumDetail.decisionNo }}
+        </div>
+      </div>
+
+      <div class="field mb-5">
+        <label class="block text-700 text-lg mb-2">Ngày phê duyệt</label>
+        <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2 text-lg">
+          {{ curriculumDetail.approvalDate }}
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Full width description -->
+  <div class="w-full">
+    <div class="field mb-5">
+      <label class="block text-700 text-lg mb-2">Miêu tả</label>
+      <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2 text-lg">
+        {{ curriculumDetail.description }}
+      </div>
+    </div>
+  </div>
+</div>

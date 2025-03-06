@@ -19,9 +19,9 @@ export default [
     {path:'curriculum/:code',component:CurriculumDetailComponent},
     {path:'plo',component:PloComponent},
 
-    {path:'listsyllabus',component:ListSyllabusComponent},
-    {path:'syllabus',component:SyllabusDetailComponent},
-    {path: 'syllabus/:syllabusId', component: SyllabusDetailComponent }, // ✅ Dynamic route for syllabus details
+    { path: 'listsyllabus', component: ListSyllabusComponent },
+    { path: 'syllabus', component: SyllabusDetailComponent },
+    { path: 'syllabus/:syllabusId', component: SyllabusDetailComponent }, // ✅ Dynamic route for syllabus details
     { path: 'edit-syllabus/:syllabusId', component: SyllabusDetailComponent } // ✅ Dynamic route for editing syllabus
-  
+
 ] as Routes;

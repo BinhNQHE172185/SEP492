@@ -33,7 +33,7 @@ namespace LMCM_BE.Controllers.SubjectControllers
                 {
                     return Ok(data);
                 }
-                return NotFound(new { message = "Data not found." });
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
             catch (Exception ex)
             {
@@ -44,7 +44,7 @@ namespace LMCM_BE.Controllers.SubjectControllers
         public async Task<IActionResult> ImportSubjectsFromExcel(IFormFile file)
         {
             if (file == null || file.Length == 0)
-                return BadRequest(new { message = "Please upload a valid Excel file." });
+                return BadRequest(new { message = "Vui lòng tải lên tệp Excel hợp lệ." });
 
             try
             {
@@ -66,7 +66,7 @@ namespace LMCM_BE.Controllers.SubjectControllers
                         {
                             if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
                             {
-                                return BadRequest(new { message = "Invalid Excel format. Please use the correct template." });
+                                return BadRequest(new { message = "Định dạng Excel không hợp lệ. Vui lòng sử dụng mẫu đúng." });
                             }
                         }
 
@@ -74,13 +74,23 @@ namespace LMCM_BE.Controllers.SubjectControllers
                         int rowCount = worksheet.Dimension.Rows;
 
                         List<SubjectInsertDto> subjects = new List<SubjectInsertDto>();
+                        HashSet<string> subjectCodes = new HashSet<string>();
 
                         for (int row = 2; row <= rowCount; row++)
                         {
+                            string subjectCode = worksheet.Cells[row, 1].Text;
+
+                            Console.WriteLine(subjectCode);
+                            if (subjectCodes.Contains(subjectCode))
+                            {
+                                return BadRequest(new { message = $"Tìm thấy mã môn học trùng lặp trong tệp Excel: {subjectCode} tại hàng {row}" });
+                            }
+                            subjectCodes.Add(subjectCode);
+
                             var subject = new SubjectInsertDto
                             {
                                 SubjectId = Guid.NewGuid(),
-                                SubjectCode = worksheet.Cells[row, 1].Text,
+                                SubjectCode = subjectCode,
                                 SubjectName = worksheet.Cells[row, 2].Text,
                                 EnglishSubjectName = worksheet.Cells[row, 3].Text,
                                 PreviousSubjectCode = worksheet.Cells[row, 4].Text,
@@ -97,9 +107,9 @@ namespace LMCM_BE.Controllers.SubjectControllers
 
                         if (isSuccess)
                         {
-                            return Ok(new { message = "Subjects imported successfully." });
+                            return Ok(new { message = "Nhập vào hệ thống thành công." });
                         }
-                        return BadRequest(new { message = "Import failed." });
+                        return BadRequest(new { message = "Nhập vào hệ thống thất bại." });
                     }
                 }
             }

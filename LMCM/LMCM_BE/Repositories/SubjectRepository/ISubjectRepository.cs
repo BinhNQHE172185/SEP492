@@ -7,7 +7,9 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
     public interface ISubjectRepository
     {
         Task<PagedResult<SubjectViewDto>> GetSubjectsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
-        Task<bool> InsertSubject(SubjectInsertDto subject);
+        Task<Subject> GetSubjectByCodeAsync(String subjectCode);
+        Task<bool> InsertSubjectAsync(SubjectInsertDto subject);
+        Task<bool> UpdateSubjectIfChangedAsync(Subject existingSubject, SubjectInsertDto subjectDto);
         Task<bool> ImportSubjectsAsync(List<SubjectInsertDto> subjects);
     }
 }

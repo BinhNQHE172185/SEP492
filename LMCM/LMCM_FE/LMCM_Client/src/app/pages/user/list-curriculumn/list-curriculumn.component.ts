@@ -73,7 +73,7 @@ export class ListCurriculumnComponent {
     this.confirmationService.confirm({
       message: 'Bạn có chắc chắn muốn xóa chương trình này không?',
       header: 'Xác nhận xóa',
-      icon: 'pi pi-exclamation-triangle',
+      
       acceptLabel: 'Xóa',
       rejectLabel: 'Hủy',
       accept: () => {

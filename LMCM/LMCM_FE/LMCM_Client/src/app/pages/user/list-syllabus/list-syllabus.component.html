@@ -36,27 +36,28 @@
           </td>
           <td>{{ item.syllabusName }}</td>
           <td>
-            <span [ngClass]="item.isActive ? 'status-yes' : 'status-no'">
-              {{ item.isActive ? 'Yes' : 'No' }}
-            </span>
+            <p-tag [severity]="getTagSeverity(item.isActive ? 'Hoạt động' : 'Đã nghỉ')">
+              {{ item.isActive ? 'Hoạt động' : 'Đã nghỉ' }}
+            </p-tag>
           </td>
           <td>
-            <span [ngClass]="item.isApproved ? 'status-yes' : 'status-no'">
-              {{ item.isApproved ? 'Yes' : 'No' }}
-            </span>
+            <p-tag [severity]="getTagSeverity(item.isApproved ? 'Hoạt động' : 'Tạm nghỉ')">
+              {{ item.isApproved ? 'Đã duyệt' : 'Chờ duyệt' }}
+            </p-tag>
           </td>
+          
           <td>{{ item.decisionNo }}</td>
           <td>
             <p-button 
               label="Sửa" 
-              icon="pi pi-pencil" 
+             
               class="p-button-text p-button-sm p-button-primary"
               [routerLink]="['/user/edit-syllabus', item.syllabusId]">
             </p-button>
           
             <p-button 
               label="Xóa" 
-              icon="pi pi-trash" 
+             
               class="p-button-text p-button-sm p-button-danger"
               (click)="confirmDelete(item.syllabusId)">
             </p-button>

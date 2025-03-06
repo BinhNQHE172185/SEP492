@@ -1,15 +1,13 @@
 ﻿using LMCM_BE.DTOs.CLODtos;
-using LMCM_BE.DTOs.SubjectDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.CLORepository;
-using LMCM_BE.Repositories.SubjectRepository.SubjectRepository;
 
-namespace LMCM_BE.Services.CLOServices
+namespace LMCM_BE.Services.CLOService
 {
-    public class CLOServices : ICLOServices
+    public class CLOService : ICLOService
     {
         private readonly ICLORepository _cLORepository;
-        public CLOServices(ICLORepository cLORepository)
+        public CLOService(ICLORepository cLORepository)
         {
             _cLORepository = cLORepository;
         }

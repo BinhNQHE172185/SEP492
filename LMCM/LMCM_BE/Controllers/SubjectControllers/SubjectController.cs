@@ -33,7 +33,7 @@ namespace LMCM_BE.Controllers.SubjectControllers
                 {
                     return Ok(data);
                 }
-                return NotFound(new { message = "Data not found." });
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
             catch (Exception ex)
             {
@@ -44,7 +44,7 @@ namespace LMCM_BE.Controllers.SubjectControllers
         public async Task<IActionResult> ImportSubjectsFromExcel(IFormFile file)
         {
             if (file == null || file.Length == 0)
-                return BadRequest(new { message = "Please upload a valid Excel file." });
+                return BadRequest(new { message = "Vui lòng tải lên tệp Excel hợp lệ." });
 
             try
             {
@@ -66,7 +66,7 @@ namespace LMCM_BE.Controllers.SubjectControllers
                         {
                             if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
                             {
-                                return BadRequest(new { message = "Invalid Excel format. Please use the correct template." });
+                                return BadRequest(new { message = "Định dạng Excel không hợp lệ. Vui lòng sử dụng mẫu đúng." });
                             }
                         }
 
@@ -83,7 +83,7 @@ namespace LMCM_BE.Controllers.SubjectControllers
                             Console.WriteLine(subjectCode);
                             if (subjectCodes.Contains(subjectCode))
                             {
-                                return BadRequest(new { message = $"Duplicate subject code found in the Excel file: {subjectCode} at row {row}" });
+                                return BadRequest(new { message = $"Tìm thấy mã môn học trùng lặp trong tệp Excel: {subjectCode} tại hàng {row}" });
                             }
                             subjectCodes.Add(subjectCode);
 
@@ -107,9 +107,9 @@ namespace LMCM_BE.Controllers.SubjectControllers
 
                         if (isSuccess)
                         {
-                            return Ok(new { message = "Subjects imported successfully." });
+                            return Ok(new { message = "Nhập vào hệ thống thành công." });
                         }
-                        return BadRequest(new { message = "Import failed." });
+                        return BadRequest(new { message = "Nhập vào hệ thống thất bại." });
                     }
                 }
             }

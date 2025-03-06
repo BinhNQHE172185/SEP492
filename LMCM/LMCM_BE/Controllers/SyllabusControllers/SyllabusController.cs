@@ -35,7 +35,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 {
                     return Ok(data);
                 }
-                return NotFound(new { message = "Data not found." });
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
             catch (Exception ex)
             {
@@ -52,9 +52,9 @@ namespace LMCM_BE.Controllers.SyllabusControllers
 
                 if (result)
                 {
-                    return Ok(new { message = "Syllabus deleted successfully." });
+                    return Ok(new { message = "Giáo trình đã được xóa thành công." });
                 }
-                return NotFound(new { message = "Syllabus not found or already inactive." });
+                return NotFound(new { message = "Không tìm thấy giáo trình." });
             }
             catch (Exception ex)
             {
@@ -67,7 +67,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
         public async Task<IActionResult> ImportSyllabusFromExcel(IFormFile file)
         {
             if (file == null || file.Length == 0)
-                return BadRequest(new { message = "Please upload a valid Excel file." });
+                return BadRequest(new { message = "Vui lòng tải lên tệp Excel hợp lệ." });
 
             try
             {
@@ -84,7 +84,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
 
                         if (missingSheets.Any())
                         {
-                            return BadRequest(new { message = $"The Excel file is missing the following sheets: {string.Join(", ", missingSheets)}." });
+                            return BadRequest(new { message = $"Tệp Excel bị thiếu các trang sau: {string.Join(", ", missingSheets)}." });
                         }
 
                         Syllabus syllabus = await ImportSyllabusSheet(package.Workbook.Worksheets["Syllabus"]);
@@ -94,9 +94,9 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                         }
                         else
                         {
-                            return BadRequest(new { message = "Import failed." });
+                            return BadRequest(new { message = "Nhập vào hệ thống thành công." });
                         }
-                        return Ok(new { message = "Syllabus imported successfully." });
+                        return Ok(new { message = "Nhập vào hệ thống thất bại." });
 
                     }
                 }
@@ -117,7 +117,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             {
                 if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
                 {
-                    throw new Exception("Invalid syllabus format. Please use the correct template.");
+                    throw new Exception("Định dạng Excel không hợp lệ. Vui lòng sử dụng mẫu đúng.");
                 }
             }
 
@@ -152,7 +152,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             }
             else
             {
-                throw new Exception("Can't find subject matched the syllabus.");
+                throw new Exception("Không tìm thấy môn học cho giáo trình.");
             }
         }
         private async Task<bool> ImportCLOSheet(ExcelWorksheet worksheet, Syllabus syllabus)
@@ -164,7 +164,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             {
                 if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
                 {
-                    throw new Exception("Invalid CLO format. Please use the correct template.");
+                    throw new Exception("Định dạng Excel không hợp lệ. Vui lòng sử dụng mẫu đúng.");
                 }
             }
 
@@ -186,7 +186,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
 
             if (!cloList.Any())
             {
-                throw new Exception("No CLOs found in the sheet.");
+                throw new Exception("Không tìm thấy CLOs trong trang.");
             }
             if (syllabus != null && syllabus.PreviousVersionId!=null)
             {

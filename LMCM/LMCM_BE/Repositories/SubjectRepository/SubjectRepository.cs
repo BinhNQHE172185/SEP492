@@ -4,6 +4,7 @@ using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SubjectDtos;
 using LMCM_BE.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
 {
@@ -44,7 +45,7 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
                 PageSize = pageSize
             };
         }
-        public async Task<bool> InsertSubject(SubjectInsertDto subjectDto)
+        public async Task<bool> InsertSubjectAsync(SubjectInsertDto subjectDto)
         {
             if (subjectDto == null) throw new ArgumentNullException(nameof(subjectDto));
 
@@ -179,14 +180,17 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
 
             return await Task.FromResult(isUpdated);
         }
-        public async Task<Subject> GetSubjectByCode(Guid subjectId)
+        public async Task<Subject> GetSubjectByCodeAsync(string code)
         {
-            if (subjectId == Guid.Empty)
-                throw new ArgumentException("Subject ID cannot be empty.", nameof(subjectId));
+            if (string.IsNullOrEmpty(code))
+                throw new ArgumentException("Subject code cannot be empty.", nameof(code));
 
             try
             {
-                var subject = await _dbContext.Subjects.FindAsync(subjectId);
+                var subject = await _dbContext.Subjects
+                                              .FirstOrDefaultAsync(s => s.SubjectCode == code &&
+                                                                   (s.Status != null && s.Status.ToLower() == "active"));
+
                 return subject;
             }
             catch (Exception ex)

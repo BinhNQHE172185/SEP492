@@ -8,12 +8,16 @@ import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
 import { AppFloatingConfigurator } from '../../../layout/component/app.floatingconfigurator';
 import { UserApiService } from '../../../apis/userAPIs/user-api.service';
+import { CommonModule } from '@angular/common';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { MessageModule } from 'primeng/message';
 
 declare const google: any;
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator],
+    imports: [ToastModule, MessageModule, CommonModule, ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator],
     template: `
         <app-floating-configurator />
         <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
@@ -46,11 +50,14 @@ declare const google: any;
                 </div>
             </div>
         </div>
-    `
+        <p-toast></p-toast>
+    `, providers: [
+        MessageService,
+    ]
 })
 export class Login implements OnInit, AfterViewInit {
 
-    constructor(private apiService: UserApiService) { }
+    constructor(private apiService: UserApiService, private service: MessageService) { }
 
     email: string = '';
 
@@ -66,6 +73,10 @@ export class Login implements OnInit, AfterViewInit {
             //   this.router.navigate(['/home']);
             window.location.href = ''; //temp
         }
+    }
+
+
+    showErrorViaToast() {
     }
 
     ngAfterViewInit(): void {
@@ -86,18 +97,21 @@ export class Login implements OnInit, AfterViewInit {
     }
 
     handleCredentialResponse(token: any): void {
+        this.service.add({ severity: 'info', summary: 'Đăng nhập', detail: 'Vui lòng chờ.' });
+
         console.log('ID Token:', token.credential);
         this.apiService.login(token.credential).subscribe(
             (response) => {
-                console.log('Login successful:', response);
+                this.service.add({ severity: 'success', summary: 'Đăng nhập thành công', detail: 'Đang chuyển hướng...' });
 
                 localStorage.setItem('userId', response.user.id);
                 localStorage.setItem('token', response.token.toString());
-
-                window.location.href = '';
+                setTimeout(() => {
+                    window.location.href = '';
+                }, 1000);
             },
             (error) => {
-                //   this.messageService.add({ severity: 'error', summary: 'Error', detail: error.error.message });
+                this.service.add({ severity: 'error', summary: 'Đã xảy ra lỗi', detail: error.error.message });
                 console.log(error);
             }
         );

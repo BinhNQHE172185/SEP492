@@ -10,6 +10,7 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { MessageService } from 'primeng/api';
+import { RouterLink, RouterModule } from '@angular/router';
 @Component({
     selector: 'app-list-syllabus',
     standalone: true,
@@ -22,7 +23,9 @@ import { MessageService } from 'primeng/api';
       CardModule,
       TagModule,
       InputGroupModule,
-      ConfirmDialogModule
+      ConfirmDialogModule,
+      RouterLink,
+      RouterModule
     ],
     providers: [ConfirmationService, MessageService],
     templateUrl: './list-syllabus.component.html',

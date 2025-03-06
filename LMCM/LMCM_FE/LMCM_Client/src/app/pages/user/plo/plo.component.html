@@ -1,0 +1,43 @@
+<div class="p-4">
+    <p-card>
+      <h2 class="text-orange-500 font-bold text-lg">Program Learning Outcomes</h2>
+      <p-table [value]="programLearningOutcomes" class="mt-2">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>No</th>
+            <th>PLO Name</th>
+            <th>PLO Description</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-plo>
+          <tr>
+            <td>{{ plo.no }}</td>
+            <td>{{ plo.name }}</td>
+            <td>{{ plo.description }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+    
+    <p-card class="mt-4">
+      <h2 class="text-orange-500 font-bold text-lg">PLO Mapping</h2>
+      <p-table [value]="ploMapping" class="mt-2">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Subject Code</th>
+            <th>PLO 1</th>
+            <th>PLO 2</th>
+            <th>PLO 3</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-mapping>
+          <tr>
+            <td>{{ mapping.subject }}</td>
+            <td style="color: orangered;">{{ mapping.plo1 ? '✔' : '' }}</td>
+            <td style="color: orangered;">{{ mapping.plo2 ? '✔' : '' }}</td>
+            <td style="color: orangered;">{{ mapping.plo3 ? '✔' : '' }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+  </div>

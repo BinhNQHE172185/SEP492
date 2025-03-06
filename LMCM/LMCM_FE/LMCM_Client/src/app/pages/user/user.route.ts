@@ -14,9 +14,10 @@ export default [
     { path: 'staff', component: StaffManageComponent },
     { path: 'profile', component: ProfileComponent },
     { path: 'listsubject', component: ListSubjectsComponent },
-    { path: 'listcurriculumn', component: ListCurriculumnComponent },
-    { path: 'curriculumn', component: CurriculumDetailComponent },
-    { path: 'plo', component: PloComponent },
+    {path:'listcurriculumn',component:ListCurriculumnComponent},
+    {path:'curriculum',component:CurriculumDetailComponent},
+    {path:'curriculum/:code',component:CurriculumDetailComponent},
+    {path:'plo',component:PloComponent},
 
     { path: 'listsyllabus', component: ListSyllabusComponent },
     { path: 'syllabus', component: SyllabusDetailComponent },

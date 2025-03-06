@@ -66,7 +66,7 @@ export class Login implements OnInit, AfterViewInit {
     checked: boolean = false;
 
     ngOnInit(): void {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('data.token');
 
         if (token) {
             // Nếu đã có token, chuyển hướng về trang chủ
@@ -99,13 +99,12 @@ export class Login implements OnInit, AfterViewInit {
     handleCredentialResponse(token: any): void {
         this.service.add({ severity: 'info', summary: 'Đăng nhập', detail: 'Vui lòng chờ.' });
 
-        console.log('ID Token:', token.credential);
         this.apiService.login(token.credential).subscribe(
             (response) => {
                 this.service.add({ severity: 'success', summary: 'Đăng nhập thành công', detail: 'Đang chuyển hướng...' });
-
-                localStorage.setItem('userId', response.user.id);
-                localStorage.setItem('token', response.token.toString());
+                console.log(response)
+                localStorage.setItem('userId', response.data.id);
+                localStorage.setItem('token', response.data.token);
                 setTimeout(() => {
                     window.location.href = '';
                 }, 1000);

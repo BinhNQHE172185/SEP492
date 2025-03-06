@@ -13,8 +13,12 @@ using LMCM_BE.AutoMapper.SubjectProfile;
 using LMCM_BE.Repositories.SyllabusRepository;
 using LMCM_BE.Services.SyllabusService;
 using LMCM_BE.AutoMapper.SyllabusProfiles;
+using LMCM_BE.Repositories.CLORepository;
+using LMCM_BE.Services.CLOServices;
 using LMCM_BE.Repositories.CurriculumRepository;
 using LMCM_BE.Services.CurriculumService;
+using LMCM_BE;
+using LMCM_BE.AutoMapper.CLOProfiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,7 +40,7 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YOUR_SECRET_KEY")),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("F-JaNdRfUserjd89#5*6Xn2r5usErw8x/A?D(G+KbPeShV")),
         ValidateIssuer = false,
         ValidateAudience = false,
         ClockSkew = TimeSpan.Zero
@@ -57,8 +61,10 @@ builder.Services.AddCors(options =>
 //AutoMapper
 builder.Services.AddAutoMapper(typeof(SubjectProfile));
 builder.Services.AddAutoMapper(typeof(SyllabusProfile));
+builder.Services.AddAutoMapper(typeof(CLOProfile));
 
 //DI
+builder.Services.AddScoped<RoleManager<IdentityRole<Guid>>>();
 builder.Services.AddScoped<UserManager<User>>();
 builder.Services.AddScoped<SignInManager<User>>();
 builder.Services.AddScoped<ICurriculumRepository, CurriculumRepository>();
@@ -67,6 +73,8 @@ builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<ISyllabusRepository, SyllabusRepository>();
 builder.Services.AddScoped<ISyllabusService, SyllabusService>();
+builder.Services.AddScoped<ICLORepository, CLOReposiroty>();
+builder.Services.AddScoped<ICLOServices, CLOServices>();
 
 builder.Services.AddAuthorization();
 
@@ -78,9 +86,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await SeedData.Initialize(services);
+}
+
 app.UseCors("AllowAngularApp");
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

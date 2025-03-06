@@ -45,26 +45,58 @@ namespace LMCM_BE.Controllers.UserControllers
 
                 if (user == null)
                 {
-                    user = new User
+                    return Unauthorized(new { success = false, message = "Tài khoản chưa được đăng ký trong hệ thống. Vui lòng liên hệ Trưởng Phòng." });
+                }
+                else if (user.Name.IsNullOrEmpty())
+                {
                     {
-                        UserName = payload.Email,
-                        Name = payload.Name,
-                        Email = payload.Email,
-                        Picture = payload.Picture,
-                    };
-
-                    var result = await _userManager.CreateAsync(user);
-                    if (!result.Succeeded)
-                        return BadRequest(new { success = false, message = "Failed to create user." });
+                        user.Name = payload.Name;
+                        user.Picture = payload.Picture;
+                        await _userManager.UpdateAsync(user);
+                    }
                 }
 
-                // Tạo JWT Token
+                // Nếu tài khoản tồn tại, tạo JWT Token
                 var token = GenerateJwtToken(user);
                 return Ok(new { success = true, token, user });
             }
             catch (Exception ex)
             {
-                return Unauthorized(new { success = false, message = "Invalid Google Token", error = ex.Message });
+                return Unauthorized(new { success = false, message = "Token Google không hợp lệ", error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Tạo tài khoản cho staff
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        [HttpPost("create-account")]
+        public async Task<IActionResult> CreateAccount([FromBody] string email)
+        {
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(email);
+
+                if (user == null)
+                {
+                    var newStaff = new User { UserName = email, Email = email };
+                    var result = await _userManager.CreateAsync(newStaff);
+                    if (result.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(newStaff, "Staff");
+                    }
+                }
+                else
+                {
+                    return Unauthorized(new { success = false, message = "Tài khoản đã được đăng ký trong hệ thống." });
+                }
+
+                return Ok(new { success = true, message = "Thêm thành công." });
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(new { success = false, message = "ĐÃ xảy ra lỗi. Vui lòng kiểm tra lại.", error = ex.Message });
             }
         }
 
@@ -81,7 +113,8 @@ namespace LMCM_BE.Controllers.UserControllers
                 var data = await _userManager.FindByEmailAsync(email);
                 if (data != null)
                 {
-                    var response = new UserProfileResponseDto{
+                    var response = new UserProfileResponseDto
+                    {
                         Email = data.Email,
                         Name = data.Name,
                         Picture = data.Picture

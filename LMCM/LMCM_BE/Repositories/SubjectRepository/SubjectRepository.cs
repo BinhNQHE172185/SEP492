@@ -4,6 +4,7 @@ using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SubjectDtos;
 using LMCM_BE.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
 {
@@ -44,7 +45,7 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
                 PageSize = pageSize
             };
         }
-        public async Task<bool> InsertSubject(SubjectInsertDto subjectDto)
+        public async Task<bool> InsertSubjectAsync(SubjectInsertDto subjectDto)
         {
             if (subjectDto == null) throw new ArgumentNullException(nameof(subjectDto));
 
@@ -95,41 +96,7 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
                 {
                     if (existingSubjects.TryGetValue(subjectDto.SubjectCode, out var existingSubject))
                     {
-                        // Update fields only if values have changed
-                        bool isUpdated = false;
-
-                        if (existingSubject.SubjectName != subjectDto.SubjectName)
-                        {
-                            existingSubject.SubjectName = subjectDto.SubjectName;
-                            isUpdated = true;
-                        }
-                        if (existingSubject.SubjectNameEnglish != subjectDto.EnglishSubjectName)
-                        {
-                            existingSubject.SubjectNameEnglish = subjectDto.EnglishSubjectName;
-                            isUpdated = true;
-                        }
-                        if (existingSubject.IsConstructivist != subjectDto.IsConstructivistSubject)
-                        {
-                            existingSubject.IsConstructivist = subjectDto.IsConstructivistSubject;
-                            isUpdated = true;
-                        }
-                        if (existingSubject.Method != subjectDto.Method)
-                        {
-                            existingSubject.Method = subjectDto.Method;
-                            isUpdated = true;
-                        }
-                        if (existingSubject.Duration != subjectDto.Duration)
-                        {
-                            existingSubject.Duration = subjectDto.Duration;
-                            isUpdated = true;
-                        }
-                        if (existingSubject.Reality != subjectDto.Reality)
-                        {
-                            existingSubject.Reality = subjectDto.Reality;
-                            isUpdated = true;
-                        }
-
-                        if (isUpdated)
+                        if (await UpdateSubjectIfChangedAsync(existingSubject, subjectDto))
                         {
                             existingSubject.UpdatedAt = DateTime.UtcNow;
                             updatedSubjects.Add(existingSubject);
@@ -167,14 +134,70 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
 
                 return true;
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException dbEx)
             {
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }
         }
+        public async Task<bool> UpdateSubjectIfChangedAsync(Subject existingSubject, SubjectInsertDto subjectDto)
+        {
+            bool isUpdated = false;
+
+            if (existingSubject.SubjectName != subjectDto.SubjectName)
+            {
+                existingSubject.SubjectName = subjectDto.SubjectName;
+                isUpdated = true;
+            }
+            if (existingSubject.SubjectNameEnglish != subjectDto.EnglishSubjectName)
+            {
+                existingSubject.SubjectNameEnglish = subjectDto.EnglishSubjectName;
+                isUpdated = true;
+            }
+            if (existingSubject.IsConstructivist != subjectDto.IsConstructivistSubject)
+            {
+                existingSubject.IsConstructivist = subjectDto.IsConstructivistSubject;
+                isUpdated = true;
+            }
+            if (existingSubject.Method != subjectDto.Method)
+            {
+                existingSubject.Method = subjectDto.Method;
+                isUpdated = true;
+            }
+            if (existingSubject.Duration != subjectDto.Duration)
+            {
+                existingSubject.Duration = subjectDto.Duration;
+                isUpdated = true;
+            }
+            if (existingSubject.Reality != subjectDto.Reality)
+            {
+                existingSubject.Reality = subjectDto.Reality;
+                isUpdated = true;
+            }
+
+            return await Task.FromResult(isUpdated);
+        }
+        public async Task<Subject> GetSubjectByCodeAsync(string code)
+        {
+            if (string.IsNullOrEmpty(code))
+                throw new ArgumentException("Subject code cannot be empty.", nameof(code));
+
+            try
+            {
+                var subject = await _dbContext.Subjects
+                                              .FirstOrDefaultAsync(s => s.SubjectCode == code &&
+                                                                   (s.Status != null && s.Status.ToLower() == "active"));
+
+                return subject;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
     }
 }

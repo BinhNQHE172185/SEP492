@@ -20,14 +20,18 @@ namespace LMCM_BE.Services.SubjectService
             return data;
         }
 
-        public async Task<bool> InsertSubject(SubjectInsertDto subjectDto)
+        public async Task<bool> InsertSubjectAsync(SubjectInsertDto subjectDto)
         {
-            return await _subjectRepository.InsertSubject(subjectDto);
+            return await _subjectRepository.InsertSubjectAsync(subjectDto);
         }
         public async Task<bool> ImportSubjectsAsync(List<SubjectInsertDto> subjects)
         {
             return await _subjectRepository.ImportSubjectsAsync(subjects);
         }
 
+        public async Task<Subject> GetSubjectByCodeAsync(string subjectCode)
+        {
+            return await _subjectRepository.GetSubjectByCodeAsync(subjectCode);
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SubjectDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
+using LMCM_BE.Models;
 using LMCM_BE.Repositories.SubjectRepository.SubjectRepository;
 using LMCM_BE.Repositories.SyllabusRepository;
 
@@ -18,6 +19,11 @@ namespace LMCM_BE.Services.SyllabusService
         {
             var data = await _syllabusRepository.GetSyllabusesAsync(searchKey, pageIndex, pageSize);
             return data;
+        }
+
+        public async Task<bool> ImportSyllabusAsync(SyllabusInsertDto syllabus)
+        {
+            return await _syllabusRepository.ImportSyllabusAsync(syllabus);
         }
     }
 }

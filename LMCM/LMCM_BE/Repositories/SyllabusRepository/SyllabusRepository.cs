@@ -2,6 +2,7 @@
 using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
+using LMCM_BE.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.SyllabusRepository
@@ -47,7 +48,86 @@ namespace LMCM_BE.Repositories.SyllabusRepository
                 PageSize = pageSize
             };
         }
+        public async Task<bool> ImportSyllabusAsync(SyllabusInsertDto syllabus)
+        {
+            if (syllabus == null)
+                throw new ArgumentNullException(nameof(syllabus));
 
+            try
+            {
+                var existingSyllabus = await _dbContext.Syllabus
+                    .SingleOrDefaultAsync(s => s.CourseCode == syllabus.CourseCode);
 
+                if (existingSyllabus != null)
+                {
+                    // Update existing syllabus
+                    return await UpdateSyllabusAsync(existingSyllabus, syllabus);
+                }
+                else
+                {
+                    // Insert new syllabus
+                    var newSyllabus = new Syllabus
+                    {
+                        SyllabusId = Guid.NewGuid(),
+                        SubjectId = syllabus.SubjectId,
+                        ProgramName = syllabus.ProgramName,
+                        CourseCode = syllabus.CourseCode,
+                        CourseName = syllabus.CourseName,
+                        CourseNameEnglish = syllabus.CourseNameEnglish,
+                        LearningTeachingMethod = syllabus.LearningTeachingMethod,
+                        NoOfCredits = syllabus.NoOfCredits,
+                        DegreeLevel = syllabus.DegreeLevel,
+                        TimeAllocation = syllabus.TimeAllocation,
+                        PreRequisite = syllabus.PreRequisite,
+                        Description = syllabus.Description,
+                        StudentTask = syllabus.StudentTask,
+                        Tools = syllabus.Tools,
+                        Note = syllabus.Note,
+                        MinGpaToPass = syllabus.MinGpaToPass,
+                        ScoringScale = syllabus.ScoringScale,
+                        ApprovedDate = syllabus.ApprovedDate,
+                        Status = "active",
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow
+                    };
+
+                    await _dbContext.Syllabus.AddAsync(newSyllabus);
+                    await _dbContext.SaveChangesAsync();
+                }
+
+                return true;
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateSyllabusAsync(Syllabus existingSyllabus, SyllabusInsertDto syllabusDto)
+        {
+            existingSyllabus.ProgramName = syllabusDto.ProgramName;
+            existingSyllabus.CourseName = syllabusDto.CourseName;
+            existingSyllabus.CourseNameEnglish = syllabusDto.CourseNameEnglish;
+            existingSyllabus.LearningTeachingMethod = syllabusDto.LearningTeachingMethod;
+            existingSyllabus.NoOfCredits = syllabusDto.NoOfCredits;
+            existingSyllabus.DegreeLevel = syllabusDto.DegreeLevel;
+            existingSyllabus.TimeAllocation = syllabusDto.TimeAllocation;
+            existingSyllabus.PreRequisite = syllabusDto.PreRequisite;
+            existingSyllabus.Description = syllabusDto.Description;
+            existingSyllabus.StudentTask = syllabusDto.StudentTask;
+            existingSyllabus.Tools = syllabusDto.Tools;
+            existingSyllabus.Note = syllabusDto.Note;
+            existingSyllabus.MinGpaToPass = syllabusDto.MinGpaToPass;
+            existingSyllabus.ScoringScale = syllabusDto.ScoringScale;
+            existingSyllabus.ApprovedDate = syllabusDto.ApprovedDate;
+            existingSyllabus.UpdatedAt = DateTime.UtcNow;
+
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
     }
 }

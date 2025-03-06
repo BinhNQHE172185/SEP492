@@ -74,13 +74,23 @@ namespace LMCM_BE.Controllers.SubjectControllers
                         int rowCount = worksheet.Dimension.Rows;
 
                         List<SubjectInsertDto> subjects = new List<SubjectInsertDto>();
+                        HashSet<string> subjectCodes = new HashSet<string>();
 
                         for (int row = 2; row <= rowCount; row++)
                         {
+                            string subjectCode = worksheet.Cells[row, 1].Text;
+
+                            Console.WriteLine(subjectCode);
+                            if (subjectCodes.Contains(subjectCode))
+                            {
+                                return BadRequest(new { message = $"Duplicate subject code found in the Excel file: {subjectCode} at row {row}" });
+                            }
+                            subjectCodes.Add(subjectCode);
+
                             var subject = new SubjectInsertDto
                             {
                                 SubjectId = Guid.NewGuid(),
-                                SubjectCode = worksheet.Cells[row, 1].Text,
+                                SubjectCode = subjectCode,
                                 SubjectName = worksheet.Cells[row, 2].Text,
                                 EnglishSubjectName = worksheet.Cells[row, 3].Text,
                                 PreviousSubjectCode = worksheet.Cells[row, 4].Text,

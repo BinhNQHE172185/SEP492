@@ -95,41 +95,7 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
                 {
                     if (existingSubjects.TryGetValue(subjectDto.SubjectCode, out var existingSubject))
                     {
-                        // Update fields only if values have changed
-                        bool isUpdated = false;
-
-                        if (existingSubject.SubjectName != subjectDto.SubjectName)
-                        {
-                            existingSubject.SubjectName = subjectDto.SubjectName;
-                            isUpdated = true;
-                        }
-                        if (existingSubject.SubjectNameEnglish != subjectDto.EnglishSubjectName)
-                        {
-                            existingSubject.SubjectNameEnglish = subjectDto.EnglishSubjectName;
-                            isUpdated = true;
-                        }
-                        if (existingSubject.IsConstructivist != subjectDto.IsConstructivistSubject)
-                        {
-                            existingSubject.IsConstructivist = subjectDto.IsConstructivistSubject;
-                            isUpdated = true;
-                        }
-                        if (existingSubject.Method != subjectDto.Method)
-                        {
-                            existingSubject.Method = subjectDto.Method;
-                            isUpdated = true;
-                        }
-                        if (existingSubject.Duration != subjectDto.Duration)
-                        {
-                            existingSubject.Duration = subjectDto.Duration;
-                            isUpdated = true;
-                        }
-                        if (existingSubject.Reality != subjectDto.Reality)
-                        {
-                            existingSubject.Reality = subjectDto.Reality;
-                            isUpdated = true;
-                        }
-
-                        if (isUpdated)
+                        if (await UpdateSubjectIfChangedAsync(existingSubject, subjectDto))
                         {
                             existingSubject.UpdatedAt = DateTime.UtcNow;
                             updatedSubjects.Add(existingSubject);
@@ -167,14 +133,67 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
 
                 return true;
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException dbEx)
             {
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }
         }
+        public async Task<bool> UpdateSubjectIfChangedAsync(Subject existingSubject, SubjectInsertDto subjectDto)
+        {
+            bool isUpdated = false;
+
+            if (existingSubject.SubjectName != subjectDto.SubjectName)
+            {
+                existingSubject.SubjectName = subjectDto.SubjectName;
+                isUpdated = true;
+            }
+            if (existingSubject.SubjectNameEnglish != subjectDto.EnglishSubjectName)
+            {
+                existingSubject.SubjectNameEnglish = subjectDto.EnglishSubjectName;
+                isUpdated = true;
+            }
+            if (existingSubject.IsConstructivist != subjectDto.IsConstructivistSubject)
+            {
+                existingSubject.IsConstructivist = subjectDto.IsConstructivistSubject;
+                isUpdated = true;
+            }
+            if (existingSubject.Method != subjectDto.Method)
+            {
+                existingSubject.Method = subjectDto.Method;
+                isUpdated = true;
+            }
+            if (existingSubject.Duration != subjectDto.Duration)
+            {
+                existingSubject.Duration = subjectDto.Duration;
+                isUpdated = true;
+            }
+            if (existingSubject.Reality != subjectDto.Reality)
+            {
+                existingSubject.Reality = subjectDto.Reality;
+                isUpdated = true;
+            }
+
+            return await Task.FromResult(isUpdated);
+        }
+        public async Task<Subject> GetSubjectByCode(Guid subjectId)
+        {
+            if (subjectId == Guid.Empty)
+                throw new ArgumentException("Subject ID cannot be empty.", nameof(subjectId));
+
+            try
+            {
+                var subject = await _dbContext.Subjects.FindAsync(subjectId);
+                return subject;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
     }
 }

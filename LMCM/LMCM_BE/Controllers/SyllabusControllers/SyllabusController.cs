@@ -1,8 +1,10 @@
 ﻿using LMCM_BE.DTOs.CLODtos;
+using LMCM_BE.DTOs.ScheduleDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
 using LMCM_BE.Models;
-using LMCM_BE.Services.CLOServices;
+using LMCM_BE.Services.CLOService;
+using LMCM_BE.Services.ScheduleService;
 using LMCM_BE.Services.SubjectService;
 using LMCM_BE.Services.SyllabusService;
 using Microsoft.AspNetCore.Mvc;
@@ -16,13 +18,15 @@ namespace LMCM_BE.Controllers.SyllabusControllers
     {
         private readonly ISyllabusService _syllabusService;
         private readonly ISubjectService _subjectService;
-        private readonly ICLOServices _cloService;
+        private readonly ICLOService _cloService;
+        private readonly IScheduleService _scheduleService;
 
-        public SyllabusController(ISyllabusService syllabusService, ISubjectService subjectService, ICLOServices cloService)
+        public SyllabusController(ISyllabusService syllabusService, ISubjectService subjectService, ICLOService cloService, IScheduleService scheduleService)
         {
             _syllabusService = syllabusService;
             _subjectService = subjectService;
             _cloService = cloService;
+            _scheduleService = scheduleService;
         }
 
         [HttpPost("getSyllabusesList")]
@@ -62,7 +66,6 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             }
         }
 
-
         [HttpPost("importSyllabus")]
         public async Task<IActionResult> ImportSyllabusFromExcel(IFormFile file)
         {
@@ -87,17 +90,28 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                             return BadRequest(new { message = $"Tệp Excel bị thiếu các trang sau: {string.Join(", ", missingSheets)}." });
                         }
 
+                        // Import Syllabus
                         Syllabus syllabus = await ImportSyllabusSheet(package.Workbook.Worksheets["Syllabus"]);
-                        if (syllabus != null)
+                        if (syllabus == null)
                         {
-                            var isCLOSuccess = await ImportCLOSheet(package.Workbook.Worksheets["CLO"], syllabus);
+                            return BadRequest(new { message = "Nhập giáo trình thất bại." });
                         }
-                        else
-                        {
-                            return BadRequest(new { message = "Nhập vào hệ thống thành công." });
-                        }
-                        return Ok(new { message = "Nhập vào hệ thống thất bại." });
 
+                        // Import CLOs
+                        var isCLOSuccess = await ImportCLOSheet(package.Workbook.Worksheets["CLO"], syllabus);
+                        if (!isCLOSuccess)
+                        {
+                            return BadRequest(new { message = "Nhập CLO thất bại." });
+                        }
+
+                        // Import Schedule
+                        var isScheduleSuccess = await ImportScheduleSheet(package.Workbook.Worksheets["Schedule"], syllabus);
+                        if (!isScheduleSuccess)
+                        {
+                            return BadRequest(new { message = "Nhập lịch học thất bại." });
+                        }
+
+                        return Ok(new { message = "Nhập vào hệ thống thành công." });
                     }
                 }
             }
@@ -106,6 +120,58 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+
+        private async Task<bool> ImportScheduleSheet(ExcelWorksheet worksheet, Syllabus syllabus)
+        {
+            // Validate expected headers
+            string[] expectedHeaders = { "Sess.", "Leaning-Teaching Method", "Content", "CLO", "ITU", "Student's materials", "Student's task", "Lecturer's Materials", "Lecturer's task", "Student's materials link", "Lecturer's Materials link" };
+
+            for (int col = 1; col <= expectedHeaders.Length; col++)
+            {
+                if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
+                {
+                    throw new Exception($"Định dạng Excel trang Schedule không hợp lệ tại cột {col}. Vui lòng sử dụng mẫu đúng.");
+                }
+            }
+
+            var scheduleList = new List<ScheduleInsertDto>();
+            int rowCount = worksheet.Dimension.Rows;
+
+            for (int row = 2; row <= rowCount; row++)
+            {
+                var scheduleData = new ScheduleInsertDto
+                {
+                    SyllabusId = syllabus.SyllabusId,
+                    ScheduleNo = int.TryParse(worksheet.Cells[row, 1].Text, out int session) ? session : 0,
+                    Method = worksheet.Cells[row, 2].Text.Trim(),
+                    Content = worksheet.Cells[row, 3].Text.Trim(),
+                    Clos = worksheet.Cells[row, 4].Text.Trim(),
+                    Itu = worksheet.Cells[row, 5].Text.Trim(),
+                    StudentMaterial = worksheet.Cells[row, 6].Text.Trim(),
+                    StudentTask = worksheet.Cells[row, 7].Text.Trim(),
+                    LecturerMaterial = worksheet.Cells[row, 8].Text.Trim(),
+                    LecturerTask = worksheet.Cells[row, 9].Text.Trim(),
+                    StudentMaterialUrl = worksheet.Cells[row, 10].Text.Trim(),
+                    LecturerMaterialUrl = worksheet.Cells[row, 11].Text.Trim()
+                };
+
+                scheduleList.Add(scheduleData);
+            }
+
+            if (!scheduleList.Any())
+            {
+                throw new Exception("Không tìm thấy dữ liệu lịch trình trong trang.");
+            }
+
+            // Remove old schedule if syllabus has a previous version
+            if (syllabus.PreviousVersionId != null)
+            {
+                await _scheduleService.DeleteSchedulesBySyllabusAsync((Guid)syllabus.PreviousVersionId);
+            }
+
+            return await _scheduleService.ImportSchedulesAsync(scheduleList);
+        }
+
 
 
         private async Task<Syllabus> ImportSyllabusSheet(ExcelWorksheet worksheet)
@@ -117,7 +183,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             {
                 if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
                 {
-                    throw new Exception("Định dạng Excel không hợp lệ. Vui lòng sử dụng mẫu đúng.");
+                    throw new Exception($"Định dạng Excel trang Syllabus không hợp lệ tại cột {col}. Vui lòng sử dụng mẫu đúng.");
                 }
             }
 
@@ -164,7 +230,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             {
                 if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
                 {
-                    throw new Exception("Định dạng Excel không hợp lệ. Vui lòng sử dụng mẫu đúng.");
+                    throw new Exception($"Định dạng Excel trang CLO không hợp lệ tại cột {col}. Vui lòng sử dụng mẫu đúng.");
                 }
             }
 

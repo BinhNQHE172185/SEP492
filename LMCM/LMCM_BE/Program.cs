@@ -13,6 +13,8 @@ using LMCM_BE.AutoMapper.SubjectProfile;
 using LMCM_BE.Repositories.SyllabusRepository;
 using LMCM_BE.Services.SyllabusService;
 using LMCM_BE.AutoMapper.SyllabusProfiles;
+using LMCM_BE.Repositories.CLORepository;
+using LMCM_BE.Services.CLOServices;
 using LMCM_BE.Repositories.CurriculumRepository;
 using LMCM_BE.Services.CurriculumService;
 using LMCM_BE;
@@ -70,6 +72,8 @@ builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<ISyllabusRepository, SyllabusRepository>();
 builder.Services.AddScoped<ISyllabusService, SyllabusService>();
+builder.Services.AddScoped<ICLORepository, CLOReposiroty>();
+builder.Services.AddScoped<ICLOServices, CLOServices>();
 
 builder.Services.AddAuthorization();
 

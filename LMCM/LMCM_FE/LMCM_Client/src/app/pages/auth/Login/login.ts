@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { MessageModule } from 'primeng/message';
+import { environment } from '../../../../environments/environment';
 
 declare const google: any;
 @Component({
@@ -83,7 +84,7 @@ export class Login implements OnInit, AfterViewInit {
         if (google && google.accounts) {
             google.accounts.id.initialize({
                 hosted_domain: 'fpt.edu.vn',
-                client_id: '433474498165-m4uv6c6h9hc3ss9vk74d9v7u8t57irr5.apps.googleusercontent.com',
+                client_id: environment.google_client_id,
                 callback: this.handleCredentialResponse.bind(this),
             });
 

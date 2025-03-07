@@ -28,7 +28,7 @@ namespace LMCM_BE
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
             if (adminUser == null)
             {
-                var newAdmin = new User { UserName = adminEmail, Email = adminEmail, Status = "1" };
+                var newAdmin = new User { UserName = adminEmail, Email = adminEmail, Status = "2" };
                 var result = await userManager.CreateAsync(newAdmin);
                 if (result.Succeeded)
                 {

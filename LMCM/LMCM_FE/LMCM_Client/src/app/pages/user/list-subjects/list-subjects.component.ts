@@ -22,7 +22,7 @@ interface Subject {
 
 interface PagingRequest {
   searchKey?: string;
-  pageNumber: number;
+  pageIndex: number;
   pageSize: number;
 }
 
@@ -36,41 +36,49 @@ interface PagingRequest {
   styleUrls: ['./list-subjects.component.scss'],
 })
 export class ListSubjectsComponent implements OnInit {
-  
   subjects: Subject[] = [];
   totalCount = 0;
   pageNumber = 1;
   pageSize = 10;
   searchKey = '';
 
-  constructor(private subjectService: SubjectApiService) {}
+  constructor(private subjectService: SubjectApiService) { }
 
   ngOnInit(): void {
     this.loadSubjects();
   }
 
-  loadSubjects(): void {
+  loadSubjects(event?: any) {
+    if (event) {
+      this.pageNumber = Math.floor(event.first / event.rows) + 1;
+      this.pageSize = event.rows;
+    }
+
     const request: PagingRequest = {
+      pageIndex: this.pageNumber,
+      pageSize: this.pageSize,
       searchKey: this.searchKey,
-      pageNumber: this.pageNumber,
-      pageSize: this.pageSize
     };
-
-    this.subjectService.getSubjects(request).subscribe((result) => {
-      this.subjects = result.items;
-      this.totalCount = result.totalCount;
-    });
+    this.subjectService.getSubjects(request).subscribe(
+      (response) => {
+        this.subjects = response.items;
+        this.totalCount = response.totalCount;
+      },
+      (error) => {
+        console.error("Lỗi khi tải danh sách môn học:", error);
+      }
+    );
   }
 
-  onPageChange(newPage: number): void {
-    this.pageNumber = newPage;
-    this.loadSubjects();
-  }
+  // onPageChange(newPage: number): void {
+  //   this.pageNumber = newPage;
+  //   this.loadSubjects();
+  // }
 
-  onSearch(): void {
-    this.pageNumber = 1;
-    this.loadSubjects();
-  }
+  // onSearch(): void {
+  //   this.pageNumber = 1;
+  //   this.loadSubjects();
+  // }
 
   getTagValue(value: boolean): 'Yes' | 'No' {
     return value ? 'Yes' : 'No';

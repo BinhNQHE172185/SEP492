@@ -17,7 +17,7 @@ namespace LMCM_BE.Repositories.CurriculumsSubjectRepository
         public async Task<PagedResult<CurriculumsSubject>> GetCurriculumsSubjectsAsync(Guid curriculumId, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.CurriculumsSubjects
-                .Where(cs => cs.CurriculumId == curriculumId && cs.Status != "Deleted")
+                .Where(cs => cs.CurriculumId == curriculumId && cs.Status != "Inactive")
                 .Include(cs => cs.Subject)
                 .AsQueryable();
 
@@ -38,7 +38,7 @@ namespace LMCM_BE.Repositories.CurriculumsSubjectRepository
         public async Task<List<CurriculumsSubject>> GetAllCurriculumsSubjectsAsync(Guid curriculumId)
         {
             return await _dbContext.CurriculumsSubjects
-                .Where(cs => cs.CurriculumId == curriculumId && cs.Status != "Deleted")
+                .Where(cs => cs.CurriculumId == curriculumId && cs.Status != "Inactive")
                 .Include(cs => cs.Subject)
                 .ToListAsync();
         }

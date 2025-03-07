@@ -1,4 +1,5 @@
 ﻿using LMCM_BE.DTOs.CurriculumDtos;
+using LMCM_BE.DTOs.CurriculumsSubjectDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Services.CurriculumService;
@@ -59,28 +60,90 @@ namespace LMCM_BE.Controllers.CurriculumControllers
                         ExcelWorksheet ploSheet = package.Workbook.Worksheets["PLO"];
                         ExcelWorksheet ploSubjectSheet = package.Workbook.Worksheets["PLO Mappings"];
 
-                        // Retrieve Curriculum Subjects
-                        var curriculumSubjects = new List<CurriculumsSubject>();
-                        var subjectCodes = new List<string>();
-                        int row = 2; //  row 1 contains headers
-                        while (!string.IsNullOrWhiteSpace(curriculumSubjectSheet.Cells[row, 1].Text))
+                        // Expected headers for each worksheet
+                        var expectedHeaders = new Dictionary<string, List<(string Header, string Cell)>>
                         {
-                            var subjectCode = curriculumSubjectSheet.Cells[row, 1].Text;
-                            subjectCodes.Add(subjectCode);
-                            row++;
+                            { "Curriculum Subject", new List<(string, string)>
+                                {
+                                    ("SubjectCode", "A1"),
+                                    ("SubjectName", "B1"),
+                                    ("English SubjectName", "C1"),
+                                    ("TermNo", "D1"),
+                                    ("Credits", "E1"),
+                                    ("Options", "F1")
+                                }
+                            },
+                            { "Curriculum", new List<(string, string)>
+                                {
+                                    ("No", "A1"),
+                                    ("Title", "B1"),
+                                    ("Details", "C1"),
+                                    ("Curriculum Code", "B2"),
+                                    ("Curriculum Name", "B3"),
+                                    ("English Curriculum Name", "B4"),
+                                    ("Curriculum Description", "B5"),
+                                    ("Vocational Code", "B6"),
+                                    ("Vocational Name", "B7"),
+                                    ("English Vocational Name", "B8"),
+                                    ("Decision No.", "B9"),
+                                    ("Approved date", "B10")
+                                }
+                            },
+                            { "PLO", new List<(string, string)>
+                                {
+                                    ("No", "A1"),
+                                    ("PLO Name", "B1"),
+                                    ("PLO Description", "C1")
+                                }
+                            },
+                            { "PLO Mappings", new List<(string, string)>
+                                {
+                                    ("Subject Code", "A2") 
+                                }
+                            }
+                        };
+
+                        // Function to validate headers with expected cell locations
+                        bool ValidateHeaders(ExcelWorksheet sheet, List<(string Header, string Cell)> expectedHeaders)
+                        {
+                            foreach (var (expectedHeader, cellAddress) in expectedHeaders)
+                            {
+                                // Get the actual header text from the specified cell
+                                string actualHeader = sheet.Cells[cellAddress].Text.Trim();
+
+                                // Validate against the expected header
+                                if (!expectedHeader.Equals(actualHeader, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    return false; // Header does not match
+                                }
+                            }
+                            return true; // All headers are correct
                         }
 
-                        // Validate Subjects in Database
-                        var existingSubjects = await _subjectService.GetActiveSubjectsByCodesAsync(subjectCodes);
-                        var missingSubjects = subjectCodes.Except(existingSubjects.Select(s => s.SubjectCode)).ToList();
+                        // Validate headers for each sheet
+                        var invalidSheets = new List<string>();
 
-                        if (missingSubjects.Any())
+                        foreach (var sheetName in expectedHeaders.Keys)
                         {
-                            return BadRequest(new { message = "The following subjects are missing or inactive:", missingSubjects });
+                            var worksheet = package.Workbook.Worksheets[sheetName];
+
+                            if (worksheet == null)
+                            {
+                                invalidSheets.Add(sheetName); // Sheet is missing
+                                continue;
+                            }
+
+                            if (!ValidateHeaders(worksheet, expectedHeaders[sheetName]))
+                            {
+                                invalidSheets.Add(sheetName); // Headers are incorrect
+                            }
                         }
 
-                        if (curriculumSheet == null || ploSheet == null || curriculumSubjectSheet == null)
-                            return BadRequest(new { message = "Invalid Excel file format." });
+
+                        if (invalidSheets.Any())
+                        {
+                            return BadRequest(new { message = "Invalid headers detected in the following sheets:", invalidSheets });
+                        }
 
                         // Read Curriculum data
                         var curriculum = new Curriculum
@@ -99,14 +162,68 @@ namespace LMCM_BE.Controllers.CurriculumControllers
                             CreatedAt = DateTime.UtcNow,
                             UpdatedAt = DateTime.UtcNow,
                             Plos = new List<Plo>(),
+                            CurriculumsSubjects = new List<CurriculumsSubject>()
                         };
 
+                        // Retrieve Curriculum Subjects
+                        var tempCurriculumsSubjects = new List<TempCurriculumsSubject>();
+                        var subjectCodes = new List<string>();
+
+                        int row = 2; // Start from row 2 (row 1 contains headers)
+                        while (!string.IsNullOrWhiteSpace(curriculumSubjectSheet.Cells[row, 1].Text))
+                        {
+                            var tempCurriculumsSubject = new TempCurriculumsSubject
+                            {
+                                SubjectCode = curriculumSubjectSheet.Cells[row, 1].Text,
+                                TermNo = int.TryParse(curriculumSubjectSheet.Cells[row, 4].Text, out int termNo) ? termNo : (int?)null,
+                                Credit = int.TryParse(curriculumSubjectSheet.Cells[row, 5].Text, out int credit) ? credit : (int?)null,
+                                Options = int.TryParse(curriculumSubjectSheet.Cells[row, 6].Text, out int options) ? options : (int?)null,
+                            };
+
+                            subjectCodes.Add(tempCurriculumsSubject.SubjectCode);
+                            tempCurriculumsSubjects.Add(tempCurriculumsSubject);
+                            row++;
+                        }
+
+                        // Validate Subjects in Database
+                        var existingSubjects = await _subjectService.GetActiveSubjectsByCodesAsync(subjectCodes);
+                        var missingSubjects = subjectCodes.Except(existingSubjects.Select(s => s.SubjectCode)).ToList();
+
+                        if (missingSubjects.Any())
+                        {
+                            return BadRequest(new { message = "The following subjects are missing or inactive:", missingSubjects });
+                        }
+
+                        if (curriculumSheet == null || ploSheet == null || curriculumSubjectSheet == null)
+                            return BadRequest(new { message = "Invalid Excel file format." });
+
+                        // Step 4: Convert Temporary Subjects to CurriculumsSubjects
+                        var curriculumsSubjects = new List<CurriculumsSubject>();
+                        foreach (var tempSubject in tempCurriculumsSubjects)
+                        {
+                            var existingSubject = existingSubjects.FirstOrDefault(s => s.SubjectCode == tempSubject.SubjectCode);
+                            if (existingSubject == null)
+                                continue; // Skip if not found in DB
+
+                            curriculumsSubjects.Add(new CurriculumsSubject
+                            {
+                                CurriculumId = curriculum.CurriculumId,
+                                SubjectId = existingSubject.SubjectId,
+                                TermNo = tempSubject.TermNo,
+                                Credit = tempSubject.Credit,
+                                Options = tempSubject.Options,
+                                Status = "Active",
+                                CreatedAt = DateTime.UtcNow,
+                                UpdatedAt = DateTime.UtcNow
+                            });
+                        }
+
                         // Read PLO data
-                        var ploDictionary = new Dictionary<string, Plo>();
-                        int ploRow= 2; // first row is headers
+                        var plos = new List<Plo>();
+                        int ploRow = 2; // first row is headers
                         while (!string.IsNullOrWhiteSpace(ploSheet.Cells[ploRow, 2].Text)) // Check if PLO Name exists
                         {
-                            var plo = new Plo
+                            plos.Add(new Plo
                             {
                                 PloId = Guid.NewGuid(),
                                 CurriculumId = curriculum.CurriculumId,
@@ -116,10 +233,7 @@ namespace LMCM_BE.Controllers.CurriculumControllers
                                 CreatedAt = DateTime.UtcNow,
                                 UpdatedAt = DateTime.UtcNow,
                                 PloSubjects = new List<PloSubject>(),
-                            };
-
-                            curriculum.Plos.Add(plo);
-                            ploDictionary[plo.PloName] = plo;
+                            });
                             ploRow++;
                         }
 
@@ -127,7 +241,7 @@ namespace LMCM_BE.Controllers.CurriculumControllers
                         var ploSubjectMappings = new List<PloSubject>();
                         int columnStart = 2; // PLOs start from column B
                         int subjectRowStart = 3; // Subjects start from row 3
-                        
+
                         for (int subjectRow = subjectRowStart; subjectRow <= ploSubjectSheet.Dimension.End.Row; subjectRow++)
                         {
                             var subjectCode = ploSubjectSheet.Cells[subjectRow, 1].Text;
@@ -137,19 +251,20 @@ namespace LMCM_BE.Controllers.CurriculumControllers
                                 continue;
 
                             // Get subject from curriculum subjects
-                            var subject = curriculum.CurriculumsSubjects.FirstOrDefault(s => s.Subject.SubjectCode == subjectCode);
+                            var subject = existingSubjects.FirstOrDefault(s => s.SubjectCode == subjectCode);
                             if (subject == null)
                                 continue;
 
                             for (int ploCol = columnStart; ploCol <= ploSubjectSheet.Dimension.End.Column; ploCol++)
                             {
                                 var ploName = ploSubjectSheet.Cells[2, ploCol].Text; // PLO name from row 2
-                                if (ploDictionary.TryGetValue(ploName, out var plo) && ploSubjectSheet.Cells[subjectRow, ploCol].Text == "ü")
+                                var plo = plos.FirstOrDefault(p => p.PloName == ploName);
+                                if (plo != null && ploSubjectSheet.Cells[subjectRow, ploCol].Text == "ü")
                                 {
                                     ploSubjectMappings.Add(new PloSubject
                                     {
                                         PloId = plo.PloId,
-                                        SubjectId = subject.Subject.SubjectId,
+                                        SubjectId = subject.SubjectId,
                                         Status = "Active",
                                         CreatedAt = DateTime.UtcNow,
                                         UpdatedAt = DateTime.UtcNow
@@ -157,7 +272,20 @@ namespace LMCM_BE.Controllers.CurriculumControllers
                                 }
                             }
                         }
-                        
+                        // Assign to curriculum
+
+                        // Assign curriculum subjects
+                        curriculum.CurriculumsSubjects = curriculumsSubjects;
+
+                        // Assign PLOs to the curriculum
+                        curriculum.Plos = plos;
+
+                        // Assign PLO-Subject mappings to each PLO
+                        foreach (var plo in curriculum.Plos)
+                        {
+                            plo.PloSubjects = ploSubjectMappings.Where(ps => ps.PloId == plo.PloId).ToList();
+                        }
+
                         // Save curriculum and mappings
                         var isSuccess = await _curriculumService.ImportCurriculumAsync(curriculum);
 

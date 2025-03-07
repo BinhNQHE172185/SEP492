@@ -17,7 +17,7 @@ namespace LMCM_BE.Repositories.PloSubjectRepository
         public async Task<PagedResult<PloSubject>> GetPloSubjectsAsync(Guid ploId, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.PloSubjects
-                .Where(ps => ps.PloId == ploId && ps.Status != "Deleted")
+                .Where(ps => ps.PloId == ploId && ps.Status != "Inactive")
                 .Include(ps => ps.Subject)
                 .AsQueryable();
 
@@ -38,7 +38,7 @@ namespace LMCM_BE.Repositories.PloSubjectRepository
         public async Task<List<PloSubject>> GetAllPloSubjectsAsync(Guid ploId)
         {
             return await _dbContext.PloSubjects
-                .Where(ps => ps.PloId == ploId && ps.Status != "Deleted")
+                .Where(ps => ps.PloId == ploId && ps.Status != "Inactive")
                 .Include(ps => ps.Subject)
                 .ToListAsync();
         }
@@ -63,14 +63,14 @@ namespace LMCM_BE.Repositories.PloSubjectRepository
         public async Task<bool> DeletePloSubjectsAsync(List<Guid> ploIds)
         {
             var ploSubjects = await _dbContext.PloSubjects
-                .Where(ps => ploIds.Contains(ps.PloId) && ps.Status != "Deleted")
+                .Where(ps => ploIds.Contains(ps.PloId) && ps.Status != "Inactive")
                 .ToListAsync();
 
             if (!ploSubjects.Any()) return false;
 
             foreach (var ploSubject in ploSubjects)
             {
-                ploSubject.Status = "Deleted";
+                ploSubject.Status = "Inactive";
                 ploSubject.UpdatedAt = DateTime.UtcNow;
             }
 

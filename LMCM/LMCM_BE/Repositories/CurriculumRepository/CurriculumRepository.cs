@@ -81,7 +81,7 @@ namespace LMCM_BE.Repositories.CurriculumRepository
                 {
                     // Step 2: Delete related data
                     // Soft delete existing curriculum by updating its status
-                    existingCurriculum.Status = "Deleted";
+                    existingCurriculum.Status = "Inactive";
                     existingCurriculum.UpdatedAt = DateTime.UtcNow;
                     _dbContext.Curriculums.Update(existingCurriculum);
 

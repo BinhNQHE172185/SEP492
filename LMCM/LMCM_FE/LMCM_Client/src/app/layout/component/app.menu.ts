@@ -39,22 +39,22 @@ export class AppMenu {
             {
                 label: 'Quản lý học liệu',
                 icon: 'pi pi-fw pi-briefcase',
-                routerLink: ['/user'],
+                routerLink: ['/learning'],
                 items: [
                     {
                         label: 'Quản lý bộ môn',
                         icon: 'pi pi-fw pi-book',
-                        routerLink: ['user/listsubject']
+                        routerLink: ['learning/listsubject']
                     },
                     {
                         label: 'Quản lý chương trình',
                         icon: 'pi pi-fw pi-book',
-                        routerLink: ['user/listcurriculumn']
+                        routerLink: ['learning/listcurriculumn']
                     },
                     {
                         label: 'Quản lý giáo trình',
                         icon: 'pi pi-fw pi-book',
-                        routerLink: ['user/listsyllabus']
+                        routerLink: ['learning/listsyllabus']
                     },
                 ]
             },

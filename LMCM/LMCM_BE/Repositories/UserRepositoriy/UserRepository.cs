@@ -95,7 +95,7 @@ namespace LMCM_BE.Repositories.UserRepositoriy
 
             var user = await _userManager.FindByEmailAsync(payload.Email);
 
-            if (user == null)
+            if (user == null || user.Status.Equals("3"))
             {
                 return null;
             }

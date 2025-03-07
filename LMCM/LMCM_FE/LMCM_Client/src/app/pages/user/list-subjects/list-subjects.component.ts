@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -8,6 +8,8 @@ import { TagModule } from 'primeng/tag';
 import { FormsModule } from '@angular/forms';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { SubjectApiService } from '../../../apis/subjectAPIs/subject-api.service';
+import { Subscription } from 'rxjs';
+import { searchService } from '../../service/search/search-service.service';
 
 interface Subject {
   subjectCode: string;
@@ -35,17 +37,24 @@ interface PagingRequest {
   templateUrl: './list-subjects.component.html',
   styleUrls: ['./list-subjects.component.scss'],
 })
-export class ListSubjectsComponent implements OnInit {
+export class ListSubjectsComponent implements OnInit, OnDestroy {
   subjects: Subject[] = [];
   totalCount = 0;
   pageNumber = 1;
   pageSize = 10;
   searchKey = '';
 
-  constructor(private subjectService: SubjectApiService) { }
+  private searchSubscription!: Subscription;
+
+  constructor(private subjectService: SubjectApiService, private searchService: searchService) { }
 
   ngOnInit(): void {
-    this.loadSubjects();
+    this.searchSubscription = this.searchService.searchQuery$.subscribe(
+      (query) => {
+        this.searchKey = query;
+        this.loadSubjects();
+      }
+    );
   }
 
   loadSubjects(event?: any) {
@@ -70,15 +79,15 @@ export class ListSubjectsComponent implements OnInit {
     );
   }
 
-  // onPageChange(newPage: number): void {
-  //   this.pageNumber = newPage;
-  //   this.loadSubjects();
-  // }
+  ngOnDestroy(): void {
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
+    }
+  }
 
-  // onSearch(): void {
-  //   this.pageNumber = 1;
-  //   this.loadSubjects();
-  // }
+  onSearchChange(query: string) {
+    this.searchService.updateSearchQuery(query);
+  }
 
   getTagValue(value: boolean): 'Yes' | 'No' {
     return value ? 'Yes' : 'No';

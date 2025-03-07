@@ -33,5 +33,9 @@ namespace LMCM_BE.Services.SubjectService
         {
             return await _subjectRepository.GetSubjectByCodeAsync(subjectCode);
         }
+        public async Task<List<Subject>> GetActiveSubjectsByCodesAsync(List<string> subjectCodes)
+        {
+            return await _subjectRepository.GetActiveSubjectsByCodesAsync(subjectCodes);
+        }
     }
 }

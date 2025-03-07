@@ -1,8 +1,6 @@
 using LMCM_BE.DbContext;
-using Google;
 using LMCM_BE.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -14,11 +12,18 @@ using LMCM_BE.Repositories.SyllabusRepository;
 using LMCM_BE.Services.SyllabusService;
 using LMCM_BE.AutoMapper.SyllabusProfiles;
 using LMCM_BE.Repositories.CLORepository;
-using LMCM_BE.Services.CLOServices;
+using LMCM_BE.Services.CLOService;
 using LMCM_BE.Repositories.CurriculumRepository;
 using LMCM_BE.Services.CurriculumService;
 using LMCM_BE;
 using LMCM_BE.AutoMapper.CLOProfiles;
+using LMCM_BE.AutoMapper.UserProfiles;
+using LMCM_BE.Repositories.UserRepositoriy;
+using LMCM_BE.Services.UserService;
+using LMCM_BE.Repositories.ScheduleRepository;
+using LMCM_BE.Services.ScheduleService;
+using LMCM_BE.AutoMapper.ScheduleProfiles;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +67,9 @@ builder.Services.AddCors(options =>
 builder.Services.AddAutoMapper(typeof(SubjectProfile));
 builder.Services.AddAutoMapper(typeof(SyllabusProfile));
 builder.Services.AddAutoMapper(typeof(CLOProfile));
+builder.Services.AddAutoMapper(typeof(UserProfile));
+builder.Services.AddAutoMapper(typeof(ScheduleIProfile));
+
 
 //DI
 builder.Services.AddScoped<RoleManager<IdentityRole<Guid>>>();
@@ -74,7 +82,11 @@ builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<ISyllabusRepository, SyllabusRepository>();
 builder.Services.AddScoped<ISyllabusService, SyllabusService>();
 builder.Services.AddScoped<ICLORepository, CLOReposiroty>();
-builder.Services.AddScoped<ICLOServices, CLOServices>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICLOService, CLOService>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
 
 builder.Services.AddAuthorization();
 

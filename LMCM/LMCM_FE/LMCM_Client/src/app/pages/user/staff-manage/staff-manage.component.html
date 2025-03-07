@@ -12,9 +12,9 @@
     </div>
 
     <div class="mt-3">
-        <p-table #dt [value]="staffList" [rows]="10" [columns]="cols" [paginator]="true"
+        <p-table #dt [value]="users" [rows]="10" [columns]="cols" [paginator]="true"
             [globalFilterFields]="['name', 'status', 'email']" [rowHover]="true" dataKey="id"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} staff" [showCurrentPageReport]="true"
+            currentPageReportTemplate="Hiện {first} tới {last} của {totalRecords} nhân viên" [showCurrentPageReport]="true"
             [rowsPerPageOptions]="[10, 20, 30]">
             <ng-template pTemplate="header">
                 <tr>
@@ -27,13 +27,13 @@
                     <th style="width: 20%;" class="text-center">Hành động</th>
                 </tr>
             </ng-template>
-            <ng-template pTemplate="body" let-staff>
+            <ng-template pTemplate="body" let-user>
                 <tr>
-                    <td>{{ staff.name }}</td>
+                    <td>{{ user.name }}</td>
                     <td>
-                        <p-tag [value]="staff.status" [severity]="getTagSeverity(staff.status)"></p-tag>
+                        <p-tag [value]="getStatusLabel(user.status)" [severity]="getTagSeverity(user.status)"></p-tag>
                     </td>
-                    <td>{{ staff.email }}</td>
+                    <td>{{ user.email }}</td>
                     <td class="text-center">
                         <p-button icon="pi pi-pencil" class="p-button-text p-button-sm" title="Chỉnh sửa"></p-button>
                         <p-button icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger"
@@ -45,17 +45,17 @@
     </div>
 </p-card>
 
-<p-dialog [(visible)]="userDialog" [style]="{ width: '450px' }" header="Thêm nhân viên" [modal]="true">
+<p-dialog [(visible)]="userDialog" [style]="{ width: '350px' }" header="Thêm nhân viên" [modal]="true">
     <div class="flex flex-col gap-6">
         <div>
             <label for="email" class="block font-bold mb-3">Email</label>
-            <input type="text" pInputText id="email" class="w-full" required autofocus />
-            <small class="text-red-500" *ngIf="submitted">Email is required.</small>
+            <input type="text" pInputText id="email" [(ngModel)]="staffId" required autofocus /> / fpt&#64;.edu.vn
         </div>
     </div>
 
     <ng-template pTemplate="footer">
         <p-button label="Hủy" icon="pi pi-times" text (click)="hideDialog()" />
-        <p-button label="Lưu" icon="pi pi-check" />
+        <p-button label="Lưu" icon="pi pi-check" (onClick)="saveUser()" />
     </ng-template>
 </p-dialog>
+<p-toast></p-toast>

@@ -6,8 +6,24 @@ import { environment } from '../../../environments/environment';
 
 interface LoginResponse {
   message: string;
-  token: string;
-  user:{id: string}
+  data: {
+    id: string;
+    token: string;
+  }
+}
+
+export interface PagingRequest {
+  searchKey?: string;
+  pageNumber: number;
+  pageSize: number;
+}
+
+export interface PagedResult<T> {
+  items: T[];
+  totalCount: number;
+  totalPages: number;
+  pageSize: number;
+  currentPage: number;
 }
 
 @Injectable({
@@ -21,5 +37,14 @@ export class UserApiService {
   login(token: string): Observable<LoginResponse> {
     const loginData = { token };
     return this.http.post<any>(`${this.apiUrl}/User/google-login`, loginData);
+  }
+
+  createAccount(staffId: string): Observable<any> {
+    const data = { staffId };
+    return this.http.post<any>(`${this.apiUrl}/User/create-account`, data);
+  }
+
+  getListUser(request: PagingRequest): Observable<PagedResult<any>> {
+    return this.http.post<any>(`${this.apiUrl}/User/list-user`, request);
   }
 }

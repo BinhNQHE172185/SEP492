@@ -118,6 +118,54 @@ export class CurriculumDetailComponent   {
         { code: 'SUB4', name: 'Subject 4', credits: 3, hours: 45 },
         { code: 'SUB5', name: 'Subject 5', credits: 3, hours: 45 }
       ]
+    },
+    {
+      name: 'Semester',
+      number: 5,
+      subjectCount: 5,
+      subjects: [
+        { code: 'SUB1', name: 'Subject 1', credits: 3, hours: 45 },
+        { code: 'SUB2', name: 'Subject 2', credits: 3, hours: 45 },
+        { code: 'SUB3', name: 'Subject 3', credits: 3, hours: 45 },
+        { code: 'SUB4', name: 'Subject 4', credits: 3, hours: 45 },
+        { code: 'SUB5', name: 'Subject 5', credits: 3, hours: 45 }
+      ]
+    },
+    {
+      name: 'Semester',
+      number: 5,
+      subjectCount: 5,
+      subjects: [
+        { code: 'SUB1', name: 'Subject 1', credits: 3, hours: 45 },
+        { code: 'SUB2', name: 'Subject 2', credits: 3, hours: 45 },
+        { code: 'SUB3', name: 'Subject 3', credits: 3, hours: 45 },
+        { code: 'SUB4', name: 'Subject 4', credits: 3, hours: 45 },
+        { code: 'SUB5', name: 'Subject 5', credits: 3, hours: 45 }
+      ]
+    },
+    {
+      name: 'Semester',
+      number: 5,
+      subjectCount: 5,
+      subjects: [
+        { code: 'SUB1', name: 'Subject 1', credits: 3, hours: 45 },
+        { code: 'SUB2', name: 'Subject 2', credits: 3, hours: 45 },
+        { code: 'SUB3', name: 'Subject 3', credits: 3, hours: 45 },
+        { code: 'SUB4', name: 'Subject 4', credits: 3, hours: 45 },
+        { code: 'SUB5', name: 'Subject 5', credits: 3, hours: 45 }
+      ]
+    },
+    {
+      name: 'Semester',
+      number: 5,
+      subjectCount: 5,
+      subjects: [
+        { code: 'SUB1', name: 'Subject 1', credits: 3, hours: 45 },
+        { code: 'SUB2', name: 'Subject 2', credits: 3, hours: 45 },
+        { code: 'SUB3', name: 'Subject 3', credits: 3, hours: 45 },
+        { code: 'SUB4', name: 'Subject 4', credits: 3, hours: 45 },
+        { code: 'SUB5', name: 'Subject 5', credits: 3, hours: 45 }
+      ]
     }
   ];
 

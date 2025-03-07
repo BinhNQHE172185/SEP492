@@ -26,7 +26,7 @@
             <ng-template pTemplate="body" let-item>
                 <tr>
                     <td>{{ item.code }}</td>
-                    <td> <a [routerLink]="['/user/curriculum', item.code]" class="text-blue-500 hover:underline" > {{ item.name }}  </a></td>
+                    <td> <a [routerLink]="['/learning/curriculum', item.code]" class="text-blue-500 hover:underline" > {{ item.name }}  </a></td>
                     <td>{{ item.description }}</td>
                     <td><a href="#" class="text-blue-500 hover:underline">{{ item.decision }}</a></td>
                     <td>{{ item.approvalDate }}</td>

@@ -71,7 +71,7 @@ export class CurriculumDetailComponent   {
     {
       label: 'Xem PLO',
       icon: 'pi pi-file',
-      link: '/user/plo'
+      link: '/learning/plo'
     },
     {
       label: 'Xem Combo',

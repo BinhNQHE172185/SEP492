@@ -41,21 +41,30 @@ export class ProfileComponent implements OnInit {
   }
 
   getUserProfile() {
-    const staffId = "8168EAA1-08CF-4163-8713-0A2B73B83BB4";
+    const userId = localStorage.getItem('userId'); 
+  
+    if (!userId) {
+      console.error('Không tìm thấy userId, vui lòng đăng nhập lại.');
+      return;
+    }
   
     this.http.post<any>('http://localhost:5035/api/User/profile', 
-        JSON.stringify(staffId), {
+        JSON.stringify(userId), {
           headers: { 'Content-Type': 'application/json' }
         }).subscribe(response => {
           if (response) {
-            this.user.name = response.name;
-            this.user.email = response.email;
-            this.user.avatar = response.picture; // hoặc response.avatar nếu API trả về avatar
+            this.user = {
+              name: response.name,
+              email: response.email,
+              avatar: response.picture
+            };
           }
         }, error => {
           console.error('Lỗi khi lấy thông tin user:', error);
         });
   }
+  
+  
   
   
 

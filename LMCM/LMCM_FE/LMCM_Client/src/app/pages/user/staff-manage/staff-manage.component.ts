@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -15,6 +15,8 @@ import { UserApiService } from '../../../apis/userAPIs/user-api.service';
 import { MessageService } from 'primeng/api';
 import { FormsModule } from '@angular/forms';
 import { ProfileStatus } from '../../../../shared/Constants/StatusConstants';
+import { Subscription } from 'rxjs';
+import { searchService } from '../../service/search/search-service.service';
 
 interface PagingRequest {
   searchKey?: string;
@@ -46,7 +48,7 @@ interface PagingRequest {
     MessageService,
   ]
 })
-export class StaffManageComponent implements OnInit {
+export class StaffManageComponent implements OnInit, OnDestroy {
   users: any[] = [];
   totalCount = 0;
   pageNumber = 1;
@@ -55,10 +57,17 @@ export class StaffManageComponent implements OnInit {
   userDialog: boolean = false;
   staffId: string = '';
 
-  constructor(private apiService: UserApiService, private messageService: MessageService) { }
+  private searchSubscription!: Subscription;
+
+  constructor(private apiService: UserApiService, private messageService: MessageService, private searchService: searchService) { }
 
   ngOnInit(): void {
-    this.loadUser();
+    this.searchSubscription = this.searchService.searchQuery$.subscribe(
+      (query) => {
+        this.searchKey = query;
+        this.loadUser();
+      }
+    );
   }
 
   loadUser() {
@@ -124,5 +133,15 @@ export class StaffManageComponent implements OnInit {
         this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: error.error.message });
       }
     );
+  }
+
+  ngOnDestroy(): void {
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
+    }
+  }
+
+  onSearchChange(query: string) {
+    this.searchService.updateSearchQuery(query);
   }
 }

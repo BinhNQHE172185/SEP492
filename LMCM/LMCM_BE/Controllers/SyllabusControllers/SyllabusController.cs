@@ -1,11 +1,13 @@
 ﻿using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.CLODtos;
+using LMCM_BE.DTOs.ConstructivistQuestionDtos;
 using LMCM_BE.DTOs.GradingStructureDtos;
 using LMCM_BE.DTOs.ScheduleDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Services.CLOService;
+using LMCM_BE.Services.ConstructivistQuestionService;
 using LMCM_BE.Services.GradingStructureService;
 using LMCM_BE.Services.ScheduleService;
 using LMCM_BE.Services.SubjectService;
@@ -26,8 +28,8 @@ namespace LMCM_BE.Controllers.SyllabusControllers
         private readonly ICLOService _cloService;
         private readonly IScheduleService _scheduleService;
         private readonly IGradingStructureService _gradingStructureService;
-
-        public SyllabusController(LMCM_DBContext dBContext,ISyllabusService syllabusService, ISubjectService subjectService, ICLOService cloService, IScheduleService scheduleService, IGradingStructureService gradingStructureService)
+        private readonly IConstructivistQuestionService _questionService;
+        public SyllabusController(LMCM_DBContext dBContext,ISyllabusService syllabusService, ISubjectService subjectService, ICLOService cloService, IScheduleService scheduleService, IGradingStructureService gradingStructureService, IConstructivistQuestionService questionService)
         {
             _dbContext = dBContext;
             _syllabusService = syllabusService;
@@ -35,6 +37,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             _cloService = cloService;
             _scheduleService = scheduleService;
             _gradingStructureService = gradingStructureService;
+            _questionService = questionService;
         }
 
         [HttpPost("getSyllabusesList")]
@@ -91,7 +94,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                         await file.CopyToAsync(stream);
                         using (var package = new ExcelPackage(stream))
                         {
-                            var requiredSheets = new List<string> { "Syllabus", "Schedule", "CLO", "Grading structure" };
+                            var requiredSheets = new List<string> { "Syllabus", "Schedule", "CLO", "Grading structure", "Constructivist Question" };
                             var availableSheets = package.Workbook.Worksheets.Select(sheet => sheet.Name).ToList();
                             var missingSheets = requiredSheets.Except(availableSheets).ToList();
 
@@ -119,6 +122,11 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                             var isGradingSuccess = await ImportGradingStructureSheet(package.Workbook.Worksheets["Grading structure"], syllabus);
                             if (!isGradingSuccess)
                                 throw new Exception("Nhập cấu trúc đánh giá thất bại.");
+
+                            // Import Constructivist Questions
+                            var isQuestionSuccess = await ImportConstructivistQuestionSheet(package.Workbook.Worksheets["Constructivist Question"], syllabus);
+                            if (!isQuestionSuccess)
+                                throw new Exception("Nhập câu hỏi thất bại.");
 
                             await _dbContext.SaveChangesAsync();
                             await transaction.CommitAsync();
@@ -184,8 +192,6 @@ namespace LMCM_BE.Controllers.SyllabusControllers
 
             return await _scheduleService.ImportSchedulesAsync(scheduleList);
         }
-
-
 
         private async Task<Syllabus> ImportSyllabusSheet(ExcelWorksheet worksheet)
         {
@@ -327,6 +333,48 @@ namespace LMCM_BE.Controllers.SyllabusControllers
 
             return await _gradingStructureService.ImportGradingStructuresAsync(gradingList);
         }
+        private async Task<bool> ImportConstructivistQuestionSheet(ExcelWorksheet worksheet, Syllabus syllabus)
+        {
+            // Validate expected headers
+            string[] expectedHeaders = { "No", "SessionNo", "Name", "Detail"};
 
+            for (int col = 1; col <= expectedHeaders.Length; col++)
+            {
+                if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
+                {
+                    throw new Exception($"Định dạng Excel trang Constructivist Question không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
+                }
+            }
+
+            var questionList = new List<ConstructivistQuestionInsertDto>();
+            int rowCount = worksheet.Dimension.Rows;
+
+            for (int row = 2; row <= rowCount; row++)
+            {
+                var questionData = new ConstructivistQuestionInsertDto
+                {
+                    SyllabusId = syllabus.SyllabusId,
+                    SessionNo = int.TryParse(worksheet.Cells[row, 2].Text, out int sessionNo) ? sessionNo : 0,
+                    QuestionName = worksheet.Cells[row, 3].Text.Trim(),
+                    QuestionDetail = worksheet.Cells[row, 4].Text.Trim(),
+                };
+
+                questionList.Add(questionData);
+            }
+
+            if (!questionList.Any())
+            {
+                return true;
+                //throw new Exception("Không tìm thấy dữ liệu câu hỏi trong trang.");
+            }
+
+            // Remove old questions if syllabus has a previous version
+            if (syllabus.PreviousVersionId != null)
+            {
+                await _questionService.DeleteConstructivistQuestionsBySyllabusAsync((Guid)syllabus.PreviousVersionId);
+            }
+
+            return await _questionService.ImportConstructivistQuestionsAsync(questionList);
+        }
     }
 }

@@ -1,100 +1,65 @@
 <div class="surface-card p-5 shadow-3 border-round bg-white">
 
-  <div class="flex gap-4 mt-3 md:mt-0 justify-end">
-    <button pButton *ngFor="let item of menuItems" 
-      [label]="item.label" 
-      [routerLink]="item.link"
-      [icon]="item.icon"
-      class="p-button-outlined p-button-warning p-3 text-lg">
-    </button>
-  </div>
-  
-  
-
   <!-- Header with buttons -->
-  <div class="flex justify-content-between align-items-center flex-wrap mb-5">
-    <h1 class="text-orange-500 text-3xl font-bold m-0">Chi tiết chương trình giảng dạy</h1>
-    
-  </div>
+  <div class="section-header">
+    <h2 class="text-orange-500">Chi tiết chương trình giảng dạy</h2>
 
+      <!-- <button pButton icon="pi pi-history" label="Xem lịch sử thay đổi"[routerLink]="['/user/plo']" class="p-button-outlined"></button> -->
+      <button pButton icon="pi pi-file" label="Xem PLO" [routerLink]="['/learning/plo']" class="p-button-outlined"></button>
+      <!-- <button pButton icon="pi pi-th-large" label="Xem Combo"[routerLink]="['/user/plo']" class="p-button-outlined"></button>
+      <button pButton icon="pi pi-list" label="Xem môn TC"[routerLink]="['/user/plo']" class="p-button-outlined"></button> -->
+
+  </div>
+  
   <div class="flex flex-column md:flex-row">
     <!-- Left Column -->
     <div class="flex-1 pr-0 md:pr-4">
-      <div class="field mb-5">
-        <label class="block text-700 text-lg mb-2">Mã Chương trình</label>
-        <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2 text-lg">
-          {{ curriculumDetail.code }}
+      <ng-template ngFor let-field [ngForOf]="[
+        { label: 'Mã Chương trình', value: curriculumDetail.code },
+        { label: 'Tên chương trình', value: curriculumDetail.name },
+        { label: 'English Curriculum Name', value: curriculumDetail.engCurriculumName },
+        { label: 'Mã chuyên ngành', value: curriculumDetail.majorCode }
+      ]">
+        <div class="field mb-5">
+          <label class="block text-700 mb-2">{{ field.label }}</label>
+          <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2">
+            {{ field.value }}
+          </div>
         </div>
-      </div>
-
-      <div class="field mb-5">
-        <label class="block text-700 text-lg mb-2">Tên chương trình</label>
-        <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2 text-lg">
-          {{ curriculumDetail.name }}
-        </div>
-      </div>
-
-      <div class="field mb-5">
-        <label class="block text-700 text-lg mb-2">English Curriculum Name</label>
-        <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2 text-lg">
-          {{ curriculumDetail.engCurriculumName }}
-        </div>
-      </div>
-
-      <div class="field mb-5">
-        <label class="block text-700 text-lg mb-2">Mã chuyên ngành</label>
-        <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2 text-lg">
-          {{ curriculumDetail.majorCode }}
-        </div>
-      </div>
+      </ng-template>
     </div>
-
+  
     <!-- Right Column -->
     <div class="flex-1 pl-0 md:pl-4">
-      <div class="field mb-5">
-        <label class="block text-700 text-lg mb-2">Tên chuyên ngành</label>
-        <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2 text-lg">
-          {{ curriculumDetail.majorName }}
+      <ng-template ngFor let-field [ngForOf]="[
+        { label: 'Tên chuyên ngành', value: curriculumDetail.majorName },
+        { label: 'English Vocational Name', value: curriculumDetail.engName },
+        { label: 'Quyết định số', value: curriculumDetail.decisionNo },
+        { label: 'Ngày phê duyệt', value: curriculumDetail.approvalDate }
+      ]">
+        <div class="field mb-5">
+          <label class="block text-700 mb-2">{{ field.label }}</label>
+          <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2">
+            {{ field.value }}
+          </div>
         </div>
-      </div>
-
-      <div class="field mb-5">
-        <label class="block text-700 text-lg mb-2">English Vocational Name</label>
-        <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2 text-lg">
-          {{ curriculumDetail.engName }}
-        </div>
-      </div>
-
-      <div class="field mb-5">
-        <label class="block text-700 text-lg mb-2">Quyết định số</label>
-        <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2 text-lg ">
-          {{ curriculumDetail.decisionNo }}
-        </div>
-      </div>
-
-      <div class="field mb-5">
-        <label class="block text-700 text-lg mb-2">Ngày phê duyệt</label>
-        <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2 text-lg">
-          {{ curriculumDetail.approvalDate }}
-        </div>
-      </div>
+      </ng-template>
     </div>
   </div>
   
   <!-- Full width description -->
   <div class="w-full">
     <div class="field mb-5">
-      <label class="block text-700 text-lg mb-2">Miêu tả</label>
-      <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2 text-lg">
+      <label class="block text-700 mb-2">Miêu tả</label>
+      <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2">
         {{ curriculumDetail.description }}
       </div>
     </div>
   </div>
-</div>
 
 
 <div class="curriculum-container">
-  <h2 >Curriculum Structure</h2>
+  <h2 >Cơ cấu chương trình giảng dạy</h2>
   <div class="semester-container">
     <div *ngFor="let semester of semesters" class="semester-card">
       <div class="semester-header">

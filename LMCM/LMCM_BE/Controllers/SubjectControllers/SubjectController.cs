@@ -80,7 +80,6 @@ namespace LMCM_BE.Controllers.SubjectControllers
                         {
                             string subjectCode = worksheet.Cells[row, 1].Text;
 
-                            Console.WriteLine(subjectCode);
                             if (subjectCodes.Contains(subjectCode))
                             {
                                 return BadRequest(new { message = $"Tìm thấy mã môn học trùng lặp trong tệp Excel: {subjectCode} tại hàng {row}" });

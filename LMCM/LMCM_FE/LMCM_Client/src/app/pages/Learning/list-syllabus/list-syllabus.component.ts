@@ -1,91 +1,110 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
 import { CardModule } from 'primeng/card';
+import { InputTextModule } from 'primeng/inputtext';
+import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
+import { FormsModule } from '@angular/forms';
 import { InputGroupModule } from 'primeng/inputgroup';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService } from 'primeng/api';
-import { MessageService } from 'primeng/api';
-import { RouterLink, RouterModule } from '@angular/router';
+import { SyllabusApiService } from '../../../apis/syllabusAPIs/syllabus-api.service';
+import { Subscription } from 'rxjs';
+import { searchService } from '../../service/search/search-service.service';
+
+interface Syllabus {
+  courseCode: string;
+  courseName: string;
+  courseNameEnglish: string;
+  decisionNo: string;
+  isActive: boolean;
+ 
+}
+
+interface PagingRequest {
+  searchKey?: string;
+  pageIndex: number;
+  pageSize: number;
+}
+
 @Component({
-    selector: 'app-list-syllabus',
-    standalone: true,
-    imports: [CommonModule, FormsModule, TableModule, ButtonModule, InputTextModule, CardModule, TagModule, InputGroupModule, ConfirmDialogModule, RouterLink, RouterModule],
-    providers: [ConfirmationService, MessageService],
-    templateUrl: './list-syllabus.component.html',
-    styleUrls: ['./list-syllabus.component.scss']
+  standalone: true,
+  imports: [
+    InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, TagModule, CardModule, InputTextModule
+  ],
+  selector: 'app-list-syllabus',
+  templateUrl: './list-syllabus.component.html',
+  styleUrls: ['./list-syllabus.component.scss'],
 })
-export class ListSyllabusComponent {
-    searchText: string = '';
-    currentPage: number = 1;
-    itemsPerPage: number = 4;
+export class ListSyllabusComponent implements OnInit, OnDestroy {
+  syllabuses: Syllabus[] = [];
+  totalCount = 0;
+  pageNumber = 1;
+  pageSize = 10;
+  searchKey = '';
 
-    syllabusList = [
-        { syllabusId: 'SYL001', subjectCode: 'MATH101', subjectName: 'Mathematics', syllabusName: 'Advanced Mathematics Syllabus', isActive: true, isApproved: true, decisionNo: '123/QD 03/15/2024' },
-        { syllabusId: 'SYL002', subjectCode: 'PHY102', subjectName: 'Physics', syllabusName: 'General Physics Syllabus', isActive: true, isApproved: false, decisionNo: '124/QD 03/14/2024' },
-        { syllabusId: 'SYL003', subjectCode: 'CHEM103', subjectName: 'Chemistry', syllabusName: 'Basic Chemistry Syllabus', isActive: false, isApproved: false, decisionNo: '125/QD 03/13/2024' }
-    ];
+  private searchSubscription!: Subscription;
 
-    constructor(
-        private confirmationService: ConfirmationService,
-        private messageService: MessageService
-    ) {}
+  constructor(private syllabusService: SyllabusApiService, private searchService: searchService) { }
 
-    filteredSyllabus() {
-        return this.syllabusList.filter((p) => p.subjectName.toLowerCase().includes(this.searchText.toLowerCase())).slice((this.currentPage - 1) * this.itemsPerPage, this.currentPage * this.itemsPerPage);
+  ngOnInit(): void {
+    this.searchSubscription = this.searchService.searchQuery$.subscribe(
+      (query) => {
+        this.searchKey = query;
+        this.loadSyllabuses();
+      }
+    );
+  }
+
+  loadSyllabuses(event?: any) {
+    if (event) {
+      this.pageNumber = Math.floor(event.first / event.rows) + 1;
+      this.pageSize = event.rows;
     }
 
-    confirmDelete(code: string) {
-        this.confirmationService.confirm({
-            message: 'Bạn có chắc chắn muốn xóa chương trình này không?',
-            header: 'Xác nhận xóa',
+    const request: PagingRequest = {
+      pageIndex: this.pageNumber,
+      pageSize: this.pageSize,
+      searchKey: this.searchKey,
+    };
 
-            acceptLabel: 'Xóa',
-            rejectLabel: 'Hủy',
-            accept: () => {
-                this.deleteItem(code);
-            }
-        });
-    }
+    this.syllabusService.getSyllabuses(request).subscribe(
+      (response) => {
+        console.log("Dữ liệu nhận được:", response);
 
-    deleteItem(syllabusId: string) {
-        this.syllabusList = this.syllabusList.filter((item) => item.syllabusId !== syllabusId);
-    }
-    getTagSeverity(status: string): 'success' | 'warn' | 'danger' | 'info' {
-        switch (status) {
-            case 'Hoạt động':
-                return 'success'; // Xanh lá
-            case 'Tạm nghỉ':
-                return 'warn'; // Vàng
-            case 'Đã nghỉ':
-                return 'danger'; // Đỏ
-            default:
-                return 'info'; // Mặc định (Xanh dương)
+        if (!response.items || response.items.length === 0) {
+          console.warn("Không có syllabus nào được trả về từ API.");
+          this.syllabuses = [];
+          this.totalCount = 0;
+          return;
         }
-    }
 
-    onSearchChange(event: Event) {
-        const inputElement = event.target as HTMLInputElement;
-        this.searchText = inputElement.value;
-    }
+        this.syllabuses = response.items.map(item => ({
+          courseCode: item.courseCode,
+          courseName: item.courseName,
+          courseNameEnglish: item.courseNameEnglish, 
+          decisionNo: item.decisionNo,
+          isActive: item.isActive
+        }));
 
-    totalPages() {
-        return Array.from({ length: Math.ceil(this.syllabusList.length / this.itemsPerPage) }, (_, i) => i + 1);
-    }
+        this.totalCount = response.totalCount;
+      },
+      (error) => {
+        console.error("Lỗi khi tải danh sách syllabus:", error);
+      }
+    );
+  }
 
-    setPage(page: number) {
-        this.currentPage = page;
+  ngOnDestroy(): void {
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
     }
+  }
 
-    prevPage() {
-        if (this.currentPage > 1) this.currentPage--;
-    }
+  onSearchChange(query: string) {
+    this.searchService.updateSearchQuery(query);
+  }
 
-    nextPage() {
-        if (this.currentPage < this.totalPages().length) this.currentPage++;
-    }
+  deleteSyllabus(index: number) {
+    this.syllabuses.splice(index, 1);
+  }
 }

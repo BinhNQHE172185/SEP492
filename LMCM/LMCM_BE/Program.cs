@@ -23,6 +23,9 @@ using LMCM_BE.Services.UserService;
 using LMCM_BE.Repositories.ScheduleRepository;
 using LMCM_BE.Services.ScheduleService;
 using LMCM_BE.AutoMapper.ScheduleProfiles;
+using LMCM_BE.AutoMapper.GradingStructureProfiles;
+using LMCM_BE.Repositories.GradingStructureRepository;
+using LMCM_BE.Services.GradingStructureService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -69,7 +72,7 @@ builder.Services.AddAutoMapper(typeof(SyllabusProfile));
 builder.Services.AddAutoMapper(typeof(CLOProfile));
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(ScheduleIProfile));
-
+builder.Services.AddAutoMapper(typeof(GradingStructureProfile));
 
 //DI
 builder.Services.AddScoped<RoleManager<IdentityRole<Guid>>>();
@@ -87,6 +90,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICLOService, CLOService>();
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
+builder.Services.AddScoped<IGradingStructureRepository, GradingStructureRepository>();
+builder.Services.AddScoped<IGradingStructureService, GradingStructureService>();
 
 builder.Services.AddAuthorization();
 

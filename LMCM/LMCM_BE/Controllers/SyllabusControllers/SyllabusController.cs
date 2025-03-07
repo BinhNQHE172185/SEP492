@@ -1,10 +1,12 @@
 ﻿using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.CLODtos;
+using LMCM_BE.DTOs.GradingStructureDtos;
 using LMCM_BE.DTOs.ScheduleDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Services.CLOService;
+using LMCM_BE.Services.GradingStructureService;
 using LMCM_BE.Services.ScheduleService;
 using LMCM_BE.Services.SubjectService;
 using LMCM_BE.Services.SyllabusService;
@@ -23,14 +25,16 @@ namespace LMCM_BE.Controllers.SyllabusControllers
         private readonly ISubjectService _subjectService;
         private readonly ICLOService _cloService;
         private readonly IScheduleService _scheduleService;
+        private readonly IGradingStructureService _gradingStructureService;
 
-        public SyllabusController(LMCM_DBContext dBContext,ISyllabusService syllabusService, ISubjectService subjectService, ICLOService cloService, IScheduleService scheduleService)
+        public SyllabusController(LMCM_DBContext dBContext,ISyllabusService syllabusService, ISubjectService subjectService, ICLOService cloService, IScheduleService scheduleService, IGradingStructureService gradingStructureService)
         {
             _dbContext = dBContext;
             _syllabusService = syllabusService;
             _subjectService = subjectService;
             _cloService = cloService;
             _scheduleService = scheduleService;
+            _gradingStructureService = gradingStructureService;
         }
 
         [HttpPost("getSyllabusesList")]
@@ -87,7 +91,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                         await file.CopyToAsync(stream);
                         using (var package = new ExcelPackage(stream))
                         {
-                            var requiredSheets = new List<string> { "Syllabus", "Schedule", "CLO" };
+                            var requiredSheets = new List<string> { "Syllabus", "Schedule", "CLO", "Grading structure" };
                             var availableSheets = package.Workbook.Worksheets.Select(sheet => sheet.Name).ToList();
                             var missingSheets = requiredSheets.Except(availableSheets).ToList();
 
@@ -111,7 +115,12 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                             if (!isScheduleSuccess)
                                 throw new Exception("Nhập lịch học thất bại.");
 
-                            await _dbContext.SaveChangesAsync(); 
+                            // Import Grading Structures
+                            var isGradingSuccess = await ImportGradingStructureSheet(package.Workbook.Worksheets["Grading structure"], syllabus);
+                            if (!isGradingSuccess)
+                                throw new Exception("Nhập cấu trúc đánh giá thất bại.");
+
+                            await _dbContext.SaveChangesAsync();
                             await transaction.CommitAsync();
                             return Ok(new { message = "Nhập vào hệ thống thành công." });
                         }
@@ -134,7 +143,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             {
                 if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
                 {
-                    throw new Exception($"Định dạng Excel trang Schedule không hợp lệ tại cột {col}. Vui lòng sử dụng mẫu đúng.");
+                    throw new Exception($"Định dạng Excel trang Schedule không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
                 }
             }
 
@@ -187,7 +196,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             {
                 if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
                 {
-                    throw new Exception($"Định dạng Excel trang Syllabus không hợp lệ tại cột {col}. Vui lòng sử dụng mẫu đúng.");
+                    throw new Exception($"Định dạng Excel trang Syllabus không hợp lệ cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
                 }
             }
 
@@ -234,7 +243,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             {
                 if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
                 {
-                    throw new Exception($"Định dạng Excel trang CLO không hợp lệ tại cột {col}. Vui lòng sử dụng mẫu đúng.");
+                    throw new Exception($"Định dạng Excel trang CLO không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
                 }
             }
 
@@ -263,6 +272,60 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 await _cloService.DeleteCLOBySyllabusAsync((Guid)syllabus.PreviousVersionId);
             }
             return await _cloService.ImportCLOsAsync(cloList);
+        }
+        private async Task<bool> ImportGradingStructureSheet(ExcelWorksheet worksheet, Syllabus syllabus)
+        {
+            // Validate expected headers
+            string[] expectedHeaders = { "#", "Assessment Component\nHạng mục đánh giá", "Assessment Type", "Weight\nTrọng số %", "Part\nPhần", "Minimun value to meet Completion Criteria", "Duration", "CLO", "Type of questions", "Number of questions", "Scope of knowledge and skill of questions", "How?", "Note", "SessionNo", "Reference" };
+
+            for (int col = 1; col <= expectedHeaders.Length; col++)
+            {
+                if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
+                {
+                    throw new Exception($"Định dạng Excel trang Grading Structure không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col-1]}. Vui lòng sử dụng mẫu đúng.");
+                }
+            }
+
+            var gradingList = new List<GradingStructureInsertDto>();
+            int rowCount = worksheet.Dimension.Rows;
+
+            for (int row = 2; row <= rowCount; row++)
+            {
+                var gradingData = new GradingStructureInsertDto
+                {
+                    SyllabusId = syllabus.SyllabusId,
+                    StructureNo= int.TryParse(worksheet.Cells[row, 1].Text, out int structureNo) ? structureNo : 0,
+                    AssessmentComponent = worksheet.Cells[row, 2].Text.Trim(),
+                    AssessmentType = worksheet.Cells[row, 3].Text.Trim(),
+                    Weight = decimal.TryParse(worksheet.Cells[row, 4].Text, out decimal weight) ? weight : 0,
+                    Part = int.TryParse(worksheet.Cells[row, 5].Text, out int part) ? part : 0,
+                    MinValue = int.TryParse(worksheet.Cells[row, 6].Text, out int minCriteria) ? minCriteria : 0,
+                    Duration = worksheet.Cells[row, 7].Text.Trim(),
+                    Clo = worksheet.Cells[row, 8].Text.Trim(),
+                    QuestionType = worksheet.Cells[row, 9].Text.Trim(),
+                    QuestionNo = worksheet.Cells[row, 10].Text.Trim(),
+                    Scope = worksheet.Cells[row, 11].Text.Trim(),
+                    How = worksheet.Cells[row, 12].Text.Trim(),
+                    Note = worksheet.Cells[row, 13].Text.Trim(),
+                    SessionNo = int.TryParse(worksheet.Cells[row, 14].Text, out int sessionNo) ? sessionNo : 0,
+                    Reference = worksheet.Cells[row, 15].Text.Trim()
+                };
+
+                gradingList.Add(gradingData);
+            }
+
+            if (!gradingList.Any())
+            {
+                throw new Exception("Không tìm thấy dữ liệu cấu trúc điểm trong trang.");
+            }
+
+            // Remove old grading structures if syllabus has a previous version
+            if (syllabus.PreviousVersionId != null)
+            {
+                await _gradingStructureService.DeleteGradingStructuresBySyllabusAsync((Guid)syllabus.PreviousVersionId);
+            }
+
+            return await _gradingStructureService.ImportGradingStructuresAsync(gradingList);
         }
 
     }

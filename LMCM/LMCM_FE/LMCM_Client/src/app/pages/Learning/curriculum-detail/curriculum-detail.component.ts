@@ -6,11 +6,6 @@ import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { IconFieldModule } from 'primeng/iconfield';
 
-interface MenuItem {
-  label: string;
-  icon: string;
-  link: string;
-}
 
 interface CurriculumDetail {
   code: string;
@@ -62,28 +57,6 @@ export class CurriculumDetailComponent   {
     description: 'Chương trình đào tạo được thiết kế nhằm cung cấp kiến thức và kỹ năng toàn diện về công nghệ thông tin, bao gồm lập trình, cơ sở dữ liệu, mạng máy tính và an ninh mạng.'
   };
 
-  menuItems: MenuItem[] = [
-    {
-      label: 'Xem lịch sử thay đổi',
-      icon: 'pi pi-history',
-      link: '/curriculum/history'
-    },
-    {
-      label: 'Xem PLO',
-      icon: 'pi pi-file',
-      link: '/learning/plo'
-    },
-    {
-      label: 'Xem Combo',
-      icon: 'pi pi-th-large',
-      link: '/curriculum/combo'
-    },
-    {
-      label: 'Xem môn TC',
-      icon: 'pi pi-list',
-      link: '/curriculum/courses'
-    }
-  ];
 
   semesters: Semester[] = [
     {
@@ -125,6 +98,54 @@ export class CurriculumDetailComponent   {
     {
       name: 'Semester',
       number: 4,
+      subjectCount: 5,
+      subjects: [
+        { code: 'SUB1', name: 'Subject 1', credits: 3, hours: 45 },
+        { code: 'SUB2', name: 'Subject 2', credits: 3, hours: 45 },
+        { code: 'SUB3', name: 'Subject 3', credits: 3, hours: 45 },
+        { code: 'SUB4', name: 'Subject 4', credits: 3, hours: 45 },
+        { code: 'SUB5', name: 'Subject 5', credits: 3, hours: 45 }
+      ]
+    },
+    {
+      name: 'Semester',
+      number: 5,
+      subjectCount: 5,
+      subjects: [
+        { code: 'SUB1', name: 'Subject 1', credits: 3, hours: 45 },
+        { code: 'SUB2', name: 'Subject 2', credits: 3, hours: 45 },
+        { code: 'SUB3', name: 'Subject 3', credits: 3, hours: 45 },
+        { code: 'SUB4', name: 'Subject 4', credits: 3, hours: 45 },
+        { code: 'SUB5', name: 'Subject 5', credits: 3, hours: 45 }
+      ]
+    },
+    {
+      name: 'Semester',
+      number: 5,
+      subjectCount: 5,
+      subjects: [
+        { code: 'SUB1', name: 'Subject 1', credits: 3, hours: 45 },
+        { code: 'SUB2', name: 'Subject 2', credits: 3, hours: 45 },
+        { code: 'SUB3', name: 'Subject 3', credits: 3, hours: 45 },
+        { code: 'SUB4', name: 'Subject 4', credits: 3, hours: 45 },
+        { code: 'SUB5', name: 'Subject 5', credits: 3, hours: 45 }
+      ]
+    },
+    {
+      name: 'Semester',
+      number: 5,
+      subjectCount: 5,
+      subjects: [
+        { code: 'SUB1', name: 'Subject 1', credits: 3, hours: 45 },
+        { code: 'SUB2', name: 'Subject 2', credits: 3, hours: 45 },
+        { code: 'SUB3', name: 'Subject 3', credits: 3, hours: 45 },
+        { code: 'SUB4', name: 'Subject 4', credits: 3, hours: 45 },
+        { code: 'SUB5', name: 'Subject 5', credits: 3, hours: 45 }
+      ]
+    },
+    {
+      name: 'Semester',
+      number: 5,
       subjectCount: 5,
       subjects: [
         { code: 'SUB1', name: 'Subject 1', credits: 3, hours: 45 },

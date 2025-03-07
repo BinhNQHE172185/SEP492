@@ -42,13 +42,6 @@ export class SyllabusDetailComponent {
     approvedDate: '2024-01-15',
   };
 
-  menuItems: MenuItem[] = [
-    {
-      label: 'Xem lịch sử thay đổi',
-      icon: 'pi pi-history',
-      link: '/curriculum/history'
-    }
-  ];
 
   materials = [
     { 
@@ -100,5 +93,6 @@ export class SyllabusDetailComponent {
       lecturersLink: ''
     }
   ];
+  
 
 }

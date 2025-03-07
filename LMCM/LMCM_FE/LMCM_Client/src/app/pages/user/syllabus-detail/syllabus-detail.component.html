@@ -1,12 +1,7 @@
 <div class="surface-card p-5 shadow-3 border-round bg-white">
 
     <div class="flex gap-4 mt-3 md:mt-0 justify-end">
-      <button pButton *ngFor="let item of menuItems" 
-        [label]="item.label" 
-        [routerLink]="item.link"
-        [icon]="item.icon"
-        class="p-button-outlined p-button-warning p-3 text-lg">
-      </button>
+      <button pButton icon="pi pi-history" label="Xem lịch sử thay đổi"  [routerLink]="['/user/syllabus']" class="p-button-outlined"></button>
     </div>
 
     <div class="flex justify-content-between align-items-center flex-wrap mb-5">

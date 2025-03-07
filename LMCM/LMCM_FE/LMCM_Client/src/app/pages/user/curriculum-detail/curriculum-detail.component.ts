@@ -6,11 +6,6 @@ import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { IconFieldModule } from 'primeng/iconfield';
 
-interface MenuItem {
-  label: string;
-  icon: string;
-  link: string;
-}
 
 interface CurriculumDetail {
   code: string;
@@ -62,28 +57,7 @@ export class CurriculumDetailComponent   {
     description: 'Chương trình đào tạo được thiết kế nhằm cung cấp kiến thức và kỹ năng toàn diện về công nghệ thông tin, bao gồm lập trình, cơ sở dữ liệu, mạng máy tính và an ninh mạng.'
   };
 
-  menuItems: MenuItem[] = [
-    {
-      label: 'Xem lịch sử thay đổi',
-      icon: 'pi pi-history',
-      link: '/curriculum/history'
-    },
-    {
-      label: 'Xem PLO',
-      icon: 'pi pi-file',
-      link: '/user/plo'
-    },
-    {
-      label: 'Xem Combo',
-      icon: 'pi pi-th-large',
-      link: '/curriculum/combo'
-    },
-    {
-      label: 'Xem môn TC',
-      icon: 'pi pi-list',
-      link: '/curriculum/courses'
-    }
-  ];
+
 
   semesters: Semester[] = [
     {

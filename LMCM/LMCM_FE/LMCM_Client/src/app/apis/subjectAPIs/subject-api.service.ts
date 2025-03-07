@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 export interface PagingRequest {
   searchKey?: string;
-  pageNumber: number;
+  pageIndex: number;
   pageSize: number;
 }
 

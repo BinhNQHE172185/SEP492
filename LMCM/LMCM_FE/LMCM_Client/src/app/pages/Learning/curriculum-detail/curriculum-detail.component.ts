@@ -58,7 +58,6 @@ export class CurriculumDetailComponent   {
   };
 
 
-
   semesters: Semester[] = [
     {
       name: 'Semester',

@@ -26,12 +26,12 @@
             <ng-template pTemplate="body" let-item>
                 <tr>
                     <td>{{ item.code }}</td>
-                    <td> <a [routerLink]="['/user/curriculum', item.code]" class="text-blue-500 hover:underline" > {{ item.name }}  </a></td>
+                    <td> <a [routerLink]="['/learning/curriculum', item.code]" class="text-blue-500 hover:underline" > {{ item.name }}  </a></td>
                     <td>{{ item.description }}</td>
                     <td><a href="#" class="text-blue-500 hover:underline">{{ item.decision }}</a></td>
                     <td>{{ item.approvalDate }}</td>
                     <td>
-                        <p-button label="Xóa" icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger"
+                        <p-button label="Xóa" class="p-button-text p-button-sm p-button-danger"
                                   (click)="confirmDelete(item.code)"></p-button>
                     </td>
                 </tr>

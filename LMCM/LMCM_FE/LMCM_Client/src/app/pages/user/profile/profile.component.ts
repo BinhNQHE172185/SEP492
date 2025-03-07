@@ -1,64 +1,48 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // ✅ Import FormsModule
 import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { DialogModule } from 'primeng/dialog';
-import { InputTextModule } from 'primeng/inputtext';
-import { FileUploadModule } from 'primeng/fileupload';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule, // ✅ Thêm FormsModule vào đây
-    CardModule,
-    ButtonModule,
-    DialogModule,
-    InputTextModule,
-    FileUploadModule
-  ],
+  imports: [CommonModule, CardModule],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']
 })
-export class ProfileComponent {
-  userDialog: boolean = false;
-  submitted: boolean = false;
-  uploadedImage: string | null = null;
-
+export class ProfileComponent implements OnInit {
   user = {
-    name: 'Nguyễn Văn A',
-    email: 'nguyenvana@example.com',
+    name: '',
+    email: '',
     avatar: ''
   };
 
-  openEdit() {
-    this.userDialog = true;
+  constructor(private http: HttpClient) {}
+
+  ngOnInit() {
+    this.getUserProfile();
   }
 
-  hideDialog() {
-    this.userDialog = false;
-    this.submitted = false;
-  }
-
-  saveUser() {
-    if (!this.user.email) {
-      this.submitted = true;
+  getUserProfile() {
+    const userId = localStorage.getItem('userId'); 
+    if (!userId) {
+      console.error('Không tìm thấy userId, vui lòng đăng nhập lại.');
       return;
     }
-    this.userDialog = false;
-  }
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.uploadedImage = e.target.result;
-        this.user.avatar = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
+    this.http.post<any>('http://localhost:5035/api/User/profile', 
+        JSON.stringify(userId), {
+          headers: { 'Content-Type': 'application/json' }
+        }).subscribe(response => {
+          if (response) {
+            this.user = {
+              name: response.name,
+              email: response.email,
+              avatar: response.picture
+            };
+          }
+        }, error => {
+          console.error('Lỗi khi lấy thông tin user:', error);
+        });
   }
 }

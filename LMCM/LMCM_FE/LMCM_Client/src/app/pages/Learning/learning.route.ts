@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { ListSubjectsComponent } from './list-subjects/list-subjects.component';
-import { ListCurriculumnComponent } from './list-curriculumn/list-curriculumn.component';
+import { ListCurriculumComponent } from './list-curriculum/list-curriculum.component';
 import { CurriculumDetailComponent } from './curriculum-detail/curriculum-detail.component';
 import { PloComponent } from './plo/plo.component';
 import { ListSyllabusComponent } from './list-syllabus/list-syllabus.component';
@@ -8,7 +8,7 @@ import { SyllabusDetailComponent } from './syllabus-detail/syllabus-detail.compo
 
 export default [
     { path: 'listsubject', component: ListSubjectsComponent },
-    {path:'listcurriculumn',component:ListCurriculumnComponent},
+    {path:'listcurriculum',component:ListCurriculumComponent},
     {path:'curriculum',component:CurriculumDetailComponent},
     {path:'curriculum/:code',component:CurriculumDetailComponent},
     {path:'plo',component:PloComponent},

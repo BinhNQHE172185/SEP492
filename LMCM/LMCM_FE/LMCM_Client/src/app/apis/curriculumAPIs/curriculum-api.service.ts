@@ -20,12 +20,12 @@ export interface PagedResult<T> {
 @Injectable({
   providedIn: 'root'
 })
-export class CurriculumnApiService {
+export class CurriculumApiService {
   private apiUrl = environment.apiUrl;
   
   constructor(private http: HttpClient) { }
 
-  getCurriculumns(request: PagingRequest): Observable<PagedResult<any>> {
-    return this.http.post<PagedResult<any>>(`${this.apiUrl}/Curriculumn/getCurriculumnList`, request);
+  getCurriculums(request: PagingRequest): Observable<PagedResult<any>> {
+    return this.http.post<PagedResult<any>>(`${this.apiUrl}/Curriculum/getCurriculumList`, request);
   }
 }

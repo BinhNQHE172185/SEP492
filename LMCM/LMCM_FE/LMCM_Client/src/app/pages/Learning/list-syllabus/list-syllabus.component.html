@@ -40,7 +40,10 @@
                       <p-tag [value]="syllabus?.isActive ? 'Hoạt động' : 'Không hoạt động'"
                           [severity]="syllabus?.isActive ? 'success' : 'danger'"></p-tag>
                   </td>
-                 
+                  <td>
+                    <p-button label="Xóa" class="p-button-text p-button-sm p-button-danger"
+                        (click)="deleteSyllabus(i)"></p-button>
+                </td>
               </tr>
           </ng-template>
 

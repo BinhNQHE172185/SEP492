@@ -8,12 +8,17 @@ import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
 import { AppFloatingConfigurator } from '../../../layout/component/app.floatingconfigurator';
 import { UserApiService } from '../../../apis/userAPIs/user-api.service';
+import { CommonModule } from '@angular/common';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { MessageModule } from 'primeng/message';
+import { environment } from '../../../../environments/environment';
 
 declare const google: any;
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator],
+    imports: [ToastModule, MessageModule, CommonModule, ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator],
     template: `
         <app-floating-configurator />
         <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
@@ -46,11 +51,14 @@ declare const google: any;
                 </div>
             </div>
         </div>
-    `
+        <p-toast></p-toast>
+    `, providers: [
+        MessageService,
+    ]
 })
 export class Login implements OnInit, AfterViewInit {
 
-    constructor(private apiService: UserApiService) { }
+    constructor(private apiService: UserApiService, private service: MessageService) { }
 
     email: string = '';
 
@@ -59,7 +67,7 @@ export class Login implements OnInit, AfterViewInit {
     checked: boolean = false;
 
     ngOnInit(): void {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('data.token');
 
         if (token) {
             // Nếu đã có token, chuyển hướng về trang chủ
@@ -68,11 +76,15 @@ export class Login implements OnInit, AfterViewInit {
         }
     }
 
+
+    showErrorViaToast() {
+    }
+
     ngAfterViewInit(): void {
         if (google && google.accounts) {
             google.accounts.id.initialize({
                 hosted_domain: 'fpt.edu.vn',
-                client_id: '433474498165-m4uv6c6h9hc3ss9vk74d9v7u8t57irr5.apps.googleusercontent.com',
+                client_id: environment.google_client_id,
                 callback: this.handleCredentialResponse.bind(this),
             });
 
@@ -86,18 +98,20 @@ export class Login implements OnInit, AfterViewInit {
     }
 
     handleCredentialResponse(token: any): void {
-        console.log('ID Token:', token.credential);
+        this.service.add({ severity: 'info', summary: 'Đăng nhập', detail: 'Vui lòng chờ.' });
+
         this.apiService.login(token.credential).subscribe(
             (response) => {
-                console.log('Login successful:', response);
-
-                localStorage.setItem('userId', response.user.id);
-                localStorage.setItem('token', response.token.toString());
-
-                window.location.href = '';
+                this.service.add({ severity: 'success', summary: 'Đăng nhập thành công', detail: 'Đang chuyển hướng...' });
+                console.log(response)
+                localStorage.setItem('userId', response.data.id);
+                localStorage.setItem('token', response.data.token);
+                setTimeout(() => {
+                    window.location.href = '';
+                }, 1000);
             },
             (error) => {
-                //   this.messageService.add({ severity: 'error', summary: 'Error', detail: error.error.message });
+                this.service.add({ severity: 'error', summary: 'Đã xảy ra lỗi', detail: error.error.message });
                 console.log(error);
             }
         );

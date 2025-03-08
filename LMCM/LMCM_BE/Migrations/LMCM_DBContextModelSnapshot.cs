@@ -959,10 +959,14 @@ namespace LMCM_BE.Migrations
                         .HasColumnName("Schedule_ID")
                         .HasDefaultValueSql("(newid())");
 
-                    b.Property<string>("Clo")
+                    b.Property<string>("Clos")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("CLO");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Content");
 
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()

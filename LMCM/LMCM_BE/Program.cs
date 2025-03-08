@@ -1,8 +1,6 @@
 using LMCM_BE.DbContext;
-using Google;
 using LMCM_BE.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -13,11 +11,28 @@ using LMCM_BE.AutoMapper.SubjectProfile;
 using LMCM_BE.Repositories.SyllabusRepository;
 using LMCM_BE.Services.SyllabusService;
 using LMCM_BE.AutoMapper.SyllabusProfiles;
+using LMCM_BE.Repositories.CLORepository;
+using LMCM_BE.Services.CLOService;
 using LMCM_BE.Repositories.CurriculumRepository;
 using LMCM_BE.Services.CurriculumService;
 using LMCM_BE.Repositories.PloRepository;
 using LMCM_BE.Repositories.PloSubjectRepository;
 using LMCM_BE.Repositories.CurriculumsSubjectRepository;
+using LMCM_BE;
+using LMCM_BE.AutoMapper.CLOProfiles;
+using LMCM_BE.AutoMapper.UserProfiles;
+using LMCM_BE.Repositories.UserRepositoriy;
+using LMCM_BE.Services.UserService;
+using LMCM_BE.Repositories.ScheduleRepository;
+using LMCM_BE.Services.ScheduleService;
+using LMCM_BE.AutoMapper.ScheduleProfiles;
+using LMCM_BE.AutoMapper.GradingStructureProfiles;
+using LMCM_BE.Repositories.GradingStructureRepository;
+using LMCM_BE.Services.GradingStructureService;
+using LMCM_BE.AutoMapper.ConstructivistQuestionProfiles;
+using LMCM_BE.Repositories.ConstructivistQuestionRepository;
+using LMCM_BE.Services.ConstructivistQuestionService;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,7 +54,7 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YOUR_SECRET_KEY")),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("F-JaNdRfUserjd89#5*6Xn2r5usErw8x/A?D(G+KbPeShV")),
         ValidateIssuer = false,
         ValidateAudience = false,
         ClockSkew = TimeSpan.Zero
@@ -60,8 +75,14 @@ builder.Services.AddCors(options =>
 //AutoMapper
 builder.Services.AddAutoMapper(typeof(SubjectProfile));
 builder.Services.AddAutoMapper(typeof(SyllabusProfile));
+builder.Services.AddAutoMapper(typeof(CLOProfile));
+builder.Services.AddAutoMapper(typeof(UserProfile));
+builder.Services.AddAutoMapper(typeof(ScheduleIProfile));
+builder.Services.AddAutoMapper(typeof(GradingStructureProfile));
+builder.Services.AddAutoMapper(typeof(ConstructivistQuestionProfile));
 
 //DI
+builder.Services.AddScoped<RoleManager<IdentityRole<Guid>>>();
 builder.Services.AddScoped<UserManager<User>>();
 builder.Services.AddScoped<SignInManager<User>>();
 builder.Services.AddScoped<ICurriculumRepository, CurriculumRepository>();
@@ -73,6 +94,16 @@ builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<ISyllabusRepository, SyllabusRepository>();
 builder.Services.AddScoped<ISyllabusService, SyllabusService>();
+builder.Services.AddScoped<ICLORepository, CLOReposiroty>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICLOService, CLOService>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
+builder.Services.AddScoped<IGradingStructureRepository, GradingStructureRepository>();
+builder.Services.AddScoped<IGradingStructureService, GradingStructureService>();
+builder.Services.AddScoped<IConstructivistQuestionRepository, ConstructivistQuestionRepository>();
+builder.Services.AddScoped<IConstructivistQuestionService, ConstructivistQuestionService>();
 
 builder.Services.AddAuthorization();
 
@@ -84,9 +115,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await SeedData.Initialize(services);
+}
+
 app.UseCors("AllowAngularApp");
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

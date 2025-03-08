@@ -8,6 +8,9 @@ using System.Security.Claims;
 using System.Text;
 using LMCM_BE.Models;
 using LMCM_BE.DTOs.UserDtos;
+using LMCM_BE.Services.UserService;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
+using LMCM_BE.DTOs.ShareDtos;
 
 namespace LMCM_BE.Controllers.UserControllers
 {
@@ -15,15 +18,11 @@ namespace LMCM_BE.Controllers.UserControllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        private readonly IConfiguration _configuration;
+        private readonly IUserService _userService;
 
-        public UserController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration)
+        public UserController(IUserService userService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _configuration = configuration;
+            _userService = userService;
         }
 
         /// <summary>
@@ -36,35 +35,45 @@ namespace LMCM_BE.Controllers.UserControllers
         {
             try
             {
-                var payload = await GoogleJsonWebSignature.ValidateAsync(request.Token, new GoogleJsonWebSignature.ValidationSettings
+                var data = await _userService.Login(request);
+
+                if (data == null)
                 {
-                    Audience = new[] { "433474498165-m4uv6c6h9hc3ss9vk74d9v7u8t57irr5.apps.googleusercontent.com" }
-                });
-
-                var user = await _userManager.FindByEmailAsync(payload.Email);
-
-                if (user == null)
-                {
-                    user = new User
-                    {
-                        UserName = payload.Email,
-                        Name = payload.Name,
-                        Email = payload.Email,
-                        Picture = payload.Picture,
-                    };
-
-                    var result = await _userManager.CreateAsync(user);
-                    if (!result.Succeeded)
-                        return BadRequest(new { success = false, message = "Failed to create user." });
+                    return Unauthorized(new { success = false, message = "Tài khoản chưa được đăng ký trong hệ thống. Vui lòng liên hệ Trưởng Phòng." });
                 }
+                else
+                {
+                    return Ok(new { success = true, data });
 
-                // Tạo JWT Token
-                var token = GenerateJwtToken(user);
-                return Ok(new { success = true, token, user });
+                }
             }
             catch (Exception ex)
             {
-                return Unauthorized(new { success = false, message = "Invalid Google Token", error = ex.Message });
+                return Unauthorized(new { success = false, message = "Đã xảy ra lỗi. Vui lòng thử lại.", error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Tạo tài khoản cho staff
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        [HttpPost("create-account")]
+        public async Task<IActionResult> CreateAccount([FromBody] StaffRequest request)
+        {
+            try
+            {
+                var data = await _userService.CreateStaff(request);
+                if (!data)
+                {
+                    return BadRequest(new { success = false, message = "Tài khoản đã được đăng ký trong hệ thống." });
+                }
+
+                return Ok(new { success = true, message = "Thêm thành công." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = "ĐÃ xảy ra lỗi. Vui lòng kiểm tra lại.", error = ex.Message });
             }
         }
 
@@ -74,19 +83,14 @@ namespace LMCM_BE.Controllers.UserControllers
         /// <param name="email"></param>
         /// <returns></returns>
         [HttpPost("profile")]
-        public async Task<IActionResult> ProfileAsync([FromBody] string email)
+        public async Task<IActionResult> ProfileAsync([FromBody] string staffId)
         {
             try
             {
-                var data = await _userManager.FindByEmailAsync(email);
+                var data = await _userService.GetProfile(staffId);
                 if (data != null)
                 {
-                    var response = new UserProfileResponseDto{
-                        Email = data.Email,
-                        Name = data.Name,
-                        Picture = data.Picture
-                    };
-                    return Ok(response);
+                    return Ok(data);
                 }
                 return NotFound(new { message = "User not found" });
             }
@@ -95,30 +99,27 @@ namespace LMCM_BE.Controllers.UserControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
-
-        private string GenerateJwtToken(User user)
+        /// <summary>
+        /// Lấy danh sách User
+        /// </summary>
+        /// <param name="staffId"></param>
+        /// <returns></returns>
+        [HttpPost("list-user")]
+        public async Task<IActionResult> GetListUser([FromBody] PagingRequest request)
         {
-            var claims = new[]
+            try
             {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim(JwtRegisteredClaimNames.Name, user.Name),
-        };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(3),
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        public class GoogleLoginRequest
-        {
-            public string Token { get; set; }
+                var data = await _userService.GetListUser(request.SearchKey, request.pageIndex, request.PageSize);
+                if (data != null)
+                {
+                    return Ok(data);
+                }
+                return NotFound(new { message = "Data not found" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
         }
     }
 }

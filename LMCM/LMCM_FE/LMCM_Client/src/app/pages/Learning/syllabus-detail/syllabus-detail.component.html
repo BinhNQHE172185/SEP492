@@ -1,0 +1,179 @@
+<div class="surface-card p-5 shadow-3 border-round bg-white">
+
+  <div class="section">
+    <div class="section-header">
+      <h2 class="text-orange-500">Chi Tiết Giáo trình</h2>
+      <button pButton icon="pi pi-history" label="Xem lịch sử thay đổi" [routerLink]="['/learning/syllabus']" class="p-button-outlined"></button>
+    </div>
+  
+  <div class="flex flex-column md:flex-row">
+    <!-- Left Column -->
+    <div class="flex-1 pr-0 md:pr-4">
+      <ng-template ngFor let-field [ngForOf]="[
+        { label: 'Loại Tài Liệu', value: syllabusDetail.documentType },
+        { label: 'Chương Trình', value: syllabusDetail.program },
+        { label: 'Số Quyết Định', value: syllabusDetail.decisionNo },
+        { label: 'Tên Khóa Học', value: syllabusDetail.courseName },
+        { label: 'Tên Khóa Học (Tiếng Anh)', value: syllabusDetail.courseNameEnglish },
+        { label: 'Mã Khóa Học', value: syllabusDetail.courseCode },
+        { label: 'Phương Pháp Dạy-Học', value: syllabusDetail.learningMethod },
+        { label: 'Nhiệm Vụ Của Sinh Viên', value: syllabusDetail.studentTask },
+        { label: 'Số Tín Chỉ', value: syllabusDetail.credits }
+      ]">
+        <div class="field mb-5">
+          <label class="block text-700 text-lg mb-2">{{ field.label }}</label>
+          <div class="surface-100 p-4 border-round shadow-2 text-lg bg-gray-100">
+            {{ field.value }}
+          </div>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Right Column -->
+    <div class="flex-1 pl-0 md:pl-4">
+      <ng-template ngFor let-field [ngForOf]="[
+        { label: 'Trình Độ', value: syllabusDetail.degreeLevel },
+        { label: 'Phân Bổ Thời Gian', value: syllabusDetail.timeAllocation },
+        { label: 'Điều Kiện Tiên Quyết', value: syllabusDetail.prerequisite },
+        { label: 'Mô Tả', value: syllabusDetail.description },
+        { label: 'Điểm GPA Tối Thiểu Để Qua', value: syllabusDetail.minGPA },
+        { label: 'Thang Điểm', value: syllabusDetail.scoringScale },
+        { label: 'Ngày Phê Duyệt', value: syllabusDetail.approvedDate },
+        { label: 'Công Cụ', value: syllabusDetail.tools },
+        { label: 'Ghi Chú', value: syllabusDetail.note }
+      ]">
+        <div class="field mb-5">
+          <label class="block text-700 text-lg mb-2">{{ field.label }}</label>
+          <div class="surface-100 p-4 border-round shadow-2 text-lg bg-gray-100">
+            {{ field.value }}
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 25px;">
+  <!-- Materials section -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="text-orange-500">Tài Liệu</h2>
+      <button pButton icon="pi pi-pencil" label="Chỉnh Sửa" class="p-button-outlined"></button>
+    </div>
+    
+    <p-table [value]="materials" styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>STT</th>
+          <th>Mô Tả Tài Liệu</th>
+          <th>Mục Đích</th>
+          <th>ISBN</th>
+          <th>Loại</th>
+          <th>Ghi Chú</th>
+          <th>Tác Giả</th>
+          <th>Nhà Xuất Bản</th>
+          <th>Ngày Xuất Bản</th>
+          <th>Phiên Bản</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-material>
+        <tr>
+          <td>{{ material.no }}</td>
+          <td>{{ material.description }}</td>
+          <td>{{ material.purpose }}</td>
+          <td>{{ material.isbn }}</td>
+          <td>{{ material.type }}</td>
+          <td>{{ material.note }}</td>
+          <td>{{ material.author }}</td>
+          <td>{{ material.publisher }}</td>
+          <td>{{ material.publishedDate }}</td>
+          <td>{{ material.edition }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Course Learning Outcomes section -->
+  <div class="section">
+    <h2 class="text-orange-500">Mục Tiêu Khóa Học (CLO)</h2>
+    
+    <p-table [value]="clos" styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>STT</th>
+          <th>Tên CLO</th>
+          <th>Mô Tả CLO</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-clo>
+        <tr>
+          <td>{{ clo.no }}</td>
+          <td>{{ clo.name }}</td>
+          <td>{{ clo.description }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Constructivist Questions section -->
+  <div class="section">
+    <h2 class="text-orange-500">Câu Hỏi</h2>
+    
+    <p-table [value]="constructivistQuestions" styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>STT</th>
+          <th>Số Buổi</th>
+          <th>Tên</th>
+          <th>Chi Tiết</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-question>
+        <tr>
+          <td>{{ question.no }}</td>
+          <td>{{ question.sessionNo }}</td>
+          <td>{{ question.name }}</td>
+          <td>{{ question.detail }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Schedule section -->
+  <div class="section">
+    <h2 class="text-orange-500">Lịch Trình</h2>
+    
+    <p-table [value]="scheduleData" styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Buổi</th>
+          <th>Phương Pháp Dạy-Học</th>
+          <th>Nội Dung</th>
+          <th>CLO</th>
+          <th>ITU</th>
+          <th>Tài Liệu Của Sinh Viên</th>
+          <th>Nhiệm Vụ Của Sinh Viên</th>
+          <th>Tài Liệu Của Giảng Viên</th>
+          <th>Nhiệm Vụ Của Giảng Viên</th>
+          <th>Liên Kết Của Sinh Viên</th>
+          <th>Liên Kết Của Giảng Viên</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-schedule>
+        <tr>
+          <td>{{ schedule.session }}</td>
+          <td>{{ schedule.learningTeachingMethod }}</td>
+          <td>{{ schedule.content }}</td>
+          <td>{{ schedule.clo }}</td>
+          <td>{{ schedule.itu }}</td>
+          <td>{{ schedule.studentsMaterials }}</td>
+          <td>{{ schedule.studentsTask }}</td>
+          <td>{{ schedule.lecturersMaterials }}</td>
+          <td>{{ schedule.lecturersTask }}</td>
+          <td>{{ schedule.studentsLink }}</td>
+          <td>{{ schedule.lecturersLink }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

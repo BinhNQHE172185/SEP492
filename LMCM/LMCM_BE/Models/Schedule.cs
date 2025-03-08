@@ -10,8 +10,8 @@ public partial class Schedule
     public int ScheduleNo { get; set; }
 
     public string? Method { get; set; }
-
-    public string? Clo { get; set; }
+    public string? Content { get; set; }
+    public string? Clos { get; set; }
 
     public string? Itu { get; set; }
 

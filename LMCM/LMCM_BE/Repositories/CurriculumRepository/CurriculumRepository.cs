@@ -3,6 +3,9 @@ using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.CurriculumDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Repositories.CurriculumsSubjectRepository;
+using LMCM_BE.Repositories.PloRepository;
+using LMCM_BE.Repositories.PloSubjectRepository;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.CurriculumRepository
@@ -11,11 +14,22 @@ namespace LMCM_BE.Repositories.CurriculumRepository
     {
         private readonly LMCM_DBContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ICurriculumsSubjectRepository _curriculumSubjectRepository;
+        private readonly IPloRepository _ploRepository;
+        private readonly IPloSubjectRepository _ploSubjectRepository;
 
-        public CurriculumRepository(LMCM_DBContext dbContext, IMapper mapper)
+        public CurriculumRepository(
+            LMCM_DBContext dbContext,
+            IMapper mapper,
+            ICurriculumsSubjectRepository curriculumSubjectRepository,
+            IPloRepository ploRepository,
+            IPloSubjectRepository ploSubjectRepository)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _curriculumSubjectRepository = curriculumSubjectRepository;
+            _ploRepository = ploRepository;
+            _ploSubjectRepository = ploSubjectRepository;
         }
 
         public async Task<PagedResult<CurriculumDto>> GetCurriculumsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
@@ -46,149 +60,49 @@ namespace LMCM_BE.Repositories.CurriculumRepository
             };
         }
 
-        public async Task<bool> InsertCurriculum(CurriculumDto curriculumDto)
+        public async Task<bool> ImportCurriculumAsync(Curriculum curriculum)
         {
-            if (curriculumDto == null) throw new ArgumentNullException(nameof(curriculumDto));
+            if (curriculum == null)
+                throw new ArgumentNullException(nameof(curriculum));
 
             try
             {
-                var curriculum = new Curriculum
+                using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+                // Step 1: Get existing active curriculum using curriculum code
+                var existingCurriculum = await _dbContext.Curriculums
+                    .Include(c => c.Plos)
+                    .Include(c => c.CurriculumsSubjects)
+                    .Where(c => c.CurriculumCode == curriculum.CurriculumCode && c.Status == "Active")
+                    .FirstOrDefaultAsync();
+
+
+                if (existingCurriculum != null)
                 {
-                    CurriculumId = Guid.NewGuid(),
-                    CurriculumCode = curriculumDto.CurriculumCode,
-                    CurriculumName = curriculumDto.Name,
-                    CurriculumDescription = curriculumDto.Description,
-                    DecisionNo = curriculumDto.DecisionNo,
-                    ApprovedDate = curriculumDto.ApprovedDate,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                };
+                    // Step 2: Delete related data
+                    // Soft delete existing curriculum by updating its status
+                    existingCurriculum.Status = "Inactive";
+                    existingCurriculum.UpdatedAt = DateTime.UtcNow;
+                    _dbContext.Curriculums.Update(existingCurriculum);
 
-                await _dbContext.Curriculums.AddAsync(curriculum);
-                await _dbContext.SaveChangesAsync();
-                return true;
-            }
-            catch (DbUpdateException)
-            {
-                return false;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        public async Task<bool> ImportCurriculumsAsync(List<Curriculum> curriculums)
-        {
-            if (curriculums == null || curriculums.Count == 0)
-                throw new ArgumentNullException(nameof(curriculums));
-
-            try
-            {
-                var existingCurriculums = await _dbContext.Curriculums
-                    .ToDictionaryAsync(c => c.CurriculumCode);
-
-                var newCurriculums = new List<Curriculum>();
-                var updatedCurriculums = new List<Curriculum>();
-
-                foreach (var curriculum in curriculums)
-                {
-                    if (existingCurriculums.TryGetValue(curriculum.CurriculumCode, out var existingCurriculum))
-                    {
-                        bool isUpdated = false;
-
-                        if (existingCurriculum.CurriculumName != curriculum.CurriculumName)
-                        {
-                            existingCurriculum.CurriculumName = curriculum.CurriculumName;
-                            isUpdated = true;
-                        }
-                        if (existingCurriculum.CurriculumNameEnglish != curriculum.CurriculumNameEnglish)
-                        {
-                            existingCurriculum.CurriculumNameEnglish = curriculum.CurriculumNameEnglish;
-                            isUpdated = true;
-                        }
-                        if (existingCurriculum.CurriculumDescription != curriculum.CurriculumDescription)
-                        {
-                            existingCurriculum.CurriculumDescription = curriculum.CurriculumDescription;
-                            isUpdated = true;
-                        }
-                        if (existingCurriculum.VocationalCode != curriculum.VocationalCode)
-                        {
-                            existingCurriculum.VocationalCode = curriculum.VocationalCode;
-                            isUpdated = true;
-                        }
-                        if (existingCurriculum.VocationalName != curriculum.VocationalName)
-                        {
-                            existingCurriculum.VocationalName = curriculum.VocationalName;
-                            isUpdated = true;
-                        }
-                        if (existingCurriculum.EnglishVocationalName != curriculum.EnglishVocationalName)
-                        {
-                            existingCurriculum.EnglishVocationalName = curriculum.EnglishVocationalName;
-                            isUpdated = true;
-                        }
-                        if (existingCurriculum.DecisionNo != curriculum.DecisionNo)
-                        {
-                            existingCurriculum.DecisionNo = curriculum.DecisionNo;
-                            isUpdated = true;
-                        }
-                        if (existingCurriculum.ApprovedDate != curriculum.ApprovedDate)
-                        {
-                            existingCurriculum.ApprovedDate = curriculum.ApprovedDate;
-                            isUpdated = true;
-                        }
-                        if (existingCurriculum.Status != curriculum.Status)
-                        {
-                            existingCurriculum.Status = curriculum.Status;
-                            isUpdated = true;
-                        }
-
-                        if (isUpdated)
-                        {
-                            existingCurriculum.UpdatedAt = DateTime.UtcNow;
-                            updatedCurriculums.Add(existingCurriculum);
-                        }
-                    }
-                    else
-                    {
-                        newCurriculums.Add(new Curriculum
-                        {
-                            CurriculumId = Guid.NewGuid(),
-                            CurriculumCode = curriculum.CurriculumCode,
-                            CurriculumName = curriculum.CurriculumName,
-                            CurriculumNameEnglish = curriculum.CurriculumNameEnglish,
-                            CurriculumDescription = curriculum.CurriculumDescription,
-                            VocationalCode = curriculum.VocationalCode,
-                            VocationalName = curriculum.VocationalName,
-                            EnglishVocationalName = curriculum.EnglishVocationalName,
-                            DecisionNo = curriculum.DecisionNo,
-                            ApprovedDate = curriculum.ApprovedDate,
-                            Status = curriculum.Status,
-                            CreatedAt = DateTime.UtcNow,
-                            UpdatedAt = DateTime.UtcNow
-                        });
-                    }
+                    await _curriculumSubjectRepository.DeleteCurriculumsSubjectAsync(existingCurriculum.CurriculumId);
+                    await _ploRepository.DeletePlosAsync(existingCurriculum.Plos.Select(p => p.PloId).ToList());
+                    await _ploSubjectRepository.DeletePloSubjectsAsync(existingCurriculum.Plos.Select(p => p.PloId).ToList());
                 }
 
-                if (updatedCurriculums.Any())
-                    _dbContext.Curriculums.UpdateRange(updatedCurriculums);
+                // Step 3: Insert the new curriculum
+                _dbContext.Curriculums.Add(curriculum);
+                await _dbContext.SaveChangesAsync();
 
-                if (newCurriculums.Any())
-                    await _dbContext.Curriculums.AddRangeAsync(newCurriculums);
-
-                if (updatedCurriculums.Any() || newCurriculums.Any())
-                    await _dbContext.SaveChangesAsync();
-
+                await transaction.CommitAsync();
                 return true;
             }
-            catch (DbUpdateException)
-            {
-                return false;
-            }
-            catch (Exception)
+            catch
             {
                 return false;
             }
         }
+
+
     }
 }

@@ -7,7 +7,7 @@ namespace LMCM_BE.Repositories.CurriculumRepository
     public interface ICurriculumRepository
     {
         Task<PagedResult<CurriculumDto>> GetCurriculumsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
-        Task<bool> InsertCurriculum(CurriculumDto curriculumDto);
-        Task<bool> ImportCurriculumsAsync(List<Curriculum> curriculums);
+        Task<bool> ImportCurriculumAsync(Curriculum curriculum);
+
     }
 }

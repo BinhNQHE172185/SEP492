@@ -45,6 +45,13 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
                 PageSize = pageSize
             };
         }
+        public async Task<List<Subject>> GetActiveSubjectsByCodesAsync(List<string> subjectCodes)
+        {
+            return await _dbContext.Subjects
+                .Where(s => subjectCodes.Contains(s.SubjectCode) && s.Status == "Active")
+                .ToListAsync();
+        }
+
         public async Task<bool> InsertSubjectAsync(SubjectInsertDto subjectDto)
         {
             if (subjectDto == null) throw new ArgumentNullException(nameof(subjectDto));

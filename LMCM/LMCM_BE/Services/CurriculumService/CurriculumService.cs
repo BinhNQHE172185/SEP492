@@ -19,14 +19,10 @@ namespace LMCM_BE.Services.CurriculumService
             return await _curriculumRepository.GetCurriculumsAsync(searchKey, pageIndex, pageSize);
         }
 
-        public async Task<bool> InsertCurriculum(CurriculumDto curriculumDto)
-        {
-            return await _curriculumRepository.InsertCurriculum(curriculumDto);
-        }
 
-        public async Task<bool> ImportCurriculumsAsync(List<Curriculum> curriculums)
+        public async Task<bool> ImportCurriculumAsync(Curriculum curriculum)
         {
-            return await _curriculumRepository.ImportCurriculumsAsync(curriculums);
+            return await _curriculumRepository.ImportCurriculumAsync(curriculum);
         }
     }
 }

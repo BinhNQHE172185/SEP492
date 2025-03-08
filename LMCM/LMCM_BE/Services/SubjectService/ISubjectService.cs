@@ -9,6 +9,8 @@ namespace LMCM_BE.Services.SubjectService
         Task<PagedResult<SubjectViewDto>> GetSubjectsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<bool> InsertSubjectAsync(SubjectInsertDto subject);
         Task<Subject> GetSubjectByCodeAsync(String subjectCode);
+        Task<List<Subject>> GetActiveSubjectsByCodesAsync(List<string> subjectCodes);
+
         Task<bool> ImportSubjectsAsync(List<SubjectInsertDto> subjects);
     }
 }

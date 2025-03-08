@@ -18,7 +18,7 @@ namespace LMCM_BE.Repositories.PloRepository
         public async Task<PagedResult<Plo>> GetPlosAsync(Guid curriculumId, string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.Plos
-                .Where(p => p.CurriculumId == curriculumId && p.Status != "Deleted")
+                .Where(p => p.CurriculumId == curriculumId && p.Status != "Inactive")
                 .Include(p => p.PloSubjects)
                 .AsQueryable();
 
@@ -69,12 +69,12 @@ namespace LMCM_BE.Repositories.PloRepository
 
         public async Task<bool> DeletePlosAsync(List<Guid> ploIds)
         {
-            var plos = await _dbContext.Plos.Where(p => ploIds.Contains(p.PloId) && p.Status != "Deleted").ToListAsync();
+            var plos = await _dbContext.Plos.Where(p => ploIds.Contains(p.PloId) && p.Status != "Inactive").ToListAsync();
             if (!plos.Any()) return false;
 
             foreach (var plo in plos)
             {
-                plo.Status = "Deleted";
+                plo.Status = "Inactive";
                 plo.UpdatedAt = DateTime.UtcNow;
             }
 

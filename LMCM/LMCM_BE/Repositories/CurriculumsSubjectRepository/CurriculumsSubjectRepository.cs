@@ -63,14 +63,14 @@ namespace LMCM_BE.Repositories.CurriculumsSubjectRepository
         public async Task<bool> DeleteCurriculumsSubjectAsync(Guid curriculumId)
         {
             var csList = await _dbContext.CurriculumsSubjects
-                .Where(c => c.CurriculumId == curriculumId && c.Status != "Deleted")
+                .Where(c => c.CurriculumId == curriculumId && c.Status != "Inactive")
                 .ToListAsync();
 
             if (!csList.Any()) return false;
 
             foreach (var cs in csList)
             {
-                cs.Status = "Deleted";
+                cs.Status = "Inactive";
                 cs.UpdatedAt = DateTime.UtcNow;
             }
 

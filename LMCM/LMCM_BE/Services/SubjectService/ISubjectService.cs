@@ -12,5 +12,6 @@ namespace LMCM_BE.Services.SubjectService
         Task<List<Subject>> GetActiveSubjectsByCodesAsync(List<string> subjectCodes);
 
         Task<bool> ImportSubjectsAsync(List<SubjectInsertDto> subjects);
+        Task<bool> SoftDeleteSubjectAsync(Guid subjectId);
     }
 }

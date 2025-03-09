@@ -37,5 +37,9 @@ namespace LMCM_BE.Services.SubjectService
         {
             return await _subjectRepository.GetActiveSubjectsByCodesAsync(subjectCodes);
         }
+        public async Task<bool> SoftDeleteSubjectAsync(Guid subjectId)
+        {
+            return await _subjectRepository.SoftDeleteSubjectAsync(subjectId);
+        }
     }
 }

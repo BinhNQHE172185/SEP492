@@ -88,6 +88,11 @@ namespace LMCM_BE.Repositories.PloSubjectRepository
             return await _dbContext.PloSubjects
                 .AnyAsync(ps => ps.PloId == ploId && ps.Status == "Active");
         }
+        public async Task<bool> HasActivePloSubjectBySubjectIdAsync(Guid subjectId)
+        {
+            return await _dbContext.PloSubjects
+                .AnyAsync(ps => ps.SubjectId == subjectId && ps.Status == "Active");
+        }
 
 
     }

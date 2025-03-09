@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ListCurriculumnComponent } from './list-curriculumn.component';
+import { ListCurriculumComponent } from './list-curriculum.component';
 import { FormsModule } from '@angular/forms';
 
-describe('ListCurriculumnComponent', () => {
-  let component: ListCurriculumnComponent;
-  let fixture: ComponentFixture<ListCurriculumnComponent>;
+describe('ListCurriculumComponent', () => {
+  let component: ListCurriculumComponent;
+  let fixture: ComponentFixture<ListCurriculumComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ListCurriculumnComponent],
+      declarations: [ListCurriculumComponent],
       imports: [FormsModule] // Đảm bảo có FormsModule để tránh lỗi với [(ngModel)]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ListCurriculumnComponent);
+    fixture = TestBed.createComponent(ListCurriculumComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

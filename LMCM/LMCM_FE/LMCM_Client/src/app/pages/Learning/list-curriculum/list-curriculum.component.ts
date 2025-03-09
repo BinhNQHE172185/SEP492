@@ -4,20 +4,20 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
-import { TagModule } from 'primeng/tag';
 import { FormsModule } from '@angular/forms';
 import { InputGroupModule } from 'primeng/inputgroup';
-import { SyllabusApiService } from '../../../apis/syllabusAPIs/syllabus-api.service';
 import { Subscription } from 'rxjs';
+import { CurriculumApiService } from '../../../apis/curriculumAPIs/curriculum-api.service';
 import { searchService } from '../../service/search/search-service.service';
-
-interface Syllabus {
-  courseCode: string;
-  courseName: string;
-  courseNameEnglish: string;
+import { RouterLink } from '@angular/router';
+import { ConfirmationService } from 'primeng/api'; // Thêm import này
+import { ConfirmDialog } from 'primeng/confirmdialog';
+interface Curriculum {
+  curriculumCode: string;
+  name: string;
+  description: string;
   decisionNo: string;
-  isActive: boolean;
- 
+  approvedDate: string;
 }
 
 interface PagingRequest {
@@ -29,14 +29,15 @@ interface PagingRequest {
 @Component({
   standalone: true,
   imports: [
-    InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, TagModule, CardModule, InputTextModule
+    InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, ConfirmDialog
   ],
-  selector: 'app-list-syllabus',
-  templateUrl: './list-syllabus.component.html',
-  styleUrls: ['./list-syllabus.component.scss'],
+  selector: 'app-list-curriculum',
+  templateUrl: './list-curriculum.component.html',
+  styleUrls: ['./list-curriculum.component.scss'],
+  providers: [ConfirmationService] // ✅ Thêm vào providers
 })
-export class ListSyllabusComponent implements OnInit, OnDestroy {
-  syllabuses: Syllabus[] = [];
+export class ListCurriculumComponent implements OnInit, OnDestroy {
+  curriculums: Curriculum[] = [];
   totalCount = 0;
   pageNumber = 1;
   pageSize = 10;
@@ -44,18 +45,24 @@ export class ListSyllabusComponent implements OnInit, OnDestroy {
 
   private searchSubscription!: Subscription;
 
-  constructor(private syllabusService: SyllabusApiService, private searchService: searchService) { }
+  constructor(private curriculumService: CurriculumApiService, private searchService: searchService) { }
 
   ngOnInit(): void {
     this.searchSubscription = this.searchService.searchQuery$.subscribe(
       (query) => {
         this.searchKey = query;
-        this.loadSyllabuses();
+        this.loadCurriculums();
       }
     );
   }
+ 
+ 
+  deleteCurriculum(code: string) {
+    this.curriculums = this.curriculums.filter(item => item.curriculumCode !== code);
+    this.totalCount = this.curriculums.length; // Cập nhật tổng số bản ghi
+  }
 
-  loadSyllabuses(event?: any) {
+  loadCurriculums(event?: any) {
     if (event) {
       this.pageNumber = Math.floor(event.first / event.rows) + 1;
       this.pageSize = event.rows;
@@ -67,29 +74,29 @@ export class ListSyllabusComponent implements OnInit, OnDestroy {
       searchKey: this.searchKey,
     };
 
-    this.syllabusService.getSyllabuses(request).subscribe(
+    this.curriculumService.getCurriculums(request).subscribe(
       (response) => {
         console.log("Dữ liệu nhận được:", response);
 
         if (!response.items || response.items.length === 0) {
-          console.warn("Không có syllabus nào được trả về từ API.");
-          this.syllabuses = [];
+          console.warn("Không có curriculum nào được trả về từ API.");
+          this.curriculums = [];
           this.totalCount = 0;
           return;
         }
 
-        this.syllabuses = response.items.map(item => ({
-          courseCode: item.courseCode,
-          courseName: item.courseName,
-          courseNameEnglish: item.courseNameEnglish, 
+        this.curriculums = response.items.map(item => ({
+          curriculumCode: item.curriculumCode,
+          name: item.name,
+          description: item.description,
           decisionNo: item.decisionNo,
-          isActive: item.isActive
+          approvedDate: item.approvedDate
         }));
 
         this.totalCount = response.totalCount;
       },
       (error) => {
-        console.error("Lỗi khi tải danh sách syllabus:", error);
+        console.error("Lỗi khi tải danh sách curriculum:", error);
       }
     );
   }
@@ -102,9 +109,5 @@ export class ListSyllabusComponent implements OnInit, OnDestroy {
 
   onSearchChange(query: string) {
     this.searchService.updateSearchQuery(query);
-  }
-
-  deleteSyllabus(index: number) {
-    this.syllabuses.splice(index, 1);
   }
 }

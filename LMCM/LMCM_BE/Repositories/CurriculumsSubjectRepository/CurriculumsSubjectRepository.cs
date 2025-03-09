@@ -78,6 +78,16 @@ namespace LMCM_BE.Repositories.CurriculumsSubjectRepository
             await _dbContext.SaveChangesAsync();
             return true;
         }
+        public async Task<bool> HasActiveCurriculumsSubjectsAsync(Guid curriculumId)
+        {
+            return await _dbContext.CurriculumsSubjects
+                .AnyAsync(cs => cs.CurriculumId == curriculumId && cs.Status == "Active");
+        }
+        public async Task<bool> HasActiveCurriculumSubjectsBySubjectIdAsync(Guid subjectId)
+        {
+            return await _dbContext.CurriculumsSubjects
+                .AnyAsync(cs => cs.SubjectId == subjectId && cs.Status == "Active");
+        }
 
     }
 }

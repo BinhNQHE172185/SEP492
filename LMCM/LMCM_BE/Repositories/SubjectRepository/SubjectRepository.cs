@@ -3,6 +3,8 @@ using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SubjectDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Repositories.CurriculumsSubjectRepository;
+using LMCM_BE.Repositories.PloSubjectRepository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -12,10 +14,16 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
     {
         private readonly LMCM_DBContext _dbContext;
         private readonly IMapper _mapper;
-        public SubjectRepository(LMCM_DBContext dbContext, IMapper mapper)
+        private readonly IPloSubjectRepository _ploSubjectRepository;
+        private readonly ICurriculumsSubjectRepository _curriculumSubjectRepository;
+
+
+        public SubjectRepository(LMCM_DBContext dbContext, IMapper mapper, IPloSubjectRepository ploSubjectRepository, ICurriculumsSubjectRepository curriculumSubjectRepository)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _curriculumSubjectRepository = curriculumSubjectRepository;
+            _ploSubjectRepository = ploSubjectRepository;
         }
 
         public async Task<PagedResult<SubjectViewDto>> GetSubjectsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
@@ -203,6 +211,41 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
             catch (Exception ex)
             {
                 throw;
+            }
+        }
+        public async Task<bool> SoftDeleteSubjectAsync(Guid subjectId)
+        {
+            // Step 1: Check if subject exists and is active
+            var subject = await _dbContext.Subjects
+                .FirstOrDefaultAsync(s => s.SubjectId == subjectId && s.Status == "Active");
+
+            if (subject == null)
+                return false; // Subject not found or already inactive
+
+            // Step 2: Check if there are active related entities
+            if (await _curriculumSubjectRepository.HasActiveCurriculumSubjectsBySubjectIdAsync(subjectId) ||
+                await _ploSubjectRepository.HasActivePloSubjectBySubjectIdAsync(subjectId))
+            {
+                throw new InvalidOperationException("Không thể xóa môn học khi có thực thể liên quan đang hoạt động.");
+            }
+
+            try
+            {
+                using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+                // Step 3: Soft delete the subject
+                subject.Status = "Inactive";
+                subject.UpdatedAt = DateTime.UtcNow;
+                _dbContext.Subjects.Update(subject);
+
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
 

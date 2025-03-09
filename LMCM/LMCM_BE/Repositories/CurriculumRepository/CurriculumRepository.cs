@@ -102,6 +102,42 @@ namespace LMCM_BE.Repositories.CurriculumRepository
                 return false;
             }
         }
+        public async Task<bool> SoftDeleteCurriculumAsync(Guid curriculumId)
+        {
+            // Step 1: Check if curriculum exists and is active
+            var curriculum = await _dbContext.Curriculums
+                .FirstOrDefaultAsync(c => c.CurriculumId == curriculumId && c.Status == "Active");
+
+            if (curriculum == null)
+                return false; // Curriculum not found or already inactive
+
+            // Step 2: Check if there are active related entities
+            if (await _curriculumSubjectRepository.HasActiveCurriculumsSubjectsAsync(curriculumId) ||
+                await _ploRepository.HasActivePloAsync(curriculumId) ||
+                await _ploSubjectRepository.HasActivePloSubjectByCurriculumIdAsync(curriculumId))
+            {
+                throw new InvalidOperationException("Không thể xóa chương trình giảng dạy khi có thực thể liên quan đang hoạt động.");
+            }
+
+            try
+            {
+                using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+                // Step 3: Soft delete the curriculum
+                curriculum.Status = "Inactive";
+                curriculum.UpdatedAt = DateTime.UtcNow;
+                _dbContext.Curriculums.Update(curriculum);
+
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
 
     }

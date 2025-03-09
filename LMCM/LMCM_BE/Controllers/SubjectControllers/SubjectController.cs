@@ -117,6 +117,29 @@ namespace LMCM_BE.Controllers.SubjectControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+        [HttpDelete("{subjectId}")]
+        public async Task<IActionResult> DeleteSubject(Guid subjectId)
+        {
+            try
+            {
+                var result = await _subjectService.SoftDeleteSubjectAsync(subjectId);
+                if (!result)
+                {
+                    return NotFound(new { message = "Không tìm thấy môn học hoặc đã bị xóa trước đó." });
+                }
+
+                return Ok(new { message = "Xóa môn học thành công." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
+            }
+        }
+
 
     }
 }

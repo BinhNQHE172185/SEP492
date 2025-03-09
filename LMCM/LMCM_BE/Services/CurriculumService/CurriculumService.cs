@@ -24,5 +24,9 @@ namespace LMCM_BE.Services.CurriculumService
         {
             return await _curriculumRepository.ImportCurriculumAsync(curriculum);
         }
+        public async Task<bool> SoftDeleteCurriculumAsync(Guid curriculumId)
+        {
+            return await _curriculumRepository.SoftDeleteCurriculumAsync(curriculumId);
+        }
     }
 }

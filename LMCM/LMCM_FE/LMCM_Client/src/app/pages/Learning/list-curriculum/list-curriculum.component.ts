@@ -9,9 +9,9 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { Subscription } from 'rxjs';
 import { CurriculumApiService } from '../../../apis/curriculumAPIs/curriculum-api.service';
 import { searchService } from '../../service/search/search-service.service';
-import { RouterLink } from '@angular/router';
-import { ConfirmationService } from 'primeng/api'; // Thêm import này
-import { ConfirmDialog } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+
 interface Curriculum {
   curriculumCode: string;
   name: string;
@@ -29,12 +29,13 @@ interface PagingRequest {
 @Component({
   standalone: true,
   imports: [
-    InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, ConfirmDialog
+    InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule,
+    InputTextModule, ConfirmDialogModule
   ],
   selector: 'app-list-curriculum',
   templateUrl: './list-curriculum.component.html',
   styleUrls: ['./list-curriculum.component.scss'],
-  providers: [ConfirmationService] // ✅ Thêm vào providers
+  providers: [ConfirmationService]
 })
 export class ListCurriculumComponent implements OnInit, OnDestroy {
   curriculums: Curriculum[] = [];
@@ -45,7 +46,11 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
 
   private searchSubscription!: Subscription;
 
-  constructor(private curriculumService: CurriculumApiService, private searchService: searchService) { }
+  constructor(
+    private curriculumService: CurriculumApiService,
+    private searchService: searchService,
+    private confirmationService: ConfirmationService
+  ) {}
 
   ngOnInit(): void {
     this.searchSubscription = this.searchService.searchQuery$.subscribe(
@@ -54,12 +59,6 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
         this.loadCurriculums();
       }
     );
-  }
- 
- 
-  deleteCurriculum(code: string) {
-    this.curriculums = this.curriculums.filter(item => item.curriculumCode !== code);
-    this.totalCount = this.curriculums.length; // Cập nhật tổng số bản ghi
   }
 
   loadCurriculums(event?: any) {
@@ -109,5 +108,21 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
 
   onSearchChange(query: string) {
     this.searchService.updateSearchQuery(query);
+  }
+
+  confirmDelete(index: number) {
+    this.confirmationService.confirm({
+      message: 'Bạn có chắc chắn muốn xóa chương trình giảng dạy này không?',
+      header: 'Xác nhận',
+     
+      accept: () => {
+        this.deleteCurriculum(index);
+      }
+    });
+  }
+
+  deleteCurriculum(index: number) {
+    this.curriculums.splice(index, 1);
+    this.totalCount = this.curriculums.length;
   }
 }

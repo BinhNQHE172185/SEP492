@@ -7,17 +7,19 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { FormsModule } from '@angular/forms';
 import { InputGroupModule } from 'primeng/inputgroup';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 import { SyllabusApiService } from '../../../apis/syllabusAPIs/syllabus-api.service';
 import { Subscription } from 'rxjs';
 import { searchService } from '../../service/search/search-service.service';
 
 interface Syllabus {
+  syllabusId: string;
   courseCode: string;
   courseName: string;
   courseNameEnglish: string;
   decisionNo: string;
   isActive: boolean;
- 
 }
 
 interface PagingRequest {
@@ -29,8 +31,10 @@ interface PagingRequest {
 @Component({
   standalone: true,
   imports: [
-    InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, TagModule, CardModule, InputTextModule
+    InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, TagModule, 
+    CardModule, InputTextModule, ConfirmDialogModule
   ],
+  providers: [ConfirmationService],
   selector: 'app-list-syllabus',
   templateUrl: './list-syllabus.component.html',
   styleUrls: ['./list-syllabus.component.scss'],
@@ -44,7 +48,11 @@ export class ListSyllabusComponent implements OnInit, OnDestroy {
 
   private searchSubscription!: Subscription;
 
-  constructor(private syllabusService: SyllabusApiService, private searchService: searchService) { }
+  constructor(
+    private syllabusService: SyllabusApiService,
+    private searchService: searchService,
+    private confirmationService: ConfirmationService
+  ) {}
 
   ngOnInit(): void {
     this.searchSubscription = this.searchService.searchQuery$.subscribe(
@@ -79,6 +87,7 @@ export class ListSyllabusComponent implements OnInit, OnDestroy {
         }
 
         this.syllabuses = response.items.map(item => ({
+          syllabusId: item.syllabusId,
           courseCode: item.courseCode,
           courseName: item.courseName,
           courseNameEnglish: item.courseNameEnglish, 
@@ -104,7 +113,30 @@ export class ListSyllabusComponent implements OnInit, OnDestroy {
     this.searchService.updateSearchQuery(query);
   }
 
-  deleteSyllabus(index: number) {
-    this.syllabuses.splice(index, 1);
+  confirmDelete(syllabusId: string) {
+    this.confirmationService.confirm({
+      message: 'Bạn có chắc chắn muốn xóa syllabus này không?',
+      header: 'Xác nhận',
+      accept: () => {
+        this.deleteSyllabus(syllabusId);
+      }
+    });
+    console.log("Sending delete request with ID:", syllabusId);
+
   }
+  
+  deleteSyllabus(syllabusId: string) {
+    this.syllabusService.deleteSyllabus(syllabusId).subscribe(
+      () => {
+        this.syllabuses = this.syllabuses.filter(syllabus => syllabus.syllabusId !== syllabusId);
+        this.totalCount--; // Cập nhật tổng số bản ghi
+      },
+      (error) => {
+        console.error("Lỗi khi xóa syllabus:", error);
+      }
+    );
+  }
+  
+  
+  
 }

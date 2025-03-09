@@ -16,5 +16,7 @@
         public int? Duration { get; set; }
 
         public int? Reality { get; set; }
+
+
     }
 }

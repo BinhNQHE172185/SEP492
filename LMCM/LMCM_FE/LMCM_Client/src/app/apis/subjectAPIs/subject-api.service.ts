@@ -28,4 +28,8 @@ export class SubjectApiService {
   getSubjects(request: PagingRequest): Observable<PagedResult<any>> {
     return this.http.post<PagedResult<any>>(`${this.apiUrl}/Subject/getSubjectList`, request);
   }
+  deleteSubject(subjectId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/Subject/${subjectId}`);
+}
+
 }

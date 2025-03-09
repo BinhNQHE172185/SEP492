@@ -44,7 +44,7 @@ namespace LMCM_BE.Controllers.CurriculumControllers
         public async Task<IActionResult> ImportCurriculumFromExcel(IFormFile file)
         {
             if (file == null || file.Length == 0)
-                return BadRequest(new { message = "Please upload a valid Excel file." });
+                return BadRequest(new { message = "Vui lòng tải lên tệp Excel hợp lệ." });
 
             try
             {
@@ -102,6 +102,9 @@ namespace LMCM_BE.Controllers.CurriculumControllers
                                 }
                             }
                         };
+                        // Function to validate headers sheet
+                        if (curriculumSheet == null || ploSheet == null || curriculumSubjectSheet == null || ploSubjectSheet == null)
+                            return BadRequest(new { message = "Định dạng tệp Excel không hợp lệ." });
 
                         // Function to validate headers with expected cell locations
                         bool ValidateHeaders(ExcelWorksheet sheet, List<(string Header, string Cell)> expectedHeaders)
@@ -142,7 +145,7 @@ namespace LMCM_BE.Controllers.CurriculumControllers
 
                         if (invalidSheets.Any())
                         {
-                            return BadRequest(new { message = "Invalid headers detected in the following sheets:", invalidSheets });
+                            return BadRequest(new { message = "Các sheet sau có tiêu đề không hợp lệ:", invalidSheets });
                         }
 
                         // Read Curriculum data
@@ -191,11 +194,8 @@ namespace LMCM_BE.Controllers.CurriculumControllers
 
                         if (missingSubjects.Any())
                         {
-                            return BadRequest(new { message = "The following subjects are missing or inactive:", missingSubjects });
+                            return BadRequest(new { message = "Các môn học sau đây không tồn tại hoặc không hoạt động:", missingSubjects });
                         }
-
-                        if (curriculumSheet == null || ploSheet == null || curriculumSubjectSheet == null)
-                            return BadRequest(new { message = "Invalid Excel file format." });
 
                         // Step 4: Convert Temporary Subjects to CurriculumsSubjects
                         var curriculumsSubjects = new List<CurriculumsSubject>();
@@ -288,12 +288,13 @@ namespace LMCM_BE.Controllers.CurriculumControllers
 
                         // Save curriculum and mappings
                         var isSuccess = await _curriculumService.ImportCurriculumAsync(curriculum);
-
+                        
                         if (isSuccess)
                         {
-                            return Ok(new { message = "Curriculum imported successfully." });
+                            return Ok(new { message = "Nhập chương trình đào tạo thành công." });
                         }
-                        return BadRequest(new { message = "Import failed." });
+                        return BadRequest(new { message = "Nhập chương trình đào tạo thất bại." });
+
                     }
                 }
             }
@@ -302,6 +303,25 @@ namespace LMCM_BE.Controllers.CurriculumControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+        [HttpDelete("{curriculumId}")]
+        public async Task<IActionResult> DeleteCurriculum(Guid curriculumId)
+        {
+            try
+            {
+                var result = await _curriculumService.SoftDeleteCurriculumAsync(curriculumId);
+                if (!result)
+                {
+                    return NotFound(new { message = "Không tìm thấy chương trình giảng dạy hoặc đã bị xóa trước đó." });
+                }
+
+                return Ok(new { message = "Xóa chương trình giảng dạy thành công." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
+            }
+        }
+
 
 
     }

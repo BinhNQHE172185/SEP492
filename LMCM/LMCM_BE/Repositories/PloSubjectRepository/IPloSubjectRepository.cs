@@ -10,6 +10,7 @@ namespace LMCM_BE.Repositories.PloSubjectRepository
         Task<bool> AddPloSubjectsAsync(List<PloSubject> ploSubjects);
 
         Task<bool> DeletePloSubjectsAsync(List<Guid> ploIds);
-
+        Task<bool> HasActivePloSubjectByCurriculumIdAsync(Guid curriculumId);
+        Task<bool> HasActivePloSubjectByPloIdAsync(Guid ploId);
     }
 }

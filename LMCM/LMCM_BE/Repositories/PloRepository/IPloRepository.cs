@@ -12,5 +12,6 @@ namespace LMCM_BE.Repositories.PloRepository
         Task<List<Plo>> GetAllPlosAsync(Guid curriculumId);
         Task<bool> AddPlosAsync(List<Plo> plos);
         Task<bool> DeletePlosAsync(List<Guid> ploIds);
+        Task<bool> HasActivePloAsync(Guid curriculumId);
     }
 }

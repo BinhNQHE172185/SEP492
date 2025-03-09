@@ -82,5 +82,11 @@ namespace LMCM_BE.Repositories.PloRepository
             await _dbContext.SaveChangesAsync();
             return true;
         }
+        public async Task<bool> HasActivePloAsync(Guid curriculumId)
+        {
+            return await _dbContext.Plos
+                .AnyAsync(p => p.CurriculumId == curriculumId && p.Status == "Active");
+        }
+
     }
 }

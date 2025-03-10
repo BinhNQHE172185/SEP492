@@ -11,5 +11,6 @@ namespace LMCM_BE.Repositories.SyllabusRepository
         Task<Syllabus> ImportSyllabusAsync(SyllabusInsertDto syllabus);
         Task<bool> UpdateSyllabusAsync(Syllabus existingSyllabus, SyllabusInsertDto syllabusDto);
         Task<bool> DeleteSyllabusAsync(Guid id);
+        Task<bool> HasActiveSyllabusesBySubjectIdAsync(Guid subjectId);
     }
 }

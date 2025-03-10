@@ -6,7 +6,7 @@
 
     <div class="mt-3">
         <p-inputgroup class="w-full">
-            <p-button icon="pi pi-search"></p-button>
+            <p-button label="Search" />
             <input [(ngModel)]="searchKey" (ngModelChange)="loadCurriculums()" pInputText placeholder="Keyword" />
         </p-inputgroup>
     </div>
@@ -16,8 +16,8 @@
             (onPage)="loadCurriculums($event)" class="w-full">
             <ng-template pTemplate="header">
                 <tr>
-                    <th>Code</th>
-                    <th>Tên</th>
+                    <th>Mã chương trình</th>
+                    <th>Tên chương trình</th>
                     <th>Miêu tả</th>
                     <th>Quyết định số</th>
                     <th>Ngày phê duyệt</th>

@@ -5,6 +5,7 @@ using LMCM_BE.DTOs.SubjectDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.CurriculumsSubjectRepository;
 using LMCM_BE.Repositories.PloSubjectRepository;
+using LMCM_BE.Repositories.SyllabusRepository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -16,14 +17,16 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
         private readonly IMapper _mapper;
         private readonly IPloSubjectRepository _ploSubjectRepository;
         private readonly ICurriculumsSubjectRepository _curriculumSubjectRepository;
+        private readonly ISyllabusRepository _syllabusSubjectRepository;
 
 
-        public SubjectRepository(LMCM_DBContext dbContext, IMapper mapper, IPloSubjectRepository ploSubjectRepository, ICurriculumsSubjectRepository curriculumSubjectRepository)
+        public SubjectRepository(LMCM_DBContext dbContext, IMapper mapper, IPloSubjectRepository ploSubjectRepository, ICurriculumsSubjectRepository curriculumSubjectRepository, ISyllabusRepository syllabusRepository)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _curriculumSubjectRepository = curriculumSubjectRepository;
             _ploSubjectRepository = ploSubjectRepository;
+            _syllabusSubjectRepository = syllabusRepository;
         }
 
         public async Task<PagedResult<SubjectViewDto>> GetSubjectsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
@@ -226,7 +229,8 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
 
             // Step 2: Check if there are active related entities
             if (await _curriculumSubjectRepository.HasActiveCurriculumSubjectsBySubjectIdAsync(subjectId) ||
-                await _ploSubjectRepository.HasActivePloSubjectBySubjectIdAsync(subjectId))
+                await _ploSubjectRepository.HasActivePloSubjectBySubjectIdAsync(subjectId) || 
+                await _syllabusSubjectRepository.HasActiveSyllabusesBySubjectIdAsync(subjectId))
             {
                 throw new InvalidOperationException("Không thể xóa môn học khi có thực thể liên quan đang hoạt động.");
             }

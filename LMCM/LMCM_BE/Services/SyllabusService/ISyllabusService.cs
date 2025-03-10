@@ -9,5 +9,6 @@ namespace LMCM_BE.Services.SyllabusService
         Task<PagedResult<SyllabusListViewDto>> GetSyllabusesAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<Syllabus> ImportSyllabusAsync(SyllabusInsertDto syllabus);
         Task<bool> DeleteSyllabusAsync(Guid id);
+        Task<bool> HasActiveSyllabusesBySubjectIdAsync(Guid subjectId);
     }
 }

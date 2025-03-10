@@ -32,6 +32,9 @@ using LMCM_BE.Services.GradingStructureService;
 using LMCM_BE.AutoMapper.ConstructivistQuestionProfiles;
 using LMCM_BE.Repositories.ConstructivistQuestionRepository;
 using LMCM_BE.Services.ConstructivistQuestionService;
+using LMCM_BE.AutoMapper.LearningMaterialChangesHistoryProfiles;
+using LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository;
+using LMCM_BE.Services.LearningMaterialChangesHistoryService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -80,6 +83,7 @@ builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(ScheduleIProfile));
 builder.Services.AddAutoMapper(typeof(GradingStructureProfile));
 builder.Services.AddAutoMapper(typeof(ConstructivistQuestionProfile));
+builder.Services.AddAutoMapper(typeof(LearningMaterialChangesHistoryProfile));
 
 //DI
 builder.Services.AddScoped<RoleManager<IdentityRole<Guid>>>();
@@ -104,6 +108,8 @@ builder.Services.AddScoped<IGradingStructureRepository, GradingStructureReposito
 builder.Services.AddScoped<IGradingStructureService, GradingStructureService>();
 builder.Services.AddScoped<IConstructivistQuestionRepository, ConstructivistQuestionRepository>();
 builder.Services.AddScoped<IConstructivistQuestionService, ConstructivistQuestionService>();
+builder.Services.AddScoped<ILearningMaterialChangesHistoryRepository, LearningMaterialChangesHistoryRepository>();
+builder.Services.AddScoped<ILearningMaterialChangesHistorySerivce, LearningMaterialChangesHistorySerivce>();
 
 builder.Services.AddAuthorization();
 

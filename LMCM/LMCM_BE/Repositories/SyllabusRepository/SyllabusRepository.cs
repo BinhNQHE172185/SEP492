@@ -44,6 +44,8 @@ namespace LMCM_BE.Repositories.SyllabusRepository
                                          s.CourseName.ToLower().Contains(search));
             }
 
+            query = query.Where(s => s.Status != "Inactive");
+
             int totalCount = await query.CountAsync();
 
             var items = await query

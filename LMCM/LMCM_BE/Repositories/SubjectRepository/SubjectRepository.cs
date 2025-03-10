@@ -40,6 +40,8 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
                                          s.SubjectName.ToLower().Contains(search));
             }
 
+            query = query.Where(s => s.Status != "Inactive");
+
             int totalCount = await query.CountAsync();
 
             var items = await query.Skip((pageIndex - 1) * pageSize)

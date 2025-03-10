@@ -35,7 +35,7 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
                 string search = searchKey.Trim().ToLower();
                 query = query.Where(s => (s.SubjectCode.ToLower().Contains(search) ||
                                          s.SubjectName.ToLower().Contains(search)) &&
-                                         s.Status.ToLower().Equals("inactive"));
+                                         s.Status.ToLower().Equals("active"));
             }
 
             int totalCount = await query.CountAsync();

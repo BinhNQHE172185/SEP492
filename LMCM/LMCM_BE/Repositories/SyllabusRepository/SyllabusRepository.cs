@@ -42,7 +42,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
                 query = query.Where(s => (s.CourseCode.ToLower().Contains(search) ||
                                          s.CourseNameEnglish.ToLower().Contains(search) ||
                                          s.CourseName.ToLower().Contains(search))&&
-                                         s.Status.ToLower().Equals("inactive"));
+                                         s.Status.ToLower().Equals("active"));
             }
 
             int totalCount = await query.CountAsync();

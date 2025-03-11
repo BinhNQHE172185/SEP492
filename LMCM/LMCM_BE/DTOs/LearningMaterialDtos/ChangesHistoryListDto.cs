@@ -1,6 +1,6 @@
 ﻿using LMCM_BE.Models;
 
-namespace LMCM_BE.DTOs.LearningMaterialChangesHistoryProfilesDtos
+namespace LMCM_BE.DTOs.LearningMaterialDtos
 {
     public class ChangesHistoryListDto
     {

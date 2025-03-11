@@ -641,6 +641,10 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_Main_Material");
 
+                    b.Property<string>("LearningType")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<Guid>("MaterialDetailId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("Material_Detail_ID");
@@ -659,6 +663,10 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("Material_Quantity");
 
+                    b.Property<string>("MaterialType")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
 
@@ -673,10 +681,6 @@ namespace LMCM_BE.Migrations
                     b.Property<Guid>("SyllabusId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("Syllabus_ID");
-
-                    b.Property<string>("Type")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()

@@ -1,8 +1,8 @@
-﻿using LMCM_BE.DTOs.LearningMaterialChangesHistoryProfilesDtos;
+﻿using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
-using LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository;
+using LMCM_BE.Repositories.LearningMaterialRepository;
 
-namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
+namespace LMCM_BE.Services.LearningMaterialService
 {
     public class LearningMaterialChangesHistorySerivce : ILearningMaterialChangesHistorySerivce
     {

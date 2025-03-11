@@ -1,20 +1,20 @@
 ﻿using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Services.CurriculumService;
-using LMCM_BE.Services.LearningMaterialChangesHistoryService;
+using LMCM_BE.Services.LearningMaterialService;
 using LMCM_BE.Services.SubjectService;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LMCM_BE.Controllers.LeaningMaterialChangesHistoryControllers
+namespace LMCM_BE.Controllers.LearningMaterialControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LeaningMaterialChangesHistoryController : ControllerBase
+    public class LearningMaterialController : ControllerBase
     {
         private readonly ILearningMaterialChangesHistorySerivce _changesService;
 
-        public LeaningMaterialChangesHistoryController(ILearningMaterialChangesHistorySerivce changesService)
+        public LearningMaterialController(ILearningMaterialChangesHistorySerivce changesService)
         {
-            _changesService = changesService;   
+            _changesService = changesService;
         }
 
         [HttpPost("getChangesHistoryList")]

@@ -1,7 +1,7 @@
-﻿using LMCM_BE.DTOs.LearningMaterialChangesHistoryProfilesDtos;
+﻿using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
 
-namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
+namespace LMCM_BE.Services.LearningMaterialService
 {
     public interface ILearningMaterialChangesHistorySerivce
     {

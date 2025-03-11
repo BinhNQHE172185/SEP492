@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using LMCM_BE.DTOs.LearningMaterialChangesHistoryProfilesDtos;
+using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.Models;
 
-namespace LMCM_BE.AutoMapper.LearningMaterialChangesHistoryProfiles
+namespace LMCM_BE.AutoMapper.LearningMaterialProfiles
 {
     public class LearningMaterialChangesHistoryProfile : Profile
     {

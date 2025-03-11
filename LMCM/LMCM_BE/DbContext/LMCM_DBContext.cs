@@ -407,7 +407,8 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.Purpose).HasMaxLength(255);
             entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.SyllabusId).HasColumnName("Syllabus_ID");
-            entity.Property(e => e.Type).HasMaxLength(255);
+            entity.Property(e => e.LearningType).HasMaxLength(255);
+            entity.Property(e => e.MaterialType).HasMaxLength(255);
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.Url).HasMaxLength(255);
 

@@ -43,7 +43,7 @@
                     </td>
                     <td>
                         <p-button label="Xóa" class="p-button-text p-button-sm p-button-danger"
-                            (click)="deleteSyllabus(i)"></p-button>
+                        (onClick)="deleteSyllabus(syllabus?.syllabusId)"></p-button>
                     </td>
                 </tr>
             </ng-template>
@@ -109,3 +109,4 @@
 </p-dialog>
 
 <p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>

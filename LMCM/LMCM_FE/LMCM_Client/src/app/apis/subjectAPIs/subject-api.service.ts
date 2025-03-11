@@ -22,7 +22,7 @@ export interface PagedResult<T> {
 })
 export class SubjectApiService {
   private apiUrl = environment.apiUrl;
-  
+
   constructor(private http: HttpClient) { }
 
   getSubjects(request: PagingRequest): Observable<PagedResult<any>> {
@@ -30,5 +30,8 @@ export class SubjectApiService {
   }
   importSubjects(request: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/Subject/importSubjects`, request);
+  }
+  deleteSubjects(id: any): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/Subject/${id}`);
   }
 }

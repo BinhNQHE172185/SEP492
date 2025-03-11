@@ -58,8 +58,8 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             }
         }
 
-        [HttpPost("deleteSyllabus")]
-        public async Task<IActionResult> DeleteSyllabusAsync([FromBody] Guid syllabusId)
+        [HttpDelete("{syllabusId}")]
+        public async Task<IActionResult> DeleteSyllabusAsync(Guid syllabusId)
         {
             try
             {

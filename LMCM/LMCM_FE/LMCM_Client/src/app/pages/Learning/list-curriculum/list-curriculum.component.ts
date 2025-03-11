@@ -11,7 +11,7 @@ import { CurriculumApiService } from '../../../apis/curriculumAPIs/curriculum-ap
 import { searchService } from '../../service/search/search-service.service';
 import { RouterLink } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api'; // Thêm import này
-import { ConfirmDialog } from 'primeng/confirmdialog';
+import { ConfirmDialog, ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { FileUploadModule } from 'primeng/fileupload';
 import { DialogModule } from 'primeng/dialog';
@@ -32,7 +32,7 @@ interface PagingRequest {
 @Component({
   standalone: true,
   imports: [
-    ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, ConfirmDialog
+    ConfirmDialogModule,ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, ConfirmDialog
   ],
   selector: 'app-list-curriculum',
   templateUrl: './list-curriculum.component.html',
@@ -51,7 +51,10 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
 
   private searchSubscription!: Subscription;
 
-  constructor(private curriculumService: CurriculumApiService, private searchService: searchService, private messageService: MessageService) { }
+  constructor(private curriculumService: CurriculumApiService,
+    private searchService: searchService,
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
     this.searchSubscription = this.searchService.searchQuery$.subscribe(
@@ -138,5 +141,25 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
 
   onSearchChange(query: string) {
     this.searchService.updateSearchQuery(query);
+  }
+
+  deleteCurriculumn(id: any) {
+    this.confirmationService.confirm({
+      header: 'Xóa dữ liệu',
+      message: 'Bạn có chắc chắn muốn xóa? Hành động này là không thể hoàn tác.',
+      acceptLabel: 'Đồng ý',
+      rejectLabel: 'Hủy',
+      accept: () => {
+        this.curriculumService.deleteCurriculums(id).subscribe(
+          (response) => {
+            this.loadCurriculums();
+            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Xóa dữ liệu thành công' });
+          },
+          (error) => {
+            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+          }
+        );
+      }
+    });
   }
 }

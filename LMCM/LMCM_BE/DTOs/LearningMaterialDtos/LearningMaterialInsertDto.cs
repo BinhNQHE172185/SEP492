@@ -6,7 +6,7 @@
 
         public Guid SyllabusId { get; set; }
 
-        public Guid MaterialDetailId { get; set; }
+        public Guid? MaterialDetailId { get; set; }
 
         public string? LearningType { get; set; }
         public string? MaterialType { get; set; }

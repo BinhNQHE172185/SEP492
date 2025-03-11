@@ -114,6 +114,8 @@ builder.Services.AddScoped<ILearningMaterialChangesHistoryRepository, LearningMa
 builder.Services.AddScoped<ILearningMaterialChangesHistorySerivce, LearningMaterialChangesHistorySerivce>();
 builder.Services.AddScoped<ILearningMaterialRepository, LearningMaterialRepository>();
 builder.Services.AddScoped<ILearningMaterialService, LearningMaterialService>();
+builder.Services.AddScoped<ILearningMaterialDetailsRepository, LearningMaterialDetailsRepository>();
+builder.Services.AddScoped<ILearningMaterialDetailsService, LearningMaterialDetailsService>();
 
 builder.Services.AddAuthorization();
 

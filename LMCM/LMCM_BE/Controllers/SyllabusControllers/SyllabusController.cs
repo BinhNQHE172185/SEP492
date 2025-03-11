@@ -2,6 +2,7 @@
 using LMCM_BE.DTOs.CLODtos;
 using LMCM_BE.DTOs.ConstructivistQuestionDtos;
 using LMCM_BE.DTOs.GradingStructureDtos;
+using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ScheduleDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
@@ -9,6 +10,7 @@ using LMCM_BE.Models;
 using LMCM_BE.Services.CLOService;
 using LMCM_BE.Services.ConstructivistQuestionService;
 using LMCM_BE.Services.GradingStructureService;
+using LMCM_BE.Services.LearningMaterialService;
 using LMCM_BE.Services.ScheduleService;
 using LMCM_BE.Services.SubjectService;
 using LMCM_BE.Services.SyllabusService;
@@ -29,7 +31,11 @@ namespace LMCM_BE.Controllers.SyllabusControllers
         private readonly IScheduleService _scheduleService;
         private readonly IGradingStructureService _gradingStructureService;
         private readonly IConstructivistQuestionService _questionService;
-        public SyllabusController(LMCM_DBContext dBContext,ISyllabusService syllabusService, ISubjectService subjectService, ICLOService cloService, IScheduleService scheduleService, IGradingStructureService gradingStructureService, IConstructivistQuestionService questionService)
+        private readonly ILearningMaterialService _learningMaterialService;
+        private readonly ILearningMaterialDetailsService _learningMaterialDetailsService;
+        public SyllabusController(LMCM_DBContext dBContext,ISyllabusService syllabusService, ISubjectService subjectService, ICLOService cloService, 
+            IScheduleService scheduleService, IGradingStructureService gradingStructureService, IConstructivistQuestionService questionService, 
+            ILearningMaterialService learningMaterialService,ILearningMaterialDetailsService learningMaterialDetailsService)
         {
             _dbContext = dBContext;
             _syllabusService = syllabusService;
@@ -38,6 +44,8 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             _scheduleService = scheduleService;
             _gradingStructureService = gradingStructureService;
             _questionService = questionService;
+            _learningMaterialService = learningMaterialService;
+            _learningMaterialDetailsService = learningMaterialDetailsService;
         }
 
         [HttpPost("getSyllabusesList")]
@@ -94,7 +102,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                         await file.CopyToAsync(stream);
                         using (var package = new ExcelPackage(stream))
                         {
-                            var requiredSheets = new List<string> { "Syllabus", "Schedule", "CLO", "Grading structure", "Constructivist Question" };
+                            var requiredSheets = new List<string> { "Syllabus", "Schedule", "CLO", "Grading structure", "Constructivist Question", "Materials" };
                             var availableSheets = package.Workbook.Worksheets.Select(sheet => sheet.Name).ToList();
                             var missingSheets = requiredSheets.Except(availableSheets).ToList();
 
@@ -127,6 +135,11 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                             var isQuestionSuccess = await ImportConstructivistQuestionSheet(package.Workbook.Worksheets["Constructivist Question"], syllabus);
                             if (!isQuestionSuccess)
                                 throw new Exception("Nhập câu hỏi thất bại.");
+
+                            // Import Materials
+                            var isMaterialsSuccess = await ImportMaterialsSheet(package.Workbook.Worksheets["Materials"], syllabus);
+                            if (!isQuestionSuccess)
+                                throw new Exception("Nhập học liệu thất bại.");
 
                             await _dbContext.SaveChangesAsync();
                             await transaction.CommitAsync();
@@ -375,6 +388,119 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             }
 
             return await _questionService.ImportConstructivistQuestionsAsync(questionList);
+        }
+        private async Task<bool> ImportMaterialsSheet(ExcelWorksheet worksheet, Syllabus syllabus)
+        {
+            // Validate expected headers
+            string[] expectedHeaders = { "No", "MaterialDescription", "Purpose", "ISBN", "Type", "Note", "Author", "Publisher", "Published Date", "Edition" };
+
+            for (int col = 1; col <= expectedHeaders.Length; col++)
+            {
+                if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
+                {
+                    throw new Exception($"Định dạng Excel trang Materials không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
+                }
+            }
+
+            var materialList = new List<LearningMaterialInsertDto>();
+            int rowCount = worksheet.Dimension.Rows;
+
+            for (int row = 2; row <= rowCount; row++)
+            {
+                var materialDetail=new LearningMaterialDetailsInsertDto();
+                var materialDescription = worksheet.Cells[row, 2].Text.Trim(); // Read MaterialDescription
+                string materialType = "";
+                string materialQuantity = "1";
+                string url = null;
+                Guid? materialDetailId=null;
+
+                var isbn = worksheet.Cells[row, 4].Text.Trim();
+                var author = worksheet.Cells[row, 7].Text.Trim();
+                var publisher = worksheet.Cells[row, 8].Text.Trim();
+                var edition = worksheet.Cells[row, 10].Text.Trim();
+                DateTime? publishedDate = DateTime.TryParse(worksheet.Cells[row, 9].Text, out DateTime tempDate) ? tempDate : (DateTime?)null;
+
+                // Check if all fields are empty
+                if (!string.IsNullOrEmpty(isbn) ||
+                    !string.IsNullOrEmpty(author) ||
+                    !string.IsNullOrEmpty(publisher) ||
+                    !string.IsNullOrEmpty(edition) ||
+                    publishedDate.HasValue)
+                {
+                    var materialDetailData = new LearningMaterialDetailsInsertDto
+                    {
+                        MaterialName=materialDescription,
+                        Isbn = isbn,
+                        Author = author,
+                        Publisher = publisher,
+                        PublishedDate = publishedDate,
+                        Edition = edition,
+                        Url=materialDescription,
+                    };
+                    LearningMaterialDetail detail= await _learningMaterialDetailsService.InsertMaterialDetailsAsync(materialDetailData);
+                    materialDetailId = detail.MaterialDetailId;
+                }
+
+                if (!string.IsNullOrEmpty(materialDescription))
+                {
+                    // Define the possible material types
+                    string[] materialTypes = { "Slide", "Lab", "Assignment", "Quiz", "Assigment" };
+
+                    bool foundType = false;
+
+                    foreach (var type in materialTypes)
+                    {
+                        if (materialDescription.StartsWith(type, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Remove the material type from the string and trim extra characters
+                            string remainingText = materialDescription.Substring(type.Length).Trim(':', ' ');
+
+                            // Try parsing the quantity, default to "1" if missing
+                            materialType = type;
+                            materialQuantity = int.TryParse(remainingText, out int quantity) ? quantity.ToString() : "1";
+
+                            foundType = true;
+                            break; // Stop checking other types once a match is found
+                        }
+                    }
+
+                    // If no known material type is found, treat it as a URL
+                    if (!foundType)
+                    {
+                        materialType = null;
+                        url = materialDescription;
+                    }
+                }
+
+                var materialData = new LearningMaterialInsertDto
+                {
+                    SyllabusId = syllabus.SyllabusId,
+                    MaterialDetailId=materialDetailId,
+                    MaterialNo= int.TryParse(worksheet.Cells[row, 1].Text, out int materialNo) ? materialNo : 0,
+                    MaterialType = materialType, // Extracted type
+                    MaterialQuantity =materialQuantity, // Extracted quantity
+                    Purpose = worksheet.Cells[row, 3].Text.Trim(),
+                    LearningType= worksheet.Cells[row, 5].Text.Trim(),
+                    Note= worksheet.Cells[row, 6].Text.Trim(),
+                    Url=url,
+                };
+
+                materialList.Add(materialData);
+            }
+
+            if (!materialList.Any())
+            {
+                return true;
+                //throw new Exception("Không tìm thấy dữ liệu câu hỏi trong trang.");
+            }
+
+            // Remove old materials if syllabus has a previous version
+            if (syllabus.PreviousVersionId != null)
+            {
+                await _learningMaterialService.DeleteLearningMaterialsBySyllabusAsync((Guid)syllabus.PreviousVersionId);
+            }
+
+            return await _learningMaterialService.ImportLearningMaterialsAsync(materialList);
         }
     }
 }

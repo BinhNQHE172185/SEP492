@@ -9,10 +9,12 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { Subscription } from 'rxjs';
 import { CurriculumApiService } from '../../../apis/curriculumAPIs/curriculum-api.service';
 import { searchService } from '../../service/search/search-service.service';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ToastModule } from 'primeng/toast';
 
 interface Curriculum {
+  curriculumId: string;
   curriculumCode: string;
   name: string;
   description: string;
@@ -30,12 +32,12 @@ interface PagingRequest {
   standalone: true,
   imports: [
     InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule,
-    InputTextModule, ConfirmDialogModule
+    InputTextModule, ConfirmDialogModule, ToastModule
   ],
   selector: 'app-list-curriculum',
   templateUrl: './list-curriculum.component.html',
   styleUrls: ['./list-curriculum.component.scss'],
-  providers: [ConfirmationService]
+  providers: [ConfirmationService, MessageService]
 })
 export class ListCurriculumComponent implements OnInit, OnDestroy {
   curriculums: Curriculum[] = [];
@@ -49,7 +51,8 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
   constructor(
     private curriculumService: CurriculumApiService,
     private searchService: searchService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
@@ -59,6 +62,7 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
         this.loadCurriculums();
       }
     );
+    this.loadCurriculums();
   }
 
   loadCurriculums(event?: any) {
@@ -75,8 +79,6 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
 
     this.curriculumService.getCurriculums(request).subscribe(
       (response) => {
-        console.log("Dữ liệu nhận được:", response);
-
         if (!response.items || response.items.length === 0) {
           console.warn("Không có curriculum nào được trả về từ API.");
           this.curriculums = [];
@@ -84,14 +86,7 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
           return;
         }
 
-        this.curriculums = response.items.map(item => ({
-          curriculumCode: item.curriculumCode,
-          name: item.name,
-          description: item.description,
-          decisionNo: item.decisionNo,
-          approvedDate: item.approvedDate
-        }));
-
+        this.curriculums = response.items;
         this.totalCount = response.totalCount;
       },
       (error) => {
@@ -110,19 +105,26 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
     this.searchService.updateSearchQuery(query);
   }
 
-  confirmDelete(index: number) {
+  confirmDelete(curriculumId: string, index: number) {
     this.confirmationService.confirm({
       message: 'Bạn có chắc chắn muốn xóa chương trình giảng dạy này không?',
-      header: 'Xác nhận',
-     
+      header: 'Xác nhận xóa',
       accept: () => {
-        this.deleteCurriculum(index);
+        this.deleteCurriculum(curriculumId, index);
       }
     });
   }
 
-  deleteCurriculum(index: number) {
-    this.curriculums.splice(index, 1);
-    this.totalCount = this.curriculums.length;
+  deleteCurriculum(curriculumId: string, index: number) {
+    this.curriculumService.deleteCurriculum(curriculumId).subscribe(
+      () => {
+        this.curriculums.splice(index, 1);
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Xóa chương trình giảng dạy thành công!' });
+      },
+      (error) => {
+        console.error("Lỗi khi xóa chương trình giảng dạy:", error);
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: error.error?.message || 'Xóa chương trình thất bại!' });
+      }
+    );
   }
 }

@@ -12,8 +12,18 @@
     </div>
 
     <div class="mt-4">
-        <p-table [value]="curriculums" [rows]="pageSize" [paginator]="true" [totalRecords]="totalCount"
-            (onPage)="loadCurriculums($event)" class="w-full">
+        <p-table 
+        [value]="curriculums" 
+        [rows]="pageSize" 
+        [paginator]="true" 
+        [lazy]="true"
+        [totalRecords]="totalCount" 
+        (onPage)="loadCurriculums($event)" 
+        [rowHover]="true"
+        currentPageReportTemplate="Hiện {first} tới {last} của {totalRecords} syllabus"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 20, 30]"
+        class="w-full">
             <ng-template pTemplate="header">
                 <tr>
                     <th>Mã chương trình</th>
@@ -30,10 +40,10 @@
                     <td>{{ item.name }}</td>
                     <td>{{ item.description }}</td>
                     <td>{{ item.decisionNo }}</td>
-                    <td>{{ item.approvedDate | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ item.approvedDate | date: 'dd/MM/yyyy' }}</td>
                     <td>
-                        <p-button label="Xóa" class="p-button-text p-button-sm p-button-danger"
-                            (click)="confirmDelete(i)"></p-button>
+                        <button pButton type="button" label="Xóa" 
+                                (click)="confirmDelete(item.curriculumId, i)"></button>
                     </td>
                 </tr>
             </ng-template>
@@ -42,4 +52,5 @@
 
     <!-- Hộp thoại xác nhận xóa -->
     <p-confirmDialog></p-confirmDialog>
+    <p-toast></p-toast>
 </p-card>

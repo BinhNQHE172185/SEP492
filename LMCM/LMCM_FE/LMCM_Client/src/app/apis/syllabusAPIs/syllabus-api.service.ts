@@ -32,7 +32,7 @@ export class SyllabusApiService {
   deleteSyllabus(syllabusId: string): Observable<any> {
     return this.http.post(
       `${this.apiUrl}/Syllabus/deleteSyllabus`,
-      syllabusId,  // Không dùng JSON.stringify
+      syllabusId,  
       {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' })
       }

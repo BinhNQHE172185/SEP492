@@ -12,6 +12,10 @@ import { Subscription } from 'rxjs';
 import { searchService } from '../../service/search/search-service.service';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageService } from 'primeng/api';
+import { MessagesModule } from 'primeng/messages';
+import { ToastModule } from 'primeng/toast';
+
 
 interface Subject {
   subjectId: string;
@@ -35,12 +39,12 @@ interface PagingRequest {
   standalone: true,
   imports: [
     InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, TagModule, CardModule,
-    InputTextModule, ConfirmDialogModule
+    InputTextModule, ConfirmDialogModule, ToastModule
   ],
   selector: 'app-list-subjects',
   templateUrl: './list-subjects.component.html',
   styleUrls: ['./list-subjects.component.scss'],
-  providers: [ConfirmationService]
+  providers: [ConfirmationService,ConfirmationService, MessageService]
 })
 export class ListSubjectsComponent implements OnInit, OnDestroy {
   subjects: Subject[] = [];
@@ -54,7 +58,9 @@ export class ListSubjectsComponent implements OnInit, OnDestroy {
   constructor(
     private subjectService: SubjectApiService,
     private searchService: searchService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService 
+
   ) {}
 
   ngOnInit(): void {
@@ -122,14 +128,17 @@ export class ListSubjectsComponent implements OnInit, OnDestroy {
 }
 
 deleteSubject(subjectId: string, index: number) {
-    this.subjectService.deleteSubject(subjectId).subscribe(
-      () => {
-        this.subjects.splice(index, 1);
-      },
-      (error) => {
-        console.error("Lỗi khi xóa môn học:", error);
-      }
-    );
+  this.subjectService.deleteSubject(subjectId).subscribe(
+    () => {
+      this.subjects.splice(index, 1);
+      this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Xóa môn học thành công!' });
+    },
+    (error) => {
+      console.error("Lỗi khi xóa môn học:", error);
+      this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: error.error.message || 'Xóa môn học thất bại!' });
+    }
+  );
 }
+
 
 }

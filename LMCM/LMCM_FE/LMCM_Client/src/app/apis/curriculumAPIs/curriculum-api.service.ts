@@ -28,4 +28,7 @@ export class CurriculumApiService {
   getCurriculums(request: PagingRequest): Observable<PagedResult<any>> {
     return this.http.post<PagedResult<any>>(`${this.apiUrl}/Curriculum/getCurriculumList`, request);
   }
+  deleteCurriculum(curriculumId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/Curriculum/${curriculumId}`);
+  }
 }

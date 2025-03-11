@@ -3,20 +3,29 @@
         <h2 class="text-xl font-bold text-orange-500">Danh sách Syllabus</h2>
         <p-button label="Nhập" icon="pi pi-upload" class="p-button-warning"></p-button>
     </div>
-  
+
     <div class="mt-3">
         <p-inputgroup class="w-full">
             <p-button label="Search" />
             <input [(ngModel)]="searchKey" (ngModelChange)="onSearchChange($event)" pInputText placeholder="Keyword" />
         </p-inputgroup>
     </div>
-  
+
     <div class="mt-4">
-        <p-table #dt [value]="syllabuses" [rows]="pageSize" [paginator]="true" [totalRecords]="totalCount" [lazy]="true"
-            (onPage)="loadSyllabuses($event)" [rowHover]="true"
+        <p-table
+            #dt
+            [value]="syllabuses"
+            [rows]="pageSize"
+            [paginator]="true"
+            [totalRecords]="totalCount"
+            [lazy]="true"
+            (onPage)="loadSyllabuses($event)"
+            [rowHover]="true"
             currentPageReportTemplate="Hiện {first} tới {last} của {totalRecords} syllabus"
-            [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 20, 30]" class="w-full">
-  
+            [showCurrentPageReport]="true"
+            [rowsPerPageOptions]="[10, 20, 30]"
+            class="w-full"
+        >
             <ng-template pTemplate="header">
                 <tr>
                     <th>Mã Syllabus</th>
@@ -27,7 +36,7 @@
                     <th>Hành động</th>
                 </tr>
             </ng-template>
-  
+
             <ng-template pTemplate="body" let-syllabus let-i="rowIndex">
                 <tr>
                     <td>{{ syllabus?.courseCode }}</td>
@@ -35,21 +44,14 @@
                     <td>{{ syllabus?.courseNameEnglish }}</td>
                     <td>{{ syllabus?.decisionNo }}</td>
                     <td>
-                        <p-tag [value]="syllabus?.isActive ? 'Hoạt động' : 'Không hoạt động'"
-                            [severity]="syllabus?.isActive ? 'success' : 'danger'"></p-tag>
+                        <p-tag [value]="syllabus?.isActive ? 'Hoạt động' : 'Không hoạt động'" [severity]="syllabus?.isActive ? 'success' : 'danger'"></p-tag>
                     </td>
-                    <p-button label="Xóa" class="p-button-text p-button-sm p-button-danger"
-                    (click)="confirmDelete(syllabus)">
-                </p-button>
-                
-                    
+                    <td><p-button label="Xóa" class="p-button-text p-button-sm p-button-danger" (click)="confirmDelete(syllabus)"> </p-button></td>
                 </tr>
             </ng-template>
-  
         </p-table>
     </div>
-  
+
     <!-- Hộp thoại xác nhận xóa -->
     <p-confirmDialog></p-confirmDialog>
-  </p-card>
-  
+</p-card>

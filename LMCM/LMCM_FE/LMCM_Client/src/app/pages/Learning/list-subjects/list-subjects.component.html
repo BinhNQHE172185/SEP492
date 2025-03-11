@@ -17,12 +17,8 @@
             [value]="subjects"
             [rows]="pageSize"
             [paginator]="true"
-            [totalRecords]="totalCount"
-            [lazy]="true"
+            [totalRecords]="totalCount"       
             (onPage)="loadSubjects($event)"
-            [rowHover]="true"
-            currentPageReportTemplate="Hiện {first} tới {last} của {totalRecords} môn học"
-            [showCurrentPageReport]="true"
             [rowsPerPageOptions]="[10, 20, 30]"
             class="w-full"
         >
@@ -52,11 +48,13 @@
                     <td>{{ subject.method }}</td>
                     <td>{{ subject.duration }}</td>
                     <td>{{ subject.reality }}</td>
-                    <p-button label="Xóa" class="p-button-text p-button-sm p-button-danger" (click)="confirmDelete(subject.subjectId, i)"></p-button>
+                    <td><p-button label="Xóa" class="p-button-text p-button-sm p-button-danger" (click)="confirmDelete(subject.subjectId, i)"></p-button></td>
                 </tr>
             </ng-template>
         </p-table>
     </div>
 
     <p-confirmDialog></p-confirmDialog>
+    <p-toast></p-toast>
+
 </p-card>

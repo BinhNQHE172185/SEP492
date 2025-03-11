@@ -34,7 +34,7 @@ import { MenuModule } from 'primeng/menu';
                         />
                     </g>
                 </svg>
-                <span>SAKAI</span>
+                <span>LMCM</span>
             </a>
         </div>
 

@@ -22,10 +22,13 @@ export interface PagedResult<T> {
 })
 export class CurriculumApiService {
   private apiUrl = environment.apiUrl;
-  
+
   constructor(private http: HttpClient) { }
 
   getCurriculums(request: PagingRequest): Observable<PagedResult<any>> {
     return this.http.post<PagedResult<any>>(`${this.apiUrl}/Curriculum/getCurriculumList`, request);
+  }
+  importCurriculums(request: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/Curriculum/importCurriculum`, request);
   }
 }

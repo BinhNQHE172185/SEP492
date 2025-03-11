@@ -10,8 +10,11 @@ import { Subscription } from 'rxjs';
 import { CurriculumApiService } from '../../../apis/curriculumAPIs/curriculum-api.service';
 import { searchService } from '../../service/search/search-service.service';
 import { RouterLink } from '@angular/router';
-import { ConfirmationService } from 'primeng/api'; // Thêm import này
+import { ConfirmationService, MessageService } from 'primeng/api'; // Thêm import này
 import { ConfirmDialog } from 'primeng/confirmdialog';
+import { ToastModule } from 'primeng/toast';
+import { FileUploadModule } from 'primeng/fileupload';
+import { DialogModule } from 'primeng/dialog';
 interface Curriculum {
   curriculumCode: string;
   name: string;
@@ -29,12 +32,12 @@ interface PagingRequest {
 @Component({
   standalone: true,
   imports: [
-    InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, ConfirmDialog
+    ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, ConfirmDialog
   ],
   selector: 'app-list-curriculum',
   templateUrl: './list-curriculum.component.html',
   styleUrls: ['./list-curriculum.component.scss'],
-  providers: [ConfirmationService] // ✅ Thêm vào providers
+  providers: [ConfirmationService, MessageService]
 })
 export class ListCurriculumComponent implements OnInit, OnDestroy {
   curriculums: Curriculum[] = [];
@@ -43,9 +46,12 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
   pageSize = 10;
   searchKey = '';
 
+  displayImportDialog: boolean = false;
+  uploadedFiles: any[] = [];
+
   private searchSubscription!: Subscription;
 
-  constructor(private curriculumService: CurriculumApiService, private searchService: searchService) { }
+  constructor(private curriculumService: CurriculumApiService, private searchService: searchService, private messageService: MessageService) { }
 
   ngOnInit(): void {
     this.searchSubscription = this.searchService.searchQuery$.subscribe(
@@ -55,8 +61,8 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
       }
     );
   }
- 
- 
+
+
   deleteCurriculum(code: string) {
     this.curriculums = this.curriculums.filter(item => item.curriculumCode !== code);
     this.totalCount = this.curriculums.length; // Cập nhật tổng số bản ghi
@@ -76,10 +82,8 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
 
     this.curriculumService.getCurriculums(request).subscribe(
       (response) => {
-        console.log("Dữ liệu nhận được:", response);
 
         if (!response.items || response.items.length === 0) {
-          console.warn("Không có curriculum nào được trả về từ API.");
           this.curriculums = [];
           this.totalCount = 0;
           return;
@@ -101,8 +105,33 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
     );
   }
 
+  showImportDialog() {
+    this.displayImportDialog = true;
+  }
+
+  closeDialog() {
+    this.displayImportDialog = false;
+  }
+
+  onUpload(event: any) {
+    const file = event.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+
+    this.curriculumService.importCurriculums(formData).subscribe(
+      () => {
+        this.loadCurriculums();
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Nhập dữ liệu thành công' });
+      },
+      (error) => {
+        this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+      }
+    );
+  }
+
   ngOnDestroy(): void {
     if (this.searchSubscription) {
+      this.searchService.updateSearchQuery('');
       this.searchSubscription.unsubscribe();
     }
   }

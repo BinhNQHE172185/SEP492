@@ -28,4 +28,7 @@ export class SyllabusApiService {
   getSyllabuses(request: PagingRequest): Observable<PagedResult<any>> {
     return this.http.post<PagedResult<any>>(`${this.apiUrl}/Syllabus/getSyllabusesList`, request);
   }
+  importSyllabuses(request: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/Syllabus/importSyllabus`, request);
+  }
 }

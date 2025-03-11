@@ -137,6 +137,7 @@ export class StaffManageComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.searchSubscription) {
+      this.searchService.updateSearchQuery('');
       this.searchSubscription.unsubscribe();
     }
   }

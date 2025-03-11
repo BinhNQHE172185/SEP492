@@ -5,6 +5,7 @@ import { CurriculumDetailComponent } from './curriculum-detail/curriculum-detail
 import { PloComponent } from './plo/plo.component';
 import { ListSyllabusComponent } from './list-syllabus/list-syllabus.component';
 import { SyllabusDetailComponent } from './syllabus-detail/syllabus-detail.component';
+import { HistoryOfChangeComponent } from './history-of-change/history-of-change.component';
 
 export default [
     { path: 'listsubject', component: ListSubjectsComponent },
@@ -12,7 +13,7 @@ export default [
     {path:'curriculum',component:CurriculumDetailComponent},
     {path:'curriculum/:code',component:CurriculumDetailComponent},
     {path:'plo',component:PloComponent},
-
+    {path:'history',component:HistoryOfChangeComponent},
     { path: 'listsyllabus', component: ListSyllabusComponent },
     { path: 'syllabus', component: SyllabusDetailComponent },
     { path: 'syllabus/:syllabusId', component: SyllabusDetailComponent },

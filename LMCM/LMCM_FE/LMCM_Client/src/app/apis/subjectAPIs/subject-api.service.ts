@@ -28,4 +28,7 @@ export class SubjectApiService {
   getSubjects(request: PagingRequest): Observable<PagedResult<any>> {
     return this.http.post<PagedResult<any>>(`${this.apiUrl}/Subject/getSubjectList`, request);
   }
+  importSubjects(request: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/Subject/importSubjects`, request);
+  }
 }

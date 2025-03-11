@@ -10,6 +10,10 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { SubjectApiService } from '../../../apis/subjectAPIs/subject-api.service';
 import { Subscription } from 'rxjs';
 import { searchService } from '../../service/search/search-service.service';
+import { MessageService } from 'primeng/api';
+import { DialogModule } from 'primeng/dialog';
+import { FileUploadModule } from 'primeng/fileupload';
+import { ToastModule } from 'primeng/toast';
 
 interface Subject {
   subjectCode: string;
@@ -31,11 +35,14 @@ interface PagingRequest {
 @Component({
   standalone: true,
   imports: [
-    InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, TagModule, CardModule, InputTextModule
+    ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, TagModule, CardModule, InputTextModule
   ],
   selector: 'app-list-subjects',
   templateUrl: './list-subjects.component.html',
   styleUrls: ['./list-subjects.component.scss'],
+  providers: [
+    MessageService,
+  ]
 })
 export class ListSubjectsComponent implements OnInit, OnDestroy {
   subjects: Subject[] = [];
@@ -44,9 +51,12 @@ export class ListSubjectsComponent implements OnInit, OnDestroy {
   pageSize = 10;
   searchKey = '';
 
+  displayImportDialog: boolean = false;
+  uploadedFiles: any[] = [];
+
   private searchSubscription!: Subscription;
 
-  constructor(private subjectService: SubjectApiService, private searchService: searchService) { }
+  constructor(private subjectService: SubjectApiService, private searchService: searchService, private messageService: MessageService) { }
 
   ngOnInit(): void {
     this.searchSubscription = this.searchService.searchQuery$.subscribe(
@@ -79,8 +89,33 @@ export class ListSubjectsComponent implements OnInit, OnDestroy {
     );
   }
 
+  showImportDialog() {
+    this.displayImportDialog = true;
+  }
+
+  closeDialog() {
+    this.displayImportDialog = false;
+  }
+
+  onUpload(event: any) {
+    const file = event.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+
+    this.subjectService.importSubjects(formData).subscribe(
+      () => {
+        this.loadSubjects(); // Load lại dữ liệu sau khi import
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Nhập dữ liệu thành công' });
+      },
+      (error) => {
+        this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+      }
+    );
+  }
+
   ngOnDestroy(): void {
     if (this.searchSubscription) {
+      this.searchService.updateSearchQuery('');
       this.searchSubscription.unsubscribe();
     }
   }

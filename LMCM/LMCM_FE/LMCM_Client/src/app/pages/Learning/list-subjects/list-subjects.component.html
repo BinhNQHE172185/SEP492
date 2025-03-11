@@ -1,21 +1,22 @@
 <p-card class="p-4 shadow-lg rounded-lg">
     <div class="flex justify-between items-center">
         <h2 class="text-xl font-bold text-orange-500">Danh sách môn học</h2>
-        <p-button label="Nhập" icon="pi pi-upload" class="p-button-warning"></p-button>
+        <p-button label="Nhập" icon="pi pi-upload" class="p-button-warning" (click)="showImportDialog()"></p-button>
+
     </div>
 
     <div class="mt-3">
         <p-inputgroup class="w-full">
-            <p-button label="Search" />
-            <input [(ngModel)]="searchKey" (ngModelChange)="onSearchChange($event)" pInputText placeholder="Keyword" />
+            <p-button label="Tìm kiếm" />
+            <input [(ngModel)]="searchKey" (ngModelChange)="onSearchChange($event)" pInputText placeholder="Từ khóa" />
         </p-inputgroup>
     </div>
-
     <div class="mt-4">
         <p-table #dt [value]="subjects" [rows]="pageSize" [paginator]="true" [totalRecords]="totalCount" [lazy]="true"
             (onPage)="loadSubjects($event)" [rowHover]="true"
             currentPageReportTemplate="Hiện {first} tới {last} của {totalRecords} môn học"
-            [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 20, 30]" class="w-full">
+            [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 20, 30]" class="w-full"
+            *ngIf="subjects && subjects.length > 0; else noDataTemplate">
 
             <ng-template pTemplate="header">
                 <tr>
@@ -45,11 +46,71 @@
                     <td>{{ subject.duration }}</td>
                     <td>{{ subject.reality }}</td>
                     <td>
-                        <p-button label="Xóa" class="p-button-text p-button-sm p-button-danger"
+                        <p-button label="Xóa" class="p-button-text p-button-danger"
                             (click)="deleteSubject(i)"></p-button>
                     </td>
                 </tr>
             </ng-template>
         </p-table>
+
+        <!-- Template khi không có dữ liệu -->
+        <ng-template #noDataTemplate>
+            <div class="text-center text-gray-500 p-4">
+                Không tìm thấy dữ liệu
+            </div>
+        </ng-template>
     </div>
 </p-card>
+
+<p-dialog [(visible)]="displayImportDialog" [header]="'Nhập Dữ Liệu'" [modal]="true" [closable]="true">
+    <ng-template pTemplate="content">
+        <!-- Nội dung chính -->
+        <section class="p-8 w-full bg-white rounded-xl shadow max-md:p-6 max-sm:p-4">
+            <div class="flex justify-center">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    class="w-[40px] h-[40px] mb-[16px]">
+                    <path
+                        d="M11.6667 16.6665V14.9998C11.6667 10.3975 15.3976 6.6665 20 6.6665C24.6023 6.6665 28.3333 10.3975 28.3333 14.9998V16.6665C32.0152 16.6665 35 19.6513 35 23.3332C35 25.8008 33.6593 28.0138 31.6667 29.1665M11.6667 16.6665C7.98477 16.6665 5 19.6513 5 23.3332C5 25.8008 6.34067 28.0138 8.33333 29.1665M11.6667 16.6665C12.3881 16.6665 13.0827 16.7812 13.7334 16.993M20 19.9998V34.9998M20 19.9998L25 24.9998M20 19.9998L15 24.9998"
+                        stroke="#FF6B00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+
+            <!-- File Upload -->
+            <p-fileupload name="demo[]" [customUpload]="true" (uploadHandler)="onUpload($event)" [multiple]="false" accept=".xls, .xlsx"
+                maxFileSize="1000000" mode="advanced">
+                <ng-template #empty>
+                    <div>Kéo và thả file vào đây để tải lên.</div>
+                </ng-template>
+                <ng-template #content>
+                    <ul *ngIf="uploadedFiles.length">
+                        <li *ngFor="let file of uploadedFiles">{{ file.name }} - {{ file.size }} bytes</li>
+                    </ul>
+                </ng-template>
+            </p-fileupload>
+        </section>
+
+        <!-- Hướng dẫn -->
+        <section class="mt-8">
+            <h3 class="mb-4 text-base font-semibold text-zinc-900">Hướng dẫn</h3>
+            <div class="p-4 bg-gray-50 rounded-md">
+                <p class="flex gap-1 mb-2">
+                    <span class="text-sm text-stone-500">1. Sử dụng đúng</span>
+                    <a href="#" class="text-sm text-orange-500">mẫu Excel</a>
+                    <span class="text-sm text-stone-500">theo yêu cầu.</span>
+                </p>
+                <p class="mb-2 text-sm text-stone-500">
+                    <span>2. Kiểm tra lại </span>
+                    <strong class="font-bold">tài liệu đã nhập.</strong>
+                </p>
+                <p class="mb-2 text-sm text-stone-500">
+                    3. Tải lên tệp Excel đã chọn.
+                </p>
+                <p class="text-sm text-stone-500">
+                    4. Hệ thống sẽ tự động xử lý và nhập dữ liệu.
+                </p>
+            </div>
+        </section>
+    </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>

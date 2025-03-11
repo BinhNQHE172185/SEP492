@@ -395,7 +395,11 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasColumnName("Material_ID");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.IsMainMaterial).HasColumnName("is_Main_Material");
-            entity.Property(e => e.MaterialDetailId).HasColumnName("Material_Detail_ID");
+
+            entity.Property(e => e.MaterialDetailId)
+                .IsRequired(false) 
+                .HasColumnName("Material_Detail_ID");
+
             entity.Property(e => e.MaterialName)
                 .HasMaxLength(255)
                 .HasColumnName("Material_Name");
@@ -407,16 +411,19 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.Purpose).HasMaxLength(255);
             entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.SyllabusId).HasColumnName("Syllabus_ID");
-            entity.Property(e => e.Type).HasMaxLength(255);
+            entity.Property(e => e.LearningType).HasMaxLength(255);
+            entity.Property(e => e.MaterialType).HasMaxLength(255);
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.Url).HasMaxLength(255);
 
-            entity.HasOne(d => d.MaterialDetail).WithMany(p => p.LearningMaterials)
+            entity.HasOne(d => d.MaterialDetail)
+                .WithMany(p => p.LearningMaterials)
                 .HasForeignKey(d => d.MaterialDetailId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.SetNull) 
                 .HasConstraintName("FK__Learning___Mater__66603565");
 
-            entity.HasOne(d => d.Syllabus).WithMany(p => p.LearningMaterials)
+            entity.HasOne(d => d.Syllabus)
+                .WithMany(p => p.LearningMaterials)
                 .HasForeignKey(d => d.SyllabusId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Learning___Sylla__656C112C");

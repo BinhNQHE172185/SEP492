@@ -9,9 +9,10 @@ public partial class LearningMaterial
 
     public Guid SyllabusId { get; set; }
 
-    public Guid MaterialDetailId { get; set; }
+    public Guid? MaterialDetailId { get; set; }
 
-    public string? Type { get; set; }
+    public string? LearningType { get; set; }
+    public string? MaterialType { get; set; }
 
     public bool? IsMainMaterial { get; set; }
 
@@ -33,7 +34,7 @@ public partial class LearningMaterial
 
     public DateTime? UpdatedAt { get; set; }
 
-    public virtual LearningMaterialDetail MaterialDetail { get; set; } = null!;
+    public virtual LearningMaterialDetail? MaterialDetail { get; set; }
 
     public virtual Syllabus Syllabus { get; set; } = null!;
 }

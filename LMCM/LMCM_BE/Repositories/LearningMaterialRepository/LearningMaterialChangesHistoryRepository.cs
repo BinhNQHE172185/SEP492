@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using LMCM_BE.DbContext;
-using LMCM_BE.DTOs.LearningMaterialChangesHistoryProfilesDtos;
+using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
 using Microsoft.EntityFrameworkCore;
 
-namespace LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository
+namespace LMCM_BE.Repositories.LearningMaterialRepository
 {
     public class LearningMaterialChangesHistoryRepository : ILearningMaterialChangesHistoryRepository
     {
@@ -24,7 +24,7 @@ namespace LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository
             {
                 string search = searchKey.Trim().ToLower();
                 query = query.Where(s => (s.CourseCode.ToLower().Contains(search) ||
-                                         s.User.UserName.ToLower().Contains(search))&&
+                                         s.User.UserName.ToLower().Contains(search)) &&
                                          s.Status.ToLower().Equals("inactive"));
             }
 

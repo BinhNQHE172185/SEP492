@@ -4,6 +4,7 @@ using LMCM_BE.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMCM_BE.Migrations
 {
     [DbContext(typeof(LMCM_DBContext))]
-    partial class LMCM_DBContextModelSnapshot : ModelSnapshot
+    [Migration("20250311144929_V5")]
+    partial class V5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -645,7 +648,7 @@ namespace LMCM_BE.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<Guid?>("MaterialDetailId")
+                    b.Property<Guid>("MaterialDetailId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("Material_Detail_ID");
 
@@ -1543,7 +1546,7 @@ namespace LMCM_BE.Migrations
                     b.HasOne("LMCM_BE.Models.LearningMaterialDetail", "MaterialDetail")
                         .WithMany("LearningMaterials")
                         .HasForeignKey("MaterialDetailId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired()
                         .HasConstraintName("FK__Learning___Mater__66603565");
 
                     b.HasOne("LMCM_BE.Models.Syllabus", "Syllabus")

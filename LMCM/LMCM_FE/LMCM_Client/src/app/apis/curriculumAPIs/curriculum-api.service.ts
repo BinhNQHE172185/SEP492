@@ -31,4 +31,7 @@ export class CurriculumApiService {
   importCurriculums(request: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/Curriculum/importCurriculum`, request);
   }
+  deleteCurriculums(id: any): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/Curriculum/${id}`);
+  }
 }

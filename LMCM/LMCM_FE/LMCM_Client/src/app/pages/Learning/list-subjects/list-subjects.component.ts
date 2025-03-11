@@ -10,12 +10,14 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { SubjectApiService } from '../../../apis/subjectAPIs/subject-api.service';
 import { Subscription } from 'rxjs';
 import { searchService } from '../../service/search/search-service.service';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
 import { FileUploadModule } from 'primeng/fileupload';
 import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 interface Subject {
+  subjectId: string;
   subjectCode: string;
   subjectName: string;
   englishName: string;
@@ -35,13 +37,14 @@ interface PagingRequest {
 @Component({
   standalone: true,
   imports: [
-    ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, TagModule, CardModule, InputTextModule
+    ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, TagModule, CardModule, InputTextModule
   ],
   selector: 'app-list-subjects',
   templateUrl: './list-subjects.component.html',
   styleUrls: ['./list-subjects.component.scss'],
   providers: [
     MessageService,
+    ConfirmationService
   ]
 })
 export class ListSubjectsComponent implements OnInit, OnDestroy {
@@ -56,7 +59,10 @@ export class ListSubjectsComponent implements OnInit, OnDestroy {
 
   private searchSubscription!: Subscription;
 
-  constructor(private subjectService: SubjectApiService, private searchService: searchService, private messageService: MessageService) { }
+  constructor(private subjectService: SubjectApiService,
+    private searchService: searchService,
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
     this.searchSubscription = this.searchService.searchQuery$.subscribe(
@@ -128,7 +134,23 @@ export class ListSubjectsComponent implements OnInit, OnDestroy {
     return value ? 'Yes' : 'No';
   }
 
-  deleteSubject(index: number) {
-    this.subjects.splice(index, 1);
+  deleteSubject(id: any) {
+    this.confirmationService.confirm({
+      header: 'Xóa dữ liệu',
+      message: 'Bạn có chắc chắn muốn xóa? Hành động này là không thể hoàn tác.',
+      acceptLabel: 'Đồng ý',
+      rejectLabel: 'Hủy',
+      accept: () => {
+        this.subjectService.deleteSubjects(id).subscribe(
+          (response) => {
+            this.loadSubjects();
+            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Xóa dữ liệu thành công' });
+          },
+          (error) => {
+            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+          }
+        );
+      }
+    });
   }
 }

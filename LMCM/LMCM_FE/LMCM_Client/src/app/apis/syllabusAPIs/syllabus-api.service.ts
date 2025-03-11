@@ -31,4 +31,7 @@ export class SyllabusApiService {
   importSyllabuses(request: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/Syllabus/importSyllabus`, request);
   }
+  deleteSyllabuses(id: any): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/Syllabus/${id}`);
+  }
 }

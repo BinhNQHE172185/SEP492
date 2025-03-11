@@ -47,7 +47,7 @@
                     <td>{{ subject.reality }}</td>
                     <td>
                         <p-button label="Xóa" class="p-button-text p-button-danger"
-                            (click)="deleteSubject(i)"></p-button>
+                            (onClick)="deleteSubject(subject.subjectId)"></p-button>
                     </td>
                 </tr>
             </ng-template>
@@ -76,8 +76,8 @@
             </div>
 
             <!-- File Upload -->
-            <p-fileupload name="demo[]" [customUpload]="true" (uploadHandler)="onUpload($event)" [multiple]="false" accept=".xls, .xlsx"
-                maxFileSize="1000000" mode="advanced">
+            <p-fileupload name="demo[]" [customUpload]="true" (uploadHandler)="onUpload($event)" [multiple]="false"
+                accept=".xls, .xlsx" maxFileSize="1000000" mode="advanced">
                 <ng-template #empty>
                     <div>Kéo và thả file vào đây để tải lên.</div>
                 </ng-template>
@@ -114,3 +114,4 @@
 </p-dialog>
 
 <p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>

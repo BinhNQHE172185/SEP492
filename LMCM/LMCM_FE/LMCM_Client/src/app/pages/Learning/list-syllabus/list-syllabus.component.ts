@@ -13,7 +13,8 @@ import { searchService } from '../../service/search/search-service.service';
 import { ToastModule } from 'primeng/toast';
 import { FileUploadModule } from 'primeng/fileupload';
 import { DialogModule } from 'primeng/dialog';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 interface Syllabus {
   courseCode: string;
@@ -21,7 +22,7 @@ interface Syllabus {
   courseNameEnglish: string;
   decisionNo: string;
   isActive: boolean;
-
+  syllabusId: string;
 }
 
 interface PagingRequest {
@@ -33,13 +34,14 @@ interface PagingRequest {
 @Component({
   standalone: true,
   imports: [
-    ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, TagModule, CardModule, InputTextModule
+    ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, TagModule, CardModule, InputTextModule
   ],
   selector: 'app-list-syllabus',
   templateUrl: './list-syllabus.component.html',
   styleUrls: ['./list-syllabus.component.scss'],
   providers: [
     MessageService,
+    ConfirmationService
   ]
 })
 export class ListSyllabusComponent implements OnInit, OnDestroy {
@@ -54,7 +56,10 @@ export class ListSyllabusComponent implements OnInit, OnDestroy {
 
   private searchSubscription!: Subscription;
 
-  constructor(private syllabusService: SyllabusApiService, private searchService: searchService, private messageService: MessageService) { }
+  constructor(private syllabusService: SyllabusApiService,
+    private searchService: searchService,
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
     this.searchSubscription = this.searchService.searchQuery$.subscribe(
@@ -87,6 +92,7 @@ export class ListSyllabusComponent implements OnInit, OnDestroy {
         }
 
         this.syllabuses = response.items.map(item => ({
+          syllabusId: item.syllabusId,
           courseCode: item.courseCode,
           courseName: item.courseName,
           courseNameEnglish: item.courseNameEnglish,
@@ -137,7 +143,24 @@ export class ListSyllabusComponent implements OnInit, OnDestroy {
     this.searchService.updateSearchQuery(query);
   }
 
-  deleteSyllabus(index: number) {
-    this.syllabuses.splice(index, 1);
+  deleteSyllabus(id: any) {
+    console.log(id)
+    this.confirmationService.confirm({
+      header: 'Xóa dữ liệu',
+      message: 'Bạn có chắc chắn muốn xóa? Hành động này là không thể hoàn tác.',
+      acceptLabel: 'Đồng ý',
+      rejectLabel: 'Hủy',
+      accept: () => {
+        this.syllabusService.deleteSyllabuses(id).subscribe(
+          (response) => {
+            this.loadSyllabuses();
+            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Xóa dữ liệu thành công' });
+          },
+          (error) => {
+            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+          }
+        );
+      }
+    });
   }
 }

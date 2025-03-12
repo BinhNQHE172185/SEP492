@@ -1,6 +1,6 @@
 <p-card>
     <div class="flex justify-between items-center">
-        <h2 class="text-xl font-bold text-orange-500">Danh sách Syllabus</h2>
+        <h2 class="text-xl font-bold text-orange-500">Danh sách Đề cương</h2>
         <p-button label="Nhập" icon="pi pi-upload" class="p-button-warning" (click)="showImportDialog()"></p-button>
     </div>
 
@@ -20,8 +20,8 @@
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th>Mã Syllabus</th>
-                    <th>Tên Syllabus</th>
+                    <th>Mã Môn</th>
+                    <th>Tên Môn học</th>
                     <th>Tên tiếng Anh</th>
                     <th>Số quyết định</th>
                     <th>Trạng thái</th>
@@ -42,8 +42,7 @@
                             [severity]="syllabus?.isActive ? 'success' : 'danger'"></p-tag>
                     </td>
                     <td>
-                        <p-button label="Xóa" class="p-button-text p-button-sm p-button-danger"
-                        (onClick)="deleteSyllabus(syllabus?.syllabusId)"></p-button>
+                        <p-button label="Xóa" (onClick)="deleteSyllabus(syllabus?.syllabusId)" outlined></p-button>
                     </td>
                 </tr>
             </ng-template>

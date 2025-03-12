@@ -45,8 +45,7 @@
                     <td>{{ subject.duration }}</td>
                     <td>{{ subject.reality }}</td>
                     <td>
-                        <p-button label="Xóa" class="p-button-text p-button-danger"
-                            (onClick)="deleteSubject(subject.subjectId)"></p-button>
+                        <p-button label="Xóa" (onClick)="deleteSubject(subject.subjectId)" outlined></p-button>
                     </td>
                 </tr>
             </ng-template>

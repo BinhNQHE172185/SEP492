@@ -57,31 +57,18 @@ namespace LMCM_BE.Repositories.GradingStructureRepository
             if (gradingStructures == null || !gradingStructures.Any())
                 throw new ArgumentNullException(nameof(gradingStructures));
 
-            var newGradingStructures = gradingStructures.Select(gradingStructureDto => new GradingStructure
+            var newGradingStructures = _mapper.Map<List<GradingStructure>>(gradingStructures);
+
+            foreach (var structure in newGradingStructures)
             {
-                StructureId = Guid.NewGuid(),
-                SyllabusId = gradingStructureDto.SyllabusId,
-                StructureNo = gradingStructureDto.StructureNo,
-                AssessmentComponent = gradingStructureDto.AssessmentComponent,
-                AssessmentType = gradingStructureDto.AssessmentType,
-                Weight = gradingStructureDto.Weight,    
-                Part= gradingStructureDto.Part,
-                MinValue= gradingStructureDto.MinValue,
-                Duration= gradingStructureDto.Duration,
-                Clo= gradingStructureDto.Clo,
-                QuestionType= gradingStructureDto.QuestionType, 
-                QuestionNo= gradingStructureDto.QuestionNo, 
-                Scope= gradingStructureDto.Scope,
-                How= gradingStructureDto.How,
-                Note= gradingStructureDto.Note,
-                SessionNo= gradingStructureDto.SessionNo,
-                Reference= gradingStructureDto.Reference,
-                Status = "Active",
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            }).ToList();
+                structure.StructureId = Guid.NewGuid();
+                structure.Status = "Active";
+                structure.CreatedAt = DateTime.UtcNow;
+                structure.UpdatedAt = DateTime.UtcNow;
+            }
 
             await _dbContext.GradingStructures.AddRangeAsync(newGradingStructures);
+
             return true;
         }
     }

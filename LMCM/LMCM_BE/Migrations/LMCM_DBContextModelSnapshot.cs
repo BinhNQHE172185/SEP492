@@ -800,7 +800,6 @@ namespace LMCM_BE.Migrations
                         .HasColumnName("Material_Description");
 
                     b.Property<string>("MaterialName")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("Material_Name");

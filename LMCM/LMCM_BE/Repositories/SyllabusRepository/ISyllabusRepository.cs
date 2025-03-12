@@ -10,6 +10,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
         Task<PagedResult<SyllabusListViewDto>> GetSyllabusesAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<PagedResult<SyllabusChangesHistoryListDto>> GetSyllabusChangeHistoriesAsync(Guid? syllabusId,string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<Syllabus> ImportSyllabusAsync(SyllabusInsertDto syllabus);
+        Task<SyllabusDetailDto> GetSyllabusDetailAsync(Guid? syllabusId);
         Task<bool> UpdateSyllabusAsync(Syllabus existingSyllabus, SyllabusInsertDto syllabusDto);
         Task<bool> DeleteSyllabusAsync(Guid id);
         Task<bool> HasActiveSyllabusesBySubjectIdAsync(Guid subjectId);

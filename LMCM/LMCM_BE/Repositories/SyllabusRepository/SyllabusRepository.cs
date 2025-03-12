@@ -68,7 +68,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
         public async Task<PagedResult<SyllabusChangesHistoryListDto>> GetSyllabusChangeHistoriesAsync(
             Guid? syllabusId, string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
-            if(syllabusId == null)
+            if (syllabusId == null)
                 throw new ArgumentNullException(nameof(syllabusId));
 
             var syllabusIdParam = new SqlParameter("@syllabusId", syllabusId);
@@ -119,31 +119,12 @@ namespace LMCM_BE.Repositories.SyllabusRepository
                 previousVersionId = existingSyllabus.SyllabusId;
             }
 
-            var newSyllabus = new Syllabus
-            {
-                SyllabusId = Guid.NewGuid(),
-                SubjectId = syllabus.SubjectId,
-                PreviousVersionId = previousVersionId,
-                ProgramName = syllabus.ProgramName,
-                CourseCode = syllabus.CourseCode,
-                CourseName = syllabus.CourseName,
-                CourseNameEnglish = syllabus.CourseNameEnglish,
-                LearningTeachingMethod = syllabus.LearningTeachingMethod,
-                NoOfCredits = syllabus.NoOfCredits,
-                DegreeLevel = syllabus.DegreeLevel,
-                TimeAllocation = syllabus.TimeAllocation,
-                PreRequisite = syllabus.PreRequisite,
-                Description = syllabus.Description,
-                StudentTask = syllabus.StudentTask,
-                Tools = syllabus.Tools,
-                Note = syllabus.Note,
-                MinGpaToPass = syllabus.MinGpaToPass,
-                ScoringScale = syllabus.ScoringScale,
-                ApprovedDate = syllabus.ApprovedDate,
-                Status = "Active",
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
+            var newSyllabus = _mapper.Map<Syllabus>(syllabus);
+            newSyllabus.SyllabusId = Guid.NewGuid();
+            newSyllabus.PreviousVersionId = previousVersionId;
+            newSyllabus.Status = "Active";
+            newSyllabus.CreatedAt = DateTime.UtcNow;
+            newSyllabus.UpdatedAt = DateTime.UtcNow;
 
             await _dbContext.Syllabus.AddAsync(newSyllabus);
             return newSyllabus;
@@ -151,30 +132,49 @@ namespace LMCM_BE.Repositories.SyllabusRepository
 
         public async Task<bool> UpdateSyllabusAsync(Syllabus existingSyllabus, SyllabusInsertDto syllabusDto)
         {
-            existingSyllabus.ProgramName = syllabusDto.ProgramName;
-            existingSyllabus.CourseName = syllabusDto.CourseName;
-            existingSyllabus.CourseNameEnglish = syllabusDto.CourseNameEnglish;
-            existingSyllabus.LearningTeachingMethod = syllabusDto.LearningTeachingMethod;
-            existingSyllabus.NoOfCredits = syllabusDto.NoOfCredits;
-            existingSyllabus.DegreeLevel = syllabusDto.DegreeLevel;
-            existingSyllabus.TimeAllocation = syllabusDto.TimeAllocation;
-            existingSyllabus.PreRequisite = syllabusDto.PreRequisite;
-            existingSyllabus.Description = syllabusDto.Description;
-            existingSyllabus.StudentTask = syllabusDto.StudentTask;
-            existingSyllabus.Tools = syllabusDto.Tools;
-            existingSyllabus.Note = syllabusDto.Note;
-            existingSyllabus.MinGpaToPass = syllabusDto.MinGpaToPass;
-            existingSyllabus.ScoringScale = syllabusDto.ScoringScale;
-            existingSyllabus.ApprovedDate = syllabusDto.ApprovedDate;
+            if (existingSyllabus == null)
+                throw new ArgumentNullException(nameof(existingSyllabus), "Existing syllabus cannot be null.");
+
+            if (syllabusDto == null)
+                throw new ArgumentNullException(nameof(syllabusDto), "Syllabus data cannot be null.");
+
+            // Use AutoMapper to update existing entity
+            _mapper.Map(syllabusDto, existingSyllabus);
             existingSyllabus.UpdatedAt = DateTime.UtcNow;
 
-            await _dbContext.SaveChangesAsync();
-            return true;
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
+
         public async Task<bool> HasActiveSyllabusesBySubjectIdAsync(Guid subjectId)
         {
             return await _dbContext.Syllabus
                 .AnyAsync(s => s.SubjectId == subjectId && s.Status == "Active");
         }
+
+        public async Task<SyllabusDetailDto> GetSyllabusDetailAsync(Guid? syllabusId)
+        {
+            if (syllabusId == null)
+                throw new ArgumentNullException(nameof(syllabusId), "Syllabus ID cannot be null.");
+
+            var syllabus = await _dbContext.Syllabus
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.SyllabusId == syllabusId);
+
+            if (syllabus == null)
+            {
+                throw new KeyNotFoundException($"No syllabus found with ID: {syllabusId}");
+            }
+
+            return _mapper.Map<SyllabusDetailDto>(syllabus);
+        }
+
     }
 }

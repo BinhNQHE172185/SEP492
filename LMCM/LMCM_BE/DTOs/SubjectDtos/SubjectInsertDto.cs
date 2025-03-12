@@ -7,11 +7,11 @@
         public string? PreviousSubjectCode { get; set; }
         public string SubjectName { get; set; } = null!;
 
-        public string EnglishSubjectName { get; set; } = null!;
+        public string? PreviousCode { get; set; }
 
-        public string? PreviousCode { get; set; }  
+        public string? SubjectNameEnglish { get; set; }
 
-        public bool IsConstructivistSubject { get; set; }
+        public bool? IsConstructivist { get; set; }
 
         public string Method { get; set; } = null!; 
 

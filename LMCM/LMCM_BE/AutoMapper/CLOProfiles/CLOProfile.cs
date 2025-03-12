@@ -10,6 +10,11 @@ namespace LMCM_BE.AutoMapper.CLOProfiles
         public CLOProfile()
         {
             CreateMap<Clo, CLOInsertDto>();
+            CreateMap<CLOInsertDto, Clo>()
+                .ForMember(dest => dest.CloId, opt => opt.Ignore()) // Ignored, set manually
+                .ForMember(dest => dest.Status, opt => opt.Ignore()) // Set manually
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Set manually
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
         }
     }
 }

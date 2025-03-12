@@ -10,6 +10,11 @@ namespace LMCM_BE.AutoMapper.SubjectProfile
         {
             CreateMap<Subject, SubjectViewDto>();
             CreateMap<Subject, SubjectInsertDto>();
+            CreateMap<SubjectInsertDto,Subject>()
+                .ForMember(dest => dest.SubjectId, opt => opt.Ignore()) // Ignored since we generate a new ID
+                .ForMember(dest => dest.Status, opt => opt.Ignore()) // We'll set this manually
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Manually set timestamps
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
         }
     }
 }

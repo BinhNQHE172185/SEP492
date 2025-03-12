@@ -9,6 +9,5 @@ namespace LMCM_BE.Repositories.CLORepository
     {
         Task<bool> ImportCLOsAsync(List<CLOInsertDto> cLOs);
         Task<bool> DeleteCLOBySyllabusAsync(Guid syllabusId);
-        Task<bool> UpdateCLOAsync(Clo existingCLO, CLOInsertDto CLODto);
     }
 }

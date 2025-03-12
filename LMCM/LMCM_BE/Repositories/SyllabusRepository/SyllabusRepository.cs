@@ -3,6 +3,7 @@ using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
 using LMCM_BE.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.SyllabusRepository
@@ -64,6 +65,43 @@ namespace LMCM_BE.Repositories.SyllabusRepository
                 PageSize = pageSize
             };
         }
+        public async Task<PagedResult<SyllabusChangesHistoryListDto>> GetSyllabusChangeHistoriesAsync(
+            Guid? syllabusId, string? searchKey, int pageIndex = 1, int pageSize = 10)
+        {
+            if(syllabusId == null)
+                throw new ArgumentNullException(nameof(syllabusId));
+
+            var syllabusIdParam = new SqlParameter("@syllabusId", syllabusId);
+
+            var previousSyllabuses = await _dbContext.Syllabus
+                .FromSqlRaw(@"
+                            WITH SyllabusHistory AS (
+                                SELECT * FROM Syllabus WHERE Syllabus_ID = @syllabusId
+                                UNION ALL
+                                SELECT s.* FROM Syllabus s
+                                INNER JOIN SyllabusHistory sh ON s.Syllabus_ID = sh.Previous_Version_ID
+                            )
+                            SELECT * FROM SyllabusHistory;", syllabusIdParam)
+                .ToListAsync(); // Ensure async execution
+
+            int totalCount = previousSyllabuses.Count;
+
+            var paginatedItems = previousSyllabuses
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var data = _mapper.Map<List<SyllabusChangesHistoryListDto>>(paginatedItems);
+
+            return new PagedResult<SyllabusChangesHistoryListDto>
+            {
+                Items = data,
+                TotalCount = totalCount,
+                CurrentPage = pageIndex,
+                PageSize = pageSize
+            };
+        }
+
         public async Task<Syllabus> ImportSyllabusAsync(SyllabusInsertDto syllabus)
         {
             if (syllabus == null)
@@ -108,7 +146,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
             };
 
             await _dbContext.Syllabus.AddAsync(newSyllabus);
-            return newSyllabus; 
+            return newSyllabus;
         }
 
         public async Task<bool> UpdateSyllabusAsync(Syllabus existingSyllabus, SyllabusInsertDto syllabusDto)
@@ -138,6 +176,5 @@ namespace LMCM_BE.Repositories.SyllabusRepository
             return await _dbContext.Syllabus
                 .AnyAsync(s => s.SubjectId == subjectId && s.Status == "Active");
         }
-
     }
 }

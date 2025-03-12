@@ -65,7 +65,23 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
-
+        [HttpPost("getSyllabusChangeHistoryList")]
+        public async Task<IActionResult> GetSyllabusChangeHistoiesAsync([FromBody] PagingRequest request)
+        {
+            try
+            {
+                var data = await _syllabusService.GetSyllabusChangeHistoriesAsync(request.Id,request.SearchKey, request.pageIndex, request.PageSize);
+                if (data != null)
+                {
+                    return Ok(data);
+                }
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
         [HttpDelete("{syllabusId}")]
         public async Task<IActionResult> DeleteSyllabusAsync(Guid syllabusId)
         {

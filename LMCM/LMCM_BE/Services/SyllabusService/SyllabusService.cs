@@ -25,7 +25,11 @@ namespace LMCM_BE.Services.SyllabusService
             var data = await _syllabusRepository.GetSyllabusesAsync(searchKey, pageIndex, pageSize);
             return data;
         }
-
+        public async Task<PagedResult<SyllabusChangesHistoryListDto>> GetSyllabusChangeHistoriesAsync(Guid? syllabusId, string? searchKey, int pageIndex = 1, int pageSize = 10)
+        {
+            var data = await _syllabusRepository.GetSyllabusChangeHistoriesAsync(syllabusId,searchKey, pageIndex, pageSize);
+            return data;
+        }
         public async Task<Syllabus> ImportSyllabusAsync(SyllabusInsertDto syllabus)
         {
             return await _syllabusRepository.ImportSyllabusAsync(syllabus);

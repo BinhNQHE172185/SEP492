@@ -14,6 +14,7 @@ namespace LMCM_BE.AutoMapper.ConstructivistQuestionProfiles
                 .ForMember(dest => dest.Status, opt => opt.Ignore()) // Set manually
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Set manually
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
+            CreateMap<ConstructivistQuestion, ConstructivistQuestionListDto>();
         }
     }
 }

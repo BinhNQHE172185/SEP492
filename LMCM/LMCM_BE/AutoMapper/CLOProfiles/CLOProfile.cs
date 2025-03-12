@@ -15,6 +15,7 @@ namespace LMCM_BE.AutoMapper.CLOProfiles
                 .ForMember(dest => dest.Status, opt => opt.Ignore()) // Set manually
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Set manually
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
+            CreateMap<Clo, CLOListDto>();
         }
     }
 }

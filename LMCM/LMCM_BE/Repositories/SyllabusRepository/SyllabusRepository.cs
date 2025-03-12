@@ -165,7 +165,12 @@ namespace LMCM_BE.Repositories.SyllabusRepository
                 throw new ArgumentNullException(nameof(syllabusId), "Syllabus ID cannot be null.");
 
             var syllabus = await _dbContext.Syllabus
-                .AsNoTracking()
+                .Include(s => s.Clos)
+                .Include(s=>s.ConstructivistQuestions)
+                .Include(s=>s.Schedules)
+                .Include(s=>s.GradingStructures)
+                .Include(s=>s.LearningMaterials)
+                .ThenInclude(l=>l.MaterialDetail)
                 .FirstOrDefaultAsync(s => s.SyllabusId == syllabusId);
 
             if (syllabus == null)

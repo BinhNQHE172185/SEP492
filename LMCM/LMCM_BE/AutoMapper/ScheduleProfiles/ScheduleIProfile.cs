@@ -15,6 +15,7 @@ namespace LMCM_BE.AutoMapper.ScheduleProfiles
                 .ForMember(dest => dest.Status, opt => opt.Ignore()) // We'll set this manually
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Manually set timestamps
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
+            CreateMap<Schedule, ScheduleListDto>();
         }
     }
 }

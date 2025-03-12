@@ -19,6 +19,7 @@ namespace LMCM_BE.AutoMapper.SyllabusProfiles
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Manually set timestamps
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
             CreateMap<Syllabus, SyllabusChangesHistoryListDto>();
+            CreateMap<Syllabus, SyllabusDetailDto>();
         }
     }
 }

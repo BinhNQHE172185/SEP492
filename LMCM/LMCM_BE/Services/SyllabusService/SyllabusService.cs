@@ -38,5 +38,10 @@ namespace LMCM_BE.Services.SyllabusService
         {
             return await _syllabusRepository.HasActiveSyllabusesBySubjectIdAsync(subjectId);
         }
+
+        public async Task<SyllabusDetailDto> GetSyllabusDetailAsync(Guid? syllabusId)
+        {
+            return await _syllabusRepository.GetSyllabusDetailAsync(syllabusId);
+        }
     }
 }

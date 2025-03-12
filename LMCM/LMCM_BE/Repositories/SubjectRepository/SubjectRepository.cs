@@ -64,40 +64,31 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
                 .Where(s => subjectCodes.Contains(s.SubjectCode) && s.Status == "Active")
                 .ToListAsync();
         }
-
         public async Task<bool> InsertSubjectAsync(SubjectInsertDto subjectDto)
         {
             if (subjectDto == null) throw new ArgumentNullException(nameof(subjectDto));
 
             try
             {
-                var subject = new Subject
-                {
-                    SubjectId = Guid.NewGuid(),
-                    SubjectCode = subjectDto.SubjectCode,
-                    SubjectName = subjectDto.SubjectName,
-                    SubjectNameEnglish = subjectDto.EnglishSubjectName,
-                    IsConstructivist = subjectDto.IsConstructivistSubject,
-                    Method = subjectDto.Method,
-                    Duration = subjectDto.Duration,
-                    Reality = subjectDto.Reality,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                };
+                var subject = _mapper.Map<Subject>(subjectDto);
+                subject.SubjectId = Guid.NewGuid();
+                subject.CreatedAt = DateTime.UtcNow;
+                subject.UpdatedAt = DateTime.UtcNow;
 
                 await _dbContext.Subjects.AddAsync(subject);
                 await _dbContext.SaveChangesAsync();
                 return true;
             }
-            catch (DbUpdateException dbEx)
+            catch (DbUpdateException)
             {
                 return false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
         }
+
         public async Task<bool> ImportSubjectsAsync(List<SubjectInsertDto> subjects)
         {
             if (subjects == null || subjects.Count == 0)
@@ -124,21 +115,13 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
                     }
                     else
                     {
-                        // Create new subject if it doesn't exist
-                        newSubjects.Add(new Subject
-                        {
-                            SubjectId = Guid.NewGuid(),
-                            SubjectCode = subjectDto.SubjectCode,
-                            SubjectName = subjectDto.SubjectName,
-                            SubjectNameEnglish = subjectDto.EnglishSubjectName,
-                            IsConstructivist = subjectDto.IsConstructivistSubject,
-                            Method = subjectDto.Method,
-                            Duration = subjectDto.Duration,
-                            Reality = subjectDto.Reality,
-                            Status = "Active",
-                            CreatedAt = DateTime.UtcNow,
-                            UpdatedAt = DateTime.UtcNow
-                        });
+                        // Use AutoMapper to map DTO to Entity
+                        var newSubject = _mapper.Map<Subject>(subjectDto);
+                        newSubject.SubjectId = Guid.NewGuid();
+                        newSubject.Status = "Active";
+                        newSubject.CreatedAt = DateTime.UtcNow;
+                        newSubject.UpdatedAt = DateTime.UtcNow;
+                        newSubjects.Add(newSubject);
                     }
                 }
 
@@ -154,11 +137,11 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
 
                 return true;
             }
-            catch (DbUpdateException dbEx)
+            catch (DbUpdateException)
             {
                 return false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }

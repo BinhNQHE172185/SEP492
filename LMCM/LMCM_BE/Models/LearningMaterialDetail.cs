@@ -7,7 +7,7 @@ public partial class LearningMaterialDetail
 {
     public Guid MaterialDetailId { get; set; }
 
-    public string MaterialName { get; set; } = null!;
+    public string? MaterialName { get; set; }
 
     public string? MaterialDescription { get; set; }
 

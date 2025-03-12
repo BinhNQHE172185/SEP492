@@ -1,8 +1,7 @@
-<p-card class="p-4 shadow-lg rounded-lg">
+<p-card>
     <div class="flex justify-between items-center">
         <h2 class="text-xl font-bold text-orange-500">Danh sách môn học</h2>
         <p-button label="Nhập" icon="pi pi-upload" class="p-button-warning" (click)="showImportDialog()"></p-button>
-
     </div>
 
     <div class="mt-3">
@@ -46,8 +45,7 @@
                     <td>{{ subject.duration }}</td>
                     <td>{{ subject.reality }}</td>
                     <td>
-                        <p-button label="Xóa" class="p-button-text p-button-danger"
-                            (onClick)="deleteSubject(subject.subjectId)"></p-button>
+                        <p-button label="Xóa" (onClick)="deleteSubject(subject.subjectId)" outlined></p-button>
                     </td>
                 </tr>
             </ng-template>

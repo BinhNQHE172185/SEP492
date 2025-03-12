@@ -1,4 +1,4 @@
-<p-card class="p-4 shadow-lg rounded-lg">
+<p-card>
     <div class="flex justify-between items-center">
         <h2 class="text-xl font-bold text-orange-500">Danh sách chương trình giảng dạy</h2>
         <p-button label="Nhập" icon="pi pi-upload" class="p-button-warning" (click)="showImportDialog()"></p-button>
@@ -17,7 +17,7 @@
             *ngIf="curriculums && curriculums.length > 0; else noDataTemplate">
             <ng-template pTemplate="header">
                 <tr>
-                    <th>Code</th>
+                    <th>Mã</th>
                     <th>Tên</th>
                     <th>Miêu tả</th>
                     <th>Quyết định số</th>
@@ -29,13 +29,11 @@
                 <tr>
                     <td>{{ item.curriculumCode }}</td>
                     <td> {{ item.name }} </td>
-                    <td>{{ item.description }}</td>
+                    <td>{{ item.description | slice:0:100 }}...</td>
                     <td>{{ item.decisionNo }}</td>
                     <td>{{ item.approvedDate | date:'dd/MM/yyyy' }}</td>
-
                     <td>
-                        <p-button label="Xóa" class="p-button-text p-button-sm p-button-danger"
-                        (onClick)="deleteCurriculumn(item.curriculumId)"></p-button>
+                        <p-button label="Xóa" (onClick)="deleteCurriculumn(item.curriculumId)" outlined></p-button>
                     </td>
                 </tr>
             </ng-template>
@@ -47,9 +45,6 @@
             </div>
         </ng-template>
     </div>
-
-    <p-confirmDialog></p-confirmDialog>
-
 </p-card>
 
 <p-dialog [(visible)]="displayImportDialog" [header]="'Nhập Dữ Liệu'" [modal]="true" [closable]="true">

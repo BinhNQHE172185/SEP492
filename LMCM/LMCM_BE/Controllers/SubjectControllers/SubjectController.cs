@@ -91,9 +91,9 @@ namespace LMCM_BE.Controllers.SubjectControllers
                                 SubjectId = Guid.NewGuid(),
                                 SubjectCode = subjectCode,
                                 SubjectName = worksheet.Cells[row, 2].Text,
-                                EnglishSubjectName = worksheet.Cells[row, 3].Text,
+                                SubjectNameEnglish = worksheet.Cells[row, 3].Text,
                                 PreviousSubjectCode = worksheet.Cells[row, 4].Text,
-                                IsConstructivistSubject = worksheet.Cells[row, 5].Text.ToLower() == "true",
+                                IsConstructivist = worksheet.Cells[row, 5].Text.ToLower() == "true",
                                 Method = worksheet.Cells[row, 6].Text,
                                 Duration = int.TryParse(worksheet.Cells[row, 7].Text, out int duration) ? duration : 0,
                                 Reality = int.TryParse(worksheet.Cells[row, 8].Text, out int reality) ? reality : 0

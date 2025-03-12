@@ -445,7 +445,6 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 {
                     var materialDetailData = new LearningMaterialDetailsInsertDto
                     {
-                        MaterialName=materialDescription,
                         Isbn = isbn,
                         Author = author,
                         Publisher = publisher,

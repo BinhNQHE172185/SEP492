@@ -155,14 +155,14 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
                 existingSubject.SubjectName = subjectDto.SubjectName;
                 isUpdated = true;
             }
-            if (existingSubject.SubjectNameEnglish != subjectDto.EnglishSubjectName)
+            if (existingSubject.SubjectNameEnglish != subjectDto.SubjectNameEnglish)
             {
-                existingSubject.SubjectNameEnglish = subjectDto.EnglishSubjectName;
+                existingSubject.SubjectNameEnglish = subjectDto.SubjectNameEnglish;
                 isUpdated = true;
             }
-            if (existingSubject.IsConstructivist != subjectDto.IsConstructivistSubject)
+            if (existingSubject.IsConstructivist != subjectDto.IsConstructivist)
             {
-                existingSubject.IsConstructivist = subjectDto.IsConstructivistSubject;
+                existingSubject.IsConstructivist = subjectDto.IsConstructivist;
                 isUpdated = true;
             }
             if (existingSubject.Method != subjectDto.Method)

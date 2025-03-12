@@ -82,7 +82,7 @@ namespace LMCM_BE.Controllers.UserControllers
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        [HttpPost("profile")]
+        [HttpGet("profile")]
         public async Task<IActionResult> ProfileAsync([FromBody] string staffId)
         {
             try
@@ -104,7 +104,7 @@ namespace LMCM_BE.Controllers.UserControllers
         /// </summary>
         /// <param name="staffId"></param>
         /// <returns></returns>
-        [HttpPost("list-user")]
+        [HttpGet("list-user")]
         public async Task<IActionResult> GetListUser([FromBody] PagingRequest request)
         {
             try

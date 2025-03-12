@@ -17,6 +17,7 @@ using LMCM_BE.Services.SyllabusService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
+using System.Runtime.InteropServices;
 
 namespace LMCM_BE.Controllers.SyllabusControllers
 {
@@ -48,7 +49,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             _learningMaterialDetailsService = learningMaterialDetailsService;
         }
 
-        [HttpPost("getSyllabusesList")]
+        [HttpGet("getSyllabusesList")]
         public async Task<IActionResult> GetSyllabusesAsync([FromBody] PagingRequest request)
         {
             try
@@ -65,12 +66,29 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
-        [HttpPost("getSyllabusChangeHistoryList")]
+        [HttpGet("getSyllabusChangeHistoryList")]
         public async Task<IActionResult> GetSyllabusChangeHistoiesAsync([FromBody] PagingRequest request)
         {
             try
             {
                 var data = await _syllabusService.GetSyllabusChangeHistoriesAsync(request.Id,request.SearchKey, request.pageIndex, request.PageSize);
+                if (data != null)
+                {
+                    return Ok(data);
+                }
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+        [HttpGet("getSyllabusDetail")]
+        public async Task<IActionResult> GetSyllabusDetailAsync(Guid syllabusId)
+        {
+            try
+            {
+                var data = await _syllabusService.GetSyllabusDetailAsync(syllabusId);
                 if (data != null)
                 {
                     return Ok(data);

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LMCM_BE.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class V1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -58,7 +58,7 @@ namespace LMCM_BE.Migrations
                     Curriculum_Code = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Curriculum_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Curriculum_Name_English = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Curriculum_Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Curriculum_Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Vocational_Code = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Vocational_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     English_Vocational_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
@@ -79,10 +79,10 @@ namespace LMCM_BE.Migrations
                 {
                     Material_Detail_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
                     Material_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Material_Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Material_Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ISBN = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Type = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Note = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Author = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Publisher = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Published_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -174,7 +174,7 @@ namespace LMCM_BE.Migrations
                     PLO_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
                     Curriculum_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PLO_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    PLO_Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    PLO_Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())")
@@ -232,12 +232,12 @@ namespace LMCM_BE.Migrations
                     Learning_Teaching_Method = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     No_of_Credits = table.Column<int>(type: "int", nullable: true),
                     Degree_Level = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Time_Allocation = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Pre_requisite = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Student_Task = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Tools = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Note = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Time_Allocation = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Pre_requisite = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Student_Task = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Tools = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Min_GPA_to_Pass = table.Column<decimal>(type: "decimal(19,2)", nullable: true),
                     Scoring_Scale = table.Column<decimal>(type: "decimal(19,2)", nullable: true),
                     Approved_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -397,9 +397,9 @@ namespace LMCM_BE.Migrations
                 {
                     Notification_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
                     User_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Message = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())"),
                     Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
                 },
@@ -444,7 +444,7 @@ namespace LMCM_BE.Migrations
                 {
                     CLO_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
                     CLO_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    CLO_Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    CLO_Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Syllabus_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())"),
@@ -467,7 +467,7 @@ namespace LMCM_BE.Migrations
                     Question_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
                     Session_No = table.Column<int>(type: "int", nullable: false),
                     Question_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Question_Detail = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Question_Detail = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Syllabus_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())"),
@@ -498,9 +498,9 @@ namespace LMCM_BE.Migrations
                     CLO = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Question_Type = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Question_No = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Scope = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    How = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Note = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Scope = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    How = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Session_No = table.Column<int>(type: "int", nullable: true),
                     Reference = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Syllabus_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -524,15 +524,16 @@ namespace LMCM_BE.Migrations
                 {
                     Material_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
                     Syllabus_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Material_Detail_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Material_Detail_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    LearningType = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    MaterialType = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     is_Main_Material = table.Column<bool>(type: "bit", nullable: true),
                     Material_No = table.Column<int>(type: "int", nullable: true),
                     Material_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Material_Quantity = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Purpose = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Note = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())")
@@ -544,7 +545,8 @@ namespace LMCM_BE.Migrations
                         name: "FK__Learning___Mater__66603565",
                         column: x => x.Material_Detail_ID,
                         principalTable: "Learning_Material_Detail",
-                        principalColumn: "Material_Detail_ID");
+                        principalColumn: "Material_Detail_ID",
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK__Learning___Sylla__656C112C",
                         column: x => x.Syllabus_ID,
@@ -558,15 +560,16 @@ namespace LMCM_BE.Migrations
                 {
                     Schedule_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
                     Schedule_No = table.Column<int>(type: "int", nullable: false),
-                    Method = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Method = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CLO = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     ITU = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Student_Material = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Student_Task = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Student_Material_Url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Lecturer_Material = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Lecturer_Task = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Lecturer_Material_Url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Student_Material = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Student_Task = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Student_Material_Url = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Lecturer_Material = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Lecturer_Task = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Lecturer_Material_Url = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Syllabus_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "(sysutcdatetime())"),
@@ -661,7 +664,7 @@ namespace LMCM_BE.Migrations
                     Old_Material_ID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Learning_Material_Type = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Change_Type = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Change_Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Change_Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Completion_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Start_Term = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Course_Code = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
@@ -805,12 +808,6 @@ namespace LMCM_BE.Migrations
                 column: "Syllabus_ID");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Subjects__4A7C5769891B3439",
-                table: "Subjects",
-                column: "Subject_Code",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Syllabus_Previous_Version_ID",
                 table: "Syllabus",
                 column: "Previous_Version_ID");
@@ -819,12 +816,6 @@ namespace LMCM_BE.Migrations
                 name: "IX_Syllabus_Subject_ID",
                 table: "Syllabus",
                 column: "Subject_ID");
-
-            migrationBuilder.CreateIndex(
-                name: "UQ__Syllabus__1AE5B24D3BC7ACD5",
-                table: "Syllabus",
-                column: "Course_Code",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",

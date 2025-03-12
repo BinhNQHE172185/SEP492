@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMCM_BE.Migrations
 {
     [DbContext(typeof(LMCM_DBContext))]
-    [Migration("20250306133144_V1.2")]
-    partial class V12
+    [Migration("20250312192156_V1")]
+    partial class V1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -138,8 +138,7 @@ namespace LMCM_BE.Migrations
                         .HasDefaultValueSql("(newid())");
 
                     b.Property<string>("CloDescription")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("CLO_Description");
 
                     b.Property<string>("CloName")
@@ -187,8 +186,7 @@ namespace LMCM_BE.Migrations
                         .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("QuestionDetail")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("Question_Detail");
 
                     b.Property<string>("QuestionName")
@@ -395,8 +393,7 @@ namespace LMCM_BE.Migrations
                         .HasColumnName("Curriculum_Code");
 
                     b.Property<string>("CurriculumDescription")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("Curriculum_Description");
 
                     b.Property<string>("CurriculumName")
@@ -569,16 +566,14 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("How")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("MinValue")
                         .HasColumnType("decimal(19, 2)")
                         .HasColumnName("Min_Value");
 
                     b.Property<string>("Note")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Part")
                         .HasColumnType("int");
@@ -598,8 +593,7 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Scope")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("SessionNo")
                         .HasColumnType("int")
@@ -650,7 +644,11 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_Main_Material");
 
-                    b.Property<Guid>("MaterialDetailId")
+                    b.Property<string>("LearningType")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<Guid?>("MaterialDetailId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("Material_Detail_ID");
 
@@ -668,9 +666,12 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("Material_Quantity");
 
-                    b.Property<string>("Note")
+                    b.Property<string>("MaterialType")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Purpose")
                         .HasMaxLength(255)
@@ -683,10 +684,6 @@ namespace LMCM_BE.Migrations
                     b.Property<Guid>("SyllabusId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("Syllabus_ID");
-
-                    b.Property<string>("Type")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -716,8 +713,7 @@ namespace LMCM_BE.Migrations
                         .HasDefaultValueSql("(newid())");
 
                     b.Property<string>("ChangeDescription")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("Change_Description");
 
                     b.Property<string>("ChangeType")
@@ -803,8 +799,7 @@ namespace LMCM_BE.Migrations
                         .HasColumnName("ISBN");
 
                     b.Property<string>("MaterialDescription")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("Material_Description");
 
                     b.Property<string>("MaterialName")
@@ -814,8 +809,7 @@ namespace LMCM_BE.Migrations
                         .HasColumnName("Material_Name");
 
                     b.Property<string>("Note")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("PublishedDate")
                         .HasColumnType("datetime2")
@@ -863,8 +857,7 @@ namespace LMCM_BE.Migrations
 
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .HasMaxLength(255)
@@ -872,12 +865,10 @@ namespace LMCM_BE.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Url")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
@@ -909,8 +900,7 @@ namespace LMCM_BE.Migrations
                         .HasColumnName("Curriculum_ID");
 
                     b.Property<string>("PloDescription")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("PLO_Description");
 
                     b.Property<string>("PloName")
@@ -976,10 +966,14 @@ namespace LMCM_BE.Migrations
                         .HasColumnName("Schedule_ID")
                         .HasDefaultValueSql("(newid())");
 
-                    b.Property<string>("Clo")
+                    b.Property<string>("Clos")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("CLO");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Content");
 
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -992,23 +986,19 @@ namespace LMCM_BE.Migrations
                         .HasColumnName("ITU");
 
                     b.Property<string>("LecturerMaterial")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("Lecturer_Material");
 
                     b.Property<string>("LecturerMaterialUrl")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("Lecturer_Material_Url");
 
                     b.Property<string>("LecturerTask")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("Lecturer_Task");
 
                     b.Property<string>("Method")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ScheduleNo")
                         .HasColumnType("int")
@@ -1019,18 +1009,15 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("StudentMaterial")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("Student_Material");
 
                     b.Property<string>("StudentMaterialUrl")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("Student_Material_Url");
 
                     b.Property<string>("StudentTask")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("Student_Task");
 
                     b.Property<Guid>("SyllabusId")
@@ -1173,8 +1160,7 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PreRequisite")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("Pre_requisite");
 
                     b.Property<Guid?>("PreviousVersionId")
@@ -1560,7 +1546,7 @@ namespace LMCM_BE.Migrations
                     b.HasOne("LMCM_BE.Models.LearningMaterialDetail", "MaterialDetail")
                         .WithMany("LearningMaterials")
                         .HasForeignKey("MaterialDetailId")
-                        .IsRequired()
+                        .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("FK__Learning___Mater__66603565");
 
                     b.HasOne("LMCM_BE.Models.Syllabus", "Syllabus")

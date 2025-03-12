@@ -64,13 +64,7 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
       }
     );
   }
-
-
-  deleteCurriculum(code: string) {
-    this.curriculums = this.curriculums.filter(item => item.curriculumCode !== code);
-    this.totalCount = this.curriculums.length; // Cập nhật tổng số bản ghi
-  }
-
+  
   loadCurriculums(event?: any) {
     if (event) {
       this.pageNumber = Math.floor(event.first / event.rows) + 1;

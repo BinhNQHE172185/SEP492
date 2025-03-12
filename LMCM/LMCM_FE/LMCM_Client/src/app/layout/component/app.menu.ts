@@ -42,7 +42,7 @@ export class AppMenu {
                 routerLink: ['/learning'],
                 items: [
                     {
-                        label: 'Quản lý bộ môn',
+                        label: 'Quản lý môn học',
                         icon: 'pi pi-fw pi-book',
                         routerLink: ['learning/listsubject']
                     },
@@ -52,7 +52,7 @@ export class AppMenu {
                         routerLink: ['learning/listcurriculum']
                     },
                     {
-                        label: 'Quản lý giáo trình',
+                        label: 'Quản lý đề cương',
                         icon: 'pi pi-fw pi-book',
                         routerLink: ['learning/listsyllabus']
                     },

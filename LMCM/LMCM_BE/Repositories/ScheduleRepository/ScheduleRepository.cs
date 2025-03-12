@@ -59,28 +59,19 @@ namespace LMCM_BE.Repositories.ScheduleRepository
             if (schedules == null || !schedules.Any())
                 throw new ArgumentNullException(nameof(schedules));
 
-            var newSchedules = schedules.Select(scheduleDto => new Schedule
+            var newSchedules = _mapper.Map<List<Schedule>>(schedules);
+
+            foreach (var schedule in newSchedules)
             {
-                ScheduleId = Guid.NewGuid(),
-                SyllabusId = scheduleDto.SyllabusId,
-                ScheduleNo = scheduleDto.ScheduleNo,
-                Method = scheduleDto.Method,
-                Content = scheduleDto.Content,
-                Clos = scheduleDto.Clos,
-                Itu = scheduleDto.Itu,
-                StudentMaterial = scheduleDto.StudentMaterial,
-                StudentTask = scheduleDto.StudentTask,
-                LecturerMaterial = scheduleDto.LecturerMaterial,
-                LecturerTask = scheduleDto.LecturerTask,
-                StudentMaterialUrl = scheduleDto.StudentMaterialUrl,
-                LecturerMaterialUrl = scheduleDto.LecturerMaterialUrl,
-                Status = "Active",
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            }).ToList();
+                schedule.ScheduleId = Guid.NewGuid();
+                schedule.Status = "Active";
+                schedule.CreatedAt = DateTime.UtcNow;
+                schedule.UpdatedAt = DateTime.UtcNow;
+            }
 
             await _dbContext.Schedules.AddRangeAsync(newSchedules);
-            return true;  
+
+            return true;
         }
     }
 }

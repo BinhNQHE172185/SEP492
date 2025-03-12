@@ -16,28 +16,18 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
         }
         public async Task<LearningMaterialDetail> InsertMaterialDetailsAsync(LearningMaterialDetailsInsertDto detail)
         {
-            if (detail == null )
+            if (detail == null)
                 throw new ArgumentNullException(nameof(detail));
 
-            var newDetail = new LearningMaterialDetail
-            {
-                MaterialDetailId = Guid.NewGuid(),
-                MaterialName = detail.MaterialName,
-                MaterialDescription = detail.MaterialDescription,
-                Isbn = detail.Isbn,
-                Type = detail.Type,
-                Note = detail.Note,
-                Author = detail.Author,
-                Publisher = detail.Publisher,
-                PublishedDate = detail.PublishedDate,
-                Edition = detail.Edition,
-                Url = detail.Url,
-                Status = "Active",
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
+            var newDetail = _mapper.Map<LearningMaterialDetail>(detail);
+
+            newDetail.MaterialDetailId = Guid.NewGuid();
+            newDetail.Status = "Active";
+            newDetail.CreatedAt = DateTime.UtcNow;
+            newDetail.UpdatedAt = DateTime.UtcNow;
 
             await _dbContext.LearningMaterialDetails.AddAsync(newDetail);
+
             return newDetail;
         }
     }

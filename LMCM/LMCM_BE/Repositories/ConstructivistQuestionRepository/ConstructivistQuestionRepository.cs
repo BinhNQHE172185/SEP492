@@ -57,17 +57,15 @@ namespace LMCM_BE.Repositories.ConstructivistQuestionRepository
             if (questions == null || !questions.Any())
                 throw new ArgumentNullException(nameof(questions));
 
-            var newQuestions =  questions.Select(questionDto => new ConstructivistQuestion
+            var newQuestions = _mapper.Map<List<ConstructivistQuestion>>(questions);
+
+            foreach (var question in newQuestions)
             {
-                QuestionId = Guid.NewGuid(),
-                SessionNo=questionDto.SessionNo,
-                SyllabusId = questionDto.SyllabusId,
-                QuestionName = questionDto.QuestionName,
-                QuestionDetail = questionDto.QuestionDetail,
-                Status = "Active",
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            }).ToList();
+                question.QuestionId = Guid.NewGuid();
+                question.Status = "Active";
+                question.CreatedAt = DateTime.UtcNow;
+                question.UpdatedAt = DateTime.UtcNow;
+            }
 
             await _dbContext.ConstructivistQuestions.AddRangeAsync(newQuestions);
             return true;

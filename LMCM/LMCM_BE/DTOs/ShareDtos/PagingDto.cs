@@ -2,6 +2,7 @@
 {
     public class PagingRequest
     {
+        public Guid? Id { get; set; }
         public string? SearchKey { get; set; } // Từ khóa tìm kiếm (có thể null)
         public int pageIndex { get; set; } = 1; // Trang mặc định là 1
         public int PageSize { get; set; } = 10; // Số lượng bản ghi mỗi trang

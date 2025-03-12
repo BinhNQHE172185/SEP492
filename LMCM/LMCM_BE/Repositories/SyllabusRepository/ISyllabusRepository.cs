@@ -8,6 +8,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
     public interface ISyllabusRepository
     {
         Task<PagedResult<SyllabusListViewDto>> GetSyllabusesAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
+        Task<PagedResult<SyllabusChangesHistoryListDto>> GetSyllabusChangeHistoriesAsync(Guid? syllabusId,string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<Syllabus> ImportSyllabusAsync(SyllabusInsertDto syllabus);
         Task<bool> UpdateSyllabusAsync(Syllabus existingSyllabus, SyllabusInsertDto syllabusDto);
         Task<bool> DeleteSyllabusAsync(Guid id);

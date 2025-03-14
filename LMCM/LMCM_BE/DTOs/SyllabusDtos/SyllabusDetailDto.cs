@@ -44,11 +44,11 @@ namespace LMCM_BE.DTOs.SyllabusDtos
         public decimal? ScoringScale { get; set; }
 
         public DateTime? ApprovedDate { get; set; }
-        public virtual ICollection<CLOListDto> Clos { get; set; } = new List<CLOListDto>();
-        public virtual ICollection<ConstructivistQuestionListDto> ConstructivistQuestions { get; set; } = new List<ConstructivistQuestionListDto>();
+        public List<CLOListDto> Clos { get; set; } = new();
+        public List<ConstructivistQuestionListDto> ConstructivistQuestions { get; set; } = new();
+        public List<GradingStructureListDto> GradingStructures { get; set; } = new();
+        public List<ScheduleListDto> Schedules { get; set; } = new();
+        public List<LearningMaterialListDto> LearningMaterials { get; set; } = new();
 
-        public virtual ICollection<GradingStructureListDto> GradingStructures { get; set; } = new List<GradingStructureListDto>();
-        public virtual ICollection<ScheduleListDto> Schedules { get; set; } = new List<ScheduleListDto>();
-        public virtual ICollection<LearningMaterialListDto> LearningMaterials { get; set; } = new List<LearningMaterialListDto>();
     }
 }

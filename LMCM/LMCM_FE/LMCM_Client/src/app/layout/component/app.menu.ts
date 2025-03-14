@@ -56,6 +56,11 @@ export class AppMenu {
                         icon: 'pi pi-fw pi-book',
                         routerLink: ['learning/listsyllabus']
                     },
+                    {
+                        label: 'Lịch sử thay đổi',
+                        icon: 'pi pi-fw pi-book',
+                        routerLink: ['learning/history']
+                    },
                 ]
             },
             {

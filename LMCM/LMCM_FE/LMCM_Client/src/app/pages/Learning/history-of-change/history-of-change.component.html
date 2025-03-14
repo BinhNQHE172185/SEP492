@@ -1,13 +1,13 @@
 <p-card class="p-4 shadow-lg rounded-lg">
     <div class="flex justify-between items-center">
-        <h2 class="text-xl font-bold text-orange-500">Danh sách chương trình giảng dạy</h2>
+        <h2 class="text-xl font-bold text-orange-500">Lịch sử thay đổi</h2>
         <p-button label="Nhập" icon="pi pi-upload" class="p-button-warning"></p-button>
     </div>
   
     <div class="mt-3">
       <p-inputgroup class="w-full">
-          <p-button icon="pi pi-search"></p-button>
-          <input [(ngModel)]="searchKey" pInputText placeholder="Keyword" />
+        <p-button label="Tìm kiếm" />
+          <input [(ngModel)]="searchKey" pInputText placeholder="Từ khóa" />
       </p-inputgroup>
     </div>
   
@@ -15,23 +15,26 @@
         <p-table  [rows]="pageSize" [paginator]="true" [totalRecords]="totalCount" class="w-full">
             <ng-template pTemplate="header">
                 <tr>
-                    <th>Code</th>
-                    <th>Tên</th>
-                    <th>Miêu tả</th>
-                    <th>Quyết định số</th>
-                    <th>Ngày phê duyệt</th>
+                    <th>Mã môn</th>
+                    <th>Tên môn</th>
+                    <th>Loại thay đổi</th>
+                    <th>Ngày hoàn thành</th>
+                    <th>Kỳ bắt đầu áp dụng</th>
                     <th>Hành động</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-item>
                 <tr>
-                    <td>{{ item.curriculumCode }}</td>
-                    <td> {{ item.name }}  </td>
-                    <td>{{ item.description }}</td>
-                    <td>{{ item.decisionNo }}</td>
-                    <td>{{ item.approvedDate | date:'dd/MM/yyyy' }}</td> 
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td> 
 
                     <td>
+                        
+                        <p-button label="Edit" class="p-button-text p-button-sm p-button-danger"
+                                  ></p-button>
                         <p-button label="Xóa" class="p-button-text p-button-sm p-button-danger"
                                   ></p-button>
                     </td>

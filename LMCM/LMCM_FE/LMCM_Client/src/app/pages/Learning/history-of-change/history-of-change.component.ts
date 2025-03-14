@@ -9,12 +9,14 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
 import { searchService } from '../../service/search/search-service.service';
 import { Subscription } from 'rxjs';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-history-of-change',
   imports: [InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, ConfirmDialog],
   templateUrl: './history-of-change.component.html',
-  styleUrl: './history-of-change.component.scss'
+  styleUrl: './history-of-change.component.scss',
+   providers: [ConfirmationService, MessageService]
 })
 export class HistoryOfChangeComponent {
   totalCount = 0;

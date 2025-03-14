@@ -23,8 +23,8 @@ namespace LMCM_BE.Controllers.SubjectControllers
             _subjectService = subjectService;
         }
 
-        [HttpGet("getSubjectList")]
-        public async Task<IActionResult> GetSubjectAsync([FromQuery] PagingRequest request)
+        [HttpPost("getSubjectList")]
+        public async Task<IActionResult> GetSubjectAsync([FromBody] PagingRequest request)
         {
             try
             {

@@ -49,8 +49,8 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             _learningMaterialDetailsService = learningMaterialDetailsService;
         }
 
-        [HttpGet("getSyllabusesList")]
-        public async Task<IActionResult> GetSyllabusesAsync([FromQuery] PagingRequest request)
+        [HttpPost("getSyllabusesList")]
+        public async Task<IActionResult> GetSyllabusesAsync([FromBody] PagingRequest request)
         {
             try
             {
@@ -66,8 +66,8 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
-        [HttpGet("getSyllabusChangeHistoryList")]
-        public async Task<IActionResult> GetSyllabusChangeHistoiesAsync([FromQuery] PagingRequest request)
+        [HttpPost("getSyllabusChangeHistoryList")]
+        public async Task<IActionResult> GetSyllabusChangeHistoiesAsync([FromBody] PagingRequest request)
         {
             try
             {

@@ -17,8 +17,8 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
             _changesService = changesService;
         }
 
-        [HttpGet("getChangesHistoryList")]
-        public async Task<IActionResult> GetChangesHistoriesAsync([FromQuery] PagingRequest request)
+        [HttpPost("getChangesHistoryList")]
+        public async Task<IActionResult> GetChangesHistoriesAsync([FromBody] PagingRequest request)
         {
             try
             {

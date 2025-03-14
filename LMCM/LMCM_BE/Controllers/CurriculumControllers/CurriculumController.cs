@@ -23,8 +23,8 @@ namespace LMCM_BE.Controllers.CurriculumControllers
             _subjectService = subjectService;
         }
 
-        [HttpGet("getCurriculumList")]
-        public async Task<IActionResult> GetCurriculumsAsync([FromQuery] PagingRequest request)
+        [HttpPost("getCurriculumList")]
+        public async Task<IActionResult> GetCurriculumsAsync([FromBody] PagingRequest request)
         {
             try
             {

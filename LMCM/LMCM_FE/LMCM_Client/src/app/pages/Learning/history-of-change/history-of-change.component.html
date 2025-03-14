@@ -45,8 +45,8 @@
             <td>{{ item.completionDate | date:'dd/MM/yyyy' }}</td>
             <td>{{ item.startTerm }}</td>
             <td>
-              <p-button label="Edit" class="p-button-text p-button-sm p-button-warning" (click)="editItem(item)"></p-button>
-              <p-button label="Xóa" class="p-button-text p-button-sm p-button-danger" (click)="confirmDelete(item)"></p-button>
+              <p-button label="Chi tiết" outlined></p-button>
+              <p-button label="Xóa"(click)="confirmDelete(item)" outlined></p-button>
             </td>
           </tr>
         </ng-template>

@@ -50,7 +50,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
         }
 
         [HttpGet("getSyllabusesList")]
-        public async Task<IActionResult> GetSyllabusesAsync([FromBody] PagingRequest request)
+        public async Task<IActionResult> GetSyllabusesAsync([FromQuery] PagingRequest request)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             }
         }
         [HttpGet("getSyllabusChangeHistoryList")]
-        public async Task<IActionResult> GetSyllabusChangeHistoiesAsync([FromBody] PagingRequest request)
+        public async Task<IActionResult> GetSyllabusChangeHistoiesAsync([FromQuery] PagingRequest request)
         {
             try
             {

@@ -24,22 +24,25 @@ namespace LMCM_BE.Controllers.CurriculumControllers
         }
 
         [HttpGet("getCurriculumList")]
-        public async Task<IActionResult> GetCurriculumsAsync([FromBody] PagingRequest request)
+        public async Task<IActionResult> GetCurriculumsAsync([FromQuery] PagingRequest request)
         {
             try
             {
                 var data = await _curriculumService.GetCurriculumsAsync(request.SearchKey, request.pageIndex, request.PageSize);
-                if (data != null)
+
+                if (data != null) 
                 {
                     return Ok(data);
                 }
+
                 return NotFound(new { message = "Data not found." });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Internal server error.", error = ex.Message });
             }
         }
+
         [HttpPost("importCurriculum")]
         public async Task<IActionResult> ImportCurriculumFromExcel(IFormFile file)
         {

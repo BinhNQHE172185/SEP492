@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
 using LMCM_BE.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace LMCM_BE.Repositories.SyllabusRepository
 {
@@ -163,23 +165,18 @@ namespace LMCM_BE.Repositories.SyllabusRepository
         {
             if (syllabusId == null)
                 throw new ArgumentNullException(nameof(syllabusId), "Syllabus ID cannot be null.");
+            var stopwatch = Stopwatch.StartNew(); // Start measuring time
+            var syllabusDto = await _dbContext.Syllabus
+                .AsNoTracking()
+                .Where(s => s.SyllabusId == syllabusId)
+                .ProjectTo<SyllabusDetailDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
 
-            var syllabus = await _dbContext.Syllabus
-                .Include(s => s.Clos)
-                .Include(s=>s.ConstructivistQuestions)
-                .Include(s=>s.Schedules)
-                .Include(s=>s.GradingStructures)
-                .Include(s=>s.LearningMaterials)
-                .ThenInclude(l=>l.MaterialDetail)
-                .FirstOrDefaultAsync(s => s.SyllabusId == syllabusId);
-
-            if (syllabus == null)
-            {
+            if (syllabusDto == null)
                 throw new KeyNotFoundException($"No syllabus found with ID: {syllabusId}");
-            }
-
-            return _mapper.Map<SyllabusDetailDto>(syllabus);
+            stopwatch.Stop(); // Stop measuring time
+            Console.WriteLine($"Query execution time: {stopwatch.ElapsedMilliseconds} ms");
+            return syllabusDto;
         }
-
     }
 }

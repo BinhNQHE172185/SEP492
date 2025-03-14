@@ -105,7 +105,7 @@ namespace LMCM_BE.Controllers.UserControllers
         /// <param name="staffId"></param>
         /// <returns></returns>
         [HttpGet("list-user")]
-        public async Task<IActionResult> GetListUser([FromBody] PagingRequest request)
+        public async Task<IActionResult> GetListUser([FromQuery] PagingRequest request)
         {
             try
             {

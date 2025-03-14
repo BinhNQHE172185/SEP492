@@ -24,7 +24,7 @@ namespace LMCM_BE.Controllers.SubjectControllers
         }
 
         [HttpGet("getSubjectList")]
-        public async Task<IActionResult> GetSubjectAsync([FromBody] PagingRequest request)
+        public async Task<IActionResult> GetSubjectAsync([FromQuery] PagingRequest request)
         {
             try
             {

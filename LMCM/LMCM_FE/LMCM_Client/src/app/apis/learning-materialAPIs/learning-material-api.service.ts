@@ -23,7 +23,7 @@ export interface PagedResult<T> {
 export class LearningMaterialApiService {
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   getLearningMaterial(request: PagingRequest): Observable<PagedResult<any>> {
     return this.http.post<PagedResult<any>>(`${this.apiUrl}/LearningMaterial/getChangesHistoryList`, request);

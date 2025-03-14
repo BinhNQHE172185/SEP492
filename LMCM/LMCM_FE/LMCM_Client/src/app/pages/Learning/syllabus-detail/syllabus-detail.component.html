@@ -1,179 +1,294 @@
 <div class="surface-card p-5 shadow-3 border-round bg-white">
-
   <div class="section">
     <div class="section-header">
       <h2 class="text-orange-500">Chi Tiết Đề Cương</h2>
       <button pButton icon="pi pi-history" label="Xem lịch sử thay đổi" [routerLink]="['/learning/syllabus']" class="p-button-outlined"></button>
     </div>
   
-  <div class="flex flex-column md:flex-row">
-    <!-- Left Column -->
-    <div class="flex-1 pr-0 md:pr-4">
-      <ng-template ngFor let-field [ngForOf]="[
-        { label: 'Loại Tài Liệu', value: syllabusDetail.documentType },
-        { label: 'Chương Trình', value: syllabusDetail.program },
-        { label: 'Số Quyết Định', value: syllabusDetail.decisionNo },
-        { label: 'Tên Khóa Học', value: syllabusDetail.courseName },
-        { label: 'Tên Khóa Học (Tiếng Anh)', value: syllabusDetail.courseNameEnglish },
-        { label: 'Mã Khóa Học', value: syllabusDetail.courseCode },
-        { label: 'Phương Pháp Dạy-Học', value: syllabusDetail.learningMethod },
-        { label: 'Nhiệm Vụ Của Sinh Viên', value: syllabusDetail.studentTask },
-        { label: 'Số Tín Chỉ', value: syllabusDetail.credits }
-      ]">
-        <div class="field mb-5">
-          <label class="block text-700 text-lg mb-2">{{ field.label }}</label>
-          <div class="surface-100 p-4 border-round shadow-2 text-lg bg-gray-100">
-            {{ field.value }}
+    <div class="flex flex-column md:flex-row">
+      <!-- Left Column -->
+      <div class="flex-1 pr-0 md:pr-4">
+        <ng-template ngFor let-field [ngForOf]="[
+          { label: 'Loại Học Liệu', value: syllabusDetail.documentType },
+          { label: 'Chương Trình', value: syllabusDetail.program },
+          { label: 'Số Quyết Định', value: syllabusDetail.decisionNo },
+          { label: 'Tên Khóa Học', value: syllabusDetail.courseName },
+          { label: 'Tên Khóa Học (Tiếng Anh)', value: syllabusDetail.courseNameEnglish },
+          { label: 'Mã Khóa Học', value: syllabusDetail.courseCode },
+          { label: 'Phương Pháp Dạy-Học', value: syllabusDetail.learningMethod },
+          { label: 'Nhiệm Vụ Của Sinh Viên', value: syllabusDetail.studentTask },
+          { label: 'Số Tín Chỉ', value: syllabusDetail.credits }
+        ]">
+          <div class="field mb-5">
+            <label class="block text-700 text-lg mb-2">{{ field.label }}</label>
+            <div class="surface-100 p-4 border-round shadow-2 text-lg bg-gray-100">
+              {{ field.value }}
+            </div>
           </div>
+        </ng-template>
+      </div>
+
+      <!-- Right Column -->
+      <div class="flex-1 pl-0 md:pl-4">
+        <ng-template ngFor let-field [ngForOf]="[
+          { label: 'Trình Độ', value: syllabusDetail.degreeLevel },
+          { label: 'Phân Bổ Thời Gian', value: syllabusDetail.timeAllocation },
+          { label: 'Điều Kiện Tiên Quyết', value: syllabusDetail.prerequisite },
+          { label: 'Mô Tả', value: syllabusDetail.description },
+          { label: 'Điểm GPA Tối Thiểu Để Qua', value: syllabusDetail.minGPA },
+          { label: 'Thang Điểm', value: syllabusDetail.scoringScale },
+          { label: 'Ngày Phê Duyệt', value: syllabusDetail.approvedDate },
+          { label: 'Công Cụ', value: syllabusDetail.tools },
+          { label: 'Ghi Chú', value: syllabusDetail.note }
+        ]">
+          <div class="field mb-5">
+            <label class="block text-700 text-lg mb-2">{{ field.label }}</label>
+            <div class="surface-100 p-4 border-round shadow-2 text-lg bg-gray-100">
+              {{ field.value }}
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 25px;">
+    <!-- Materials section with enhanced CRUD functionality -->
+    <div class="section">
+      <div class="section-header flex justify-content-between align-items-center mb-3">
+        <h2 class="text-orange-500 m-0">Học Liệu</h2>
+        <div>
+          <button pButton icon="pi pi-plus" label="Thêm Học Liệu" class="p-button-success mr-2" (click)="openNewMaterialDialog()"></button>
+          
         </div>
-      </ng-template>
+      </div>
+      
+      <p-table [value]="materials" styleClass="p-datatable-sm" [tableStyle]="{'min-width': '50rem'}">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>STT</th>
+            <th>Mô Tả Học Liệu</th>
+            <th>Mục Đích</th>
+            <th>Loại</th>
+            <th>Tác Giả</th>
+            <th style="width: 150px">Thao Tác</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-material>
+          <tr>
+            <td>{{ material.no }}</td>
+            <td>{{ material.description }}</td>
+            <td>{{ material.purpose }}</td>
+            <td>{{ material.type }}</td>
+            <td>{{ material.author }}</td>
+            <td>
+              <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-warning mr-2" 
+                      (click)="openEditMaterialDialog(material)" title="Chỉnh sửa"></button>
+              <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" 
+                      (click)="confirmDeleteMaterial(material)" title="Xóa"></button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6" class="text-center p-4">Không có học liệu nào được tìm thấy.</td>
+          </tr>
+        </ng-template>
+      </p-table>
     </div>
 
-    <!-- Right Column -->
-    <div class="flex-1 pl-0 md:pl-4">
-      <ng-template ngFor let-field [ngForOf]="[
-        { label: 'Trình Độ', value: syllabusDetail.degreeLevel },
-        { label: 'Phân Bổ Thời Gian', value: syllabusDetail.timeAllocation },
-        { label: 'Điều Kiện Tiên Quyết', value: syllabusDetail.prerequisite },
-        { label: 'Mô Tả', value: syllabusDetail.description },
-        { label: 'Điểm GPA Tối Thiểu Để Qua', value: syllabusDetail.minGPA },
-        { label: 'Thang Điểm', value: syllabusDetail.scoringScale },
-        { label: 'Ngày Phê Duyệt', value: syllabusDetail.approvedDate },
-        { label: 'Công Cụ', value: syllabusDetail.tools },
-        { label: 'Ghi Chú', value: syllabusDetail.note }
-      ]">
-        <div class="field mb-5">
-          <label class="block text-700 text-lg mb-2">{{ field.label }}</label>
-          <div class="surface-100 p-4 border-round shadow-2 text-lg bg-gray-100">
-            {{ field.value }}
-          </div>
-        </div>
-      </ng-template>
+    <!-- Course Learning Outcomes section -->
+    <div class="section mt-4">
+      <h2 class="text-orange-500">Mục Tiêu Khóa Học (CLO)</h2>
+      
+      <p-table [value]="clos" styleClass="p-datatable-sm">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>STT</th>
+            <th>Tên CLO</th>
+            <th>Mô Tả CLO</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-clo>
+          <tr>
+            <td>{{ clo.no }}</td>
+            <td>{{ clo.name }}</td>
+            <td>{{ clo.description }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Constructivist Questions section -->
+    <div class="section mt-4">
+      <h2 class="text-orange-500">Câu Hỏi</h2>
+      
+      <p-table [value]="constructivistQuestions" styleClass="p-datatable-sm">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>STT</th>
+            <th>Số Buổi</th>
+            <th>Tên</th>
+            <th>Chi Tiết</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-question>
+          <tr>
+            <td>{{ question.no }}</td>
+            <td>{{ question.sessionNo }}</td>
+            <td>{{ question.name }}</td>
+            <td>{{ question.detail }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Schedule section -->
+    <div class="section mt-4">
+      <h2 class="text-orange-500">Lịch Trình</h2>
+      
+      <p-table [value]="scheduleData" styleClass="p-datatable-sm">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Buổi</th>
+            <th>Phương Pháp Dạy-Học</th>
+            <th>Nội Dung</th>
+            <th>CLO</th>
+            <th>ITU</th>
+            <th>Học Liệu Của Sinh Viên</th>
+            <th>Nhiệm Vụ Của Sinh Viên</th>
+            <th>Học Liệu Của Giảng Viên</th>
+            <th>Nhiệm Vụ Của Giảng Viên</th>
+            <th>Liên Kết Của Sinh Viên</th>
+            <th>Liên Kết Của Giảng Viên</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-schedule>
+          <tr>
+            <td>{{ schedule.session }}</td>
+            <td>{{ schedule.learningTeachingMethod }}</td>
+            <td>{{ schedule.content }}</td>
+            <td>{{ schedule.clo }}</td>
+            <td>{{ schedule.itu }}</td>
+            <td>{{ schedule.studentsMaterials }}</td>
+            <td>{{ schedule.studentsTask }}</td>
+            <td>{{ schedule.lecturersMaterials }}</td>
+            <td>{{ schedule.lecturersTask }}</td>
+            <td>{{ schedule.studentsLink }}</td>
+            <td>{{ schedule.lecturersLink }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
     </div>
   </div>
 </div>
 
-<div style="margin-top: 25px;">
-  <!-- Materials section -->
-  <div class="section">
-    <div class="section-header">
-      <h2 class="text-orange-500">Tài Liệu</h2>
-      <button pButton icon="pi pi-pencil" label="Chỉnh Sửa" class="p-button-outlined"></button>
+<!-- Material Dialog -->
+<p-dialog [(visible)]="materialDialog" [style]="{width: '650px'}" 
+          [header]="isEdit ? 'Chỉnh Sửa Học Liệu' : 'Thêm Học Liệu Mới'" 
+          [modal]="true" [draggable]="false" [resizable]="false">
+
+  <form [formGroup]="materialForm" class="p-3">
+    <div class="grid formgrid">
+      <!-- Mô Tả Học Liệu -->
+      <div class="col-12 field mb-4">
+        <span class="p-float-label">
+          <label for="description">Mô Tả Học Liệu <span class="text-red-500">*</span></label>          
+          <input id="description" type="text" pInputText formControlName="description" class="w-full" />
+        </span>
+        <small class="p-error" *ngIf="materialForm.get('description')?.invalid && materialForm.get('description')?.touched">
+          Mô tả học liệu là bắt buộc
+        </small>
+      </div>
+
+      <!-- Mục Đích -->
+      <div class="col-12 md:col-6 field mb-4">
+        <span class="p-float-label">
+          <label for="purpose">Mục Đích <span class="text-red-500">*</span></label>
+          <input id="purpose" type="text" pInputText formControlName="purpose" class="w-full" />
+
+        </span>
+        <small class="p-error" *ngIf="materialForm.get('purpose')?.invalid && materialForm.get('purpose')?.touched">
+          Mục đích là bắt buộc
+        </small>
+      </div>
+
+      <!-- Loại Học Liệu -->
+      <div class="col-12 md:col-6 field mb-4">
+        <span class="p-float-label w-full">
+          <label for="type">Loại Học Liệu <span class="text-red-500">*</span></label>
+          <p-dropdown id="type" [options]="materialTypes" formControlName="type" optionLabel="label" 
+                      optionValue="value" [showClear]="false" appendTo="body" styleClass="w-full"></p-dropdown>
+
+        </span>
+      </div>
+
+      <!-- Tác Giả -->
+      <div class="col-12 md:col-6 field mb-4">
+        <span class="p-float-label">
+          <label for="author">Tác Giả <span class="text-red-500">*</span></label>          
+          <input id="author" type="text" pInputText formControlName="author" class="w-full" />
+
+        </span>
+        <small class="p-error" *ngIf="materialForm.get('author')?.invalid && materialForm.get('author')?.touched">
+          Tác giả là bắt buộc
+        </small>
+      </div>
+
+      <!-- ISBN -->
+      <div class="col-12 md:col-6 field mb-4">
+        <span class="p-float-label">
+          <label for="isbn">ISBN</label>          
+          <input id="isbn" type="text" pInputText formControlName="isbn" class="w-full" />
+
+        </span>
+      </div>
+
+      <!-- Nhà Xuất Bản -->
+      <div class="col-12 md:col-6 field mb-4">
+        <span class="p-float-label">
+          <label for="publisher">Nhà Xuất Bản</label>          
+          <input id="publisher" type="text" pInputText formControlName="publisher" class="w-full" />
+        </span>
+      </div>
+
+      <!-- Ngày Xuất Bản -->
+      <div class="col-12 md:col-6 field mb-4">
+        <span class="p-float-label">
+          <label for="publishedDate">Ngày Xuất Bản</label>          
+          <input id="publishedDate" type="text" pInputText formControlName="publishedDate" class="w-full" />
+        </span>
+      </div>
+
+      <!-- Phiên Bản -->
+  <div class="col-12 md:col-6 field mb-4">
+        <span class="p-float-label">
+          <label for="edition">Phiên Bản</label>          
+          <input id="edition" type="text" pInputText formControlName="edition" class="w-full" />
+        </span>
+      </div>    
+
+      <!-- Ghi Chú (Fixed) -->
+      <div class="col-12 md:col-6 field mb-4">
+        <span class="p-float-label">
+          <label for="note">Ghi chú</label>          
+          <input id="note" type="text" pInputText formControlName="edition" class="w-full" />
+        </span>
+      </div>    
+
     </div>
-    
-    <p-table [value]="materials" styleClass="p-datatable-sm">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>STT</th>
-          <th>Mô Tả Tài Liệu</th>
-          <th>Mục Đích</th>
-          <th>ISBN</th>
-          <th>Loại</th>
-          <th>Ghi Chú</th>
-          <th>Tác Giả</th>
-          <th>Nhà Xuất Bản</th>
-          <th>Ngày Xuất Bản</th>
-          <th>Phiên Bản</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-material>
-        <tr>
-          <td>{{ material.no }}</td>
-          <td>{{ material.description }}</td>
-          <td>{{ material.purpose }}</td>
-          <td>{{ material.isbn }}</td>
-          <td>{{ material.type }}</td>
-          <td>{{ material.note }}</td>
-          <td>{{ material.author }}</td>
-          <td>{{ material.publisher }}</td>
-          <td>{{ material.publishedDate }}</td>
-          <td>{{ material.edition }}</td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
+  </form>
 
-  <!-- Course Learning Outcomes section -->
-  <div class="section">
-    <h2 class="text-orange-500">Mục Tiêu Khóa Học (CLO)</h2>
-    
-    <p-table [value]="clos" styleClass="p-datatable-sm">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>STT</th>
-          <th>Tên CLO</th>
-          <th>Mô Tả CLO</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-clo>
-        <tr>
-          <td>{{ clo.no }}</td>
-          <td>{{ clo.name }}</td>
-          <td>{{ clo.description }}</td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
+  <ng-template pTemplate="footer">
+    <div class="flex justify-content-end gap-2">
+      <button pButton pRipple label="Hủy" icon="pi pi-times" class="p-button-text" (click)="cancelDialog()"></button>
+      <button pButton pRipple label="Lưu" icon="pi pi-check" class="p-button-primary" (click)="saveMaterial()"></button>
+    </div>
+  </ng-template>
+</p-dialog>
 
-  <!-- Constructivist Questions section -->
-  <div class="section">
-    <h2 class="text-orange-500">Câu Hỏi</h2>
-    
-    <p-table [value]="constructivistQuestions" styleClass="p-datatable-sm">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>STT</th>
-          <th>Số Buổi</th>
-          <th>Tên</th>
-          <th>Chi Tiết</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-question>
-        <tr>
-          <td>{{ question.no }}</td>
-          <td>{{ question.sessionNo }}</td>
-          <td>{{ question.name }}</td>
-          <td>{{ question.detail }}</td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
+<!-- Confirmation Dialog -->
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 
-  <!-- Schedule section -->
-  <div class="section">
-    <h2 class="text-orange-500">Lịch Trình</h2>
-    
-    <p-table [value]="scheduleData" styleClass="p-datatable-sm">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Buổi</th>
-          <th>Phương Pháp Dạy-Học</th>
-          <th>Nội Dung</th>
-          <th>CLO</th>
-          <th>ITU</th>
-          <th>Tài Liệu Của Sinh Viên</th>
-          <th>Nhiệm Vụ Của Sinh Viên</th>
-          <th>Tài Liệu Của Giảng Viên</th>
-          <th>Nhiệm Vụ Của Giảng Viên</th>
-          <th>Liên Kết Của Sinh Viên</th>
-          <th>Liên Kết Của Giảng Viên</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-schedule>
-        <tr>
-          <td>{{ schedule.session }}</td>
-          <td>{{ schedule.learningTeachingMethod }}</td>
-          <td>{{ schedule.content }}</td>
-          <td>{{ schedule.clo }}</td>
-          <td>{{ schedule.itu }}</td>
-          <td>{{ schedule.studentsMaterials }}</td>
-          <td>{{ schedule.studentsTask }}</td>
-          <td>{{ schedule.lecturersMaterials }}</td>
-          <td>{{ schedule.lecturersTask }}</td>
-          <td>{{ schedule.studentsLink }}</td>
-          <td>{{ schedule.lecturersLink }}</td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-</div>
+<!-- Toast Messages -->
+<p-toast></p-toast>

@@ -13,13 +13,20 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { FileUploadModule } from 'primeng/fileupload';
 import { DialogModule } from 'primeng/dialog';
+import { CalendarModule } from 'primeng/calendar';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
   standalone: true,
   imports: [
     ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, 
     InputGroupModule, FormsModule, CommonModule, TableModule, 
-    ButtonModule, CardModule, InputTextModule
+    ButtonModule, CardModule, InputTextModule, 
+
+    // Thêm các module còn thiếu
+    CalendarModule,      // Để chọn ngày (Ngày hoàn thành, Kỳ bắt đầu áp dụng)
+    DropdownModule,      // Để hiển thị dropdown chọn "Loại thay đổi"
+    InputTextModule  
   ],
   selector: 'app-history-of-change',
   templateUrl: './history-of-change.component.html',
@@ -97,6 +104,25 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
     console.log('Xóa:', item);
     this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa bản ghi' });
   }
+  displayDetailDialog = false;
+selectedItem: any = {};
+changeTypes = [
+  { label: 'Xây mới', value: 'Xây mới' },
+  { label: 'Chỉnh sửa', value: 'Chỉnh sửa' },
+  { label: 'Xóa bỏ', value: 'Xóa bỏ' }
+];
+
+showDetail(item: any) {
+  this.selectedItem = { ...item }; // Sao chép dữ liệu để chỉnh sửa không ảnh hưởng đến danh sách gốc
+  this.displayDetailDialog = true;
+}
+
+saveDetail() {
+  console.log('Lưu chi tiết:', this.selectedItem);
+  this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã cập nhật dữ liệu' });
+  this.displayDetailDialog = false;
+}
+
 
   ngOnDestroy(): void {
     if (this.searchSubscription) {

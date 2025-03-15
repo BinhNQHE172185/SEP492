@@ -45,7 +45,7 @@
             <td>{{ item.completionDate | date:'dd/MM/yyyy' }}</td>
             <td>{{ item.startTerm }}</td>
             <td>
-              <p-button label="Chi tiết" outlined></p-button>
+              <p-button label="Chi tiết" outlined (click)="showDetail(item)"></p-button>
               <p-button label="Xóa"(click)="confirmDelete(item)" outlined></p-button>
             </td>
           </tr>
@@ -58,5 +58,48 @@
     </ng-template>
   
     <p-confirmDialog></p-confirmDialog>
+    <p-dialog [(visible)]="displayDetailDialog" [modal]="true" header="Chỉnh sửa thông tin thay đổi" [style]="{width: '600px'}">
+      <div class="p-4 border rounded-lg">
+        <div class="grid grid-cols-2 gap-4">
+          
+          <div>
+            <label class="font-bold">Mã môn *</label>
+            <input pInputText [(ngModel)]="selectedItem.courseCode" class="w-full" disabled />
+          </div>
+    
+          <div>
+            <label class="font-bold">Ngày hoàn thành *</label>
+            <p-calendar [(ngModel)]="selectedItem.completionDate" dateFormat="yy-mm-dd" class="w-full"></p-calendar>
+          </div>
+    
+          <div>
+            <label class="font-bold">Kỳ bắt đầu áp dụng *</label>
+            <p-calendar [(ngModel)]="selectedItem.startTerm" dateFormat="yy-mm-dd" class="w-full"></p-calendar>
+          </div>
+    
+          <div>
+            <label class="font-bold">Số hợp đồng</label>
+            <input pInputText [(ngModel)]="selectedItem.contractNumber" class="w-full" />
+          </div>
+    
+          <div class="col-span-2">
+            <label class="font-bold">Loại thay đổi *</label>
+            <p-dropdown [options]="changeTypes" [(ngModel)]="selectedItem.changeType" placeholder="Chọn loại thay đổi" class="w-full"></p-dropdown>
+          </div>
+    
+          <div class="col-span-2">
+            <label class="font-bold">Nội dung thay đổi *</label>
+            <textarea pInputTextarea [(ngModel)]="selectedItem.changeContent" rows="3" class="w-full"></textarea>
+          </div>
+    
+        </div>
+      </div>
+    
+      <ng-template pTemplate="footer">
+        <p-button label="Lưu" icon="pi pi-save" (click)="saveDetail()" class="p-button-success"></p-button>
+        <p-button label="Hủy" icon="pi pi-times" (click)="displayDetailDialog = false" class="p-button-secondary"></p-button>
+      </ng-template>
+    </p-dialog>
+    
   </p-card>
   

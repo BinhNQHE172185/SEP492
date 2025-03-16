@@ -22,11 +22,7 @@ import { DropdownModule } from 'primeng/dropdown';
     ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, 
     InputGroupModule, FormsModule, CommonModule, TableModule, 
     ButtonModule, CardModule, InputTextModule, 
-
-    // Thêm các module còn thiếu
-    CalendarModule,      // Để chọn ngày (Ngày hoàn thành, Kỳ bắt đầu áp dụng)
-    DropdownModule,      // Để hiển thị dropdown chọn "Loại thay đổi"
-    InputTextModule  
+    CalendarModule, DropdownModule, InputTextModule
   ],
   selector: 'app-history-of-change',
   templateUrl: './history-of-change.component.html',
@@ -39,8 +35,11 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
   pageSize = 10;
   pageIndex = 1;
   searchKey = '';
-
   private searchSubscription!: Subscription;
+  displayDetailDialog = false;
+  displayAddDialog = false;
+  selectedItem: any = {};
+  newHistory: any = {};
 
   constructor(
     private learningMaterialService: LearningMaterialApiService,
@@ -52,43 +51,63 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
     this.loadHistory();
   }
 
+  getUserIdFromLocalStorage(): string | null {
+    return localStorage.getItem('userId');
+  }
+
   loadHistory(event?: any) {
     if (event) {
-      console.log('📌 Sự kiện phân trang:', event);
-      this.pageIndex = Math.floor(event.first / event.rows) + 1; // ✅ Tính pageIndex đúng
+      this.pageIndex = Math.floor(event.first / event.rows) + 1;
       this.pageSize = event.rows || this.pageSize;
     }
-  
+
     const request = {
-      searchKey: this.searchKey.trim(), 
+      searchKey: this.searchKey.trim(),
       pageIndex: this.pageIndex,
       pageSize: this.pageSize
     };
-  
-    console.log('📤 Gửi request API:', request);
-  
+
     this.learningMaterialService.getLearningMaterial(request).subscribe({
       next: (response) => {
-        console.log('📥 Dữ liệu nhận được:', response);
+        console.log('Dữ liệu nhận được:', response);
         this.historyList = response.items;
         this.totalCount = response.totalCount;
       },
       error: (error) => {
-        console.error('❌ Lỗi khi gọi API:', error);
+        console.error('Lỗi khi gọi API:', error);
         this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải dữ liệu' });
       }
     });
   }
-  
-  
+
   paginate(event: any) {
     console.log(' Phân trang:', event);
     this.loadHistory(event);
   }
+  showDetail(item: any) {
+    if (!item) {
+     
+      return;
+    }
 
-  editItem(item: any) {
-    console.log('Chỉnh sửa:', item);
+    this.selectedItem = {
+      ...item,
+      completionDate: item.completionDate ? new Date(item.completionDate) : null,
+      startTerm: item.startTerm ? new Date(item.startTerm) : null
+    };
+  
+    this.displayDetailDialog = true;
   }
+
+  saveDetail() {
+    console.log('Lưu chi tiết:', this.selectedItem);
+    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã cập nhật dữ liệu' });
+    this.displayDetailDialog = false;
+  }
+
+ closeDetailDialog() {
+  this.displayDetailDialog = false;
+}
 
   confirmDelete(item: any) {
     this.confirmationService.confirm({
@@ -104,23 +123,49 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
     console.log('Xóa:', item);
     this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa bản ghi' });
   }
-  displayDetailDialog = false;
-selectedItem: any = {};
-changeTypes = [
-  { label: 'Xây mới', value: 'Xây mới' },
-  { label: 'Chỉnh sửa', value: 'Chỉnh sửa' },
-  { label: 'Xóa bỏ', value: 'Xóa bỏ' }
-];
 
-showDetail(item: any) {
-  this.selectedItem = { ...item }; // Sao chép dữ liệu để chỉnh sửa không ảnh hưởng đến danh sách gốc
-  this.displayDetailDialog = true;
-}
+  openAddDialog() {
+    this.newHistory = {};
+    this.displayAddDialog = true;
+  }
 
-saveDetail() {
-  console.log('Lưu chi tiết:', this.selectedItem);
-  this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã cập nhật dữ liệu' });
-  this.displayDetailDialog = false;
+  addHistory() {
+    const userId = this.getUserIdFromLocalStorage();
+    if (!userId) {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không tìm thấy thông tin người dùng' });
+        return;
+    }
+    if (!this.newHistory.changeType || !this.newHistory.learningMaterialType) {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng nhập đầy đủ thông tin' });
+        return;
+    }
+
+    const request = {
+        userId: userId,
+        contractId: this.newHistory.contractNumber || null,
+        newMaterialId: this.newHistory.newMaterialId || null,
+        oldMaterialId: this.newHistory.oldMaterialId || null,
+        learningMaterialType: this.newHistory.learningMaterialType, 
+        changeType: this.newHistory.changeType, 
+        changeDescription: this.newHistory.changeDescription || '',
+        completionDate: this.newHistory.completionDate || new Date().toISOString(),
+        startTerm: this.newHistory.startTerm || '',
+        courseCode: this.newHistory.courseCode || ''
+    };
+
+    console.log('📤 Gửi request thêm lịch sử:', request);
+
+    this.learningMaterialService.createLearningMaterialHistory(request).subscribe({
+        next: () => {
+            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm lịch sử thay đổi' });
+            this.displayAddDialog = false;
+            this.loadHistory();
+        },
+        error: (error) => {
+            console.error('Lỗi khi thêm lịch sử thay đổi:', error);
+            this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể thêm lịch sử thay đổi' });
+        }
+    });
 }
 
 

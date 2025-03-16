@@ -28,4 +28,9 @@ export class LearningMaterialApiService {
   getLearningMaterial(request: PagingRequest): Observable<PagedResult<any>> {
     return this.http.post<PagedResult<any>>(`${this.apiUrl}/LearningMaterial/getChangesHistoryList`, request);
   }
+  createLearningMaterialHistory(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/LearningMaterial/createChangesHistory`, data);
+  }
+  
+  
 }

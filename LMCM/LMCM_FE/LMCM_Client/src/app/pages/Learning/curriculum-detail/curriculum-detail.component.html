@@ -1,97 +1,83 @@
 <div class="surface-card p-5 shadow-3 border-round bg-white">
-<div class="section">
+  <div class="section">
 
 
-  <!-- Header with buttons -->
-  <div class="section-header">
-    <h2 class="text-orange-500">Chi tiết chương trình giảng dạy</h2>
+    <!-- Header with buttons -->
+    <div class="section-header">
+      <h2 class="text-orange-500">Chi tiết chương trình giảng dạy</h2>
 
       <!-- <button pButton icon="pi pi-history" label="Xem lịch sử thay đổi"[routerLink]="['/user/plo']" class="p-button-outlined"></button> -->
-      <button pButton icon="pi pi-file" label="Xem PLO" [routerLink]="['/learning/plo']" class="p-button-outlined"></button>
+      <button pButton icon="pi pi-file" label="Xem PLO" [routerLink]="['/learning/plo']"
+        class="p-button-outlined"></button>
       <!-- <button pButton icon="pi pi-th-large" label="Xem Combo"[routerLink]="['/user/plo']" class="p-button-outlined"></button>
       <button pButton icon="pi pi-list" label="Xem môn TC"[routerLink]="['/user/plo']" class="p-button-outlined"></button> -->
 
-  </div>
-  
-  <div class="flex flex-column md:flex-row">
-    <!-- Left Column -->
-    <div class="flex-1 pr-0 md:pr-4">
-      <ng-template ngFor let-field [ngForOf]="[
+    </div>
+
+    <div class="flex flex-column md:flex-row">
+      <!-- Left Column -->
+      <div class="flex-1 pr-0 md:pr-4">
+        <ng-template ngFor let-field [ngForOf]="[
         { label: 'Mã Chương trình', value: curriculumDetail.code },
         { label: 'Tên chương trình', value: curriculumDetail.name },
         { label: 'English Curriculum Name', value: curriculumDetail.engCurriculumName },
         { label: 'Mã chuyên ngành', value: curriculumDetail.majorCode }
       ]">
-        <div class="field mb-5">
-          <label class="block text-700 mb-2">{{ field.label }}</label>
-         
-          <p-inputGroup class="w-full">
-            <input pInputText type="text" [value]="field.value" [disabled]="true" 
-              class="w-full readable-text" />
-          </p-inputGroup>
-        </div>
-      </ng-template>
-    </div>
-  
-    <!-- Right Column -->
-    <div class="flex-1 pl-0 md:pl-4">
-      <ng-template ngFor let-field [ngForOf]="[
+          <div class="field mb-5">
+            <label class="block text-700 mb-2">{{ field.label }}</label>
+            <input pInputText [value]="field.value" [disabled]="true" class="w-full readable-text" />
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Right Column -->
+      <div class="flex-1 pl-0 md:pl-4">
+        <ng-template ngFor let-field [ngForOf]="[
         { label: 'Tên chuyên ngành', value: curriculumDetail.majorName },
         { label: 'English Vocational Name', value: curriculumDetail.engName },
         { label: 'Quyết định số', value: curriculumDetail.decisionNo },
         { label: 'Ngày phê duyệt', value: curriculumDetail.approvalDate }
       ]">
-        <div class="field mb-5">
-          <label class="block text-700 mb-2">{{ field.label }}</label>
-          <p-inputGroup class="w-full">
-            <input pInputText type="text" [value]="field.value" [disabled]="true" 
-              class="w-full readable-text" />
-          </p-inputGroup>
-        </div>
-      </ng-template>
-    </div>
-  </div>
-  
-  <!-- Full width description -->
-  <div class="w-full">
-    <div class="field mb-5">
-      <label class="block text-700 mb-2">Miêu tả</label>
-      <p-inputGroup class="w-full">
-        <input pInputText type="text" [value]="curriculumDetail.description" [disabled]="true" 
-          class="w-full readable-text" />
-      </p-inputGroup>
-     
-    </div>
-  </div>
-</div>
-
-<div class="curriculum-container">
-  <h2 >Cơ cấu chương trình giảng dạy</h2>
-  <div class="semester-container">
-    <div *ngFor="let semester of semesters" class="semester-card">
-      <div class="semester-header">
-        <h3>{{ semester.name }} {{ semester.number }}</h3>
-        <span class="subject-count">{{ semester.subjectCount }} subjects</span>
-      </div>
-      <div>
-      <p-card *ngFor="let subject of semester.subjects" class="subject-card" >
-        
-        <ng-template pTemplate="header">
-          <div class="subject-header">
-            <strong>{{ subject.code }}</strong>
-            <span style="margin-right: 5px;">{{ subject.credits }} credits • {{ subject.hours }} hours</span>
+          <div class="field mb-5">
+            <label class="block text-700 mb-2">{{ field.label }}</label>
+            <input pInputText [value]="field.value" [disabled]="true" class="w-full readable-text" />
           </div>
         </ng-template>
-        <div class="subject-content">
-          <p>{{ subject.name }}</p>
-          <p *ngIf="subject.nameVn">{{ subject.nameVn }}</p>
-        </div>
-       
-      </p-card>
+      </div>
+    </div>
 
+    <!-- Full width description -->
+    <div class="w-full">
+      <div class="field mb-5">
+        <label class="block text-700 mb-2">Miêu tả</label>
+        <textarea pTextarea [value]="curriculumDetail.description" [disabled]="true"
+          class="w-full readable-text-area"></textarea>
+      </div>
     </div>
   </div>
-</div>
-</div>
 
+  <h2>Cơ cấu chương trình giảng dạy</h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <p-card *ngFor="let semester of semesters">
+      <div class="semester-header">
+        <h3>{{ semester.name }} {{ semester.number }}</h3>
+      </div>
+      <div>
+        <p-card *ngFor="let subject of semester.subjects" class="subject-card">
+          <ng-template pTemplate="header">
+            <div class="subject-header">
+              <strong>{{ subject.code }}</strong>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="content">
+            <p *ngIf="subject.nameVn">{{ subject.nameVn }}</p>
+            <div class="flex gap-2">
+              <p-tag severity="info" [value]="subject.credits + ' credits'"></p-tag>
+              <p-tag severity="warn" [value]="subject.hours + ' hours'"></p-tag>
+            </div>
+          </ng-template>
+        </p-card>
+      </div>
+    </p-card>
+  </div>
 </div>

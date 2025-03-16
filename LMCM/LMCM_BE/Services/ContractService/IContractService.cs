@@ -6,5 +6,6 @@ namespace LMCM_BE.Services.ContractService
     public interface IContractService
     {
         Task<Contract> CreateContract(ContractInsertDto contractDto);
+        Task<Contract?> GetContractByIdAsync(Guid contractId);
     }
 }

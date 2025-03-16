@@ -2,7 +2,7 @@
 using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
-using LMCM_BE.DTOs.SyllabusDtos;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.LearningMaterialRepository
@@ -20,12 +20,13 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
         {
             var query = _dbContext.LearningMaterialChangesHistories.AsQueryable();
 
+            query = query.Where(s=>s.Status != "Inactive");
+
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
                 string search = searchKey.Trim().ToLower();
-                query = query.Where(s => (s.CourseCode.ToLower().Contains(search) ||
-                                         s.User.UserName.ToLower().Contains(search)) &&
-                                         s.Status.ToLower().Equals("inactive"));
+                query = query.Where(s => s.CourseCode.ToLower().Contains(search) ||
+                                         s.User.UserName.ToLower().Contains(search));
             }
 
             int totalCount = await query.CountAsync();

@@ -1,6 +1,6 @@
 <div class="surface-card p-5 shadow-3 border-round bg-white">
   <div class="section">
-    <div class="section-header">
+    <div class="section-header flex justify-content-between align-items-center">
       <h2 class="text-orange-500">Chi Tiết Đề Cương</h2>
       <button pButton icon="pi pi-history" label="Xem lịch sử thay đổi" [routerLink]="['/learning/syllabus']" class="p-button-outlined"></button>
     </div>
@@ -19,12 +19,14 @@
           { label: 'Nhiệm Vụ Của Sinh Viên', value: syllabusDetail.studentTask },
           { label: 'Số Tín Chỉ', value: syllabusDetail.credits }
         ]">
-          <div class="field mb-5">
-            <label class="block text-700 text-lg mb-2">{{ field.label }}</label>
-            <div class="surface-100 p-4 border-round shadow-2 text-lg bg-gray-100">
-              {{ field.value }}
-            </div>
-          </div>
+        <div class="field mb-5">
+          <label class="block text-700 font-medium mb-2">{{ field.label }}</label>
+          <p-inputGroup class="w-full">
+            <input pInputText type="text" [value]="field.value" [disabled]="true" 
+              class="w-full readable-text" />
+          </p-inputGroup>
+        </div>
+    
         </ng-template>
       </div>
 
@@ -41,16 +43,37 @@
           { label: 'Công Cụ', value: syllabusDetail.tools },
           { label: 'Ghi Chú', value: syllabusDetail.note }
         ]">
-          <div class="field mb-5">
-            <label class="block text-700 text-lg mb-2">{{ field.label }}</label>
-            <div class="surface-100 p-4 border-round shadow-2 text-lg bg-gray-100">
-              {{ field.value }}
-            </div>
-          </div>
+        <div class="field mb-5">
+          <label class="block text-700 font-medium mb-2">{{ field.label }}</label>
+          
+          <p-inputGroup class="w-full">
+            <input pInputText type="text" [value]="field.value" [disabled]="true" 
+              class="w-full readable-text" />
+          </p-inputGroup>
+        </div>
+    
         </ng-template>
       </div>
-    </div>
   </div>
+      <div class="w-full">
+        <ng-template ngFor let-field [ngForOf]="[
+        { label: 'Mô Tả', value: syllabusDetail.description } ]">
+
+        <div class="field mb-5">
+          <label class="block text-700 font-medium mb-2">{{ field.label }}</label>
+          
+          <p-inputGroup class="w-full">
+            <input pInputText type="text" [value]="field.value" [disabled]="true" 
+              class="w-full readable-text" />
+          </p-inputGroup>
+        </div>
+      </ng-template>        
+      </div>
+
+  
+  </div>
+
+
 
   <div style="margin-top: 25px;">
     <!-- Materials section with enhanced CRUD functionality -->
@@ -58,7 +81,7 @@
       <div class="section-header flex justify-content-between align-items-center mb-3">
         <h2 class="text-orange-500 m-0">Học Liệu</h2>
         <div>
-          <button pButton icon="pi pi-plus" label="Thêm Học Liệu" class="p-button-success mr-2" (click)="openNewMaterialDialog()"></button>
+          <button pButton icon="pi pi-plus" label="Thêm Học Liệu" class="p-button-outlined" (click)="openNewMaterialDialog()"></button>
           
         </div>
       </div>
@@ -71,7 +94,12 @@
             <th>Mục Đích</th>
             <th>Loại</th>
             <th>Tác Giả</th>
-            <th style="width: 150px">Thao Tác</th>
+            <th>ISBN</th>
+            <th>Nhà Xuất Bản</th>
+            <th>Ngày Xuất Bản</th>
+            <th>Phiên Bản</th>
+            <th>Ghi Chú</th>
+            <th>Thao Tác</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-material>
@@ -81,17 +109,20 @@
             <td>{{ material.purpose }}</td>
             <td>{{ material.type }}</td>
             <td>{{ material.author }}</td>
+            <td>{{ material.isbn }}</td>
+            <td>{{ material.publisher }}</td>
+            <td>{{ material.publishedDate | date:'yyyy' }}</td>
+            <td>{{ material.edition }}</td>
+            <td>{{ material.note }}</td>
             <td>
-              <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-warning mr-2" 
-                      (click)="openEditMaterialDialog(material)" title="Chỉnh sửa"></button>
-              <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" 
-                      (click)="confirmDeleteMaterial(material)" title="Xóa"></button>
+              <p-button label="Sửa" class="p-button-text p-button-sm p-button-warning" (click)="openEditMaterialDialog(material)"></p-button>
+              <p-button label="Xóa" class="p-button-text p-button-sm p-button-danger" (click)="confirmDeleteMaterial(material)"></p-button>
             </td>
           </tr>
         </ng-template>
         <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="6" class="text-center p-4">Không có học liệu nào được tìm thấy.</td>
+            <td colspan="11" class="text-center p-4">Không có học liệu nào được tìm thấy.</td>
           </tr>
         </ng-template>
       </p-table>
@@ -188,96 +219,94 @@
           [header]="isEdit ? 'Chỉnh Sửa Học Liệu' : 'Thêm Học Liệu Mới'" 
           [modal]="true" [draggable]="false" [resizable]="false">
 
-  <form [formGroup]="materialForm" class="p-3">
-    <div class="grid formgrid">
-      <!-- Mô Tả Học Liệu -->
-      <div class="col-12 field mb-4">
-        <span class="p-float-label">
-          <label for="description">Mô Tả Học Liệu <span class="text-red-500">*</span></label>          
-          <input id="description" type="text" pInputText formControlName="description" class="w-full" />
-        </span>
-        <small class="p-error" *ngIf="materialForm.get('description')?.invalid && materialForm.get('description')?.touched">
-          Mô tả học liệu là bắt buộc
-        </small>
-      </div>
-
-      <!-- Mục Đích -->
-      <div class="col-12 md:col-6 field mb-4">
-        <span class="p-float-label">
-          <label for="purpose">Mục Đích <span class="text-red-500">*</span></label>
-          <input id="purpose" type="text" pInputText formControlName="purpose" class="w-full" />
-
-        </span>
-        <small class="p-error" *ngIf="materialForm.get('purpose')?.invalid && materialForm.get('purpose')?.touched">
-          Mục đích là bắt buộc
-        </small>
-      </div>
-
-      <!-- Loại Học Liệu -->
-      <div class="col-12 md:col-6 field mb-4">
-        <span class="p-float-label w-full">
-          <label for="type">Loại Học Liệu <span class="text-red-500">*</span></label>
-          <p-dropdown id="type" [options]="materialTypes" formControlName="type" optionLabel="label" 
-                      optionValue="value" [showClear]="false" appendTo="body" styleClass="w-full"></p-dropdown>
-
-        </span>
-      </div>
-
-      <!-- Tác Giả -->
-      <div class="col-12 md:col-6 field mb-4">
-        <span class="p-float-label">
-          <label for="author">Tác Giả <span class="text-red-500">*</span></label>          
-          <input id="author" type="text" pInputText formControlName="author" class="w-full" />
-
-        </span>
-        <small class="p-error" *ngIf="materialForm.get('author')?.invalid && materialForm.get('author')?.touched">
-          Tác giả là bắt buộc
-        </small>
-      </div>
-
-      <!-- ISBN -->
-      <div class="col-12 md:col-6 field mb-4">
-        <span class="p-float-label">
-          <label for="isbn">ISBN</label>          
-          <input id="isbn" type="text" pInputText formControlName="isbn" class="w-full" />
-
-        </span>
-      </div>
-
-      <!-- Nhà Xuất Bản -->
-      <div class="col-12 md:col-6 field mb-4">
-        <span class="p-float-label">
-          <label for="publisher">Nhà Xuất Bản</label>          
-          <input id="publisher" type="text" pInputText formControlName="publisher" class="w-full" />
-        </span>
-      </div>
-
-      <!-- Ngày Xuất Bản -->
-      <div class="col-12 md:col-6 field mb-4">
-        <span class="p-float-label">
-          <label for="publishedDate">Ngày Xuất Bản</label>          
-          <input id="publishedDate" type="text" pInputText formControlName="publishedDate" class="w-full" />
-        </span>
-      </div>
-
-      <!-- Phiên Bản -->
-  <div class="col-12 md:col-6 field mb-4">
-        <span class="p-float-label">
-          <label for="edition">Phiên Bản</label>          
-          <input id="edition" type="text" pInputText formControlName="edition" class="w-full" />
-        </span>
-      </div>    
-
-      <!-- Ghi Chú (Fixed) -->
-      <div class="col-12 md:col-6 field mb-4">
-        <span class="p-float-label">
-          <label for="note">Ghi chú</label>          
-          <input id="note" type="text" pInputText formControlName="edition" class="w-full" />
-        </span>
-      </div>    
-
-    </div>
-  </form>
+          <form [formGroup]="materialForm" class="p-3">
+            <div class="grid formgrid">
+              <!-- Mô Tả Học Liệu -->
+              <div class="col-12 field mb-4">
+                <label for="description">Mô Tả Học Liệu <span class="text-red-500">*</span></label>
+                <p-inputGroup class="w-full">
+                  <input id="description" type="text" pInputText formControlName="description" class="w-full" placeholder="Disabled" [disabled]="true" />
+                </p-inputGroup>
+                <small class="p-error" *ngIf="materialForm.get('description')?.invalid && materialForm.get('description')?.touched">
+                  Mô tả học liệu là bắt buộc
+                </small>
+              </div>
+          
+              <!-- Mục Đích -->
+              <div class="col-12 md:col-6 field mb-4">
+                <label for="purpose">Mục Đích <span class="text-red-500">*</span></label>
+                <p-inputGroup class="w-full">
+                  <input id="purpose" type="text" pInputText formControlName="purpose" class="w-full" />
+                </p-inputGroup>
+                <small class="p-error" *ngIf="materialForm.get('purpose')?.invalid && materialForm.get('purpose')?.touched">
+                  Mục đích là bắt buộc
+                </small>
+              </div>
+          
+              <!-- Loại Học Liệu -->
+              <div class="col-12 md:col-6 field mb-4">
+                <label for="type">Loại Học Liệu <span class="text-red-500">*</span></label>
+                <p-inputGroup class="w-full">
+                  <p-dropdown id="type" [options]="materialTypes" formControlName="type" optionLabel="label" 
+                            optionValue="value" [showClear]="false" appendTo="body"></p-dropdown>
+                </p-inputGroup>
+              </div>
+          
+              <!-- Tác Giả -->
+              <div class="col-12 md:col-6 field mb-4">
+                <label for="author">Tác Giả <span class="text-red-500">*</span></label>
+                <p-inputGroup class="w-full">
+                  <input id="author" type="text" pInputText formControlName="author" />
+                </p-inputGroup>
+                <small class="p-error" *ngIf="materialForm.get('author')?.invalid && materialForm.get('author')?.touched">
+                  Tác giả là bắt buộc
+                </small>
+              </div>
+          
+              <!-- ISBN -->
+              <div class="col-12 md:col-6 field mb-4">
+                <label for="isbn">ISBN</label>
+                <p-inputGroup class="w-full">
+                  <input id="isbn" type="text" pInputText formControlName="isbn"  />
+                </p-inputGroup>
+              </div>
+          
+              <!-- Nhà Xuất Bản -->
+              <div class="col-12 md:col-6 field mb-4">
+                <label for="publisher">Nhà Xuất Bản</label>
+                <p-inputGroup class="w-full">
+                  <input id="publisher" type="text" pInputText formControlName="publisher" />
+                </p-inputGroup>
+              </div>
+          
+              <!-- Ngày Xuất Bản -->
+              <div class="col-12 md:col-6 field mb-4">
+                <label for="publishedDate">Ngày Xuất Bản</label>
+                <div class="w-full">
+                  <p-calendar id="publishedDate" formControlName="publishedDate" [showIcon]="true" dateFormat="yy" ></p-calendar>
+                </div>
+              </div>
+          
+              <!-- Phiên Bản -->
+              <div class="col-12 md:col-6 field mb-4">
+                <label for="edition">Phiên Bản</label>
+                <p-inputGroup class="w-full">
+                  <input id="edition" type="text" pInputText formControlName="edition" />
+                </p-inputGroup>
+              </div>    
+          
+              <!-- Ghi Chú (Fixed) -->
+              <div class="col-12 md:col-6 field mb-4">
+                <label for="note">Ghi chú</label>
+                <p-inputGroup class="w-full">
+                  <input id="note" type="text" pInputText formControlName="note"  />
+                </p-inputGroup>
+              </div>
+              
+              <!-- Buttons -->
+            
+            </div>
+          </form>
 
   <ng-template pTemplate="footer">
     <div class="flex justify-content-end gap-2">

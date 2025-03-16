@@ -14,7 +14,11 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { TextareaModule } from 'primeng/textarea';
-
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { FieldsetModule } from 'primeng/fieldset';
+import { DividerModule } from 'primeng/divider';
+import { PanelModule } from 'primeng/panel';
 interface Material {
   id: number;
   no: number;
@@ -55,7 +59,13 @@ interface MenuItem {
     FormsModule,
     ReactiveFormsModule,
     ConfirmDialogModule,
-    ToastModule
+    ToastModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    FieldsetModule,
+    DividerModule,
+    PanelModule,
+    TextareaModule
   ],
   providers: [ConfirmationService, MessageService]
 })
@@ -202,7 +212,6 @@ export class SyllabusDetailComponent {
     this.confirmationService.confirm({
       message: `Bạn có chắc chắn muốn xóa tài liệu "${material.description}"?`,
       header: 'Xác nhận xóa',
-      icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.deleteMaterial();
       }

@@ -5,6 +5,8 @@ import { RouterLink } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { IconFieldModule } from 'primeng/iconfield';
+import { InputGroup } from 'primeng/inputgroup';
+import { InputTextModule } from 'primeng/inputtext';
 
 
 interface CurriculumDetail {
@@ -41,7 +43,7 @@ interface Subject {
   templateUrl: './curriculum-detail.component.html',
   styleUrls: ['./curriculum-detail.component.scss'],
   standalone: true,
-  imports: [CommonModule, ButtonModule,RouterLink,CardModule,TableModule,IconFieldModule]
+  imports: [CommonModule, ButtonModule,RouterLink,CardModule,TableModule,IconFieldModule,InputGroup,InputTextModule]
 })
 
 export class CurriculumDetailComponent   {

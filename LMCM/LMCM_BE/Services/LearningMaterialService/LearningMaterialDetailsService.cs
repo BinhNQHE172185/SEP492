@@ -11,9 +11,25 @@ namespace LMCM_BE.Services.LearningMaterialService
         {
             _materialDetailRepository = materialDetailRepository;
         }
+
+        public async Task<bool> DeleteMaterialDetailByIdAsync(Guid materialDetailId)
+        {
+            return await _materialDetailRepository.DeleteMaterialDetailByIdAsync(materialDetailId);
+        }
+
+        public async Task<LearningMaterialDetail> GetMaterialDetailByIdAsync(Guid materialDetailId)
+        {
+            return await _materialDetailRepository.GetMaterialDetailByIdAsync(materialDetailId);
+        }
+
         public Task<LearningMaterialDetail> InsertMaterialDetailsAsync(LearningMaterialDetailsInsertDto detail)
         {
             return _materialDetailRepository.InsertMaterialDetailsAsync(detail);
+        }
+
+        public async Task<bool> UpdateMaterialDetailAsync(Guid materialDetailId, LearningMaterialDetailsInsertDto newDetail)
+        {
+            return await _materialDetailRepository.UpdateMaterialDetailAsync(materialDetailId, newDetail);  
         }
     }
 }

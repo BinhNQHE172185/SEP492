@@ -1,6 +1,6 @@
 <div class="surface-card p-5 shadow-3 border-round bg-white">
   <div class="section">
-    <div class="section-header">
+    <div class="section-header flex justify-content-between align-items-center">
       <h2 class="text-orange-500">Chi Tiết Đề Cương</h2>
       <button pButton icon="pi pi-history" label="Xem lịch sử thay đổi" [routerLink]="['/learning/syllabus']" class="p-button-outlined"></button>
     </div>
@@ -19,12 +19,14 @@
           { label: 'Nhiệm Vụ Của Sinh Viên', value: syllabusDetail.studentTask },
           { label: 'Số Tín Chỉ', value: syllabusDetail.credits }
         ]">
-          <div class="field mb-5">
-            <label class="block text-700 text-lg mb-2">{{ field.label }}</label>
-            <div class="surface-100 p-4 border-round shadow-2 text-lg bg-gray-100">
-              {{ field.value }}
-            </div>
-          </div>
+        <div class="field mb-5">
+          <label class="block text-700 font-medium mb-2">{{ field.label }}</label>
+          <p-inputGroup class="w-full">
+            <input pInputText type="text" [value]="field.value" [disabled]="true" 
+              class="w-full readable-text" />
+          </p-inputGroup>
+        </div>
+    
         </ng-template>
       </div>
 
@@ -41,16 +43,37 @@
           { label: 'Công Cụ', value: syllabusDetail.tools },
           { label: 'Ghi Chú', value: syllabusDetail.note }
         ]">
-          <div class="field mb-5">
-            <label class="block text-700 text-lg mb-2">{{ field.label }}</label>
-            <div class="surface-100 p-4 border-round shadow-2 text-lg bg-gray-100">
-              {{ field.value }}
-            </div>
-          </div>
+        <div class="field mb-5">
+          <label class="block text-700 font-medium mb-2">{{ field.label }}</label>
+          
+          <p-inputGroup class="w-full">
+            <input pInputText type="text" [value]="field.value" [disabled]="true" 
+              class="w-full readable-text" />
+          </p-inputGroup>
+        </div>
+    
         </ng-template>
       </div>
-    </div>
   </div>
+      <div class="w-full">
+        <ng-template ngFor let-field [ngForOf]="[
+        { label: 'Mô Tả', value: syllabusDetail.description } ]">
+
+        <div class="field mb-5">
+          <label class="block text-700 font-medium mb-2">{{ field.label }}</label>
+          
+          <p-inputGroup class="w-full">
+            <input pInputText type="text" [value]="field.value" [disabled]="true" 
+              class="w-full readable-text" />
+          </p-inputGroup>
+        </div>
+      </ng-template>        
+      </div>
+
+  
+  </div>
+
+
 
   <div style="margin-top: 25px;">
     <!-- Materials section with enhanced CRUD functionality -->
@@ -202,7 +225,7 @@
               <div class="col-12 field mb-4">
                 <label for="description">Mô Tả Học Liệu <span class="text-red-500">*</span></label>
                 <p-inputGroup class="w-full">
-                  <input id="description" type="text" pInputText formControlName="description" class="w-full" />
+                  <input id="description" type="text" pInputText formControlName="description" class="w-full" placeholder="Disabled" [disabled]="true" />
                 </p-inputGroup>
                 <small class="p-error" *ngIf="materialForm.get('description')?.invalid && materialForm.get('description')?.touched">
                   Mô tả học liệu là bắt buộc

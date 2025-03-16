@@ -1,4 +1,6 @@
 <div class="surface-card p-5 shadow-3 border-round bg-white">
+<div class="section">
+
 
   <!-- Header with buttons -->
   <div class="section-header">
@@ -22,9 +24,11 @@
       ]">
         <div class="field mb-5">
           <label class="block text-700 mb-2">{{ field.label }}</label>
-          <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2">
-            {{ field.value }}
-          </div>
+         
+          <p-inputGroup class="w-full">
+            <input pInputText type="text" [value]="field.value" [disabled]="true" 
+              class="w-full readable-text" />
+          </p-inputGroup>
         </div>
       </ng-template>
     </div>
@@ -39,9 +43,10 @@
       ]">
         <div class="field mb-5">
           <label class="block text-700 mb-2">{{ field.label }}</label>
-          <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2">
-            {{ field.value }}
-          </div>
+          <p-inputGroup class="w-full">
+            <input pInputText type="text" [value]="field.value" [disabled]="true" 
+              class="w-full readable-text" />
+          </p-inputGroup>
         </div>
       </ng-template>
     </div>
@@ -51,12 +56,14 @@
   <div class="w-full">
     <div class="field mb-5">
       <label class="block text-700 mb-2">Miêu tả</label>
-      <div style="background-color: #f1f5f9;" class="surface-100 p-4 border-round shadow-2">
-        {{ curriculumDetail.description }}
-      </div>
+      <p-inputGroup class="w-full">
+        <input pInputText type="text" [value]="curriculumDetail.description" [disabled]="true" 
+          class="w-full readable-text" />
+      </p-inputGroup>
+     
     </div>
   </div>
-
+</div>
 
 <div class="curriculum-container">
   <h2 >Cơ cấu chương trình giảng dạy</h2>
@@ -84,4 +91,7 @@
 
     </div>
   </div>
+</div>
+</div>
+
 </div>

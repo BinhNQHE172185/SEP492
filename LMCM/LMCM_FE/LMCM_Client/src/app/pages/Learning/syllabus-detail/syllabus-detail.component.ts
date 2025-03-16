@@ -16,6 +16,9 @@ import { ToastModule } from 'primeng/toast';
 import { TextareaModule } from 'primeng/textarea';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { FieldsetModule } from 'primeng/fieldset';
+import { DividerModule } from 'primeng/divider';
+import { PanelModule } from 'primeng/panel';
 interface Material {
   id: number;
   no: number;
@@ -58,7 +61,11 @@ interface MenuItem {
     ConfirmDialogModule,
     ToastModule,
     InputGroupModule,
-    InputGroupAddonModule
+    InputGroupAddonModule,
+    FieldsetModule,
+    DividerModule,
+    PanelModule,
+    TextareaModule
   ],
   providers: [ConfirmationService, MessageService]
 })

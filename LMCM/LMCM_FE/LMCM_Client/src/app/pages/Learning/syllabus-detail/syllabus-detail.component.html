@@ -36,7 +36,6 @@
           { label: 'Trình Độ', value: syllabusDetail.degreeLevel },
           { label: 'Phân Bổ Thời Gian', value: syllabusDetail.timeAllocation },
           { label: 'Điều Kiện Tiên Quyết', value: syllabusDetail.prerequisite },
-          { label: 'Mô Tả', value: syllabusDetail.description },
           { label: 'Điểm GPA Tối Thiểu Để Qua', value: syllabusDetail.minGPA },
           { label: 'Thang Điểm', value: syllabusDetail.scoringScale },
           { label: 'Ngày Phê Duyệt', value: syllabusDetail.approvedDate },
@@ -225,7 +224,7 @@
               <div class="col-12 field mb-4">
                 <label for="description">Mô Tả Học Liệu <span class="text-red-500">*</span></label>
                 <p-inputGroup class="w-full">
-                  <input id="description" type="text" pInputText formControlName="description" class="w-full" placeholder="Disabled" [disabled]="true" />
+                  <input id="description" type="text" pInputText formControlName="description" class="w-full" [disabled]="true" />
                 </p-inputGroup>
                 <small class="p-error" *ngIf="materialForm.get('description')?.invalid && materialForm.get('description')?.touched">
                   Mô tả học liệu là bắt buộc

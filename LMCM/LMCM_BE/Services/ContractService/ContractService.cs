@@ -17,5 +17,9 @@ namespace LMCM_BE.Services.ContractService
         {
             return await _contractRepository.CreateContract(contractDto);   
         }
+        public async Task<Contract?> GetContractByIdAsync(Guid contractId)
+        {
+            return await _contractRepository.GetContractByIdAsync(contractId);
+        }
     }
 }

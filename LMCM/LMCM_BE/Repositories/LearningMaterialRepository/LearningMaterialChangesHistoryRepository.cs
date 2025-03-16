@@ -3,6 +3,7 @@ using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
+using LMCM_BE.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.LearningMaterialRepository
@@ -46,6 +47,26 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 CurrentPage = pageIndex,
                 PageSize = pageSize
             };
+        }
+        public async Task<bool> CreateLearningMaterialChangesHistoryAsync(CreateLearningMaterialChangesHistoryDto historyDto)
+        {
+            if (historyDto == null)
+            {
+                throw new ArgumentNullException(nameof(historyDto));
+            }
+            try
+            {
+                var history = _mapper.Map<LearningMaterialChangesHistory>(historyDto);
+                history.HistoryId = Guid.NewGuid();
+                history.Status = "Active";
+                await _dbContext.LearningMaterialChangesHistories.AddAsync(history);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

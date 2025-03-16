@@ -1,5 +1,6 @@
 ﻿using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
+using LMCM_BE.Models;
 using LMCM_BE.Repositories.LearningMaterialRepository;
 
 namespace LMCM_BE.Services.LearningMaterialService
@@ -16,6 +17,10 @@ namespace LMCM_BE.Services.LearningMaterialService
         {
             var data = await _changesRepository.GetChangesHistoriesAsync(searchKey, pageIndex, pageSize);
             return data;
+        }
+        public async Task<bool> CreateLearningMaterialChangesHistoryAsync(CreateLearningMaterialChangesHistoryDto historyDto)
+        {
+            return await _changesRepository.CreateLearningMaterialChangesHistoryAsync(historyDto);
         }
     }
 }

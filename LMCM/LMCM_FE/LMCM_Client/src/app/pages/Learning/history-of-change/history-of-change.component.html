@@ -58,7 +58,7 @@
     </ng-template>
 
     <p-confirmDialog></p-confirmDialog>
-    <p-dialog [(visible)]="displayDetailDialog" [modal]="true" [closable]="true" header="Chi tiết thay đổi" [style]="{ width: '600px', 'border-radius': '8px' }">
+    <p-dialog [(visible)]="displayDetailDialog" [modal]="true" [closable]="true" header="Chi tiết thay đổi" [style]="{ width: '600px',height: '600px', 'border-radius': '8px' }">
         <div class="p-4">
             <div class="grid grid-cols-1 gap-3" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
                 <div>
@@ -69,12 +69,12 @@
 
                     <div style="margin-bottom: 15px;">
                         <label class="font-bold text-sm">Ngày hoàn thành *</label> <br />
-                        <p-calendar [(ngModel)]="selectedItem.completionDate" dateFormat="yy-mm-dd" class="w-full"></p-calendar> <br />
+                        <p-calendar [(ngModel)]="selectedItem.completionDate" dateFormat="yy-mm-dd" class="w-full" showIcon="true"></p-calendar> <br />
                     </div>
 
                     <div style="margin-bottom: 15px;">
                         <label class="font-bold text-sm">Kỳ bắt đầu áp dụng *</label> <br />
-                        <p-calendar [(ngModel)]="selectedItem.startTerm" dateFormat="yy-mm-dd" class="w-full"></p-calendar> <br />
+                        <p-calendar [(ngModel)]="selectedItem.startTerm" dateFormat="yy-mm-dd" class="w-full" showIcon="true"></p-calendar> <br />
                     </div >
                 </div>
                 <div>
@@ -83,20 +83,18 @@
                         <input pInputText [(ngModel)]="selectedItem.contractNumber" /> <br />
                     </div>
 
-                    <!-- Hiển thị loại thay đổi dưới dạng text -->
                     <div style="margin-bottom: 15px;">
                         <label class="font-bold text-sm">Loại thay đổi *</label> <br />
                         <input pInputText [(ngModel)]="selectedItem.changeType" /> <br />
                     </div>
 
-                    <!-- Hiển thị loại thay đổi dưới dạng text -->
                     <div style="margin-bottom: 15px;">
                         <label class="font-bold text-sm">Loại học liệu *</label> <br />
                         <input pInputText [(ngModel)]="selectedItem.learningMaterialType" /> <br />
                     </div>
                 </div>
 
-                <div>
+                <div style="grid-column: span 2;">
                     <label class="font-bold text-sm">Nội dung thay đổi *</label> <br />
                     <textarea pInputTextarea [(ngModel)]="selectedItem.changeDescription" rows="3" class="w-full p-inputtextarea p-component p-2 rounded-md border"></textarea>
                 </div>
@@ -110,53 +108,44 @@
         </ng-template>
     </p-dialog>
 
-    <p-dialog [(visible)]="displayAddDialog" [modal]="true" [closable]="true" header="Thêm mới thông tin thay đổi" [style]="{ width: '600px', 'border-radius': '8px' }">
+    <p-dialog [(visible)]="displayAddDialog" [modal]="true" [closable]="true" header="Thêm mới thông tin thay đổi" [style]="{ width: '600px',height: '630px', 'border-radius': '8px' }">
         <div class="p-4">
             <div class="grid grid-cols-1 gap-3" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
-                <!-- Mã môn -->
+              
                 <div>
                     <div style="margin-bottom: 15px;">
                         <label class="font-bold text-sm">Mã môn *</label> <br />
                         <input pInputText [(ngModel)]="newHistory.courseCode" placeholder="Nhập mã môn" />
                     </div>
 
-                    <!-- Ngày hoàn thành -->
                     <div style="margin-bottom: 15px;">
                         <label class="font-bold text-sm">Ngày hoàn thành *</label> <br />
-                        <p-calendar [(ngModel)]="newHistory.completionDate" dateFormat="yy-mm-dd" class="w-full"></p-calendar>
+                        <p-calendar [(ngModel)]="newHistory.completionDate" dateFormat="yy-mm-dd" showIcon="true" class="w-full"></p-calendar>
                     </div>
 
-                    <!-- Kỳ bắt đầu áp dụng -->
                     <div style="margin-bottom: 15px;">
                         <label class="font-bold text-sm">Kỳ bắt đầu áp dụng *</label> <br />
-                        <p-calendar [(ngModel)]="newHistory.startTerm" dateFormat="yy-mm-dd" class="w-full"></p-calendar>
+                        <p-calendar [(ngModel)]="newHistory.startTerm" dateFormat="yy-mm-dd" showIcon="true" class="w-full"></p-calendar>
                     </div>
                 </div>
 
                 <div>
-                    <!-- Số hợp đồng -->
+                 
                     <div style="margin-bottom: 15px;">
                         <label class="font-bold text-sm">Số hợp đồng</label> <br />
                         <input pInputText [(ngModel)]="newHistory.contractNumber" placeholder="Nhập số hợp đồng" />
                     </div>
-
-                    <!-- Loại thay đổi -->
-                    <!-- Hiển thị loại thay đổi dưới dạng text -->
                     <div style="margin-bottom: 15px;">
                         <label class="font-bold text-sm">Loại thay đổi *</label> <br />
                         <input pInputText [(ngModel)]="newHistory.changeType" />
                     </div>
-
-                    <!-- Hiển thị loại thay đổi dưới dạng text -->
                     <div style="margin-bottom: 15px;">
                         <label class="font-bold text-sm">Loại học liệu *</label> <br />
                         <input pInputText [(ngModel)]="newHistory.learningMaterialType" />
                     </div>
                 </div>
-
-                <!-- Nội dung thay đổi -->
-                <div>
-                    <label class="font-bold text-sm">Nội dung thay đổi *</label>
+                <div style="grid-column: span 2;">
+                    <label class="font-bold text-sm" >Nội dung thay đổi *</label>
                     <textarea pInputTextarea [(ngModel)]="newHistory.changeDescription" rows="3" class="w-full p-inputtextarea p-component p-2 rounded-md border"></textarea>
                 </div>
             </div>

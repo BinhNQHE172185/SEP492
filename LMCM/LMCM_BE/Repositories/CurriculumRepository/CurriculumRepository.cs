@@ -40,7 +40,7 @@ namespace LMCM_BE.Repositories.CurriculumRepository
             {
                 string search = searchKey.Trim().ToLower();
                 query = query.Where(c => c.CurriculumCode.ToLower().Contains(search) ||
-                                         c.CurriculumName.ToLower().Contains(search));
+                                         c.CurriculumName.ToLower().Contains(search) && c.Status == "Active");
             }
 
             int totalCount = await query.CountAsync();

@@ -45,5 +45,11 @@ namespace LMCM_BE.Repositories.ContractRepository
 
             return newContract;
         }
+        public async Task<Contract?> GetContractByIdAsync(Guid contractId)
+        {
+            return await _context.Contracts
+                .FirstOrDefaultAsync(c => c.ContractId == contractId && c.Status == "Active");
+        }
+
     }
 }

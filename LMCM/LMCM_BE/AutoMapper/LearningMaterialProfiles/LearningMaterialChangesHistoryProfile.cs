@@ -9,6 +9,7 @@ namespace LMCM_BE.AutoMapper.LearningMaterialProfiles
         public LearningMaterialChangesHistoryProfile()
         {
             CreateMap<LearningMaterialChangesHistory, ChangesHistoryListDto>();
+            CreateMap<CreateLearningMaterialChangesHistoryDto, LearningMaterialChangesHistory>();
         }
     }
 }

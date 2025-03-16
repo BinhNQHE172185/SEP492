@@ -436,7 +436,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 }
             }
 
-            var materialList = new List<LearningMaterialInsertDto>();
+            var materialList = new List<LearningMaterialImportDto>();
             int rowCount = worksheet.Dimension.Rows;
 
             for (int row = 2; row <= rowCount; row++)
@@ -505,7 +505,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                     }
                 }
 
-                var materialData = new LearningMaterialInsertDto
+                var materialData = new LearningMaterialImportDto
                 {
                     SyllabusId = syllabus.SyllabusId,
                     MaterialDetailId=materialDetailId,

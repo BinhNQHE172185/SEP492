@@ -2,8 +2,6 @@
 {
     public class LearningMaterialDetailsInsertDto
     {
-        public Guid MaterialDetailId { get; set; }
-
         public string MaterialName { get; set; } = null!;
 
         public string? MaterialDescription { get; set; }

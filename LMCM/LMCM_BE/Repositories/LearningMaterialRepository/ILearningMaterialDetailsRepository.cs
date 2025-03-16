@@ -6,5 +6,8 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
     public interface ILearningMaterialDetailsRepository
     {
         Task<LearningMaterialDetail> InsertMaterialDetailsAsync(LearningMaterialDetailsInsertDto detail);
+        Task<LearningMaterialDetail> GetMaterialDetailByIdAsync(Guid materialDetailId);
+        Task<bool> UpdateMaterialDetailAsync(Guid materialDetailId, LearningMaterialDetailsInsertDto newDetail);
+        Task<bool> DeleteMaterialDetailByIdAsync(Guid materialDetailId);
     }
 }

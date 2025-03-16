@@ -1,8 +1,11 @@
 ﻿namespace LMCM_BE.DTOs.LearningMaterialDtos
 {
-    public class LearningMaterialInsertDto
+    public class LearningMaterialImportDto
     {
         public Guid SyllabusId { get; set; }
+
+        public Guid? MaterialDetailId { get; set; }
+
         public string? LearningType { get; set; }
         public string? MaterialType { get; set; }
 
@@ -19,6 +22,5 @@
         public string? Purpose { get; set; }
 
         public string? Note { get; set; }
-        public virtual LearningMaterialDetailsInsertDto? MaterialDetail { get; set; }
     }
 }

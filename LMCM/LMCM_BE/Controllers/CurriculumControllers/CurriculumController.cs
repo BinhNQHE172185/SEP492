@@ -3,6 +3,7 @@ using LMCM_BE.DTOs.CurriculumsSubjectDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Services.CurriculumService;
+using LMCM_BE.Services.PloService;
 using LMCM_BE.Services.SubjectService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +17,13 @@ namespace LMCM_BE.Controllers.CurriculumControllers
     {
         private readonly ICurriculumService _curriculumService;
         private readonly ISubjectService _subjectService;
+        private readonly IPloService _ploService;
 
-        public CurriculumController(ICurriculumService curriculumService, ISubjectService subjectService)
+        public CurriculumController(ICurriculumService curriculumService, ISubjectService subjectService, IPloService ploService)
         {
             _curriculumService = curriculumService;
             _subjectService = subjectService;
+            _ploService = ploService;
         }
 
         [HttpPost("getCurriculumList")]
@@ -30,17 +33,39 @@ namespace LMCM_BE.Controllers.CurriculumControllers
             {
                 var data = await _curriculumService.GetCurriculumsAsync(request.SearchKey, request.pageIndex, request.PageSize);
 
-                if (data != null) 
+                if (data != null)
                 {
                     return Ok(data);
                 }
 
-                return NotFound(new { message = "Data not found." });
+                return NotFound(new { message = "Không tìm thấy dữ liệu." });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Internal server error.", error = ex.Message });
+                return StatusCode(500, new { message = "Lỗi máy chủ nội bộ.", error = ex.Message });
             }
+        }
+
+        [HttpGet("{curriculumId}")]
+        public async Task<IActionResult> GetCurriculumDetail(Guid curriculumId)
+        {
+            var curriculum = await _curriculumService.GetCurriculumDetailAsync(curriculumId);
+
+            if (curriculum == null)
+                return NotFound(new { message = "Không tìm thấy chương trình giảng dạy hoặc chương trình này không hoạt động." });
+
+            return Ok(curriculum);
+        }
+
+        [HttpGet("{curriculumId}/plos")]
+        public async Task<IActionResult> GetPloDetails(Guid curriculumId)
+        {
+            var plos = await _ploService.GetPloDetailsByCurriculumIdAsync(curriculumId);
+
+            if (plos == null || plos.Count == 0)
+                return NotFound(new { message = "Không tìm thấy PLO nào cho chương trình giảng dạy này." });
+
+            return Ok(plos);
         }
 
         [HttpPost("importCurriculum")]
@@ -48,7 +73,6 @@ namespace LMCM_BE.Controllers.CurriculumControllers
         {
             if (file == null || file.Length == 0)
                 return BadRequest(new { message = "Vui lòng tải lên tệp Excel hợp lệ." });
-
             try
             {
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -101,7 +125,7 @@ namespace LMCM_BE.Controllers.CurriculumControllers
                             },
                             { "PLO Mappings", new List<(string, string)>
                                 {
-                                    ("Subject Code", "A2") 
+                                    ("Subject Code", "A2")
                                 }
                             }
                         };
@@ -291,7 +315,7 @@ namespace LMCM_BE.Controllers.CurriculumControllers
 
                         // Save curriculum and mappings
                         var isSuccess = await _curriculumService.ImportCurriculumAsync(curriculum);
-                        
+
                         if (isSuccess)
                         {
                             return Ok(new { message = "Nhập chương trình đào tạo thành công." });

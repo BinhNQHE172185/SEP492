@@ -9,5 +9,6 @@ namespace LMCM_BE.Services.CurriculumService
         Task<PagedResult<CurriculumDto>> GetCurriculumsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<bool> ImportCurriculumAsync(Curriculum curriculum);
         Task<bool> SoftDeleteCurriculumAsync(Guid curriculumId);
+        Task<CurriculumDetailDto?> GetCurriculumDetailAsync(Guid curriculumId);
     }
 }

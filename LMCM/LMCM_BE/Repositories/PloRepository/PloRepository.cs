@@ -1,4 +1,6 @@
-﻿using LMCM_BE.DbContext;
+﻿using AutoMapper;
+using LMCM_BE.DbContext;
+using LMCM_BE.DTOs.PloDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.PloRepository;
@@ -9,10 +11,13 @@ namespace LMCM_BE.Repositories.PloRepository
     public class PloRepository : IPloRepository
     {
         private readonly LMCM_DBContext _dbContext;
+        private readonly IMapper _mapper;
 
-        public PloRepository(LMCM_DBContext dbContext)
+
+        public PloRepository(LMCM_DBContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
         public async Task<PagedResult<Plo>> GetPlosAsync(Guid curriculumId, string? searchKey, int pageIndex = 1, int pageSize = 10)
@@ -41,13 +46,17 @@ namespace LMCM_BE.Repositories.PloRepository
                 PageSize = pageSize
             };
         }
-        public async Task<List<Plo>> GetAllPlosAsync(Guid curriculumId)
+        public async Task<List<PloDetailDto>> GetPloDetailsByCurriculumIdAsync(Guid curriculumId)
         {
-            return await _dbContext.Plos
-                .Where(p => p.CurriculumId == curriculumId && p.Status != "Deleted")
+            var plos = await _dbContext.Plos
                 .Include(p => p.PloSubjects)
+                    .ThenInclude(ps => ps.Subject)
+                .Where(p => p.CurriculumId == curriculumId && p.Status == "Active")
                 .ToListAsync();
+
+            return _mapper.Map<List<PloDetailDto>>(plos);
         }
+
 
         public async Task<bool> AddPlosAsync(List<Plo> plos)
         {

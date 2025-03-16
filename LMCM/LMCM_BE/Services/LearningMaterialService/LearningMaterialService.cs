@@ -1,4 +1,5 @@
 ﻿using LMCM_BE.DTOs.LearningMaterialDtos;
+using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.LearningMaterialRepository;
 
@@ -25,6 +26,16 @@ namespace LMCM_BE.Services.LearningMaterialService
         public async Task<LearningMaterial> GetLearningMaterialByIdAsync(Guid materialId)
         {
             return await _materialRepository.GetLearningMaterialByIdAsync(materialId);
+        }
+
+        public async Task<PagedResult<LearningMaterialListDto>> GetMaterialsBySyllabusIdAsync(Guid syllabusId,string? searchKey, int pageIndex = 1, int pageSize = 10)
+        {
+            return await _materialRepository.GetMaterialsBySyllabusIdAsync(syllabusId,searchKey, pageIndex, pageSize);
+        }
+
+        public async Task<List<LearningMaterialListDto>> GetMaterialsBySyllabusIdAsync(Guid syllabusId)
+        {
+            return await _materialRepository.GetMaterialsBySyllabusIdAsync(syllabusId);
         }
 
         public async Task<bool> ImportLearningMaterialsAsync(List<LearningMaterialImportDto> materials)

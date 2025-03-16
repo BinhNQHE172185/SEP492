@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.LearningMaterialDtos;
+using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -100,6 +101,50 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             return learningMaterial;
         }
 
+        public async Task<PagedResult<LearningMaterialListDto>> GetMaterialsBySyllabusIdAsync(Guid syllabusId,string? searchKey, int pageIndex = 1, int pageSize = 10)
+        {
+            var query = _dbContext.LearningMaterials.AsQueryable();
+
+            query = query.Where(s =>s.SyllabusId==syllabusId && s.Status != "Inactive");
+
+            if (!string.IsNullOrWhiteSpace(searchKey))
+            {
+                string search = searchKey.Trim().ToLower();
+                query = query.Where(s => s.MaterialName.ToLower().Contains(search));
+            }
+
+            int totalCount = await query.CountAsync();
+
+            var items = await query
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .Include(s => s.MaterialDetail)
+                .ToListAsync();
+
+            var data = _mapper.Map<List<LearningMaterialListDto>>(items);
+
+            return new PagedResult<LearningMaterialListDto>
+            {
+                Items = data,
+                TotalCount = totalCount,
+                CurrentPage = pageIndex,
+                PageSize = pageSize
+            };
+        }
+
+        public async Task<List<LearningMaterialListDto>> GetMaterialsBySyllabusIdAsync(Guid syllabusId)
+        {
+            var query = _dbContext.LearningMaterials.AsQueryable();
+
+            query = query.Where(s =>s.SyllabusId==syllabusId&& s.Status != "Inactive")
+                         .Include(s => s.MaterialDetail);
+
+            var items = await query.ToListAsync();
+
+            var data = _mapper.Map<List<LearningMaterialListDto>>(items);
+
+            return data;
+        }
 
         public async Task<bool> ImportLearningMaterialsAsync(List<LearningMaterialImportDto> materials)
         {

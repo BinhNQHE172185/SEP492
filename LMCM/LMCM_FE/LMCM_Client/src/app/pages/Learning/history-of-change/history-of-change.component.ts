@@ -147,7 +147,7 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
             courseCode: this.newHistory.courseCode || ''
         };
 
-        console.log('📤 Gửi request thêm lịch sử:', request);
+        console.log('Gửi request thêm lịch sử:', request);
 
         this.learningMaterialService.createLearningMaterialHistory(request).subscribe({
             next: () => {

@@ -45,9 +45,12 @@
                     <td>{{ item.completionDate | date: 'dd/MM/yyyy' }}</td>
                     <td>{{ item.startTerm }}</td>
                     <td>
-                        <p-button label="Chi tiết" outlined (click)="showDetail(item)"></p-button>
-                        <p-button label="Xóa" outlined (click)="confirmDelete(item)"></p-button>
-                    </td>
+                      <div style="display: flex; gap: 10px;">
+                          <p-button label="Chi tiết" outlined (click)="showDetail(item)"></p-button>
+                          <p-button label="Xóa" outlined (click)="confirmDelete(item)"></p-button>
+                      </div>
+                  </td>
+                  
                 </tr>
             </ng-template>
         </p-table>

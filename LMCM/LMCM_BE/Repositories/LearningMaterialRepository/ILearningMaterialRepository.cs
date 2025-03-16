@@ -10,8 +10,8 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
         Task<List<LearningMaterialListDto>> GetMaterialsBySyllabusIdAsync(Guid syllabusId);
         Task<bool> ImportLearningMaterialsAsync(List<LearningMaterialImportDto> materials);
         Task<bool> DeleteLearningMaterialsBySyllabusAsync(Guid syllabusId);
-        Task<LearningMaterial> InsertLearningMaterialAsync(LearningMaterialInsertDto material);
-        Task<LearningMaterial> GetLearningMaterialByIdAsync(Guid materialId);
+        Task<bool> InsertLearningMaterialAsync(LearningMaterialInsertDto material);
+        Task<LearningMaterialViewDto> GetLearningMaterialByIdAsync(Guid materialId);
         Task<bool> UpdateLearningMaterialAsync(Guid materialId,LearningMaterialUpdateDto newMaterial);
         Task<bool> DeleteLearningMaterialByIdAsync(Guid materialId);
     }

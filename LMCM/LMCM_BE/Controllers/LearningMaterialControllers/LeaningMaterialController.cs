@@ -90,8 +90,9 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
         {
             try
             {
-                var createdMaterial = await _learningMaterialService.InsertLearningMaterialAsync(material);
-                return Ok(createdMaterial);
+                if (await _learningMaterialService.InsertLearningMaterialAsync(material))
+                    return Ok(new { message = "Thêm thành công." });
+                else return BadRequest(new { message = "Thêm thất bại. Vui lòng kiểm tra dữ liệu đầu vào." });
             }
             catch (Exception ex)
             {

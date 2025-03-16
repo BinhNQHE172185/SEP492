@@ -24,15 +24,17 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
 
             try
             {
-                var material = await GetLearningMaterialByIdAsync(materialId);
+                var learningMaterial = await _dbContext.LearningMaterials
+                        .Include(lm => lm.MaterialDetail)
+                        .FirstOrDefaultAsync(lm => lm.MaterialId == materialId);
 
-                if (material == null)
+                if (learningMaterial == null)
                     return false; // No material found 
 
-                material.Status = "Inactive";
-                material.UpdatedAt = DateTime.UtcNow;
+                learningMaterial.Status = "Inactive";
+                learningMaterial.UpdatedAt = DateTime.UtcNow;
 
-                _dbContext.LearningMaterials.Update(material);
+                _dbContext.LearningMaterials.Update(learningMaterial);
                 await _dbContext.SaveChangesAsync();
 
                 return true;
@@ -86,19 +88,19 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             }
         }
 
-        public async Task<LearningMaterial> GetLearningMaterialByIdAsync(Guid materialId)
+        public async Task<LearningMaterialViewDto> GetLearningMaterialByIdAsync(Guid materialId)
         {
             if (materialId == Guid.Empty)
                 throw new ArgumentException("Material ID cannot be empty.", nameof(materialId));
 
             var learningMaterial = await _dbContext.LearningMaterials
-                .Include(s => s.MaterialDetail) 
+                .Include(s => s.MaterialDetail)
                 .FirstOrDefaultAsync(s => s.MaterialId == materialId);
 
             if (learningMaterial == null)
                 throw new KeyNotFoundException($"Learning material with ID {materialId} was not found.");
 
-            return learningMaterial;
+            return _mapper.Map<LearningMaterialViewDto>(learningMaterial);
         }
 
         public async Task<PagedResult<LearningMaterialListDto>> GetMaterialsBySyllabusIdAsync(Guid syllabusId,string? searchKey, int pageIndex = 1, int pageSize = 10)
@@ -167,7 +169,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             return true;
         }
 
-        public async Task<LearningMaterial> InsertLearningMaterialAsync(LearningMaterialInsertDto material)
+        public async Task<bool> InsertLearningMaterialAsync(LearningMaterialInsertDto material)
         {
             if (material == null)
                 throw new ArgumentNullException(nameof(material));
@@ -189,7 +191,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             await _dbContext.LearningMaterials.AddAsync(newMaterial);
             await _dbContext.SaveChangesAsync();
 
-            return newMaterial;
+            return true;
         }
 
         public async Task<bool> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial)
@@ -200,7 +202,9 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             if (newMaterial == null)
                 throw new ArgumentNullException(nameof(newMaterial), "New material data cannot be null.");
 
-            LearningMaterial learningMaterial = await GetLearningMaterialByIdAsync(materialId);
+            var learningMaterial = await _dbContext.LearningMaterials
+                    .Include(lm => lm.MaterialDetail)
+                    .FirstOrDefaultAsync(lm => lm.MaterialId == materialId);
 
             if (learningMaterial == null)
                 throw new ArgumentNullException(nameof(learningMaterial), "material data not found.");

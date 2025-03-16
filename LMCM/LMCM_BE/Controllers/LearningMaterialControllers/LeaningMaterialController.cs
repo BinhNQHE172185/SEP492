@@ -75,7 +75,7 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
                 var material = await _learningMaterialService.GetLearningMaterialByIdAsync(id);
                 if (material == null)
                 {
-                    return NotFound(new { message = "Learning material not found." });
+                    return NotFound(new { message = "Dữ liệu không được tìm thấy." });
                 }
                 return Ok(material);
             }
@@ -90,8 +90,9 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
         {
             try
             {
-                var createdMaterial = await _learningMaterialService.InsertLearningMaterialAsync(material);
-                return Ok(createdMaterial);
+                if (await _learningMaterialService.InsertLearningMaterialAsync(material))
+                    return Ok(new { message = "Thêm thành công." });
+                else return BadRequest(new { message = "Thêm thất bại. Vui lòng kiểm tra dữ liệu đầu vào." });
             }
             catch (Exception ex)
             {
@@ -107,7 +108,7 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
                 var updatedMaterial = await _learningMaterialService.UpdateLearningMaterialAsync(id, material);
                 if (updatedMaterial == null)
                 {
-                    return NotFound(new { message = "Learning material not found." });
+                    return NotFound(new { message = "Dữ liệu không được tìm thấy." });
                 }
                 return Ok(updatedMaterial);
             }
@@ -125,9 +126,9 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
                 var success = await _learningMaterialService.DeleteLearningMaterialByIdAsync(id);
                 if (!success)
                 {
-                    return NotFound(new { message = "Learning material not found." });
+                    return NotFound(new { message = "Dữ liệu không được tìm thấy." });
                 }
-                return Ok(new { message = "Learning material deleted successfully." });
+                return Ok(new { message = "Xóa tài liệu thành công." });
             }
             catch (Exception ex)
             {
@@ -145,7 +146,7 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
                 {
                     return Ok(data);
                 }
-                return NotFound(new { message = "Data not found." });
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
             catch (Exception ex)
             {

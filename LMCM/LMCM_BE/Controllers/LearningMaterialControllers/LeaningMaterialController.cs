@@ -1,7 +1,6 @@
-﻿using LMCM_BE.DTOs.ShareDtos;
-using LMCM_BE.Services.CurriculumService;
+﻿using LMCM_BE.DTOs.LearningMaterialDtos;
+using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Services.LearningMaterialService;
-using LMCM_BE.Services.SubjectService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMCM_BE.Controllers.LearningMaterialControllers
@@ -10,11 +9,83 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
     [ApiController]
     public class LearningMaterialController : ControllerBase
     {
+        private readonly ILearningMaterialService _learningMaterialService;
         private readonly ILearningMaterialChangesHistorySerivce _changesService;
 
-        public LearningMaterialController(ILearningMaterialChangesHistorySerivce changesService)
+        public LearningMaterialController(
+            ILearningMaterialService learningMaterialService,
+            ILearningMaterialChangesHistorySerivce changesService)
         {
+            _learningMaterialService = learningMaterialService;
             _changesService = changesService;
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetLearningMaterialByIdAsync(Guid id)
+        {
+            try
+            {
+                var material = await _learningMaterialService.GetLearningMaterialByIdAsync(id);
+                if (material == null)
+                {
+                    return NotFound(new { message = "Learning material not found." });
+                }
+                return Ok(material);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateLearningMaterialAsync([FromBody] LearningMaterialInsertDto material)
+        {
+            try
+            {
+                var createdMaterial = await _learningMaterialService.InsertLearningMaterialAsync(material);
+                return Ok(createdMaterial);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateLearningMaterialAsync(Guid id, [FromBody] LearningMaterialUpdateDto material)
+        {
+            try
+            {
+                var updatedMaterial = await _learningMaterialService.UpdateLearningMaterialAsync(id, material);
+                if (updatedMaterial == null)
+                {
+                    return NotFound(new { message = "Learning material not found." });
+                }
+                return Ok(updatedMaterial);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteLearningMaterialAsync(Guid id)
+        {
+            try
+            {
+                var success = await _learningMaterialService.DeleteLearningMaterialByIdAsync(id);
+                if (!success)
+                {
+                    return NotFound(new { message = "Learning material not found." });
+                }
+                return Ok(new { message = "Learning material deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
         }
 
         [HttpPost("getChangesHistoryList")]

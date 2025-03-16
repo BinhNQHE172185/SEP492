@@ -10,9 +10,9 @@ namespace LMCM_BE.AutoMapper.LearningMaterialProfiles
         {
             CreateMap<LearningMaterialDetail, LearningMaterialDetailsInsertDto>();
             CreateMap<LearningMaterialDetailsInsertDto, LearningMaterialDetail>()
-                .ForMember(dest => dest.MaterialDetailId, opt => opt.Ignore()) // Ignored since we generate a new ID
-                .ForMember(dest => dest.Status, opt => opt.Ignore()) // Set manually
-                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Set manually
+                .ForMember(dest => dest.MaterialDetailId, opt => opt.Ignore()) 
+                .ForMember(dest => dest.Status, opt => opt.Ignore()) 
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) 
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
             CreateMap<LearningMaterialDetail, LearningMaterialDetailDto>();
         }

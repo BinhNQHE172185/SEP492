@@ -39,6 +39,7 @@ using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Repositories.ContractRepository;
 using LMCM_BE.Services.ContractService;
 using LMCM_BE.AutoMapper.ContractProfiles;
+using LMCM_BE.Services.PloService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -100,6 +101,7 @@ builder.Services.AddScoped<SignInManager<User>>();
 builder.Services.AddScoped<ICurriculumRepository, CurriculumRepository>();
 builder.Services.AddScoped<ICurriculumService, CurriculumService>();
 builder.Services.AddScoped<IPloRepository, PloRepository>();
+builder.Services.AddScoped<IPloService, PloService>();
 builder.Services.AddScoped<IPloSubjectRepository, PloSubjectRepository>();
 builder.Services.AddScoped<ICurriculumsSubjectRepository, CurriculumsSubjectRepository>();
 builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();

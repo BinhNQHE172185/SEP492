@@ -34,7 +34,11 @@
             <ng-template pTemplate="body" let-syllabus let-i="rowIndex">
                 <tr>
                     <td>{{ syllabus?.courseCode }}</td>
-                    <td>{{ syllabus?.courseName }}</td>
+                    <td>
+                        <a (click)="goToDetail(syllabus.syllabusId)" class="text-blue-600 hover:underline cursor-pointer">
+                            {{ syllabus?.courseName }}
+                        </a>
+                    </td>
                     <td>{{ syllabus?.courseNameEnglish }}</td>
                     <td>{{ syllabus?.decisionNo }}</td>
                     <td>

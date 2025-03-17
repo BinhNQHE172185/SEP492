@@ -23,7 +23,7 @@ namespace LMCM_BE
             }
 
             // Tạo tài khoản Admin mặc định
-            string adminEmail = "quyenlnhe173212@fpt.edu.vn";
+            string adminEmail = "binhnqhe172185@fpt.edu.vn";
 
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
             if (adminUser == null)

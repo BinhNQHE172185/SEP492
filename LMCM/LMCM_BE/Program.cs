@@ -43,6 +43,7 @@ using LMCM_BE.Services.PloService;
 using LMCM_BE.AutoMapper.BudgetProposalProfile;
 using LMCM_BE.Repositories.BudgetPropasalRepository;
 using LMCM_BE.Services.BudgetPropasalService;
+using LMCM_BE.AutoMapper.PloProfiles;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -97,6 +98,7 @@ builder.Services.AddAutoMapper(typeof(LearningMaterialProfile));
 builder.Services.AddAutoMapper(typeof(LearningMaterialDetailsProfile));
 builder.Services.AddAutoMapper(typeof(ContractProfile));
 builder.Services.AddAutoMapper(typeof(BudgetPropasalProfile));
+builder.Services.AddAutoMapper(typeof(PloProfile));
 
 //DI
 builder.Services.AddScoped<RoleManager<IdentityRole<Guid>>>();

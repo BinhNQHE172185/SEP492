@@ -1,6 +1,11 @@
 ﻿using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
+using LMCM_BE.DTOs.UserDtos;
+using LMCM_BE.Models;
+using LMCM_BE.Services.ContractService;
 using LMCM_BE.Services.LearningMaterialService;
+using LMCM_BE.Services.UserService;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMCM_BE.Controllers.LearningMaterialControllers
@@ -11,13 +16,20 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
     {
         private readonly ILearningMaterialService _learningMaterialService;
         private readonly ILearningMaterialChangesHistorySerivce _changesService;
+        private readonly IUserService _userService;
+        private readonly IContractService _contractService;
 
         public LearningMaterialController(
             ILearningMaterialService learningMaterialService,
-            ILearningMaterialChangesHistorySerivce changesService)
+            ILearningMaterialChangesHistorySerivce changesService,
+            IUserService userService,
+            IContractService contractService
+            )
         {
             _learningMaterialService = learningMaterialService;
             _changesService = changesService;
+            _userService = userService;
+            _contractService = contractService;
         }
 
         [HttpPost("getPagedMaterialsList")]
@@ -63,7 +75,7 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
                 var material = await _learningMaterialService.GetLearningMaterialByIdAsync(id);
                 if (material == null)
                 {
-                    return NotFound(new { message = "Learning material not found." });
+                    return NotFound(new { message = "Dữ liệu không được tìm thấy." });
                 }
                 return Ok(material);
             }
@@ -78,8 +90,9 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
         {
             try
             {
-                var createdMaterial = await _learningMaterialService.InsertLearningMaterialAsync(material);
-                return Ok(createdMaterial);
+                if (await _learningMaterialService.InsertLearningMaterialAsync(material))
+                    return Ok(new { message = "Thêm thành công." });
+                else return BadRequest(new { message = "Thêm thất bại. Vui lòng kiểm tra dữ liệu đầu vào." });
             }
             catch (Exception ex)
             {
@@ -95,7 +108,7 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
                 var updatedMaterial = await _learningMaterialService.UpdateLearningMaterialAsync(id, material);
                 if (updatedMaterial == null)
                 {
-                    return NotFound(new { message = "Learning material not found." });
+                    return NotFound(new { message = "Dữ liệu không được tìm thấy." });
                 }
                 return Ok(updatedMaterial);
             }
@@ -113,9 +126,9 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
                 var success = await _learningMaterialService.DeleteLearningMaterialByIdAsync(id);
                 if (!success)
                 {
-                    return NotFound(new { message = "Learning material not found." });
+                    return NotFound(new { message = "Dữ liệu không được tìm thấy." });
                 }
-                return Ok(new { message = "Learning material deleted successfully." });
+                return Ok(new { message = "Xóa tài liệu thành công." });
             }
             catch (Exception ex)
             {
@@ -133,12 +146,48 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
                 {
                     return Ok(data);
                 }
-                return NotFound(new { message = "Data not found." });
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = ex.Message });
             }
+        }
+        [HttpPost("createChangesHistory")]
+        public async Task<IActionResult> CreateLearningMaterialChangesHistory([FromBody] CreateLearningMaterialChangesHistoryDto historyDto)
+        {
+            if (historyDto == null)
+            {
+                return BadRequest("Invalid data.");
+            }
+            // Validate referenced IDs
+            UserProfileResponseDto user = await _userService.GetProfile(historyDto.UserId.ToString());
+            if (user == null)
+                return BadRequest(new { message = "Invalid UserId." });
+
+            var newMaterial = await _learningMaterialService.GetLearningMaterialByIdAsync(historyDto.NewMaterialId);
+            if (newMaterial == null)
+                return BadRequest(new { message = "Invalid NewMaterialId." });
+
+            if (historyDto.OldMaterialId.HasValue)
+            {
+                var oldMaterial = await _learningMaterialService.GetLearningMaterialByIdAsync(historyDto.OldMaterialId.Value);
+                if (oldMaterial == null)
+                    return BadRequest(new { message = "Invalid OldMaterialId." });
+            }
+
+            if (historyDto.ContractId.HasValue)
+            {
+                var contract = await _contractService.GetContractByIdAsync(historyDto.ContractId.Value);
+                if (contract == null)
+                    return BadRequest(new { message = "Invalid ContractId." });
+            }
+
+            bool isSuccess = await _changesService.CreateLearningMaterialChangesHistoryAsync(historyDto);
+            if (isSuccess)
+                return Ok(new { message = "History created successfully" });
+
+            return StatusCode(500, "Failed to create history.");
         }
     }
 }

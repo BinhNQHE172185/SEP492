@@ -11,10 +11,10 @@ namespace LMCM_BE.Repositories.ContractRepository
     public class ContractRepository : IContractRepository
     {
         private readonly LMCM_DBContext _context;
-        private readonly GoogleDriveService _googleDriveService;
+        private readonly IGoogleDriveService _googleDriveService;
         private readonly IMapper _mapper;
 
-        public ContractRepository(LMCM_DBContext context, GoogleDriveService googleDriveService, IMapper mapper)
+        public ContractRepository(LMCM_DBContext context, IGoogleDriveService googleDriveService, IMapper mapper)
         {
             _context = context;
             _googleDriveService = googleDriveService;
@@ -45,5 +45,11 @@ namespace LMCM_BE.Repositories.ContractRepository
 
             return newContract;
         }
+        public async Task<Contract?> GetContractByIdAsync(Guid contractId)
+        {
+            return await _context.Contracts
+                .FirstOrDefaultAsync(c => c.ContractId == contractId && c.Status == "Active");
+        }
+
     }
 }

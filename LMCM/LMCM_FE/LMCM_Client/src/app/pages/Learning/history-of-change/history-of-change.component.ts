@@ -13,94 +13,158 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { FileUploadModule } from 'primeng/fileupload';
 import { DialogModule } from 'primeng/dialog';
+import { CalendarModule } from 'primeng/calendar';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
-  standalone: true,
-  imports: [
-    ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, 
-    InputGroupModule, FormsModule, CommonModule, TableModule, 
-    ButtonModule, CardModule, InputTextModule
-  ],
-  selector: 'app-history-of-change',
-  templateUrl: './history-of-change.component.html',
-  styleUrls: ['./history-of-change.component.scss'],
-  providers: [ConfirmationService, MessageService]
+    standalone: true,
+    imports: [ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, CalendarModule, DropdownModule, InputTextModule],
+    selector: 'app-history-of-change',
+    templateUrl: './history-of-change.component.html',
+    styleUrls: ['./history-of-change.component.scss'],
+    providers: [ConfirmationService, MessageService]
 })
 export class HistoryOfChangeComponent implements OnInit, OnDestroy {
-  historyList: any[] = [];
-  totalCount = 0;
-  pageSize = 10;
-  pageIndex = 1;
-  searchKey = '';
+    historyList: any[] = [];
+    totalCount = 0;
+    pageSize = 10;
+    pageIndex = 1;
+    searchKey = '';
+    private searchSubscription!: Subscription;
+    displayDetailDialog = false;
+    displayAddDialog = false;
+    selectedItem: any = {};
+    newHistory: any = {};
 
-  private searchSubscription!: Subscription;
+    constructor(
+        private learningMaterialService: LearningMaterialApiService,
+        private confirmationService: ConfirmationService,
+        private messageService: MessageService
+    ) {}
 
-  constructor(
-    private learningMaterialService: LearningMaterialApiService,
-    private confirmationService: ConfirmationService,
-    private messageService: MessageService
-  ) {}
-
-  ngOnInit(): void {
-    this.loadHistory();
-  }
-
-  loadHistory(event?: any) {
-    if (event) {
-      console.log('📌 Sự kiện phân trang:', event);
-      this.pageIndex = Math.floor(event.first / event.rows) + 1; // ✅ Tính pageIndex đúng
-      this.pageSize = event.rows || this.pageSize;
+    ngOnInit(): void {
+        this.loadHistory();
     }
-  
-    const request = {
-      searchKey: this.searchKey.trim(), 
-      pageIndex: this.pageIndex,
-      pageSize: this.pageSize
-    };
-  
-    console.log('📤 Gửi request API:', request);
-  
-    this.learningMaterialService.getLearningMaterial(request).subscribe({
-      next: (response) => {
-        console.log('📥 Dữ liệu nhận được:', response);
-        this.historyList = response.items;
-        this.totalCount = response.totalCount;
-      },
-      error: (error) => {
-        console.error('❌ Lỗi khi gọi API:', error);
-        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải dữ liệu' });
-      }
-    });
-  }
-  
-  
-  paginate(event: any) {
-    console.log(' Phân trang:', event);
-    this.loadHistory(event);
-  }
 
-  editItem(item: any) {
-    console.log('Chỉnh sửa:', item);
-  }
-
-  confirmDelete(item: any) {
-    this.confirmationService.confirm({
-      message: 'Bạn có chắc chắn muốn xóa bản ghi này?',
-      header: 'Xác nhận',
-      accept: () => {
-        this.deleteItem(item);
-      }
-    });
-  }
-
-  deleteItem(item: any) {
-    console.log('Xóa:', item);
-    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa bản ghi' });
-  }
-
-  ngOnDestroy(): void {
-    if (this.searchSubscription) {
-      this.searchSubscription.unsubscribe();
+    getUserIdFromLocalStorage(): string | null {
+        return localStorage.getItem('userId');
     }
-  }
+
+    loadHistory(event?: any) {
+        if (event) {
+            this.pageIndex = Math.floor(event.first / event.rows) + 1;
+            this.pageSize = event.rows || this.pageSize;
+        }
+
+        const request = {
+            searchKey: this.searchKey.trim(),
+            pageIndex: this.pageIndex,
+            pageSize: this.pageSize
+        };
+
+        this.learningMaterialService.getLearningMaterial(request).subscribe({
+            next: (response) => {
+                console.log('Dữ liệu nhận được:', response);
+                this.historyList = response.items;
+                this.totalCount = response.totalCount;
+            },
+            error: (error) => {
+                console.error('Lỗi khi gọi API:', error);
+                this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải dữ liệu' });
+            }
+        });
+    }
+
+    paginate(event: any) {
+        console.log(' Phân trang:', event);
+        this.loadHistory(event);
+    }
+    showDetail(item: any) {
+        if (!item) {
+            return;
+        }
+
+        this.selectedItem = {
+            ...item,
+            completionDate: item.completionDate ? new Date(item.completionDate) : null,
+            startTerm: item.startTerm ? new Date(item.startTerm) : null
+        };
+
+        this.displayDetailDialog = true;
+    }
+
+    saveDetail() {
+        console.log('Lưu chi tiết:', this.selectedItem);
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã cập nhật dữ liệu' });
+        this.displayDetailDialog = false;
+    }
+
+    closeDetailDialog() {
+        this.displayDetailDialog = false;
+    }
+
+    confirmDelete(item: any) {
+        this.confirmationService.confirm({
+            message: 'Bạn có chắc chắn muốn xóa bản ghi này?',
+            header: 'Xác nhận',
+            accept: () => {
+                this.deleteItem(item);
+            }
+        });
+    }
+
+    deleteItem(item: any) {
+        console.log('Xóa:', item);
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa bản ghi' });
+    }
+
+    openAddDialog() {
+        this.newHistory = {};
+        this.displayAddDialog = true;
+    }
+
+    addHistory() {
+        const userId = this.getUserIdFromLocalStorage();
+        if (!userId) {
+            this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không tìm thấy thông tin người dùng' });
+            return;
+        }
+        if (!this.newHistory.changeType || !this.newHistory.learningMaterialType) {
+            this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng nhập đầy đủ thông tin' });
+            return;
+        }
+
+        const request = {
+            userId: userId,
+            contractId: this.newHistory.contractNumber || null,
+            newMaterialId: this.newHistory.newMaterialId || null,
+            oldMaterialId: this.newHistory.oldMaterialId || null,
+            learningMaterialType: this.newHistory.learningMaterialType,
+            changeType: this.newHistory.changeType,
+            changeDescription: this.newHistory.changeDescription || '',
+            completionDate: this.newHistory.completionDate || new Date().toISOString(),
+            startTerm: this.newHistory.startTerm || '',
+            courseCode: this.newHistory.courseCode || ''
+        };
+
+        console.log('Gửi request thêm lịch sử:', request);
+
+        this.learningMaterialService.createLearningMaterialHistory(request).subscribe({
+            next: () => {
+                this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm lịch sử thay đổi' });
+                this.displayAddDialog = false;
+                this.loadHistory();
+            },
+            error: (error) => {
+                console.error('Lỗi khi thêm lịch sử thay đổi:', error);
+                this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể thêm lịch sử thay đổi' });
+            }
+        });
+    }
+
+    ngOnDestroy(): void {
+        if (this.searchSubscription) {
+            this.searchSubscription.unsubscribe();
+        }
+    }
 }

@@ -9,13 +9,15 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { Subscription } from 'rxjs';
 import { CurriculumApiService } from '../../../apis/curriculumAPIs/curriculum-api.service';
 import { searchService } from '../../service/search/search-service.service';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api'; // Thêm import này
 import { ConfirmDialog, ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { FileUploadModule } from 'primeng/fileupload';
 import { DialogModule } from 'primeng/dialog';
+
 interface Curriculum {
+  curriculumId: string;
   curriculumCode: string;
   name: string;
   description: string;
@@ -32,7 +34,7 @@ interface PagingRequest {
 @Component({
   standalone: true,
   imports: [
-    ConfirmDialogModule,ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, ConfirmDialog
+    ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, ConfirmDialog
   ],
   selector: 'app-list-curriculum',
   templateUrl: './list-curriculum.component.html',
@@ -54,7 +56,9 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
   constructor(private curriculumService: CurriculumApiService,
     private searchService: searchService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService) { }
+    private confirmationService: ConfirmationService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.searchSubscription = this.searchService.searchQuery$.subscribe(
@@ -64,7 +68,7 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
       }
     );
   }
-  
+
   loadCurriculums(event?: any) {
     if (event) {
       this.pageNumber = Math.floor(event.first / event.rows) + 1;
@@ -87,6 +91,7 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
         }
 
         this.curriculums = response.items.map(item => ({
+          curriculumId: item.curriculumId,
           curriculumCode: item.curriculumCode,
           name: item.name,
           description: item.description,
@@ -100,6 +105,10 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
         console.error("Lỗi khi tải danh sách curriculum:", error);
       }
     );
+  }
+
+  goToDetail(curriculumId: string) {
+    this.router.navigate([`/learning/curriculum/${curriculumId}`]);
   }
 
   showImportDialog() {

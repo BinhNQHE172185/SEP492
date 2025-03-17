@@ -28,7 +28,11 @@
             <ng-template pTemplate="body" let-item>
                 <tr>
                     <td>{{ item.curriculumCode }}</td>
-                    <td> {{ item.name }} </td>
+                    <td>
+                        <a (click)="goToDetail(item.curriculumId)" class="text-blue-600 hover:underline cursor-pointer">
+                            {{ item.name }}
+                        </a>
+                    </td>
                     <td>{{ item.description | slice:0:100 }}...</td>
                     <td>{{ item.decisionNo }}</td>
                     <td>{{ item.approvedDate | date:'dd/MM/yyyy' }}</td>

@@ -1,27 +1,53 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
+import { ActivatedRoute } from '@angular/router';
+import { CurriculumApiService } from '../../../apis/curriculumAPIs/curriculum-api.service';
 
 @Component({
   selector: 'app-plo-mapping',
   standalone: true,
   imports: [CommonModule, TableModule, CardModule],
-  templateUrl:   './plo.component.html'
-    
-  
-  
+  templateUrl: './plo.component.html'
 })
-export class PloComponent {
-  programLearningOutcomes = [
-    { no: 1, name: 'Critical Thinking', description: 'Apply critical thinking and problem-solving skills' },
-    { no: 2, name: 'Technical Knowledge', description: 'Demonstrate comprehensive understanding of computing principles' },
-    { no: 3, name: 'Professional Ethics', description: 'Practice professional ethics in computing' }
-  ];
+export class PloComponent implements OnInit {
+  curriculumId: string = '';
+  programLearningOutcomes: any[] = [];
+  uniqueSubjects: any[] = [];
 
-  ploMapping = [
-    { subject: 'IT4409', plo1: true, plo2: false, plo3: true },
-    { subject: 'IT3103', plo1: true, plo2: true, plo3: false },
-    { subject: 'IT2030', plo1: false, plo2: true, plo3: true }
-  ];
+  constructor(private route: ActivatedRoute, private curriculumService: CurriculumApiService) { }
+
+  ngOnInit() {
+    this.curriculumId = this.route.snapshot.paramMap.get('id') || '';
+    this.getDetail();
+  }
+
+  getDetail() {
+    const id = this.curriculumId;
+    if (id) {
+      this.curriculumService.getPLO(id).subscribe({
+        next: (data) => {
+          this.programLearningOutcomes = data;
+          this.extractUniqueSubjects();
+        },
+        error: (err) => {
+          console.error('Error fetching curriculum detail:', err);
+        }
+      });
+    }
+  }
+
+  extractUniqueSubjects() {
+    const subjectsSet = new Set<string>();
+    this.programLearningOutcomes.forEach((plo) => {
+      plo.subjects.forEach((subject: any) => subjectsSet.add(subject.subjectCode));
+    });
+    this.uniqueSubjects = Array.from(subjectsSet);
+  }
+
+  // Kiểm tra xem subject có trong PLO không
+  isSubjectInPLO(plo: any, subjectCode: string): boolean {
+    return plo.subjects.some((subject: any) => subject.subjectCode === subjectCode);
+  }
 }

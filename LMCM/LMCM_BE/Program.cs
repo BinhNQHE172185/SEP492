@@ -39,6 +39,10 @@ using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Repositories.ContractRepository;
 using LMCM_BE.Services.ContractService;
 using LMCM_BE.AutoMapper.ContractProfiles;
+using LMCM_BE.Services.PloService;
+using LMCM_BE.AutoMapper.BudgetProposalProfile;
+using LMCM_BE.Repositories.BudgetPropasalRepository;
+using LMCM_BE.Services.BudgetPropasalService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,12 +51,7 @@ builder.Services.AddDbContext<LMCM_DBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyDB")));
 
 // Add services to the container.
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
-        options.JsonSerializerOptions.WriteIndented = true;
-    });
+builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -97,6 +96,7 @@ builder.Services.AddAutoMapper(typeof(LearningMaterialChangesHistoryProfile));
 builder.Services.AddAutoMapper(typeof(LearningMaterialProfile));
 builder.Services.AddAutoMapper(typeof(LearningMaterialDetailsProfile));
 builder.Services.AddAutoMapper(typeof(ContractProfile));
+builder.Services.AddAutoMapper(typeof(BudgetPropasalProfile));
 
 //DI
 builder.Services.AddScoped<RoleManager<IdentityRole<Guid>>>();
@@ -105,6 +105,7 @@ builder.Services.AddScoped<SignInManager<User>>();
 builder.Services.AddScoped<ICurriculumRepository, CurriculumRepository>();
 builder.Services.AddScoped<ICurriculumService, CurriculumService>();
 builder.Services.AddScoped<IPloRepository, PloRepository>();
+builder.Services.AddScoped<IPloService, PloService>();
 builder.Services.AddScoped<IPloSubjectRepository, PloSubjectRepository>();
 builder.Services.AddScoped<ICurriculumsSubjectRepository, CurriculumsSubjectRepository>();
 builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
@@ -130,6 +131,9 @@ builder.Services.AddScoped<ILearningMaterialDetailsService, LearningMaterialDeta
 builder.Services.AddScoped<GoogleDriveService>();
 builder.Services.AddScoped<IContractRepository, ContractRepository>();
 builder.Services.AddScoped<IContractService, ContractService>();
+builder.Services.AddScoped<IBudgetPropasalRepository, BudgetPropasalRepository>();
+builder.Services.AddScoped<IBudgetPropasalService, BudgetPropasalService>();
+builder.Services.AddScoped<IGoogleDriveService, GoogleDriveService>();
 
 builder.Services.AddAuthorization();
 

@@ -10,6 +10,8 @@ export class searchService {
   searchQuery$ = this.searchQuerySubject.asObservable();
 
   updateSearchQuery(query: string): void {
-    this.searchQuerySubject.next(query);
+    if (query !== this.searchQuerySubject.getValue()) {
+      this.searchQuerySubject.next(query);
+    }
   }
 }

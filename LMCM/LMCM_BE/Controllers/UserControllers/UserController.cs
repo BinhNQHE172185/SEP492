@@ -82,7 +82,7 @@ namespace LMCM_BE.Controllers.UserControllers
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        [HttpGet("profile")]
+        [HttpPost("profile")]
         public async Task<IActionResult> ProfileAsync([FromBody] string staffId)
         {
             try

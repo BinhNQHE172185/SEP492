@@ -34,7 +34,7 @@ namespace LMCM_BE.Repositories.CurriculumRepository
 
         public async Task<PagedResult<CurriculumDto>> GetCurriculumsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
-            var query = _dbContext.Curriculums.Include(c => c.CurriculumsSubjects).AsQueryable();
+            var query = _dbContext.Curriculums.Include(c => c.CurriculumsSubjects).Where(c => c.Status == "Active").AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
@@ -138,7 +138,15 @@ namespace LMCM_BE.Repositories.CurriculumRepository
                 return false;
             }
         }
+        public async Task<CurriculumDetailDto?> GetCurriculumDetailAsync(Guid curriculumId)
+        {
+            var curriculum = await _dbContext.Curriculums
+                .Include(c => c.CurriculumsSubjects)
+                    .ThenInclude(cs => cs.Subject)
+                .Where(c => c.CurriculumId == curriculumId && c.Status == "Active")
+                .FirstOrDefaultAsync();
 
-
+            return curriculum == null ? null : _mapper.Map<CurriculumDetailDto>(curriculum);
+        }
     }
 }

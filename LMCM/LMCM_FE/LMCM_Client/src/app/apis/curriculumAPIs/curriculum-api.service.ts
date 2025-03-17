@@ -28,6 +28,12 @@ export class CurriculumApiService {
   getCurriculums(request: PagingRequest): Observable<PagedResult<any>> {
     return this.http.post<PagedResult<any>>(`${this.apiUrl}/Curriculum/getCurriculumList`, request);
   }
+  getCurriculumsDetail(id: any): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/Curriculum/${id}`);
+  }
+  getPLO(id: any): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/Curriculum/${id}/plos`);
+  }
   importCurriculums(request: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/Curriculum/importCurriculum`, request);
   }

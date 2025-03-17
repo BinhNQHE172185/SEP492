@@ -2,8 +2,6 @@
 {
     public class LearningMaterialUpdateDto
     {
-        public Guid? MaterialDetailId { get; set; }
-
         public string? LearningType { get; set; }
         public string? MaterialType { get; set; }
 

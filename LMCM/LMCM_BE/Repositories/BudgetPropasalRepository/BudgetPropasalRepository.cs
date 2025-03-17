@@ -1,0 +1,84 @@
+﻿using AutoMapper;
+using LMCM_BE.DbContext;
+using LMCM_BE.DTOs.BudgetProposalDtos;
+using LMCM_BE.DTOs.ShareDtos;
+using LMCM_BE.DTOs.SyllabusDtos;
+using LMCM_BE.Models;
+using LMCM_BE.Services.GoogleDriveService;
+using Microsoft.EntityFrameworkCore;
+
+namespace LMCM_BE.Repositories.BudgetPropasalRepository
+{
+    public class BudgetPropasalRepository : IBudgetPropasalRepository
+    {
+        private readonly LMCM_DBContext _dbContext;
+        private readonly IGoogleDriveService _googleDriveService;
+        private readonly IMapper _mapper;
+
+        public BudgetPropasalRepository(LMCM_DBContext dbContext, IGoogleDriveService googleDriveService, IMapper mapper)
+        {
+            _dbContext = dbContext;
+            _googleDriveService = googleDriveService;
+            _mapper = mapper;
+        }
+        public async Task<BudgetProposal> CreateBudgetPropasal(BudgetProposalInsertDto propasal)
+        {
+            // Step 1: Upload contract file to Google Drive (if provided)
+            string? fileUrl = null;
+
+            if (propasal.File != null)
+            {
+                Console.WriteLine("ok");
+                fileUrl = await _googleDriveService.UploadBudgetPropasalFileAsync(propasal.File);
+            }
+
+            // Step 2: Create Contract object
+            var newPropasal = _mapper.Map<BudgetProposal>(propasal);
+
+            newPropasal.ProposalId = Guid.NewGuid();
+            newPropasal.Url = fileUrl;
+            newPropasal.Status = "Active";
+            newPropasal.CreatedAt = DateTime.UtcNow;
+            newPropasal.UpdatedAt = DateTime.UtcNow;
+
+            // Step 3: Save to database
+            _dbContext.BudgetProposals.Add(newPropasal);
+            await _dbContext.SaveChangesAsync();
+
+            return newPropasal;
+        }
+
+        public async Task<PagedResult<BudgetProposalListDto>> GetBudgetPropasalsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
+        {
+            var query = _dbContext.BudgetProposals.AsQueryable();
+
+            query = query.Where(s => s.Status != "Inactive");
+
+            if (!string.IsNullOrWhiteSpace(searchKey))
+            {
+                string search = searchKey.Trim().ToLower();
+                query = query.Where(s => s.Author.Email.ToLower().Contains(search) ||
+                                         s.Title.ToLower().Contains(search) ||
+                                         s.Author.UserName.ToLower().Contains(search));
+            }
+
+            int totalCount = await query.CountAsync();
+
+            var items = await query
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .Include(s => s.Author)
+                .ToListAsync();
+
+            var data = _mapper.Map<List<BudgetProposalListDto>>(items);
+
+            return new PagedResult<BudgetProposalListDto>
+            {
+                Items = data,
+                TotalCount = totalCount,
+                CurrentPage = pageIndex,
+                PageSize = pageSize
+            };
+        }
+    }
+}

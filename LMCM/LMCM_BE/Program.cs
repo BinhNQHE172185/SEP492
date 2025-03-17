@@ -40,6 +40,9 @@ using LMCM_BE.Repositories.ContractRepository;
 using LMCM_BE.Services.ContractService;
 using LMCM_BE.AutoMapper.ContractProfiles;
 using LMCM_BE.Services.PloService;
+using LMCM_BE.AutoMapper.BudgetProposalProfile;
+using LMCM_BE.Repositories.BudgetPropasalRepository;
+using LMCM_BE.Services.BudgetPropasalService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -93,6 +96,7 @@ builder.Services.AddAutoMapper(typeof(LearningMaterialChangesHistoryProfile));
 builder.Services.AddAutoMapper(typeof(LearningMaterialProfile));
 builder.Services.AddAutoMapper(typeof(LearningMaterialDetailsProfile));
 builder.Services.AddAutoMapper(typeof(ContractProfile));
+builder.Services.AddAutoMapper(typeof(BudgetPropasalProfile));
 
 //DI
 builder.Services.AddScoped<RoleManager<IdentityRole<Guid>>>();
@@ -127,6 +131,8 @@ builder.Services.AddScoped<ILearningMaterialDetailsService, LearningMaterialDeta
 builder.Services.AddScoped<GoogleDriveService>();
 builder.Services.AddScoped<IContractRepository, ContractRepository>();
 builder.Services.AddScoped<IContractService, ContractService>();
+builder.Services.AddScoped<IBudgetPropasalRepository, BudgetPropasalRepository>();
+builder.Services.AddScoped<IBudgetPropasalService, BudgetPropasalService>();
 
 builder.Services.AddAuthorization();
 

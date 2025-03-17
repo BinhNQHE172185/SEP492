@@ -85,8 +85,11 @@ namespace LMCM_BE.Services.GoogleDriveService
                     EmailAddress = email,
                 };
 
-                await _driveService.Permissions.Create(permission, _contractFolderId).ExecuteAsync();
-                await _driveService.Permissions.Create(permission, _budgetPropasalFolderId).ExecuteAsync();
+                var contractPermissionTask = _driveService.Permissions.Create(permission, _contractFolderId).ExecuteAsync();
+                var budgetProposalPermissionTask = _driveService.Permissions.Create(permission, _budgetPropasalFolderId).ExecuteAsync();
+
+                await Task.WhenAll(contractPermissionTask, budgetProposalPermissionTask);
+
                 return true;
             }
             catch (Exception ex)

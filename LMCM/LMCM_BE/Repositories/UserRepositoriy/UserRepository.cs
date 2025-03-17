@@ -5,6 +5,7 @@ using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SubjectDtos;
 using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Services.GoogleDriveService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -21,32 +22,44 @@ namespace LMCM_BE.Repositories.UserRepositoriy
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
         private readonly LMCM_DBContext _dbContext;
-        public UserRepository(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration, IMapper mapper, LMCM_DBContext dbContext)
+        private readonly IGoogleDriveService _googleDriveService;
+        public UserRepository(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration, IMapper mapper, LMCM_DBContext dbContext,IGoogleDriveService googleDriveService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _mapper = mapper;
             _dbContext = dbContext;
+            _googleDriveService = googleDriveService;
         }
 
         public async Task<bool> CreateStaff(StaffRequest request)
         {
             var email = request.StaffId + "@fpt.edu.vn";
             var user = await _userManager.FindByEmailAsync(email);
+
             if (user == null)
             {
                 var newStaff = new User { UserName = email, Email = email, Status = "1" };
                 var result = await _userManager.CreateAsync(newStaff);
+
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(newStaff, "Staff");
+
+                    // Share Google Drive folders with new staff
+                    bool isShared = await _googleDriveService.ShareFoldersWithUser( email, "reader"); // "writer" for edit access, "reader" for view access
+
+                    if (!isShared)
+                    {
+                        Console.WriteLine("Failed to share Google Drive folder with user.");
+                    }
+
                     return true;
                 }
             }
             return false;
         }
-
         public async Task<UserProfileResponseDto> GetProfile(string userId)
         {
             var data = await _userManager.FindByIdAsync(userId);

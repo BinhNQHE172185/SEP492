@@ -1,5 +1,6 @@
 ﻿using LMCM_BE.DTOs.BudgetProposalDtos;
 using LMCM_BE.DTOs.ContractDtos;
+using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Services.BudgetPropasalService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,24 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
         public BudgetPropasalController(IBudgetPropasalService budgetPropasalService)
         {
             _budgetPropasalService = budgetPropasalService; 
+        }
+
+        [HttpPost("getBudgetPropasalList")]
+        public async Task<IActionResult> GetBudgetPropasalsAsync([FromBody] PagingRequest request)
+        {
+            try
+            {
+                var data = await _budgetPropasalService.GetBudgetPropasalsAsync(request.SearchKey, request.pageIndex, request.PageSize);
+                if (data != null)
+                {
+                    return Ok(data);
+                }
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
         }
 
         [HttpPost("createBudgetPropasal")]

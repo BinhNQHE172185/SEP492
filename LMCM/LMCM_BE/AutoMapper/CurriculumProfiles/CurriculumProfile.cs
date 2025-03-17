@@ -38,7 +38,7 @@ namespace LMCM_BE.AutoMapper.CurriculumProfiles
                            Duration = cs.Subject.Duration,
                            Reality = cs.Subject.Reality
                        }).ToList()
-                   }).ToList()));
+                   }).OrderBy(s => s.Number).ToList()));
 
             CreateMap<CurriculumsSubject, SemesterSubjectDto>()
                 .ForMember(dest => dest.SubjectId, opt => opt.MapFrom(src => src.Subject.SubjectId))

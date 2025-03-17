@@ -19,7 +19,17 @@ namespace LMCM_BE.AutoMapper.SyllabusProfiles
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Manually set timestamps
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
             CreateMap<Syllabus, SyllabusChangesHistoryListDto>();
-            CreateMap<Syllabus, SyllabusDetailDto>();
+            CreateMap<Syllabus, SyllabusDetailDto>()
+                .ForMember(dest => dest.Schedules,
+                opt => opt.MapFrom(src => src.Schedules.OrderBy(s => s.ScheduleNo)))
+                .ForMember(dest => dest.LearningMaterials,
+                opt => opt.MapFrom(src => src.LearningMaterials.OrderBy(s => s.MaterialNo)))
+                .ForMember(dest => dest.Clos,
+                opt => opt.MapFrom(src => src.Clos.OrderBy(s => s.CloName)))
+                .ForMember(dest => dest.ConstructivistQuestions,
+                opt => opt.MapFrom(src => src.ConstructivistQuestions.OrderBy(s => s.SessionNo)))
+                .ForMember(dest => dest.GradingStructures,
+                opt => opt.MapFrom(src => src.GradingStructures.OrderBy(s => s.StructureNo)));
         }
     }
 }

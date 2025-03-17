@@ -35,7 +35,9 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
     displayAddDialog = false;
     selectedItem: any = {};
     newHistory: any = {};
+    displayEditDialog: boolean = false;
 
+    editHistory: any = {};
     constructor(
         private learningMaterialService: LearningMaterialApiService,
         private confirmationService: ConfirmationService,
@@ -92,15 +94,23 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
 
         this.displayDetailDialog = true;
     }
-
-    saveDetail() {
-        console.log('Lưu chi tiết:', this.selectedItem);
-        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã cập nhật dữ liệu' });
+    closeDetailDialog() {
         this.displayDetailDialog = false;
     }
 
-    closeDetailDialog() {
-        this.displayDetailDialog = false;
+    editDetail(item: any) {
+        console.log("Editing item:", item);
+        this.editHistory = {
+            ...item,
+            completionDate: item.completionDate ? new Date(item.completionDate) : null,
+            startTerm: item.startTerm ? new Date(item.startTerm + "-01") : null, 
+        };
+        this.displayEditDialog = true;
+    }
+    
+    updateHistory() {
+        console.log('Updated history:', this.editHistory);
+        this.displayEditDialog = false;
     }
 
     confirmDelete(item: any) {

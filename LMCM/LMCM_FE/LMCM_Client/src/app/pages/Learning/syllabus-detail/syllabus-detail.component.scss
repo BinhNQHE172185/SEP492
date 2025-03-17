@@ -1,93 +1,83 @@
 :host {
   display: block;
-  
+
   .section {
     margin-bottom: 2rem;
-    
+
     .section-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1rem;
-      
+
       h2 {
         margin: 0;
       }
     }
   }
-  
+
   ::ng-deep .custom-dialog .p-dialog-title {
     color: rgb(233 114 0);
   }
-  
+
   // Table styling enhancements
   ::ng-deep {
-    .p-datatable .p-datatable-thead > tr > th {
+    .p-datatable .p-datatable-thead>tr>th {
       background-color: #f8f9fa;
       color: #495057;
       font-weight: 600;
     }
-    
-    .p-datatable .p-datatable-tbody > tr:nth-child(even) {
+
+    .p-datatable .p-datatable-tbody>tr:nth-child(even) {
       background-color: #f8f9fa;
     }
-    
+
     .p-button-text {
       &.p-button-warning {
         color: #e97d23;
       }
-      
+
       &.p-button-danger {
         color: #dc3545;
       }
     }
-    
-    // Form styling
-    .p-float-label {
-      margin-bottom: 0.5rem;
-      
-      label {
-        font-weight: 500;
-      }
-    }
-    
+
     .p-error {
       display: block;
       margin-top: 0.25rem;
     }
-    
+
     // Dialog styling
     .p-dialog .p-dialog-header {
       border-bottom: 1px solid #dee2e6;
       padding-bottom: 1rem;
     }
-    
+
     .p-dialog .p-dialog-footer {
       border-top: 1px solid #dee2e6;
       padding-top: 1rem;
     }
   }
 }
+
 .readable-text {
-    font-size: 1rem !important;
-    padding: 0.75rem !important;
-    color: #0a0a0a !important;
-    background-color: #f0f4f8 !important;
-    min-height: 45px !important;
-  }
-  
-  .readable-text-area {
-    font-size: 1rem !important;
-    padding: 0.75rem !important;
-    color: #495057 !important;
-    background-color: #f8f9fa !important;
-    min-height: 120px !important;
-    resize: vertical !important;
-    line-height: 1.5 !important;
-  }
-  
-  /* Make disabled fields look less faded out */
-  .p-inputtext:disabled {
-    opacity: 0.9 !important;
-    cursor: default !important;
-  }
+  font-size: 1rem !important;
+  padding: 0.75rem !important;
+  color: #0a0a0a !important;
+  background-color: #f0f4f8 !important;
+  min-height: 45px !important;
+}
+
+.readable-text-area {
+  font-size: 1rem !important;
+  color: #495057 !important;
+  background-color: #f0f4f8 !important;
+  line-height: 1.5 !important;
+  resize: none !important;
+}
+
+/* Make disabled fields look less faded out */
+.p-inputtext:disabled {
+  opacity: 0.9 !important;
+  cursor: default !important;
+}

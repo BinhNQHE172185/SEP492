@@ -18,7 +18,5 @@ export default [
     { path: 'listexpert', component: ListExpertComponent },
     { path: 'listreport', component: ListReportComponent },
     { path: 'syllabus', component: ListSyllabusComponent },
-    { path: 'syllabus/:syllabusId', component: SyllabusDetailComponent },
-    { path: 'edit-syllabus/:syllabusId', component: SyllabusDetailComponent }
-
+    { path: 'syllabus/:id', component: SyllabusDetailComponent },
 ] as Routes;

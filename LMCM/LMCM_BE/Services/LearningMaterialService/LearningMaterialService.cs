@@ -43,14 +43,14 @@ namespace LMCM_BE.Services.LearningMaterialService
             return await _materialRepository.ImportLearningMaterialsAsync(materials);
         }
 
-        public async Task<bool> InsertLearningMaterialAsync(LearningMaterialInsertDto material)
+        public async Task<Guid?> InsertLearningMaterialAsync(LearningMaterialInsertDto material)
         {
             return await _materialRepository.InsertLearningMaterialAsync(material); 
         }
 
-        public async Task<bool> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial)
+        public async Task<Guid?> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial,bool createChangeHistory)
         {
-            return await _materialRepository.UpdateLearningMaterialAsync(materialId, newMaterial);
+            return await _materialRepository.UpdateLearningMaterialAsync(materialId, newMaterial,createChangeHistory);
         }
     }
 }

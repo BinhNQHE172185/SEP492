@@ -169,7 +169,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             return true;
         }
 
-        public async Task<bool> InsertLearningMaterialAsync(LearningMaterialInsertDto material)
+        public async Task<Guid?> InsertLearningMaterialAsync(LearningMaterialInsertDto material)
         {
             if (material == null)
                 throw new ArgumentNullException(nameof(material));
@@ -191,10 +191,10 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             await _dbContext.LearningMaterials.AddAsync(newMaterial);
             await _dbContext.SaveChangesAsync();
 
-            return true;
+            return newMaterial.MaterialId;
         }
 
-        public async Task<bool> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial)
+        public async Task<Guid?> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial, bool createChangeHistory)
         {
             if (materialId == null)
                 throw new ArgumentNullException(nameof(materialId), "material id cannot be null.");
@@ -209,23 +209,32 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             if (learningMaterial == null)
                 throw new ArgumentNullException(nameof(learningMaterial), "material data not found.");
 
-            // Use AutoMapper to update existing entity
-            _mapper.Map(newMaterial, learningMaterial);
-            learningMaterial.UpdatedAt = DateTime.UtcNow;
+            if (!createChangeHistory)
+            {
+                // Use AutoMapper to update existing entity
+                _mapper.Map(newMaterial, learningMaterial);
+                learningMaterial.UpdatedAt = DateTime.UtcNow;
 
-            if(learningMaterial.MaterialDetail != null)
-            {
-                learningMaterial.MaterialDetail.UpdatedAt= DateTime.UtcNow; 
+                if (learningMaterial.MaterialDetail != null)
+                {
+                    learningMaterial.MaterialDetail.UpdatedAt = DateTime.UtcNow;
+                }
+                try
+                {
+                    await _dbContext.SaveChangesAsync();
+                    return learningMaterial.MaterialId;
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
             }
-
-            try
+            else
             {
-                await _dbContext.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                return false;
+                LearningMaterialInsertDto learningMaterialInsertDto = _mapper.Map<LearningMaterialInsertDto>(newMaterial);
+                learningMaterialInsertDto.SyllabusId=learningMaterial.SyllabusId;
+                Guid? newMaterialId= await InsertLearningMaterialAsync(learningMaterialInsertDto);
+                return newMaterialId;
             }
         }
     }

@@ -58,20 +58,20 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <p-card *ngFor="let semester of semesters">
         <div class="semester-header">
-          <h3>{{ semester.name }} {{ semester.number }}</h3>
+          <h3>Kỳ {{ semester.number }}</h3>
         </div>
         <div>
-          <p-card *ngFor="let subject of semester.subjects" class="subject-card">
+          <p-card *ngFor="let subject of semester.semesterSubjects" class="subject-card">
             <ng-template pTemplate="header">
               <div class="subject-header">
-                <strong>{{ subject.code }}</strong>
+                <strong>{{ subject.subjectCode }}</strong>
               </div>
             </ng-template>
             <ng-template pTemplate="content">
-              <p *ngIf="subject.nameVn">{{ subject.nameVn }}</p>
+              <p *ngIf="subject.subjectName">{{ subject.subjectName }}</p>
               <div class="flex gap-2">
-                <p-tag severity="info" [value]="subject.credits + ' credits'"></p-tag>
-                <p-tag severity="warn" [value]="subject.hours + ' hours'"></p-tag>
+                <p-tag severity="info" [value]="subject.credit + ' credits'"></p-tag>
+                <p-tag severity="warn" [value]="subject.reality + ' hours'"></p-tag>
               </div>
             </ng-template>
           </p-card>

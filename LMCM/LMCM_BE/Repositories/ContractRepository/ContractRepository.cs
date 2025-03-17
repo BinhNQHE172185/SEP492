@@ -11,10 +11,10 @@ namespace LMCM_BE.Repositories.ContractRepository
     public class ContractRepository : IContractRepository
     {
         private readonly LMCM_DBContext _context;
-        private readonly GoogleDriveService _googleDriveService;
+        private readonly IGoogleDriveService _googleDriveService;
         private readonly IMapper _mapper;
 
-        public ContractRepository(LMCM_DBContext context, GoogleDriveService googleDriveService, IMapper mapper)
+        public ContractRepository(LMCM_DBContext context, IGoogleDriveService googleDriveService, IMapper mapper)
         {
             _context = context;
             _googleDriveService = googleDriveService;

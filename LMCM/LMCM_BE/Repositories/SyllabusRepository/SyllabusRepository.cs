@@ -165,17 +165,14 @@ namespace LMCM_BE.Repositories.SyllabusRepository
         {
             if (syllabusId == null)
                 throw new ArgumentNullException(nameof(syllabusId), "Syllabus ID cannot be null.");
-            var stopwatch = Stopwatch.StartNew(); // Start measuring time
             var syllabusDto = await _dbContext.Syllabus
                 .AsNoTracking()
                 .Where(s => s.SyllabusId == syllabusId)
                 .ProjectTo<SyllabusDetailDto>(_mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync();
+                .SingleOrDefaultAsync();
 
             if (syllabusDto == null)
                 throw new KeyNotFoundException($"No syllabus found with ID: {syllabusId}");
-            stopwatch.Stop(); // Stop measuring time
-            Console.WriteLine($"Query execution time: {stopwatch.ElapsedMilliseconds} ms");
             return syllabusDto;
         }
     }

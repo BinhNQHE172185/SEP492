@@ -2,31 +2,29 @@
   <div class="section">
     <div class="section-header flex justify-content-between align-items-center">
       <h2 class="text-orange-500">Chi Tiết Đề Cương</h2>
-      <button pButton icon="pi pi-history" label="Xem lịch sử thay đổi" [routerLink]="['/learning/syllabus']" class="p-button-outlined"></button>
+      <button pButton icon="pi pi-history" label="Xem lịch sử thay đổi" [routerLink]="['/learning/syllabus']"
+        class="p-button-outlined"></button>
     </div>
-  
+
     <div class="flex flex-column md:flex-row">
       <!-- Left Column -->
       <div class="flex-1 pr-0 md:pr-4">
         <ng-template ngFor let-field [ngForOf]="[
-          { label: 'Loại Học Liệu', value: syllabusDetail.documentType },
-          { label: 'Chương Trình', value: syllabusDetail.program },
+          { label: 'Chương Trình', value: syllabusDetail.programName },
           { label: 'Số Quyết Định', value: syllabusDetail.decisionNo },
           { label: 'Tên Khóa Học', value: syllabusDetail.courseName },
           { label: 'Tên Khóa Học (Tiếng Anh)', value: syllabusDetail.courseNameEnglish },
           { label: 'Mã Khóa Học', value: syllabusDetail.courseCode },
-          { label: 'Phương Pháp Dạy-Học', value: syllabusDetail.learningMethod },
-          { label: 'Nhiệm Vụ Của Sinh Viên', value: syllabusDetail.studentTask },
-          { label: 'Số Tín Chỉ', value: syllabusDetail.credits }
+          { label: 'Phương Pháp Dạy-Học', value: syllabusDetail.learningTeachingMethod },
+          { label: 'Số Tín Chỉ', value: syllabusDetail.noOfCredits }
         ]">
-        <div class="field mb-5">
-          <label class="block text-700 font-medium mb-2">{{ field.label }}</label>
-          <p-inputGroup class="w-full">
-            <input pInputText type="text" [value]="field.value" [disabled]="true" 
-              class="w-full readable-text" />
-          </p-inputGroup>
-        </div>
-    
+          <div class="field mb-5">
+            <label class="block text-700 font-medium mb-2">{{ field.label }}</label>
+            <p-inputGroup class="w-full">
+              <input pInputText type="text" [value]="field.value ?? 'N/A'" [disabled]="true"
+                class="w-full readable-text" />
+            </p-inputGroup>
+          </div>
         </ng-template>
       </div>
 
@@ -34,81 +32,79 @@
       <div class="flex-1 pl-0 md:pl-4">
         <ng-template ngFor let-field [ngForOf]="[
           { label: 'Trình Độ', value: syllabusDetail.degreeLevel },
-          { label: 'Phân Bổ Thời Gian', value: syllabusDetail.timeAllocation },
-          { label: 'Điều Kiện Tiên Quyết', value: syllabusDetail.prerequisite },
-          { label: 'Điểm GPA Tối Thiểu Để Qua', value: syllabusDetail.minGPA },
-          { label: 'Thang Điểm', value: syllabusDetail.scoringScale },
           { label: 'Ngày Phê Duyệt', value: syllabusDetail.approvedDate },
+          { label: 'Điều Kiện Tiên Quyết', value: syllabusDetail.preRequisite },
+          { label: 'Điểm GPA Tối Thiểu Để Qua', value: syllabusDetail.minGpaToPass },
+          { label: 'Thang Điểm', value: syllabusDetail.scoringScale },
           { label: 'Công Cụ', value: syllabusDetail.tools },
-          { label: 'Ghi Chú', value: syllabusDetail.note }
+        ]">
+          <div class="field mb-5">
+            <label class="block text-700 font-medium mb-2">{{ field.label }}</label>
+            <p-inputGroup class="w-full">
+              <input pInputText type="text" [value]="field.value ?? 'N/A'" [disabled]="true"
+                class="w-full readable-text" />
+            </p-inputGroup>
+          </div>
+
+        </ng-template>
+      </div>
+    </div>
+    <div class="w-full">
+      <ng-template ngFor let-field [ngForOf]="[
+        { label: 'Mô Tả', value: syllabusDetail.description },
+        { label: 'Phân Bổ Thời Gian', value: syllabusDetail.timeAllocation },
+        { label: 'Nhiệm Vụ Của Sinh Viên', value: syllabusDetail.studentTask },
+        { label: 'Ghi Chú', value: syllabusDetail.note },
         ]">
         <div class="field mb-5">
           <label class="block text-700 font-medium mb-2">{{ field.label }}</label>
-          
-          <p-inputGroup class="w-full">
-            <input pInputText type="text" [value]="field.value" [disabled]="true" 
-              class="w-full readable-text" />
-          </p-inputGroup>
+          <textarea pTextarea [value]="field.value" [disabled]="true" class="w-full readable-text"
+            autoResize></textarea>
         </div>
-    
-        </ng-template>
-      </div>
+      </ng-template>
+    </div>
   </div>
-      <div class="w-full">
-        <ng-template ngFor let-field [ngForOf]="[
-        { label: 'Mô Tả', value: syllabusDetail.description } ]">
-
-        <div class="field mb-5">
-          <label class="block text-700 font-medium mb-2">{{ field.label }}</label>
-          
-          <p-inputGroup class="w-full">
-            <input pInputText type="text" [value]="field.value" [disabled]="true" 
-              class="w-full readable-text" />
-          </p-inputGroup>
-        </div>
-      </ng-template>        
-      </div>
-
-  
-  </div>
-
-
 
   <div style="margin-top: 25px;">
     <!-- Materials section with enhanced CRUD functionality -->
     <div class="section">
-      <div class="section-header flex justify-content-between align-items-center mb-3">
+      <div class="section-header">
         <h2 class="text-orange-500 m-0">Học Liệu</h2>
         <div>
-          <button pButton icon="pi pi-plus" label="Thêm Học Liệu" class="p-button-warning" (click)="openNewMaterialDialog()"></button>
+          <button pButton icon="pi pi-plus" label="Thêm Học Liệu" class="p-button-warning"
+            (click)="openNewMaterialDialog()"></button>
         </div>
       </div>
-      
-      <p-table [value]="materials" styleClass="p-datatable-sm" [tableStyle]="{'min-width': '50rem'}">
+
+      <p-table [value]="materials">
         <ng-template pTemplate="header">
           <tr>
-            <th>STT</th>
             <th>Tên giáo trình</th>
-            <th>Năm Xuất Bản</th>            
+            <th>Só lượng</th>
+            <th>Năm Xuất Bản</th>
             <th>Tác Giả</th>
-            <th>Nhà Xuất Bản</th>            
+            <th>Nhà Xuất Bản</th>
             <th>ISBN</th>
             <th>Loại</th>
+            <th>Ghi Chú</th>
             <th>Thao tác</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-material>
           <tr>
-            <td>{{ material.no }}</td>
-            <td>{{ material.description }}</td>
-            <td>{{ material.publishedDate | date:'yyyy' }}</td>            
+            <td>{{ material.materialType ?? material.url }}</td>
+            <td>{{ material.materialQuantity }}</td>
+            <td>{{ material.publishedDate | date:'yyyy' }}</td>
             <td>{{ material.author }}</td>
             <td>{{ material.publisher }}</td>
             <td>{{ material.isbn }}</td>
-            <td>{{ material.type }}</td>
+            <td>{{ material.learningType }}</td>
+            <td>{{ material.note }}</td>
             <td>
-              <p-button label="Sửa" outlined (click)="openEditMaterialDialog(material)"></p-button>
-              <p-button label="Xóa" outlined  class="p-button-text p-button-sm p-button-danger p-button-outlined" (click)="confirmDeleteMaterial(material)"></p-button>
+              <div class="flex gap-1">
+                <p-button label="Sửa" outlined (click)="openEditMaterialDialog(material.materialId)"></p-button>
+                <p-button label="Xóa" outlined (click)="confirmDeleteMaterial(material.materialId)"></p-button>
+              </div>
             </td>
           </tr>
         </ng-template>
@@ -123,8 +119,8 @@
     <!-- Course Learning Outcomes section -->
     <div class="section mt-4">
       <h2 class="text-orange-500">Mục Tiêu Khóa Học (CLO)</h2>
-      
-      <p-table [value]="clos" styleClass="p-datatable-sm">
+
+      <p-table [value]="syllabusDetail.clos" styleClass="p-datatable-sm">
         <ng-template pTemplate="header">
           <tr>
             <th>STT</th>
@@ -132,11 +128,11 @@
             <th>Mô Tả CLO</th>
           </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-clo>
+        <ng-template pTemplate="body" let-clo let-i="rowIndex">
           <tr>
-            <td>{{ clo.no }}</td>
-            <td>{{ clo.name }}</td>
-            <td>{{ clo.description }}</td>
+            <td>{{ i + 1 }}</td>
+            <td>{{ clo.cloName }}</td>
+            <td>{{ clo.cloDescription }}</td>
           </tr>
         </ng-template>
       </p-table>
@@ -145,8 +141,8 @@
     <!-- Constructivist Questions section -->
     <div class="section mt-4">
       <h2 class="text-orange-500">Câu Hỏi</h2>
-      
-      <p-table [value]="constructivistQuestions" styleClass="p-datatable-sm">
+
+      <p-table [value]="syllabusDetail.constructivistQuestions" styleClass="p-datatable-sm">
         <ng-template pTemplate="header">
           <tr>
             <th>STT</th>
@@ -155,12 +151,62 @@
             <th>Chi Tiết</th>
           </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-question>
+        <ng-template pTemplate="body" let-question let-i="rowIndex">
           <tr>
-            <td>{{ question.no }}</td>
+            <td>{{ i + 1 }}</td>
             <td>{{ question.sessionNo }}</td>
             <td>{{ question.name }}</td>
             <td>{{ question.detail }}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td class="text-center p-4">Không có dữ liệu nào được tìm thấy.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <div class="section mt-4">
+      <h2 class="text-orange-500">Cấu trúc chấm điểm</h2>
+
+      <p-table [value]="syllabusDetail.gradingStructures" styleClass="p-datatable-sm">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Số thứ tự</th>
+            <th>Thành phần đánh giá</th>
+            <th>Loại đánh giá</th>
+            <th>Trọng số (%)</th>
+            <th>Phần</th>
+            <th>Giá trị tối thiểu</th>
+            <th>Thời lượng</th>
+            <th>Kết quả học tập (CLO)</th>
+            <th>Loại câu hỏi</th>
+            <th>Số câu hỏi</th>
+            <th>Phạm vi</th>
+            <th>Phương pháp đánh giá</th>
+            <th>Ghi chú</th>
+            <th>Buổi</th>
+            <th>Tài liệu tham khảo</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-question>
+          <tr>
+            <td>{{ question.structureNo }}</td>
+            <td>{{ question.assessmentComponent }}</td>
+            <td>{{ question.assessmentType }}</td>
+            <td>{{ question.weight }}</td>
+            <td>{{ question.part }}</td>
+            <td>{{ question.minValue }}</td>
+            <td>{{ question.duration }}</td>
+            <td>{{ question.clo }}</td>
+            <td>{{ question.questionType }}</td>
+            <td>{{ question.questionNo }}</td>
+            <td>{{ question.scope }}</td>
+            <td>{{ question.how }}</td>
+            <td>{{ question.note }}</td>
+            <td>{{ question.sessionNo }}</td>
+            <td>{{ question.reference }}</td>
           </tr>
         </ng-template>
       </p-table>
@@ -169,12 +215,11 @@
     <!-- Schedule section -->
     <div class="section mt-4">
       <h2 class="text-orange-500">Lịch Trình</h2>
-      
-      <p-table [value]="scheduleData" styleClass="p-datatable-sm">
+      <p-table [value]="syllabusDetail.schedules">
         <ng-template pTemplate="header">
           <tr>
             <th>Buổi</th>
-            <th>Phương Pháp Dạy-Học</th>
+            <th>Phương Pháp</th>
             <th>Nội Dung</th>
             <th>CLO</th>
             <th>ITU</th>
@@ -182,23 +227,23 @@
             <th>Nhiệm Vụ Của Sinh Viên</th>
             <th>Học Liệu Của Giảng Viên</th>
             <th>Nhiệm Vụ Của Giảng Viên</th>
-            <th>Liên Kết Của Sinh Viên</th>
-            <th>Liên Kết Của Giảng Viên</th>
+            <th>Liên Kết học liệu Của Sinh Viên</th>
+            <th>Liên Kết học liệu Của Giảng Viên</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-schedule>
           <tr>
-            <td>{{ schedule.session }}</td>
-            <td>{{ schedule.learningTeachingMethod }}</td>
+            <td>{{ schedule.scheduleNo }}</td>
+            <td>{{ schedule.method }}</td>
             <td>{{ schedule.content }}</td>
-            <td>{{ schedule.clo }}</td>
+            <td>{{ schedule.clos }}</td>
             <td>{{ schedule.itu }}</td>
-            <td>{{ schedule.studentsMaterials }}</td>
-            <td>{{ schedule.studentsTask }}</td>
-            <td>{{ schedule.lecturersMaterials }}</td>
-            <td>{{ schedule.lecturersTask }}</td>
-            <td>{{ schedule.studentsLink }}</td>
-            <td>{{ schedule.lecturersLink }}</td>
+            <td>{{ schedule.studentMaterial }}</td>
+            <td>{{ schedule.studentTask }}</td>
+            <td>{{ schedule.lecturerMaterial }}</td>
+            <td>{{ schedule.lecturerTask }}</td>
+            <td>{{ schedule.studentMaterialUrl }}</td>
+            <td>{{ schedule.lecturerMaterialUrl }}</td>
           </tr>
         </ng-template>
       </p-table>
@@ -207,109 +252,94 @@
 </div>
 
 <!-- Material Dialog -->
-<p-dialog [(visible)]="materialDialog" [style]="{width: '650px'}" 
-          [header]="isEdit ? 'Chỉnh Sửa Học Liệu' : 'Thêm Học Liệu Mới'" 
-          [modal]="true" [draggable]="false" [resizable]="false"
-          class="custom-dialog" >
+<p-dialog [(visible)]="materialDialog"
+  [header]="isEdit ? 'Chỉnh Sửa Học Liệu' : 'Thêm Học Liệu Mới'" [modal]="true" [draggable]="false" [resizable]="true">
 
-  <form [formGroup]="materialForm"  class="p-3">
-    <div class="grid formgrid">
-      <!-- Tên giáo trình -->
-      <div class="col-12 field mb-4">
-        <label for="description">Tên giáo trình <span class="text-red-500">*</span></label>
-        <p-inputGroup class="w-full" >
+  <form [formGroup]="materialForm" class="p-3">
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-wrap gap-4">
+        <div class="flex flex-col grow basis-0 gap-2">
+          <label for="description">Tên giáo trình <span class="text-red-500">*</span></label>
           <input id="description" type="text" pInputText formControlName="description" class="w-full" />
-        </p-inputGroup>
-        <small class="p-error" *ngIf="materialForm.get('description')?.invalid && materialForm.get('description')?.touched">
-          Tên giáo trình là bắt buộc
-        </small>
-      </div>
-
-      <!-- Năm xuất bản giáo trình -->
-      <div class="col-12 md:col-6 field mb-4">
-        <label for="publishedDate">Năm xuất bản giáo trình</label>
-        <div class="w-full">
-          <p-calendar id="publishedDate" formControlName="publishedDate" [showIcon]="true" view="year" dateFormat="yy" [yearNavigator]="true" yearRange="2000:2030"></p-calendar>
+          <small class="p-error"
+            *ngIf="materialForm.get('description')?.invalid && materialForm.get('description')?.touched">
+            Tên giáo trình là bắt buộc
+          </small>
+        </div>
+        <div class="flex flex-col grow basis-0 gap-2">
+          <label for="type">Loại giáo trình <span class="text-red-500">*</span></label>
+          <p-dropdown id="type" [options]="materialTypes" formControlName="type" optionLabel="label" optionValue="value"
+            [showClear]="false" appendTo="body" class="w-full"></p-dropdown>
         </div>
       </div>
 
-      <!-- Sách gốc - right column -->
-      <div class="col-12 md:col-6 field mb-4">
-        <label for="originalBook">Sách gốc</label>
-        <p-inputGroup class="w-full">
+      <div class="flex flex-wrap gap-4">
+        <div class="flex flex-col grow basis-0 gap-2">
+          <label for="publishedDate">Năm xuất bản giáo trình</label>
+          <p-calendar id="publishedDate" formControlName="publishedDate" [showIcon]="true" view="year" dateFormat="yy"
+            [yearNavigator]="true" yearRange="2000:2030"></p-calendar>
+        </div>
+        <div class="flex flex-col grow basis-0 gap-2">
+          <label for="originalBook">Sách gốc</label>
           <input id="originalBook" type="text" pInputText formControlName="originalBook" class="w-full" />
-        </p-inputGroup>
-      </div>
-
-<!-- Tác giả -->
-<div class="col-12 field mb-4">
-  <label>Tác giả <span class="text-red-500">*</span></label>
-
-    <div class="flex gap-2 mb-2">
-      <input type="text" pInputText formControlName="author" placeholder="Nhập tên tác giả" class="flex-grow-1" />
-      <button pButton type="button" label="Thêm tác giả" icon="pi pi-plus" class="p-button-outlined p-button-secondary" (click)="addAuthor()"></button>
-    </div>
-  <div class="flex flex-column">    
-    <div *ngIf="authors.length > 0" class="mt-2">
-      <div class="flex flex-wrap gap-2">
-        <div *ngFor="let author of authors; let i = index" class="flex align-items-center bg-gray-50 border-round p-2">
-          <span>{{author}}</span>
-          <button pButton type="button" icon="pi pi-times" class="p-button-text p-button-rounded p-button-danger ml-2" (click)="removeAuthor(i)"></button>
-        </div>
-      </div>
-    </div>
-    
-    <small class="p-error" *ngIf="authors.length === 0 && materialForm.get('author')?.touched">
-      Vui lòng thêm ít nhất một tác giả
-    </small>
-  </div>
-</div>
-
-      <!-- Nhà xuất bản sách gốc -->
-      <div class="col-12 md:col-6 field mb-4">
-        <label for="publisher">Nhà xuất bản sách gốc</label>
-        <p-dropdown id="publisher" [options]="publishers" formControlName="publisher" optionLabel="label" 
-                  optionValue="value" [showClear]="true" [filter]="true" filterBy="label" 
-                  placeholder="Chọn nhà xuất bản" appendTo="body" class="w-full"></p-dropdown>
-      </div>
-
-      <!-- Năm xuất bản sách gốc -->
-      <div class="col-12 md:col-6 field mb-4">
-        <label for="originalPublishedDate">Năm xuất bản sách gốc</label>
-        <div class="w-full">
-          <p-calendar id="originalPublishedDate" formControlName="originalPublishedDate" [showIcon]="true" view="year" dateFormat="yy" [yearNavigator]="true" yearRange="2000:2030"></p-calendar>
         </div>
       </div>
 
-      <!-- Phiên bản sách gốc -->
-      <div class="col-12 md:col-6 field mb-4">
-        <label for="edition">Phiên bản sách gốc</label>
-        <p-inputGroup class="w-full">
+      <!-- Tác giả -->
+      <!-- <div class="flex flex-wrap gap-4">
+        <label>Tác giả <span class="text-red-500">*</span></label>
+        <input type="text" pInputText formControlName="author" placeholder="Nhập tên tác giả" class="flex-grow-1" />
+        <button pButton type="button" label="Thêm tác giả" icon="pi pi-plus"
+          class="p-button-outlined p-button-secondary" (click)="addAuthor()"></button>
+        <div class="flex flex-column">
+          <div *ngIf="authors.length > 0" class="mt-2">
+            <div class="flex flex-wrap gap-2">
+              <div *ngFor="let author of authors; let i = index"
+                class="flex align-items-center bg-gray-50 border-round p-2">
+                <span>{{author}}</span>
+                <button pButton type="button" icon="pi pi-times"
+                  class="p-button-text p-button-rounded p-button-danger ml-2" (click)="removeAuthor(i)"></button>
+              </div>
+            </div>
+          </div>
+
+          <small class="p-error" *ngIf="authors.length === 0 && materialForm.get('author')?.touched">
+            Vui lòng thêm ít nhất một tác giả
+          </small>
+        </div>
+      </div> -->
+
+      <div class="flex flex-wrap gap-4">
+        <div class="flex flex-col grow basis-0 gap-2">
+          <label for="originalPublishedDate">Năm xuất bản sách gốc</label>
+          <p-calendar id="originalPublishedDate" formControlName="originalPublishedDate" [showIcon]="true" view="year"
+            dateFormat="yy" [yearNavigator]="true" yearRange="2000:2030"></p-calendar>
+        </div>
+        <div class="flex flex-col grow basis-0 gap-2">
+          <label for="publisher">Nhà xuất bản sách gốc</label>
+          <p-dropdown id="publisher" [options]="publishers" formControlName="publisher" optionLabel="label"
+            optionValue="value" [showClear]="true" [filter]="true" filterBy="label" placeholder="Chọn nhà xuất bản"
+            appendTo="body" class="w-full"></p-dropdown>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-4">
+        <div class="flex flex-col grow basis-0 gap-2">
+          <label for="edition">Phiên bản sách gốc</label>
           <input id="edition" type="text" pInputText formControlName="edition" class="w-full" />
-        </p-inputGroup>
-      </div>
-      
-      <!-- ISBN -->
-      <div class="col-12 md:col-6 field mb-4">
-        <label for="isbn">ISBN</label>
-        <p-inputGroup class="w-full">
+        </div>
+        <div class="flex flex-col grow basis-0 gap-2">
+          <label for="isbn">ISBN</label>
           <input id="isbn" type="text" pInputText formControlName="isbn" />
-        </p-inputGroup>
-      </div>
-
-      <!-- Loại giáo trình -->
-      <div class="col-12 field mb-4">
-        <label for="type">Loại giáo trình <span class="text-red-500">*</span></label>
-        <p-dropdown id="type" [options]="materialTypes" formControlName="type" optionLabel="label" 
-                  optionValue="value" [showClear]="false" appendTo="body" class="w-full"></p-dropdown>
+        </div>
       </div>
     </div>
   </form>
 
   <ng-template pTemplate="footer">
     <div class="flex justify-content-end gap-2">
-      <button pButton outlined label="Hủy"  class="p-button-text" (click)="cancelDialog()"></button>
-      <button pButton pRipple label="Lưu thay đổi"  class="p-button-warning" (click)="saveMaterial()"></button>
+      <button pButton outlined label="Hủy" class="p-button-text" (click)="cancelDialog()"></button>
+      <button pButton pRipple label="Lưu thay đổi" class="p-button-warning" (click)="saveMaterial()"></button>
     </div>
   </ng-template>
 </p-dialog>

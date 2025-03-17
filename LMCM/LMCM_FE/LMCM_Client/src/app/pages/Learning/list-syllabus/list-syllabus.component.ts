@@ -15,6 +15,7 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { Router } from '@angular/router';
 
 interface Syllabus {
   courseCode: string;
@@ -59,7 +60,9 @@ export class ListSyllabusComponent implements OnInit, OnDestroy {
   constructor(private syllabusService: SyllabusApiService,
     private searchService: searchService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService) { }
+    private confirmationService: ConfirmationService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.searchSubscription = this.searchService.searchQuery$.subscribe(
@@ -106,6 +109,10 @@ export class ListSyllabusComponent implements OnInit, OnDestroy {
         console.error("Lỗi khi tải danh sách syllabus:", error);
       }
     );
+  }
+
+  goToDetail(id: string) {
+    this.router.navigate([`/learning/syllabus/${id}`]);
   }
 
   showImportDialog() {

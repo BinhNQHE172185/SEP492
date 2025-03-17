@@ -52,6 +52,7 @@ namespace LMCM_BE.Repositories.PloRepository
                 .Include(p => p.PloSubjects)
                     .ThenInclude(ps => ps.Subject)
                 .Where(p => p.CurriculumId == curriculumId && p.Status == "Active")
+                .OrderBy(p=>p.PloName)
                 .ToListAsync();
 
             return _mapper.Map<List<PloDetailDto>>(plos);

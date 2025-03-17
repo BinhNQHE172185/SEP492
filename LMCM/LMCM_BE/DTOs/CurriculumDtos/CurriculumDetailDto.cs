@@ -18,6 +18,6 @@ namespace LMCM_BE.DTOs.CurriculumDtos
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public List<TempCurriculumsSubject> Subjects { get; set; } = new();
+        public List<SemesterDto> Semesters { get; set; } = new();
     }
 }

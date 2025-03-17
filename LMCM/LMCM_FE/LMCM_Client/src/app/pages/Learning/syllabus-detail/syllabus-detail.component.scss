@@ -16,6 +16,10 @@
     }
   }
   
+  ::ng-deep .custom-dialog .p-dialog-title {
+    color: rgb(233 114 0);
+  }
+  
   // Table styling enhancements
   ::ng-deep {
     .p-datatable .p-datatable-thead > tr > th {

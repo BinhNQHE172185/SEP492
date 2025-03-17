@@ -49,7 +49,7 @@ export class AppMenu {
                     {
                         label: 'Quản lý chương trình',
                         icon: 'pi pi-fw pi-book',
-                        routerLink: ['learning/listcurriculum']
+                        routerLink: ['learning/curriculum']
                     },
                     {
                         label: 'Quản lý đề cương',

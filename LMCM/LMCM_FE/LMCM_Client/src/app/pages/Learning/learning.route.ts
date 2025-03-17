@@ -9,10 +9,9 @@ import { HistoryOfChangeComponent } from './history-of-change/history-of-change.
 
 export default [
     { path: 'listsubject', component: ListSubjectsComponent },
-    {path:'listcurriculum',component:ListCurriculumComponent},
-    {path:'curriculum',component:CurriculumDetailComponent},
-    {path:'curriculum/:code',component:CurriculumDetailComponent},
-    {path:'plo',component:PloComponent},
+    {path:'curriculum',component:ListCurriculumComponent},
+    {path:'curriculum/:id',component:CurriculumDetailComponent},
+    {path:'curriculum/:id/plo',component:PloComponent},
     {path:'history',component:HistoryOfChangeComponent},
     { path: 'listsyllabus', component: ListSyllabusComponent },
     { path: 'syllabus', component: SyllabusDetailComponent },

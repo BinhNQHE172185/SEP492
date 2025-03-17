@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -9,18 +9,20 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { TagModule } from 'primeng/tag';
 import { PanelModule } from 'primeng/panel';
+import { CurriculumApiService } from '../../../apis/curriculumAPIs/curriculum-api.service';
 
 
 interface CurriculumDetail {
-  code: string;
-  name: string;
-  engName: string;
+  curriculumCode: string;
+  curriculumName: string;
+  curriculumNameEnglish: string;
   engCurriculumName: string;
-  majorCode: string;
-  majorName: string;
+  vocationalCode: string;
+  englishVocationalName: string;
+  vocationalName: string;
   decisionNo: string;
-  approvalDate: string;
-  description: string;
+  approvedDate: string;
+  curriculumDescription: string;
 }
 
 interface Semester {
@@ -57,19 +59,40 @@ interface Subject {
   ]
 })
 
-export class CurriculumDetailComponent {
-  curriculumDetail: CurriculumDetail = {
-    code: 'CUR-2024-001',
-    name: 'Chương Trình Công Nghệ Thông Tin',
-    engName: 'Information Technology',
-    engCurriculumName: 'Information Technology Program',
-    majorCode: 'VOC-IT-001',
-    majorName: 'Công Nghệ Thông Tin',
-    decisionNo: '1234/QĐ-ĐHQG',
-    approvalDate: '2024-01-15',
-    description: 'Chương trình đào tạo được thiết kế nhằm cung cấp kiến thức và kỹ năng toàn diện về công nghệ thông tin, bao gồm lập trình, cơ sở dữ liệu, mạng máy tính và an ninh mạng.'
-  };
+export class CurriculumDetailComponent implements OnInit {
+  curriculumId: string = '';
+  curriculumDetail!: CurriculumDetail;
 
+  constructor(private router: Router, private route: ActivatedRoute, private curriculumService: CurriculumApiService) { }
+
+  ngOnInit() {
+    this.curriculumId = this.route.snapshot.paramMap.get('id') || '';
+    console.log('Curriculum ID:', this.curriculumId);
+    this.getDetail();
+  }
+
+  getDetail() {
+    const id = this.curriculumId;
+    if (id) {
+      this.curriculumService.getCurriculumsDetail(id).subscribe({
+        next: (data) => {
+          this.curriculumDetail = {
+            ...data,
+            semesters: [
+              ...data.semesters || []
+            ]
+          };
+        },
+        error: (err) => {
+          console.error('Error fetching curriculum detail:', err);
+        }
+      });
+    }
+  }
+
+  viewPLO() {
+    this.router.navigate([`/learning/curriculum/${this.curriculumId}/plo`]);
+  }
 
   semesters: Semester[] = [
     {

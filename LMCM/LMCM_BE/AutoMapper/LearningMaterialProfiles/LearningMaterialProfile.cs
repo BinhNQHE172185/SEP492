@@ -31,6 +31,7 @@ namespace LMCM_BE.AutoMapper.LearningMaterialProfiles
                 .ForMember(dest => dest.MaterialDetail, opt => opt.MapFrom(src => src.MaterialDetail));
             CreateMap<LearningMaterialViewDto, LearningMaterial>()
                 .ForMember(dest => dest.MaterialDetail, opt => opt.MapFrom(src => src.MaterialDetail));
+            CreateMap<LearningMaterialUpdateDto, LearningMaterialInsertDto>();
         }
     }
 }

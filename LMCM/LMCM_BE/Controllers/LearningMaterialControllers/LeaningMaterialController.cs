@@ -37,7 +37,7 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
         {
             try
             {
-                var data = await _learningMaterialService.GetMaterialsBySyllabusIdAsync((Guid)request.Id,request.SearchKey, request.pageIndex, request.PageSize);
+                var data = await _learningMaterialService.GetMaterialsBySyllabusIdAsync((Guid)request.Id, request.SearchKey, request.pageIndex, request.PageSize);
                 if (data != null)
                 {
                     return Ok(data);
@@ -90,8 +90,14 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
         {
             try
             {
-                if (await _learningMaterialService.InsertLearningMaterialAsync(material))
-                    return Ok(new { message = "Thêm thành công." });
+                Guid? materialId = await _learningMaterialService.InsertLearningMaterialAsync(material);
+                if (materialId.HasValue)
+                    return Ok(new
+                    {
+                        message = "Thêm thành công.",
+                        Data = materialId,
+
+                    });
                 else return BadRequest(new { message = "Thêm thất bại. Vui lòng kiểm tra dữ liệu đầu vào." });
             }
             catch (Exception ex)
@@ -101,16 +107,22 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
         }
 
         [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateLearningMaterialAsync(Guid id, [FromBody] LearningMaterialUpdateDto material)
+        public async Task<IActionResult> UpdateLearningMaterialAsync(Guid id, [FromBody] LearningMaterialUpdateDto material, bool createChangeHistory)
         {
             try
             {
-                var updatedMaterial = await _learningMaterialService.UpdateLearningMaterialAsync(id, material);
-                if (updatedMaterial == null)
+                Guid? materialId = await _learningMaterialService.UpdateLearningMaterialAsync(id,material,createChangeHistory);
+                if (materialId.HasValue)
+                    return Ok(new
+                    {
+                        message = "Update thành công.",
+                        Data = materialId,
+
+                    });
+                else
                 {
                     return NotFound(new { message = "Dữ liệu không được tìm thấy." });
                 }
-                return Ok(updatedMaterial);
             }
             catch (Exception ex)
             {

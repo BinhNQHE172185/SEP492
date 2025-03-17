@@ -44,17 +44,19 @@ export class AppMenu {
                     {
                         label: 'Quản lý môn học',
                         icon: 'pi pi-fw pi-book',
-                        routerLink: ['learning/listsubject']
+                        routerLink: ['learning/subject']
                     },
                     {
                         label: 'Quản lý chương trình',
                         icon: 'pi pi-fw pi-book',
-                        routerLink: ['learning/curriculum']
+                        routerLink: ['learning/curriculum'],
+                        routerLinkActiveOptions: { exact: false },
                     },
                     {
                         label: 'Quản lý đề cương',
                         icon: 'pi pi-fw pi-book',
-                        routerLink: ['learning/listsyllabus']
+                        routerLink: ['learning/syllabus'],
+                        routerLinkActiveOptions: { exact: false },
                     },
                     {
                         label: 'Lịch sử thay đổi',

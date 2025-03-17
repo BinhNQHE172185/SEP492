@@ -10,16 +10,14 @@ import { ListReportComponent } from './list-report/list-report.component';
 import { ListExpertComponent } from './list-expert/list-expert.component';
 
 export default [
-    { path: 'listsubject', component: ListSubjectsComponent },
-    { path: 'listcurriculum', component: ListCurriculumComponent },
+    { path: 'subject', component: ListSubjectsComponent },
     { path: 'curriculum', component: ListCurriculumComponent },
     { path: 'curriculum/:id', component: CurriculumDetailComponent },
     { path: 'curriculum/:id/plo', component: PloComponent },
     { path: 'history', component: HistoryOfChangeComponent },
     { path: 'listexpert', component: ListExpertComponent },
     { path: 'listreport', component: ListReportComponent },
-    { path: 'listsyllabus', component: ListSyllabusComponent },
-    { path: 'syllabus', component: SyllabusDetailComponent },
+    { path: 'syllabus', component: ListSyllabusComponent },
     { path: 'syllabus/:syllabusId', component: SyllabusDetailComponent },
     { path: 'edit-syllabus/:syllabusId', component: SyllabusDetailComponent }
 

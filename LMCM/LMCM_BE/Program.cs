@@ -133,6 +133,7 @@ builder.Services.AddScoped<IContractRepository, ContractRepository>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IBudgetPropasalRepository, BudgetPropasalRepository>();
 builder.Services.AddScoped<IBudgetPropasalService, BudgetPropasalService>();
+builder.Services.AddScoped<IGoogleDriveService, GoogleDriveService>();
 
 builder.Services.AddAuthorization();
 

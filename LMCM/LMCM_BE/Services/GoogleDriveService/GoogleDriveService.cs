@@ -1,15 +1,12 @@
 ﻿using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
+using Google.Apis.Drive.v3.Data;
 using Google.Apis.Services;
 using Google.Apis.Upload;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace LMCM_BE.Services.GoogleDriveService
 {
-    public class GoogleDriveService
+    public class GoogleDriveService: IGoogleDriveService
     {
         private readonly DriveService _driveService;
         private readonly string _contractFolderId = "1D-BiSw2okv50bU3C85NS4Z1YE4it0374";
@@ -17,8 +14,14 @@ namespace LMCM_BE.Services.GoogleDriveService
 
         public GoogleDriveService()
         {
-            var credential = GoogleCredential.FromFile("google-drive-credentials.json")
-                .CreateScoped(DriveService.ScopeConstants.DriveFile);
+            GoogleCredential credential;
+
+            //  Load credentials only ONCE
+            using (var stream = new FileStream("google-drive-credentials.json", FileMode.Open, FileAccess.Read))
+            {
+                credential = GoogleCredential.FromStream(stream)
+                    .CreateScoped(new[] { DriveService.Scope.Drive }); //  Full Drive access
+            }
 
             _driveService = new DriveService(new BaseClientService.Initializer
             {
@@ -70,6 +73,27 @@ namespace LMCM_BE.Services.GoogleDriveService
 
             var uploadedFile = request.ResponseBody;
             return uploadedFile.WebViewLink; // Return Google Drive File URL
+        }
+        public async Task<bool> ShareFoldersWithUser(string email, string role = "reader")
+        {
+            try
+            {
+                var permission = new Permission
+                {
+                    Type = "user",
+                    Role = role,  // "reader" (view-only) or "writer" (edit)
+                    EmailAddress = email,
+                };
+
+                await _driveService.Permissions.Create(permission, _contractFolderId).ExecuteAsync();
+                await _driveService.Permissions.Create(permission, _budgetPropasalFolderId).ExecuteAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sharing folder: {ex.Message}");
+                return false;
+            }
         }
     }
 }

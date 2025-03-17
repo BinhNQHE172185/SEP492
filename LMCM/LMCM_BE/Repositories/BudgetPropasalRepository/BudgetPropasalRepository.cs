@@ -9,10 +9,10 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
     public class BudgetPropasalRepository : IBudgetPropasalRepository
     {
         private readonly LMCM_DBContext _context;
-        private readonly GoogleDriveService _googleDriveService;
+        private readonly IGoogleDriveService _googleDriveService;
         private readonly IMapper _mapper;
 
-        public BudgetPropasalRepository(LMCM_DBContext context, GoogleDriveService googleDriveService, IMapper mapper)
+        public BudgetPropasalRepository(LMCM_DBContext context, IGoogleDriveService googleDriveService, IMapper mapper)
         {
             _context = context;
             _googleDriveService = googleDriveService;

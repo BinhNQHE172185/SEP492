@@ -9,33 +9,32 @@
           <th>Mô Tả</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-plo>
+      <ng-template pTemplate="body" let-plo let-i="rowIndex">
         <tr>
-          <td>{{ plo.no }}</td>
-          <td>{{ plo.name }}</td>
-          <td>{{ plo.description }}</td>
+          <td>{{ i + 1 }}</td>
+          <td>{{ plo.ploName }}</td>
+          <td>{{ plo.ploDescription }}</td>
         </tr>
       </ng-template>
     </p-table>
   </p-card>
-  
+
   <p-card class="mt-4">
-    <h2 class="text-orange-500 font-bold text-lg">Bản Đồ</h2>
-    <p-table [value]="ploMapping" class="mt-2">
+    <h2 class="text-orange-500 font-bold text-lg">Bản Đồ PLO</h2>
+    <p-table class="w-full" [value]="uniqueSubjects">
       <ng-template pTemplate="header">
         <tr>
-          <th>Mã Môn Học</th>
-          <th>KQHT 1</th>
-          <th>KQHT 2</th>
-          <th>KQHT 3</th>
+          <th>Code</th>
+          <th *ngFor="let plo of programLearningOutcomes">{{ plo.ploName }}</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-mapping>
+    
+      <ng-template pTemplate="body" let-subjectCode>
         <tr>
-          <td>{{ mapping.subject }}</td>
-          <td style="color: orangered;">{{ mapping.plo1 ? '✔' : '' }}</td>
-          <td style="color: orangered;">{{ mapping.plo2 ? '✔' : '' }}</td>
-          <td style="color: orangered;">{{ mapping.plo3 ? '✔' : '' }}</td>
+          <td>{{ subjectCode }}</td>
+          <td *ngFor="let plo of programLearningOutcomes" style="color: orangered;">
+            <span *ngIf="isSubjectInPLO(plo, subjectCode)" style="display: flex; justify-content: center;">✔</span>
+          </td>
         </tr>
       </ng-template>
     </p-table>

@@ -48,6 +48,11 @@ namespace LMCM_BE.Services.LearningMaterialService
             return await _materialRepository.InsertLearningMaterialAsync(material); 
         }
 
+        public async Task<bool> InsertLearningMaterialsFromOldSyllabusAsync(Guid oldSyllabusId, Guid newSyllabusId)
+        {
+            return await _materialRepository.InsertLearningMaterialsFromOldSyllabusAsync(oldSyllabusId, newSyllabusId); 
+        }
+
         public async Task<Guid?> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial,bool createChangeHistory)
         {
             return await _materialRepository.UpdateLearningMaterialAsync(materialId, newMaterial,createChangeHistory);

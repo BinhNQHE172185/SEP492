@@ -44,7 +44,20 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
         private confirmationService: ConfirmationService,
         private messageService: MessageService
     ) {}
-
+    //dữ liệu fix cứng
+    changeTypeOptions = [
+        { label: 'Cập nhật', value: 'update' },
+        { label: 'Bổ sung', value: 'add' },
+        { label: 'Xóa', value: 'delete' }
+    ];
+    //dữ liệu fix cứng
+    learningMaterialTypeOptions = [
+        { label: 'Bài giảng', value: 'lecture' },
+        { label: 'Giáo trình', value: 'textbook' },
+        { label: 'Slide bài giảng', value: 'slides' },
+        { label: 'Tài liệu tham khảo', value: 'reference' }
+    ];
+    
     ngOnInit(): void {
         this.loadHistory();
     }

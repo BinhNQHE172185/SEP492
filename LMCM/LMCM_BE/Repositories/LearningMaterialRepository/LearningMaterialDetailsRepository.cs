@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.LearningMaterialDtos;
+using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -60,6 +61,36 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
 
             return learningMateriaDetaill;
         }
+        public async Task<PagedResult<LearningMaterialDetailDto>> GetMaterialDetailsListAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
+        {
+            var query = _dbContext.LearningMaterialDetails
+                .Where(detail => detail.Status == "Active")
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchKey))
+            {
+                string search = searchKey.Trim().ToLower();
+                query = query.Where(detail => detail.MaterialName.ToLower().Contains(search) ||
+                                              detail.MaterialDescription.ToLower().Contains(search));
+            }
+
+            int totalCount = await query.CountAsync();
+
+            var items = await query.Skip((pageIndex - 1) * pageSize)
+                                   .Take(pageSize)
+                                   .ToListAsync();
+
+            var data = _mapper.Map<List<LearningMaterialDetailDto>>(items);
+
+            return new PagedResult<LearningMaterialDetailDto>
+            {
+                Items = data,
+                TotalCount = totalCount,
+                CurrentPage = pageIndex,
+                PageSize = pageSize
+            };
+        }
+
 
         public async Task<LearningMaterialDetail> InsertMaterialDetailsAsync(LearningMaterialDetailsInsertDto detail)
         {

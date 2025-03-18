@@ -15,7 +15,7 @@ public partial class LearningMaterial
     public string? MaterialType { get; set; }
 
     public bool? IsMainMaterial { get; set; }
-
+    public bool? IsImportedMaterial { get; set; }
     public int? MaterialNo { get; set; }
 
     public string? MaterialName { get; set; }

@@ -395,7 +395,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasColumnName("Material_ID");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.IsMainMaterial).HasColumnName("is_Main_Material");
-
+            entity.Property(e => e.IsImportedMaterial).HasColumnName("is_Imported_Material");
             entity.Property(e => e.MaterialDetailId)
                 .IsRequired(false) 
                 .HasColumnName("Material_Detail_ID");

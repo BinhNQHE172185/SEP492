@@ -121,6 +121,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .Include(s => s.MaterialDetail)
+                .OrderBy(s => s.MaterialNo)
                 .ToListAsync();
 
             var data = _mapper.Map<List<LearningMaterialListDto>>(items);

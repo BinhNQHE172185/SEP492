@@ -169,11 +169,19 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                             var isQuestionSuccess = await ImportConstructivistQuestionSheet(package.Workbook.Worksheets["Constructivist Question"], syllabus);
                             if (!isQuestionSuccess)
                                 throw new Exception("Nhập câu hỏi thất bại.");
+                            
+                            if(syllabus.PreviousVersionId != null)
+                            {
+                                await _learningMaterialService.InsertLearningMaterialsFromOldSyllabusAsync((Guid)syllabus.PreviousVersionId, syllabus.SyllabusId);
+                            }
+                            else
+                            {
+                                // Import Materials for first time only
+                                var isMaterialsSuccess = await ImportMaterialsSheet(package.Workbook.Worksheets["Materials"], syllabus);
+                                if (!isQuestionSuccess)
+                                    throw new Exception("Nhập học liệu thất bại.");
 
-                            // Import Materials
-                            var isMaterialsSuccess = await ImportMaterialsSheet(package.Workbook.Worksheets["Materials"], syllabus);
-                            if (!isQuestionSuccess)
-                                throw new Exception("Nhập học liệu thất bại.");
+                            }
 
                             await _dbContext.SaveChangesAsync();
                             await transaction.CommitAsync();

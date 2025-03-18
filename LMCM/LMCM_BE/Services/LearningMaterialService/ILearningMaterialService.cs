@@ -14,5 +14,6 @@ namespace LMCM_BE.Services.LearningMaterialService
         Task<LearningMaterialViewDto> GetLearningMaterialByIdAsync(Guid materialId);
         Task<Guid?> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial, bool createChangeHistory);
         Task<bool> DeleteLearningMaterialByIdAsync(Guid materialId);
+        Task<bool> InsertLearningMaterialsFromOldSyllabusAsync(Guid oldSyllabusId, Guid newSyllabusId);
     }
 }

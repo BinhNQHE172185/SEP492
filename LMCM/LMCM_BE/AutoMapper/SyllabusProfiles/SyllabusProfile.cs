@@ -22,8 +22,6 @@ namespace LMCM_BE.AutoMapper.SyllabusProfiles
             CreateMap<Syllabus, SyllabusDetailDto>()
                 .ForMember(dest => dest.Schedules,
                 opt => opt.MapFrom(src => src.Schedules.OrderBy(s => s.ScheduleNo)))
-                .ForMember(dest => dest.LearningMaterials,
-                opt => opt.MapFrom(src => src.LearningMaterials.OrderBy(s => s.MaterialNo)))
                 .ForMember(dest => dest.Clos,
                 opt => opt.MapFrom(src => src.Clos.OrderBy(s => s.CloName)))
                 .ForMember(dest => dest.ConstructivistQuestions,

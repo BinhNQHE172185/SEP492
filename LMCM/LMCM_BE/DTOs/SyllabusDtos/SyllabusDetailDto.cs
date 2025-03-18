@@ -48,7 +48,6 @@ namespace LMCM_BE.DTOs.SyllabusDtos
         public List<ConstructivistQuestionListDto> ConstructivistQuestions { get; set; } = new();
         public List<GradingStructureListDto> GradingStructures { get; set; } = new();
         public List<ScheduleListDto> Schedules { get; set; } = new();
-        public List<LearningMaterialListDto> LearningMaterials { get; set; } = new();
 
     }
 }

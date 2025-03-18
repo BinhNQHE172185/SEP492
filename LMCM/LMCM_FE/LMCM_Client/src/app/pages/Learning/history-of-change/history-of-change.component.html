@@ -66,47 +66,49 @@
     [style]="{ width: '580px', height: '630px', 'border-radius': '8px' }">
 
     <div class="p-4">
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <div class="mb-4">
+        <div class="flex flex-col md:flex-row gap-8">
+            <div class="md:w-1/2 flex flex-col gap-4 w-full">
+                <div class=" flex flex-col gap-2">
                     <label class="font-bold text-sm">Mã môn *</label>
-                    <input pInputText [(ngModel)]="selectedItem.courseCode" class="w-full"  />
+                    <input pInputText [(ngModel)]="selectedItem.courseCode" class="w-full" />
                 </div>
-
-                <div class="mb-4">
+    
+                <div class="flex flex-col gap-2">
                     <label class="font-bold text-sm">Ngày hoàn thành *</label>
-                    <p-calendar [(ngModel)]="selectedItem.completionDate" dateFormat="dd-mm-yy" showIcon="true" class="w-full" ></p-calendar>
+                    <p-datepicker [(ngModel)]="selectedItem.completionDate" dateFormat="dd-mm-yy" showIcon="true" ></p-datepicker>
                 </div>
-
-                <div class="mb-4">
+    
+                <div class="flex flex-col gap-2">
                     <label class="font-bold text-sm">Kỳ bắt đầu áp dụng *</label>
-                    <p-calendar [(ngModel)]="selectedItem.startTerm" dateFormat="yy-mm" showIcon="true" class="w-full" ></p-calendar>
+                    <p-datepicker [(ngModel)]="selectedItem.startTerm" dateFormat="yy-mm" showIcon="true" ></p-datepicker>
                 </div>
+                
             </div>
-
-            <div>
-                <div class="mb-4">
+    
+            <div class="md:w-1/2 flex flex-col gap-4">
+                <div class="flex flex-col gap-2">
                     <label class="font-bold text-sm">Số hợp đồng</label>
-                    <input pInputText [(ngModel)]="selectedItem.contractNumber" class="w-full"  />
+                    <input pInputText [(ngModel)]="selectedItem.contractNumber" class="w-full" />
                 </div>
-
-                <div class="mb-4">
+    
+                <div class="flex flex-col gap-2">
                     <label class="font-bold text-sm">Loại thay đổi *</label>
-                    <input pInputText [(ngModel)]="selectedItem.changeType" class="w-full"  />
+                    <input pInputText [(ngModel)]="selectedItem.changeType" class="w-full" />
                 </div>
-
-                <div class="mb-4">
+    
+                <div class="flex flex-col gap-2">
                     <label class="font-bold text-sm">Loại học liệu *</label>
-                    <input pInputText [(ngModel)]="selectedItem.learningMaterialType" class="w-full"  />
+                    <input pInputText [(ngModel)]="selectedItem.learningMaterialType" class="w-full" />
                 </div>
-            </div>
-            <div class="col-span-2">
-                <label class="font-bold text-sm">Nội dung thay đổi *</label>
-                <textarea pInputTextarea [(ngModel)]="selectedItem.changeDescription" rows="8" autoResize="true"
-                    class="w-full p-2 rounded-md border" ></textarea>
             </div>
         </div>
+    
+        <div class="mt-4 flex flex-col gap-2">
+            <label class="font-bold text-sm">Nội dung thay đổi *</label>
+            <textarea pInputTextarea [(ngModel)]="selectedItem.changeDescription" rows="8" autoResize="true" class="w-full p-2 rounded-md border"></textarea>
+        </div>
     </div>
+    
 
     <ng-template pTemplate="footer">
         <div class="flex justify-end gap-2">
@@ -120,48 +122,49 @@ header="Chỉnh sửa thông tin thay đổi"
 [style]="{ width: '580px', height: '630px', 'border-radius': '8px' }">
 
 <div class="p-4">
-    <div class="grid grid-cols-2 gap-4">
-        <div>
-            <div class="mb-4">
+    <div class="flex flex-col md:flex-row gap-8">
+
+        <div class="md:w-1/2 flex flex-col gap-4">
+            <div class="flex flex-col gap-2">
                 <label class="font-bold text-sm">Mã môn *</label>
                 <input pInputText [(ngModel)]="editHistory.courseCode" class="w-full" />
             </div>
 
-            <div class="mb-4">
+            <div class="flex flex-col gap-2">
                 <label class="font-bold text-sm">Ngày hoàn thành *</label>
-                <p-calendar [(ngModel)]="editHistory.completionDate" dateFormat="dd-mm-yy" showIcon="true" class="w-full"></p-calendar>
+                <p-datepicker [(ngModel)]="editHistory.completionDate" dateFormat="dd-mm-yy" showIcon="true" class="w-full"></p-datepicker>
             </div>
 
-            <div class="mb-4">
+            <div class="flex flex-col gap-2">
                 <label class="font-bold text-sm">Kỳ bắt đầu áp dụng *</label>
-                <p-calendar [(ngModel)]="editHistory.startTerm" dateFormat="yy-mm" showIcon="true" class="w-full"></p-calendar>
+                <p-datepicker [(ngModel)]="editHistory.startTerm" dateFormat="yy-mm" showIcon="true" class="w-full"></p-datepicker>
             </div>
         </div>
 
-        <div>
-            <div class="mb-4">
+        <div class="md:w-1/2 flex flex-col gap-4">
+            <div class="flex flex-col gap-2">
                 <label class="font-bold text-sm">Số hợp đồng</label>
                 <input pInputText [(ngModel)]="editHistory.contractNumber" class="w-full" />
             </div>
 
-            <div class="mb-4">
+            <div class="flex flex-col gap-2">
                 <label class="font-bold text-sm">Loại thay đổi *</label>
                 <input pInputText [(ngModel)]="editHistory.changeType" class="w-full" />
             </div>
 
-            <div class="mb-4">
+            <div class="flex flex-col gap-2">
                 <label class="font-bold text-sm">Loại học liệu *</label>
                 <input pInputText [(ngModel)]="editHistory.learningMaterialType" class="w-full" />
             </div>
         </div>
+    </div>
 
-        <div class="col-span-2">
-            <label class="font-bold text-sm">Nội dung thay đổi *</label>
-            <textarea pInputTextarea [(ngModel)]="editHistory.changeDescription" rows="8" autoResize="true"
-                class="w-full p-2 rounded-md border"></textarea>
-        </div>
+    <div class="mt-4 flex flex-col gap-2">
+        <label class="font-bold text-sm">Nội dung thay đổi *</label>
+        <textarea pInputTextarea [(ngModel)]="editHistory.changeDescription" rows="8" autoResize="true" class="w-full p-2 rounded-md border"></textarea>
     </div>
 </div>
+
 
 <ng-template pTemplate="footer">
     <div class="flex justify-end gap-2">
@@ -176,48 +179,49 @@ header="Thêm mới thông tin thay đổi"
 [style]="{ width: '580px', height: '630px', 'border-radius': '8px' }">
 
 <div class="p-4">
-    <div class="grid grid-cols-2 gap-4">
-        <div>
-            <div class="mb-4">
+    <div class="flex flex-col md:flex-row gap-8">
+
+        <div class="md:w-1/2 flex flex-col gap-4">
+            <div class="flex flex-col gap-2">
                 <label class="font-bold text-sm">Mã môn *</label>
                 <input pInputText [(ngModel)]="newHistory.courseCode" class="w-full" placeholder="Nhập mã môn" />
             </div>
 
-            <div class="mb-4">
+            <div class="flex flex-col gap-2">
                 <label class="font-bold text-sm">Ngày hoàn thành *</label>
-                <p-calendar [(ngModel)]="newHistory.completionDate" dateFormat="dd-mm-yy" showIcon="true" class="w-full"></p-calendar>
+                <p-datepicker [(ngModel)]="newHistory.completionDate" dateFormat="dd-mm-yy" showIcon="true"></p-datepicker>
             </div>
 
-            <div class="mb-4">
+            <div class="flex flex-col gap-2">
                 <label class="font-bold text-sm">Kỳ bắt đầu áp dụng *</label>
-                <p-calendar [(ngModel)]="newHistory.startTerm" dateFormat="yy-mm" showIcon="true" class="w-full"></p-calendar>
+                <p-datepicker [(ngModel)]="newHistory.startTerm" dateFormat="yy-mm" showIcon="true"></p-datepicker>
             </div>
         </div>
 
-        <div>
-            <div class="mb-4">
+        <div class="md:w-1/2 flex flex-col gap-4">
+            <div class="flex flex-col gap-2">
                 <label class="font-bold text-sm">Số hợp đồng</label>
                 <input pInputText [(ngModel)]="newHistory.contractNumber" class="w-full" placeholder="Nhập số hợp đồng" />
             </div>
 
-            <div class="mb-4">
+            <div class="flex flex-col gap-2">
                 <label class="font-bold text-sm">Loại thay đổi *</label>
                 <input pInputText [(ngModel)]="newHistory.changeType" class="w-full" />
             </div>
 
-            <div class="mb-4">
+            <div class="flex flex-col gap-2">
                 <label class="font-bold text-sm">Loại học liệu *</label>
                 <input pInputText [(ngModel)]="newHistory.learningMaterialType" class="w-full" />
             </div>
         </div>
+    </div>
 
-        <div class="col-span-2">
-            <label class="font-bold text-sm">Nội dung thay đổi *</label>
-            <textarea pInputTextarea [(ngModel)]="newHistory.changeDescription" rows="8" autoResize="true"
-                class="w-full p-2 rounded-md border"></textarea>
-        </div>
+    <div class="mt-4 flex flex-col gap-2">
+        <label class="font-bold text-sm">Nội dung thay đổi *</label>
+        <textarea pInputTextarea [(ngModel)]="newHistory.changeDescription" rows="8" autoResize="true" class="w-full p-2 rounded-md border"></textarea>
     </div>
 </div>
+
 
 <ng-template pTemplate="footer">
     <div class="flex justify-end gap-2">

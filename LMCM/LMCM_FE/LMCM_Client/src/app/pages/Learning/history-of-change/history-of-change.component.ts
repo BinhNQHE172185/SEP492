@@ -15,10 +15,11 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { DialogModule } from 'primeng/dialog';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
+import { DatePickerModule } from 'primeng/datepicker';
 
 @Component({
     standalone: true,
-    imports: [ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, CalendarModule, DropdownModule, InputTextModule],
+    imports: [ConfirmDialogModule, DatePickerModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, CalendarModule, DropdownModule, InputTextModule],
     selector: 'app-history-of-change',
     templateUrl: './history-of-change.component.html',
     styleUrls: ['./history-of-change.component.scss'],
@@ -66,7 +67,7 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
 
         this.learningMaterialService.getLearningMaterial(request).subscribe({
             next: (response) => {
-                console.log('Dữ liệu nhận được:', response);
+            
                 this.historyList = response.items;
                 this.totalCount = response.totalCount;
             },
@@ -78,7 +79,7 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
     }
 
     paginate(event: any) {
-        console.log(' Phân trang:', event);
+    
         this.loadHistory(event);
     }
     showDetail(item: any) {
@@ -99,7 +100,7 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
     }
 
     editDetail(item: any) {
-        console.log("Editing item:", item);
+       
         this.editHistory = {
             ...item,
             completionDate: item.completionDate ? new Date(item.completionDate) : null,
@@ -109,7 +110,7 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
     }
     
     updateHistory() {
-        console.log('Updated history:', this.editHistory);
+       
         this.displayEditDialog = false;
     }
 

@@ -121,6 +121,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .Include(s => s.MaterialDetail)
+                .OrderBy(s => s.MaterialNo)
                 .ToListAsync();
 
             var data = _mapper.Map<List<LearningMaterialListDto>>(items);
@@ -192,6 +193,41 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             await _dbContext.SaveChangesAsync();
 
             return newMaterial.MaterialId;
+        }
+
+        public async Task<bool> InsertLearningMaterialsFromOldSyllabusAsync(Guid oldSyllabusId, Guid newSyllabusId)
+        {
+            var existingMaterials = await _dbContext.LearningMaterials
+                .Where(s => s.SyllabusId == oldSyllabusId && s.Status != "Inactive")
+                .Include(s => s.MaterialDetail)
+                .ToListAsync();
+
+            if (!existingMaterials.Any())
+                return false; // No materials found
+
+            // Clone materials for new syllabus
+            var newMaterials = existingMaterials.Select(material => new LearningMaterial
+            {
+                MaterialId = Guid.NewGuid(), // Ensure new ID
+                SyllabusId = newSyllabusId, // Assign to new syllabus
+                MaterialDetailId = material.MaterialDetailId,
+                LearningType =material.LearningType,
+                MaterialType =material.MaterialType,
+                IsMainMaterial = material.IsMainMaterial,
+                MaterialNo=material.MaterialNo,
+                MaterialName =material.MaterialName,
+                MaterialQuantity =material.MaterialQuantity,
+                Url =material.Url,
+                Purpose =material.Purpose,
+                Note =material.Note,
+                Status = material.Status,
+                CreatedAt=material.CreatedAt,
+                UpdatedAt=material.UpdatedAt,
+            }).ToList();
+
+            await _dbContext.LearningMaterials.AddRangeAsync(newMaterials);
+
+            return true;
         }
 
         public async Task<Guid?> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial, bool createChangeHistory)

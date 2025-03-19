@@ -163,7 +163,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 material.Status = "Active";
                 material.CreatedAt = DateTime.UtcNow;
                 material.UpdatedAt = DateTime.UtcNow;
-                if (oldSyllabusId != null && material.MaterialDetailId!=null)
+                if (oldSyllabusId != null && material.MaterialDetailId==null)
                 {
                     var oldMaterial = await _dbContext.LearningMaterials
                         .Where(s => s.SyllabusId == oldSyllabusId && s.Url == material.Url)

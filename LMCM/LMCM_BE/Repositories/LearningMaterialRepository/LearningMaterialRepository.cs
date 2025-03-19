@@ -163,12 +163,12 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 material.Status = "Active";
                 material.CreatedAt = DateTime.UtcNow;
                 material.UpdatedAt = DateTime.UtcNow;
-                if (oldSyllabusId != null && material.MaterialType == "Imported Material")
+                if (oldSyllabusId != null && material.MaterialDetailId!=null)
                 {
                     var oldMaterial = await _dbContext.LearningMaterials
                         .Where(s => s.SyllabusId == oldSyllabusId && s.Url == material.Url)
                         .Include(s => s.MaterialDetail)
-                        .SingleOrDefaultAsync();
+                        .FirstOrDefaultAsync();
                     if(oldMaterial != null) material.MaterialDetailId = oldMaterial.MaterialDetailId;
                 }
             }

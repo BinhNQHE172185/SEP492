@@ -22,6 +22,7 @@ namespace LMCM_BE.AutoMapper.LearningMaterialProfiles
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
             CreateMap<LearningMaterialUpdateDto, LearningMaterial>()
                 .ForMember(dest => dest.MaterialId, opt => opt.Ignore())
+                .ForMember(dest => dest.IsImportedMaterial, opt => opt.Ignore())
                 .ForMember(dest => dest.Status, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())

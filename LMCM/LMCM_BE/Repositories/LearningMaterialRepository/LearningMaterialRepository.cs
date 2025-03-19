@@ -31,7 +31,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 if (learningMaterial == null)
                     return false; // No material found 
 
-                learningMaterial.Status = "Inactive";
+                learningMaterial.Status = "Deleted";
                 learningMaterial.UpdatedAt = DateTime.UtcNow;
 
                 _dbContext.LearningMaterials.Update(learningMaterial);
@@ -103,11 +103,11 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             return _mapper.Map<LearningMaterialViewDto>(learningMaterial);
         }
 
-        public async Task<PagedResult<LearningMaterialListDto>> GetMaterialsBySyllabusIdAsync(Guid syllabusId,string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<PagedResult<LearningMaterialListDto>> GetMaterialsBySyllabusIdAsync(Guid syllabusId, string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.LearningMaterials.AsQueryable();
 
-            query = query.Where(s =>s.SyllabusId==syllabusId && s.Status != "Inactive");
+            query = query.Where(s => s.SyllabusId == syllabusId && s.Status != "Deleted");
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
@@ -139,7 +139,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
         {
             var query = _dbContext.LearningMaterials.AsQueryable();
 
-            query = query.Where(s =>s.SyllabusId==syllabusId&& s.Status != "Inactive")
+            query = query.Where(s => s.SyllabusId == syllabusId && s.Status != "Deleted")
                          .Include(s => s.MaterialDetail);
 
             var items = await query.ToListAsync();
@@ -149,21 +149,47 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             return data;
         }
 
-        public async Task<bool> ImportLearningMaterialsAsync(List<LearningMaterialImportDto> materials)
+        public async Task<bool> ImportLearningMaterialsAsync(List<LearningMaterialImportDto> materials, Guid? oldSyllabusId, Guid newSyllabusId)
         {
             if (materials == null || !materials.Any())
                 throw new ArgumentNullException(nameof(materials));
 
             var newMaterials = _mapper.Map<List<LearningMaterial>>(materials);
-
             foreach (var material in newMaterials)
             {
                 material.MaterialId = Guid.NewGuid();
                 material.IsMainMaterial = false;
+                material.IsImportedMaterial=true;
                 material.Status = "Active";
                 material.CreatedAt = DateTime.UtcNow;
                 material.UpdatedAt = DateTime.UtcNow;
+                if (oldSyllabusId != null && material.MaterialType=="Imported Material" && material.MaterialDetailId==null)
+                {
+                    var oldMaterial = await _dbContext.LearningMaterials
+                        .Where(s => s.SyllabusId == oldSyllabusId && s.Url == material.Url)
+                        .Include(s => s.MaterialDetail)
+                        .FirstOrDefaultAsync();
+                    if(oldMaterial != null) material.MaterialDetailId = oldMaterial.MaterialDetailId;
+                }
             }
+
+            if (oldSyllabusId!=null)
+            {
+                var existingMaterials = await _dbContext.LearningMaterials
+                    .Where(s => s.SyllabusId == oldSyllabusId && s.Status == "Inactive" && s.IsImportedMaterial == false)
+                    .ToListAsync();
+                foreach (var material in existingMaterials)
+                {
+                    material.MaterialId = Guid.NewGuid();
+                    material.SyllabusId = newSyllabusId;
+                    material.Status = "Active";
+                    material.CreatedAt = DateTime.UtcNow;
+                    material.UpdatedAt = DateTime.UtcNow;
+                }
+
+                newMaterials.AddRange(existingMaterials);
+            }
+
 
             await _dbContext.LearningMaterials.AddRangeAsync(newMaterials);
 
@@ -177,7 +203,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
 
             var newMaterial = _mapper.Map<LearningMaterial>(material);
 
-            if(newMaterial.MaterialDetail != null)
+            if (newMaterial.MaterialDetail != null)
             {
                 newMaterial.MaterialDetail.Status = "Active";
                 newMaterial.MaterialDetail.CreatedAt = DateTime.UtcNow;
@@ -185,6 +211,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             }
 
             newMaterial.MaterialId = Guid.NewGuid();
+            newMaterial.IsImportedMaterial = false;
             newMaterial.Status = "Active";
             newMaterial.CreatedAt = DateTime.UtcNow;
             newMaterial.UpdatedAt = DateTime.UtcNow;
@@ -193,41 +220,6 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             await _dbContext.SaveChangesAsync();
 
             return newMaterial.MaterialId;
-        }
-
-        public async Task<bool> InsertLearningMaterialsFromOldSyllabusAsync(Guid oldSyllabusId, Guid newSyllabusId)
-        {
-            var existingMaterials = await _dbContext.LearningMaterials
-                .Where(s => s.SyllabusId == oldSyllabusId && s.Status != "Inactive")
-                .Include(s => s.MaterialDetail)
-                .ToListAsync();
-
-            if (!existingMaterials.Any())
-                return false; // No materials found
-
-            // Clone materials for new syllabus
-            var newMaterials = existingMaterials.Select(material => new LearningMaterial
-            {
-                MaterialId = Guid.NewGuid(), // Ensure new ID
-                SyllabusId = newSyllabusId, // Assign to new syllabus
-                MaterialDetailId = material.MaterialDetailId,
-                LearningType =material.LearningType,
-                MaterialType =material.MaterialType,
-                IsMainMaterial = material.IsMainMaterial,
-                MaterialNo=material.MaterialNo,
-                MaterialName =material.MaterialName,
-                MaterialQuantity =material.MaterialQuantity,
-                Url =material.Url,
-                Purpose =material.Purpose,
-                Note =material.Note,
-                Status = material.Status,
-                CreatedAt=material.CreatedAt,
-                UpdatedAt=material.UpdatedAt,
-            }).ToList();
-
-            await _dbContext.LearningMaterials.AddRangeAsync(newMaterials);
-
-            return true;
         }
 
         public async Task<Guid?> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial, bool createChangeHistory)
@@ -268,8 +260,8 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             else
             {
                 LearningMaterialInsertDto learningMaterialInsertDto = _mapper.Map<LearningMaterialInsertDto>(newMaterial);
-                learningMaterialInsertDto.SyllabusId=learningMaterial.SyllabusId;
-                Guid? newMaterialId= await InsertLearningMaterialAsync(learningMaterialInsertDto);
+                learningMaterialInsertDto.SyllabusId = learningMaterial.SyllabusId;
+                Guid? newMaterialId = await InsertLearningMaterialAsync(learningMaterialInsertDto);
                 return newMaterialId;
             }
         }

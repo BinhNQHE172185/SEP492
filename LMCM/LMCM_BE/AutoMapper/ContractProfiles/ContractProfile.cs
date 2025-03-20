@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LMCM_BE.DTOs.BudgetProposalDtos;
 using LMCM_BE.DTOs.ContractDtos;
 using LMCM_BE.Models;
 
@@ -13,7 +14,10 @@ namespace LMCM_BE.AutoMapper.ContractProfiles
                 .ForMember(dest => dest.Url, opt => opt.Ignore())
                 .ForMember(dest => dest.Status, opt => opt.Ignore()) 
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) 
-                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore()); ;
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
+             CreateMap<Contract, ContractListDto>()
+                .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Author))
+                .ForMember(dest => dest.Proposal, opt => opt.MapFrom(src => src.Proposal));
         }
     }
 }

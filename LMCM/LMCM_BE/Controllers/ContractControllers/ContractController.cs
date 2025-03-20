@@ -1,4 +1,5 @@
 ﻿using LMCM_BE.DTOs.ContractDtos;
+using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Repositories.ContractRepository;
 using LMCM_BE.Services.ContractService;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,23 @@ namespace LMCM_BE.Controllers.ContractControllers
             _contractService = contractService;
         }
 
+        [HttpPost("getContractList")]
+        public async Task<IActionResult> GetContractsAsync([FromBody] PagingRequest request)
+        {
+            try
+            {
+                var data = await _contractService.GetContractsAsync(request.SearchKey, request.pageIndex, request.PageSize);
+                if (data != null)
+                {
+                    return Ok(data);
+                }
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
         [HttpPost("createContract")]
         public async Task<IActionResult> CreateContract([FromForm] ContractInsertDto contractDto)
         {

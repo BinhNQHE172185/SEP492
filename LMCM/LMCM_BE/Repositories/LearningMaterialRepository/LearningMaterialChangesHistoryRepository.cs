@@ -4,6 +4,7 @@ using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
 using LMCM_BE.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.LearningMaterialRepository
@@ -21,7 +22,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
         {
             var query = _dbContext.LearningMaterialChangesHistories.AsQueryable();
 
-            query = query.Where(s=>s.Status != "Inactive");
+            query = query.Where(s => s.Status != "Inactive");
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
@@ -37,6 +38,8 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 .Take(pageSize)
                 .Include(s => s.User)
                 .Include(s => s.Contract)
+                .Include(s => s.NewMaterial)
+                .Include(s => s.OldMaterial)
                 .ToListAsync();
 
             var data = _mapper.Map<List<ChangesHistoryListDto>>(items);
@@ -69,5 +72,49 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 return false;
             }
         }
+        public async Task<PagedResult<ChangesHistoryWithMaterialDto>> GetLearningMaterialChangeHistoriesAsync(
+     Guid? learningMaterialId, string? searchKey, int pageIndex = 1, int pageSize = 10)
+        {
+            if (learningMaterialId == null)
+                throw new ArgumentNullException(nameof(learningMaterialId));
+
+            // Get full history chain using recursive CTE (without manual entity loading)
+            var historyChain = await _dbContext.LearningMaterialChangesHistories
+                .Include(h => h.User)      
+                .Include(h => h.Contract)  
+                .Include(h => h.OldMaterial) 
+                .Where(h => h.NewMaterialId == learningMaterialId ||
+                            _dbContext.LearningMaterialChangesHistories.Any(mh => mh.OldMaterialId == h.NewMaterialId))
+                .ToListAsync();
+
+            // Apply search filter
+            if (!string.IsNullOrWhiteSpace(searchKey))
+            {
+                string search = searchKey.Trim().ToLower();
+                historyChain = historyChain.Where(h =>
+                    (h.CourseCode != null && h.CourseCode.ToLower().Contains(search)) ||
+                    (h.User.UserName.ToLower().Contains(search))
+                ).ToList();
+            }
+
+            int totalCount = historyChain.Count;
+
+            // Paginate
+            var paginatedItems = historyChain
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var data = _mapper.Map<List<ChangesHistoryWithMaterialDto>>(paginatedItems);
+
+            return new PagedResult<ChangesHistoryWithMaterialDto>
+            {
+                Items = data,
+                TotalCount = totalCount,
+                CurrentPage = pageIndex,
+                PageSize = pageSize
+            };
+        }
+
     }
 }

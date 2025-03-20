@@ -32,4 +32,6 @@ public partial class LearningMaterialChangesHistory
     public virtual Contract? Contract { get; set; }
 
     public virtual User User { get; set; } = null!;
+    public virtual LearningMaterial NewMaterial { get; set; } = null!;
+    public virtual LearningMaterial? OldMaterial { get; set; }
 }

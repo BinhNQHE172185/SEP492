@@ -460,6 +460,18 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.UserId).HasColumnName("User_ID");
 
+            entity.HasOne(d => d.NewMaterial)
+                .WithMany()
+                .HasForeignKey(d => d.NewMaterialId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_LearningMaterialChangesHistory_NewMaterial");
+
+            entity.HasOne(d => d.OldMaterial)
+                .WithMany()
+                .HasForeignKey(d => d.OldMaterialId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_LearningMaterialChangesHistory_OldMaterial");
+
             entity.HasOne(d => d.Contract).WithMany(p => p.LearningMaterialChangesHistories)
                 .HasForeignKey(d => d.ContractId)
                 .HasConstraintName("FK__Learning___Contr__25518C17");

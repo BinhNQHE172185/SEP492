@@ -114,7 +114,7 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
         {
             try
             {
-                Guid? materialId = await _learningMaterialService.UpdateLearningMaterialAsync(id,material,createChangeHistory);
+                Guid? materialId = await _learningMaterialService.UpdateLearningMaterialAsync(id, material, createChangeHistory);
                 if (materialId.HasValue)
                     return Ok(new
                     {
@@ -168,6 +168,27 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+        [HttpPost("getLearningMaterialChangesHistoryList")]
+        public async Task<IActionResult> GetLearningMaterialChangesHistoriesAsync([FromBody] PagingRequest request)
+        {
+            try
+            {
+                var data = await _changesService.GetLearningMaterialChangeHistoriesAsync(
+                    request.Id, request.SearchKey, request.pageIndex, request.PageSize);
+
+                if (data != null && data.Items.Any())
+                {
+                    return Ok(data);
+                }
+
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
         [HttpPost("createChangesHistory")]
         public async Task<IActionResult> CreateLearningMaterialChangesHistory([FromBody] CreateLearningMaterialChangesHistoryDto historyDto)
         {

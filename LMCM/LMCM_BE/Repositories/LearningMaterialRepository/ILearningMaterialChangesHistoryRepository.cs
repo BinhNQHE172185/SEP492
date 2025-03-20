@@ -8,5 +8,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
     {
         Task<PagedResult<ChangesHistoryListDto>> GetChangesHistoriesAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<bool> CreateLearningMaterialChangesHistoryAsync(CreateLearningMaterialChangesHistoryDto historyDto);
+        Task<PagedResult<ChangesHistoryWithMaterialDto>> GetLearningMaterialChangeHistoriesAsync(
+     Guid? learningMaterialId, string? searchKey, int pageIndex = 1, int pageSize = 10);
     }
 }

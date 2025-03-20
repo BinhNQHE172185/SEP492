@@ -8,5 +8,6 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
     {
         Task<BudgetProposal> CreateBudgetPropasal(BudgetProposalInsertDto propasal);
         Task<PagedResult<BudgetProposalListDto>> GetBudgetPropasalsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
+        Task<BudgetPropasalDetailDto> GetBudgetPropasalById(Guid? propasalId);
     }
 }

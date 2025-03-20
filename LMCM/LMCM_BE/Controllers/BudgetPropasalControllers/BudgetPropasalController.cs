@@ -34,7 +34,23 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
-
+        [HttpGet("getbudgetPropasalDetail")]
+        public async Task<IActionResult> GetBudgetPropasalDetailAsync(Guid propasalId)
+        {
+            try
+            {
+                var data = await _budgetPropasalService.GetBudgetPropasalById(propasalId);
+                if (data != null)
+                {
+                    return Ok(data);
+                }
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
         [HttpPost("createBudgetPropasal")]
         public async Task<IActionResult> CreateBudgetPropasal([FromForm] BudgetProposalInsertDto propasalDto)
         {

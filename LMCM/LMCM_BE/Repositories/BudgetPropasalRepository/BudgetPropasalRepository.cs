@@ -48,6 +48,21 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             return newPropasal;
         }
 
+        public async Task<BudgetPropasalDetailDto> GetBudgetPropasalById(Guid? propasalId)
+        {
+            if (propasalId == null)
+                throw new ArgumentNullException(nameof(propasalId), "propasal ID cannot be null.");
+            var budgetProposal = await _dbContext.BudgetProposals
+                .AsNoTracking()
+                .Where(s => s.ProposalId == propasalId)
+                .SingleOrDefaultAsync();
+
+            if (budgetProposal == null)
+                throw new KeyNotFoundException($"No syllabus found with ID: {propasalId}");
+            var budgetPropasalDto=_mapper.Map<BudgetPropasalDetailDto>(budgetProposal); 
+            return budgetPropasalDto;
+        }
+
         public async Task<PagedResult<BudgetProposalListDto>> GetBudgetPropasalsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.BudgetProposals.AsQueryable();

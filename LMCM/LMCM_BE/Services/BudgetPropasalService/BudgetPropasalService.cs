@@ -18,6 +18,11 @@ namespace LMCM_BE.Services.BudgetPropasalService
             return await _budgetPropasalRepository.CreateBudgetPropasal(propasal);  
         }
 
+        public async Task<BudgetPropasalDetailDto> GetBudgetPropasalById(Guid? propasalId)
+        {
+            return await _budgetPropasalRepository.GetBudgetPropasalById(propasalId);
+        }
+
         public async Task<PagedResult<BudgetProposalListDto>> GetBudgetPropasalsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             return await _budgetPropasalRepository.GetBudgetPropasalsAsync(searchKey, pageIndex, pageSize);

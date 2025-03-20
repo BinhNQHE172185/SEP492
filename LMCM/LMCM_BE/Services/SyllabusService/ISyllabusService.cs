@@ -12,5 +12,6 @@ namespace LMCM_BE.Services.SyllabusService
         Task<bool> DeleteSyllabusAsync(Guid id);
         Task<bool> HasActiveSyllabusesBySubjectIdAsync(Guid subjectId);
         Task<SyllabusDetailDto> GetSyllabusDetailAsync(Guid? syllabusId);
+        Task<Syllabus> GetSyllabusByIdAsync(Guid? syllabusId);
     }
 }

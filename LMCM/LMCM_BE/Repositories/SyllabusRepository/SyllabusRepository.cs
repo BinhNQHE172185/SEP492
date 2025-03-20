@@ -175,5 +175,19 @@ namespace LMCM_BE.Repositories.SyllabusRepository
                 throw new KeyNotFoundException($"No syllabus found with ID: {syllabusId}");
             return syllabusDto;
         }
+
+        public async Task<Syllabus> GetSyllabusByIdAsync(Guid? syllabusId)
+        {
+            if (syllabusId == null)
+                throw new ArgumentNullException(nameof(syllabusId), "Syllabus ID cannot be null.");
+            var syllabus = await _dbContext.Syllabus
+                .AsNoTracking()
+                .Where(s => s.SyllabusId == syllabusId)
+                .SingleOrDefaultAsync();
+
+            if (syllabus == null)
+                throw new KeyNotFoundException($"No syllabus found with ID: {syllabusId}");
+            return syllabus;
+        }
     }
 }

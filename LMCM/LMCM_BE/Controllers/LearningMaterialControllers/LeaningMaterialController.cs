@@ -4,6 +4,7 @@ using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Services.ContractService;
 using LMCM_BE.Services.LearningMaterialService;
+using LMCM_BE.Services.SyllabusService;
 using LMCM_BE.Services.UserService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,13 +20,15 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
         private readonly IUserService _userService;
         private readonly IContractService _contractService;
         private readonly ILearningMaterialDetailsService _materialDetailService;
+        private readonly ISyllabusService _syllabusService;
 
         public LearningMaterialController(
             ILearningMaterialService learningMaterialService,
             ILearningMaterialChangesHistorySerivce changesService,
             IUserService userService,
             IContractService contractService,
-            ILearningMaterialDetailsService materialDetailService
+            ILearningMaterialDetailsService materialDetailService,
+            ISyllabusService syllabusService
             )
         {
             _learningMaterialService = learningMaterialService;
@@ -33,6 +36,7 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
             _userService = userService;
             _contractService = contractService;
             _materialDetailService = materialDetailService;
+            _syllabusService = syllabusService;
         }
 
         [HttpPost("getPagedMaterialsList")]
@@ -93,6 +97,8 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
         {
             try
             {
+                var syllabus=await _syllabusService.GetSyllabusByIdAsync(material.SyllabusId);
+                if (syllabus == null) BadRequest(new { message = "Không tìm thấy syllabus." });
                 Guid? materialId = await _learningMaterialService.InsertLearningMaterialAsync(material);
                 if (materialId.HasValue)
                     return Ok(new

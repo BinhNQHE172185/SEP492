@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.BudgetProposalDtos;
+using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
 using LMCM_BE.Models;
@@ -28,7 +29,6 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
 
             if (propasal.File != null)
             {
-                Console.WriteLine("ok");
                 fileUrl = await _googleDriveService.UploadBudgetPropasalFileAsync(propasal.File);
             }
 
@@ -59,7 +59,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
 
             if (budgetProposal == null)
                 throw new KeyNotFoundException($"No syllabus found with ID: {propasalId}");
-            var budgetPropasalDto=_mapper.Map<BudgetPropasalDetailDto>(budgetProposal); 
+            var budgetPropasalDto = _mapper.Map<BudgetPropasalDetailDto>(budgetProposal);
             return budgetPropasalDto;
         }
 
@@ -94,6 +94,38 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
                 CurrentPage = pageIndex,
                 PageSize = pageSize
             };
+        }
+
+        public async Task<Guid?> UpdateBudgetPropasalAsync(Guid propasalId, BudgetProposalUpdateDto newPropasal)
+        {
+            if (propasalId == null)
+                throw new ArgumentNullException(nameof(propasalId), "propasal id cannot be null.");
+
+            if (newPropasal == null)
+                throw new ArgumentNullException(nameof(newPropasal), "New propasal data cannot be null.");
+
+            var propasal = await _dbContext.BudgetProposals
+                    .Include(lm => lm.Author)
+                    .FirstOrDefaultAsync(lm => lm.ProposalId == propasalId);
+
+            if (propasal == null)
+                throw new ArgumentNullException(nameof(propasal), "propasal data not found.");
+            if(newPropasal.AuthorId!=propasal.AuthorId)
+                throw new ArgumentNullException(nameof(newPropasal.AuthorId), "User is not authorized to update this material.");
+
+            // Use AutoMapper to update existing entity
+            _mapper.Map(newPropasal, propasal);
+            propasal.UpdatedAt = DateTime.UtcNow;
+
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+                return propasal.ProposalId;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 }

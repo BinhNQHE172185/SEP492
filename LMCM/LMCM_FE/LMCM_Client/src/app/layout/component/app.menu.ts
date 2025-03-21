@@ -68,11 +68,27 @@ export class AppMenu {
             {
                 label: 'Quản lý tài liệu',
                 icon: 'pi pi-fw pi-briefcase',
-                routerLink: ['/user'],
+                routerLink: ['/document'],
                 items: [
                     {
                         label: 'Quản lý hợp đồng',
                         icon: 'pi pi-fw pi-print',
+                        routerLink: ['document/contracts']
+                    },
+                    {
+                        label: 'Quản lý tờ trình',
+                        icon: 'pi pi-fw pi-print',
+                        routerLink: ['document/report']
+                    },
+                    {
+                        label: 'Quản lý biên bản nghiệm thu',
+                        icon: 'pi pi-fw pi-print',
+                        routerLink: ['document/contracts']
+                    },
+                    {
+                        label: 'Quản lý chuyên gia',
+                        icon: 'pi pi-fw pi-print',
+                        routerLink: ['document/expert']
                     },
                 ]
             },

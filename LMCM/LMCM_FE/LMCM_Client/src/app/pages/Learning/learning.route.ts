@@ -6,8 +6,6 @@ import { PloComponent } from './plo/plo.component';
 import { ListSyllabusComponent } from './list-syllabus/list-syllabus.component';
 import { SyllabusDetailComponent } from './syllabus-detail/syllabus-detail.component';
 import { HistoryOfChangeComponent } from './history-of-change/history-of-change.component';
-import { ListReportComponent } from './list-report/list-report.component';
-import { ListExpertComponent } from './list-expert/list-expert.component';
 
 export default [
     { path: 'subject', component: ListSubjectsComponent },
@@ -15,8 +13,6 @@ export default [
     { path: 'curriculum/:id', component: CurriculumDetailComponent },
     { path: 'curriculum/:id/plo', component: PloComponent },
     { path: 'history', component: HistoryOfChangeComponent },
-    { path: 'listexpert', component: ListExpertComponent },
-    { path: 'listreport', component: ListReportComponent },
     { path: 'syllabus', component: ListSyllabusComponent },
     { path: 'syllabus/:id', component: SyllabusDetailComponent },
 ] as Routes;

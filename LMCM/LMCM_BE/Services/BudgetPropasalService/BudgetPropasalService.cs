@@ -27,5 +27,10 @@ namespace LMCM_BE.Services.BudgetPropasalService
         {
             return await _budgetPropasalRepository.GetBudgetPropasalsAsync(searchKey, pageIndex, pageSize);
         }
+
+        public async Task<Guid?> UpdateBudgetPropasalAsync(Guid propasalId, BudgetProposalUpdateDto newPropasal)
+        {
+            return await _budgetPropasalRepository.UpdateBudgetPropasalAsync(propasalId, newPropasal);  
+        }
     }
 }

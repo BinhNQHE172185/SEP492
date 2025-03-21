@@ -9,5 +9,6 @@ namespace LMCM_BE.Services.BudgetPropasalService
         Task<BudgetProposal> CreateBudgetPropasal(BudgetProposalInsertDto propasal);
         Task<PagedResult<BudgetProposalListDto>> GetBudgetPropasalsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<BudgetPropasalDetailDto> GetBudgetPropasalById(Guid? propasalId);
+        Task<Guid?> UpdateBudgetPropasalAsync(Guid propasalId, BudgetProposalUpdateDto newPropasal);
     }
 }

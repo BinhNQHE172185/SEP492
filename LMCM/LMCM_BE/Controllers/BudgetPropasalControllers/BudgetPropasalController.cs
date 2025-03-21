@@ -1,5 +1,6 @@
 ﻿using LMCM_BE.DTOs.BudgetProposalDtos;
 using LMCM_BE.DTOs.ContractDtos;
+using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Services.BudgetPropasalService;
 using Microsoft.AspNetCore.Mvc;
@@ -58,8 +59,20 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
             {
                 if (propasalDto.File == null)
                 {
-                    return BadRequest(new { Success = false, Message = "No file was uploaded." });
+                    return BadRequest(new { Success = false, Message = "Không tìm thấy file." });
                 }
+                // Check file type
+                if (propasalDto.File.ContentType != "application/pdf")
+                {
+                    return BadRequest(new { Success = false, Message = "Chỉ file pdf mới được tải lên." });
+                }
+
+                // Check file size (5MB = 5 * 1024 * 1024 bytes)
+                if (propasalDto.File.Length > 5 * 1024 * 1024)
+                {
+                    return BadRequest(new { Success = false, Message = "Dung lượng file không được vượt quá 5MB." });
+                }
+
                 var propasal = await _budgetPropasalService.CreateBudgetPropasal(propasalDto);
                 return Ok(new
                 {
@@ -94,6 +107,29 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                     Message = "Đã xảy ra lỗi khi tạo hợp đồng. Vui lòng thử lại sau.",
                     Error = ex.Message
                 });
+            }
+        }
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateBudgetPropasalAsync(Guid id, [FromBody] BudgetProposalUpdateDto newPropasal)
+        {
+            try
+            {
+                Guid? propasalId = await _budgetPropasalService.UpdateBudgetPropasalAsync(id, newPropasal);
+                if (propasalId.HasValue)
+                    return Ok(new
+                    {
+                        message = "Update thành công.",
+                        Data = propasalId,
+
+                    });
+                else
+                {
+                    return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
             }
         }
     }

@@ -29,6 +29,18 @@ namespace LMCM_BE.Repositories.ContractRepository
             string? fileUrl = null;
             if (contractDto.File != null)
             {
+                // Check file type
+                if (contractDto.File.ContentType != "application/pdf")
+                {
+                    throw new Exception("Only PDF files are allowed.");
+                }
+
+                // Check file size (5MB = 5 * 1024 * 1024 bytes)
+                if (contractDto.File.Length > 5 * 1024 * 1024)
+                {
+                    throw new Exception("File size must not exceed 5MB.");
+                }
+
                 fileUrl = await _googleDriveService.UploadContractFileAsync(contractDto.File);
             }
 

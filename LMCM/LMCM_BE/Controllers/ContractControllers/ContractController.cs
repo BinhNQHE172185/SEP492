@@ -39,6 +39,21 @@ namespace LMCM_BE.Controllers.ContractControllers
         {
             try
             {
+                if (contractDto.File == null)
+                {
+                    return BadRequest(new { Success = false, Message = "Không tìm thấy file." });
+                }
+                // Check file type
+                if (contractDto.File.ContentType != "application/pdf")
+                {
+                    return BadRequest(new { Success = false, Message = "Chỉ file pdf mới được tải lên." });
+                }
+
+                // Check file size (5MB = 5 * 1024 * 1024 bytes)
+                if (contractDto.File.Length > 5 * 1024 * 1024)
+                {
+                    return BadRequest(new { Success = false, Message = "Dung lượng file không được vượt quá 5MB." });
+                }
                 var contract = await _contractService.CreateContract(contractDto);
                 return Ok(new
                 {

@@ -59,8 +59,20 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
             {
                 if (propasalDto.File == null)
                 {
-                    return BadRequest(new { Success = false, Message = "No file was uploaded." });
+                    return BadRequest(new { Success = false, Message = "Không tìm thấy file." });
                 }
+                // Check file type
+                if (propasalDto.File.ContentType != "application/pdf")
+                {
+                    return BadRequest(new { Success = false, Message = "Chỉ file pdf mới được tải lên." });
+                }
+
+                // Check file size (5MB = 5 * 1024 * 1024 bytes)
+                if (propasalDto.File.Length > 5 * 1024 * 1024)
+                {
+                    return BadRequest(new { Success = false, Message = "Dung lượng file không được vượt quá 5MB." });
+                }
+
                 var propasal = await _budgetPropasalService.CreateBudgetPropasal(propasalDto);
                 return Ok(new
                 {

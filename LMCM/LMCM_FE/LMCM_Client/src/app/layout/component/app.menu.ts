@@ -90,6 +90,11 @@ export class AppMenu {
                         icon: 'pi pi-fw pi-print',
                         routerLink: ['document/expert']
                     },
+                    {
+                        label: 'Quản lý mẫu tài liệu',
+                        icon: 'pi pi-fw pi-print',
+                        routerLink: ['document/template']
+                    },
                 ]
             },
             {

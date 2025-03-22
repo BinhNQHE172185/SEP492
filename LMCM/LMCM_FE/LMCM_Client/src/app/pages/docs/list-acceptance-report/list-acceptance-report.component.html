@@ -115,29 +115,29 @@
       <section class="p-8 w-full bg-white rounded-xl" *ngIf="selectedItem">
           <div class="grid gap-4 md:grid-cols-2">
               <div>
-                  <label class="block font-semibold mb-2">Ngày nghiệm thu<span class="text-orange-500">*</span></label>
+                  <label class="block mb-2">Ngày nghiệm thu<span class="text-orange-500">*</span></label>
                   <input pInputText [(ngModel)]="selectedItem.date" class="w-full" />
               </div>
               <div>
-                  <label class="block font-semibold mb-2">Số hợp đồng<span class="text-orange-500">*</span></label>
+                  <label class="block mb-2">Số hợp đồng<span class="text-orange-500">*</span></label>
                   <input pInputText [(ngModel)]="selectedItem.contractNumber" class="w-full" />
               </div>
           </div>
 
           <div class="grid gap-4 md:grid-cols-2 mt-4">
               <div>
-                  <label class="block font-semibold mb-2">Giá cả quyết toán<span class="text-orange-500">*</span></label>
+                  <label class="block mb-2">Giá cả quyết toán<span class="text-orange-500">*</span></label>
                   <input pInputText [(ngModel)]="selectedItem.finalPrice" class="w-full" />
                   <span pInputGroupAddon> {{ selectedItem.finalPrice | number }} VND</span>
               </div>
               <div>
-                  <label class="block font-semibold mb-2">Người kiểm tra<span class="text-orange-500">*</span></label>
+                  <label class="block mb-2">Người kiểm tra<span class="text-orange-500">*</span></label>
                   <input pInputText [(ngModel)]="selectedItem.observer" class="w-full" />
               </div>
           </div>
 
           <div class="mt-4">
-              <label class="block font-semibold mb-2">Nội dung nghiệm thu<span class="text-orange-500">*</span></label>
+              <label class="block mb-2">Nội dung nghiệm thu<span class="text-orange-500">*</span></label>
               <textarea pInputTextarea [(ngModel)]="selectedItem.content" rows="8" autoResize="true"
                   class="w-full p-2 rounded-md border"></textarea>
           </div>

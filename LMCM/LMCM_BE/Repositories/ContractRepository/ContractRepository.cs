@@ -98,5 +98,10 @@ namespace LMCM_BE.Repositories.ContractRepository
                 PageSize = pageSize
             };
         }
+        public async Task<bool> HasActiveContractsAsync(Guid contractorId)
+        {
+            return await _dbContext.Contracts
+                .AnyAsync(p => p.ContractorId == contractorId && p.Status == "Active");
+        }
     }
 }

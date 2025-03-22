@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Google.Apis.Drive.v3.Data;
 using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.PloDtos;
 using LMCM_BE.DTOs.ShareDtos;
@@ -23,7 +24,7 @@ namespace LMCM_BE.Repositories.PloRepository
         public async Task<PagedResult<Plo>> GetPlosAsync(Guid curriculumId, string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.Plos
-                .Where(p => p.CurriculumId == curriculumId && p.Status != "Inactive")
+                .Where(p => p.CurriculumId == curriculumId && p.Status == "Active")
                 .Include(p => p.PloSubjects)
                 .AsQueryable();
 

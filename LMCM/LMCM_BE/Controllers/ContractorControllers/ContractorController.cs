@@ -1,0 +1,111 @@
+﻿using LMCM_BE.DTOs.ContractorDtos;
+using LMCM_BE.DTOs.ShareDtos;
+using LMCM_BE.Services.ContractorService;
+using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using System.ComponentModel.DataAnnotations;
+
+namespace LMCM_BE.Controllers.ContractorControllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ContractorController : ControllerBase
+    {
+        private readonly IContractorService _contractorService;
+
+        public ContractorController(IContractorService contractorService)
+        {
+            _contractorService = contractorService;
+        }
+
+        [HttpPost("getContractorList")]
+        public async Task<IActionResult> GetContractorsAsync([FromBody] PagingRequest request)
+        {
+            try
+            {
+                var data = await _contractorService.GetContractorsAsync(request.SearchKey, request.pageIndex, request.PageSize);
+                return data != null ? Ok(data) : NotFound(new { message = "Không tìm thấy dữ liệu nhà thầu." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
+            }
+        }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateContractor([FromBody] ContractorCreateDto request)
+        {
+            try
+            {
+                var result = await _contractorService.CreateContractorAsync(request);
+                return result != null ? Ok(result) : BadRequest(new { message = "Không thể tạo nhà thầu." });
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
+            }
+        }
+
+        [HttpPut("update/{contractorId}")]
+        public async Task<IActionResult> UpdateContractor(Guid contractorId, [FromBody] ContractorUpdateDto request)
+        {
+            try
+            {
+                var result = await _contractorService.UpdateContractorAsync(contractorId, request);
+                return result != null ? Ok(new { message = "Cập nhật nhà thầu thành công.", contractorId = result }) : NotFound(new { message = "Không tìm thấy nhà thầu hoặc cập nhật thất bại." });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
+            }
+        }
+
+        [HttpDelete("{contractorId}")]
+        public async Task<IActionResult> DeleteContractor(Guid contractorId)
+        {
+            try
+            {
+                var result = await _contractorService.SoftDeleteContractorAsync(contractorId);
+                return result ? Ok(new { message = "Xóa nhà thầu thành công." }) : NotFound(new { message = "Không tìm thấy nhà thầu hoặc đã bị xóa trước đó." });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
+            }
+        }
+
+        [HttpGet("{contractorId}")]
+        public async Task<IActionResult> GetContractorDetail(Guid contractorId)
+        {
+            try
+            {
+                var contractor = await _contractorService.GetContractorDetailAsync(contractorId);
+                return Ok(contractor);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
+            }
+        }
+    }
+}

@@ -65,42 +65,35 @@ namespace LMCM_BE.Repositories.CurriculumRepository
             if (curriculum == null)
                 throw new ArgumentNullException(nameof(curriculum));
 
-            try
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            // Step 1: Get existing active curriculum using curriculum code
+            var existingCurriculum = await _dbContext.Curriculums
+                .Include(c => c.Plos)
+                .Include(c => c.CurriculumsSubjects)
+                .Where(c => c.CurriculumCode == curriculum.CurriculumCode && c.Status == "Active")
+                .FirstOrDefaultAsync();
+
+
+            if (existingCurriculum != null)
             {
-                using var transaction = await _dbContext.Database.BeginTransactionAsync();
+                // Step 2: Delete related data
+                // Soft delete existing curriculum by updating its status
+                existingCurriculum.Status = "Inactive";
+                existingCurriculum.UpdatedAt = DateTime.UtcNow;
+                _dbContext.Curriculums.Update(existingCurriculum);
 
-                // Step 1: Get existing active curriculum using curriculum code
-                var existingCurriculum = await _dbContext.Curriculums
-                    .Include(c => c.Plos)
-                    .Include(c => c.CurriculumsSubjects)
-                    .Where(c => c.CurriculumCode == curriculum.CurriculumCode && c.Status == "Active")
-                    .FirstOrDefaultAsync();
-
-
-                if (existingCurriculum != null)
-                {
-                    // Step 2: Delete related data
-                    // Soft delete existing curriculum by updating its status
-                    existingCurriculum.Status = "Inactive";
-                    existingCurriculum.UpdatedAt = DateTime.UtcNow;
-                    _dbContext.Curriculums.Update(existingCurriculum);
-
-                    await _curriculumSubjectRepository.DeleteCurriculumsSubjectAsync(existingCurriculum.CurriculumId);
-                    await _ploRepository.DeletePlosAsync(existingCurriculum.Plos.Select(p => p.PloId).ToList());
-                    await _ploSubjectRepository.DeletePloSubjectsAsync(existingCurriculum.Plos.Select(p => p.PloId).ToList());
-                }
-
-                // Step 3: Insert the new curriculum
-                _dbContext.Curriculums.Add(curriculum);
-                await _dbContext.SaveChangesAsync();
-
-                await transaction.CommitAsync();
-                return true;
+                await _curriculumSubjectRepository.DeleteCurriculumsSubjectAsync(existingCurriculum.CurriculumId);
+                await _ploRepository.DeletePlosAsync(existingCurriculum.Plos.Select(p => p.PloId).ToList());
+                await _ploSubjectRepository.DeletePloSubjectsAsync(existingCurriculum.Plos.Select(p => p.PloId).ToList());
             }
-            catch
-            {
-                return false;
-            }
+
+            // Step 3: Insert the new curriculum
+            _dbContext.Curriculums.Add(curriculum);
+            await _dbContext.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+            return true;
         }
         public async Task<bool> SoftDeleteCurriculumAsync(Guid curriculumId)
         {
@@ -109,7 +102,7 @@ namespace LMCM_BE.Repositories.CurriculumRepository
                 .FirstOrDefaultAsync(c => c.CurriculumId == curriculumId && c.Status == "Active");
 
             if (curriculum == null)
-                return false; // Curriculum not found or already inactive
+                throw new KeyNotFoundException("Không tìm thấy chương trình giảng dạy.");
 
             // Step 2: Check if there are active related entities
             if (await _curriculumSubjectRepository.HasActiveCurriculumsSubjectsAsync(curriculumId) ||
@@ -118,25 +111,17 @@ namespace LMCM_BE.Repositories.CurriculumRepository
             {
                 throw new InvalidOperationException("Không thể xóa chương trình giảng dạy khi có thực thể liên quan đang hoạt động.");
             }
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
-            try
-            {
-                using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            // Step 3: Soft delete the curriculum
+            curriculum.Status = "Inactive";
+            curriculum.UpdatedAt = DateTime.UtcNow;
+            _dbContext.Curriculums.Update(curriculum);
 
-                // Step 3: Soft delete the curriculum
-                curriculum.Status = "Inactive";
-                curriculum.UpdatedAt = DateTime.UtcNow;
-                _dbContext.Curriculums.Update(curriculum);
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
 
-                await _dbContext.SaveChangesAsync();
-                await transaction.CommitAsync();
-
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            return true;
         }
         public async Task<CurriculumDetailDto?> GetCurriculumDetailAsync(Guid curriculumId)
         {
@@ -145,6 +130,9 @@ namespace LMCM_BE.Repositories.CurriculumRepository
                     .ThenInclude(cs => cs.Subject)
                 .Where(c => c.CurriculumId == curriculumId && c.Status == "Active")
                 .FirstOrDefaultAsync();
+
+            if (curriculum == null)
+                throw new KeyNotFoundException("Không tìm thấy chương trình giảng dạy.");
 
             return curriculum == null ? null : _mapper.Map<CurriculumDetailDto>(curriculum);
         }

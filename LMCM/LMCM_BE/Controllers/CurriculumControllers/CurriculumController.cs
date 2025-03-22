@@ -49,23 +49,37 @@ namespace LMCM_BE.Controllers.CurriculumControllers
         [HttpGet("{curriculumId}")]
         public async Task<IActionResult> GetCurriculumDetail(Guid curriculumId)
         {
-            var curriculum = await _curriculumService.GetCurriculumDetailAsync(curriculumId);
-
-            if (curriculum == null)
-                return NotFound(new { message = "Không tìm thấy chương trình giảng dạy hoặc chương trình này không hoạt động." });
-
-            return Ok(curriculum);
+            try
+            {
+                var curriculum = await _curriculumService.GetCurriculumDetailAsync(curriculumId);
+                return Ok(curriculum);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
+            }
         }
 
         [HttpGet("{curriculumId}/plos")]
         public async Task<IActionResult> GetPloDetails(Guid curriculumId)
         {
-            var plos = await _ploService.GetPloDetailsByCurriculumIdAsync(curriculumId);
+            try
+            {
+                var plos = await _ploService.GetPloDetailsByCurriculumIdAsync(curriculumId);
 
-            if (plos == null || plos.Count == 0)
-                return NotFound(new { message = "Không tìm thấy PLO nào cho chương trình giảng dạy này." });
+                if (plos == null || plos.Count == 0)
+                    return NotFound(new { message = "Không tìm thấy PLO nào cho chương trình giảng dạy này." });
 
-            return Ok(plos);
+                return Ok(plos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
+            }
         }
 
         [HttpPost("importCurriculum")]
@@ -327,7 +341,7 @@ namespace LMCM_BE.Controllers.CurriculumControllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpDelete("{curriculumId}")]
@@ -342,6 +356,14 @@ namespace LMCM_BE.Controllers.CurriculumControllers
                 }
 
                 return Ok(new { message = "Xóa chương trình giảng dạy thành công." });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {

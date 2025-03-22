@@ -73,7 +73,7 @@ export class AppMenu {
                     {
                         label: 'Quản lý hợp đồng',
                         icon: 'pi pi-fw pi-print',
-                        routerLink: ['document/contracts']
+                        routerLink: ['document/contract']
                     },
                     {
                         label: 'Quản lý tờ trình',

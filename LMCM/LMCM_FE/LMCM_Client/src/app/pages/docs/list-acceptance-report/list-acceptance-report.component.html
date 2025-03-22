@@ -55,29 +55,29 @@
   [style]="{ width: '1000px', minHeight: '55vh' }" [draggable]="false" [resizable]="false" class="custom-dialog">
   <ng-template pTemplate="content">
       <section class="p-8 w-full bg-white rounded-xl" *ngIf="detailReport">
-        <div class="grid gap-4 md:grid-cols-2">
-            <div>
+        <div class="flex flex-wrap gap-4">
+            <div class="flex-1 min-w-[250px]">
                 <label class="block mb-2">Ngày nghiệm thu</label>
                 <input type="text" class="w-full p-2 border rounded" [value]="detailReport.date" readonly />
             </div>
-            <div>
+            <div class="flex-1 min-w-[250px]">
                 <label class="block mb-2">Số hợp đồng</label>
                 <input type="text" class="w-full p-2 border rounded" [value]="detailReport.contractNumber" readonly />
             </div>
         </div>
         
-        <div class="grid gap-4 md:grid-cols-2 mt-4">
-            <div>
+        <div class="flex flex-wrap gap-4 mt-4">
+            <div class="flex-1 min-w-[250px]">
                 <label class="block mb-2">Giá cả quyết toán</label>
                 <input type="text" class="w-full p-2 border rounded" [value]="detailReport.finalPrice | currency:'VND'" readonly />
             </div>
-            <div>
+            <div class="flex-1 min-w-[250px]">
                 <label class="block mb-2">Người kiểm tra</label>
                 <input type="text" class="w-full p-2 border rounded" [value]="detailReport.observer" readonly />
             </div>
         </div>
         
-          <div class="mt-4">
+        <div class="mt-4">
             <label class="block mb-2">Nội dung nghiệm thu</label>
             <textarea 
                 pInputTextarea
@@ -88,6 +88,7 @@
                 readonly
             ></textarea>
         </div>
+        
         <div class="file-attachment mt-4">
             <label class="mb-2 block">File đính kèm</label>    
             <div class="file-box" style="background-color: #fff3eb; padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 10px; max-width: 300px;">
@@ -114,29 +115,29 @@
   [style]="{ width: '1000px', minHeight: '55vh' }" [draggable]="false" [resizable]="false" class="custom-dialog">
   <ng-template pTemplate="content">
       <section class="p-8 w-full bg-white rounded-xl" *ngIf="selectedItem">
-          <div class="grid gap-4 md:grid-cols-2">
-              <div>
-                  <label class="block mb-2">Ngày nghiệm thu<span class="text-orange-500">*</span></label>
-                  <input pInputText [(ngModel)]="selectedItem.date" class="w-full" />
-              </div>
-              <div>
-                  <label class="block mb-2">Số hợp đồng<span class="text-orange-500">*</span></label>
-                  <input pInputText [(ngModel)]="selectedItem.contractNumber" class="w-full" />
-              </div>
-          </div>
-
-          <div class="grid gap-4 md:grid-cols-2 mt-4">
-              <div>
-                  <label class="block mb-2">Giá cả quyết toán<span class="text-orange-500">*</span></label>
-                  <input pInputText [(ngModel)]="selectedItem.finalPrice" class="w-full" />
-                  <span pInputGroupAddon> {{ selectedItem.finalPrice | number }} VND</span>
-              </div>
-              <div>
-                  <label class="block mb-2">Người kiểm tra<span class="text-orange-500">*</span></label>
-                  <input pInputText [(ngModel)]="selectedItem.observer" class="w-full" />
-              </div>
-          </div>
-
+        <div class="flex flex-wrap gap-4">
+            <div class="flex-1 min-w-[250px]">
+                <label class="block mb-2">Ngày nghiệm thu<span class="text-orange-500">*</span></label>
+                <input pInputText [(ngModel)]="selectedItem.date" class="w-full" />
+            </div>
+            <div class="flex-1 min-w-[250px]">
+                <label class="block mb-2">Số hợp đồng<span class="text-orange-500">*</span></label>
+                <input pInputText [(ngModel)]="selectedItem.contractNumber" class="w-full" />
+            </div>
+        </div>
+        
+        <div class="flex flex-wrap gap-4 mt-4">
+            <div class="flex-1 min-w-[250px]">
+                <label class="block mb-2">Giá cả quyết toán<span class="text-orange-500">*</span></label>
+                <input pInputText [(ngModel)]="selectedItem.finalPrice" class="w-full" />
+                <span pInputGroupAddon> {{ selectedItem.finalPrice | number }} VND</span>
+            </div>
+            <div class="flex-1 min-w-[250px]">
+                <label class="block mb-2">Người kiểm tra<span class="text-orange-500">*</span></label>
+                <input pInputText [(ngModel)]="selectedItem.observer" class="w-full" />
+            </div>
+        </div>
+        
           <div class="mt-4">
               <label class="block mb-2">Nội dung nghiệm thu<span class="text-orange-500">*</span></label>
               <textarea pInputTextarea [(ngModel)]="selectedItem.content" rows="8" autoResize="true"
@@ -173,28 +174,29 @@
   [style]="{ width: '1000px', minHeight: '55vh' }" [draggable]="false" [resizable]="false" class="custom-dialog">
   <ng-template pTemplate="content">
       <section class="p-8 w-full bg-white rounded-xl">
-          <div class="grid gap-4 md:grid-cols-2">
-              <div>
-                  <label class="block mb-2">Ngày nghiệm thu<span class="text-orange-500">*</span></label>
-                  <input pInputText [(ngModel)]="newReport.date" class="w-full" />
-              </div>
-              <div>
-                  <label class="block mb-2">Số hợp đồng<span class="text-orange-500">*</span></label>
-                  <input pInputText [(ngModel)]="newReport.contractNumber" class="w-full" />
-              </div>
-          </div>
-
-          <div class="grid gap-4 md:grid-cols-2 mt-4">
-              <div>
-                  <label class="block mb-2">Giá cả quyết toán<span class="text-orange-500">*</span></label>
-                  <input pInputText [(ngModel)]="newReport.finalPrice" class="w-full" />
-                  <span pInputGroupAddon> {{ newReport.finalPrice | number }} VND</span>
-              </div>
-              <div>
-                  <label class="block mb-2">Người kiểm tra<span class="text-orange-500">*</span></label>
-                  <input pInputText [(ngModel)]="newReport.observer" class="w-full" />
-              </div>
-          </div>
+        <div class="flex flex-wrap gap-4">
+            <div class="flex-1 min-w-[250px]">
+                <label class="block mb-2">Ngày nghiệm thu<span class="text-orange-500">*</span></label>
+                <input pInputText [(ngModel)]="newReport.date" class="w-full" />
+            </div>
+            <div class="flex-1 min-w-[250px]">
+                <label class="block mb-2">Số hợp đồng<span class="text-orange-500">*</span></label>
+                <input pInputText [(ngModel)]="newReport.contractNumber" class="w-full" />
+            </div>
+        </div>
+        
+        <div class="flex flex-wrap gap-4 mt-4">
+            <div class="flex-1 min-w-[250px]">
+                <label class="block mb-2">Giá cả quyết toán<span class="text-orange-500">*</span></label>
+                <input pInputText [(ngModel)]="newReport.finalPrice" class="w-full" />
+                <span pInputGroupAddon> {{ newReport.finalPrice | number }} VND</span>
+            </div>
+            <div class="flex-1 min-w-[250px]">
+                <label class="block mb-2">Người kiểm tra<span class="text-orange-500">*</span></label>
+                <input pInputText [(ngModel)]="newReport.observer" class="w-full" />
+            </div>
+        </div>
+        
 
           <div class="mt-4">
               <label class="block mb-2">Nội dung nghiệm thu<span class="text-orange-500">*</span></label>

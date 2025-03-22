@@ -54,30 +54,30 @@
   [style]="{ width: '1000px', minHeight: '55vh' }" [draggable]="false" [resizable]="false" class="custom-dialog">
   <ng-template pTemplate="content">
       <section class="p-8 w-full bg-white rounded-xl" *ngIf="detailReport">
-          <div class="grid gap-4 md:grid-cols-2">
-              <div>
-                  <label class="block font-semibold mb-2">Ngày nghiệm thu</label>
-                  <p>{{ detailReport.date }}</p>
-              </div>
-              <div>
-                  <label class="block font-semibold mb-2">Số hợp đồng</label>
-                  <p>{{ detailReport.contractNumber }}</p>
-              </div>
-          </div>
-
-          <div class="grid gap-4 md:grid-cols-2 mt-4">
-              <div>
-                  <label class="block font-semibold mb-2">Giá cả quyết toán</label>
-                  <p>{{ detailReport.finalPrice | currency:'VND' }}</p>
-              </div>
-              <div>
-                  <label class="block font-semibold mb-2">Người kiểm tra</label>
-                  <p>{{ detailReport.observer }}</p>
-              </div>
-          </div>
-
+        <div class="grid gap-4 md:grid-cols-2">
+            <div>
+                <label class="block mb-2">Ngày nghiệm thu</label>
+                <input type="text" class="w-full p-2 border rounded" [value]="detailReport.date" readonly />
+            </div>
+            <div>
+                <label class="block mb-2">Số hợp đồng</label>
+                <input type="text" class="w-full p-2 border rounded" [value]="detailReport.contractNumber" readonly />
+            </div>
+        </div>
+        
+        <div class="grid gap-4 md:grid-cols-2 mt-4">
+            <div>
+                <label class="block mb-2">Giá cả quyết toán</label>
+                <input type="text" class="w-full p-2 border rounded" [value]="detailReport.finalPrice | currency:'VND'" readonly />
+            </div>
+            <div>
+                <label class="block mb-2">Người kiểm tra</label>
+                <input type="text" class="w-full p-2 border rounded" [value]="detailReport.observer" readonly />
+            </div>
+        </div>
+        
           <div class="mt-4">
-            <label class="block font-semibold mb-2">Nội dung nghiệm thu</label>
+            <label class="block mb-2">Nội dung nghiệm thu</label>
             <textarea 
                 pInputTextarea
                 [(ngModel)]="detailReport.content" 
@@ -87,14 +87,12 @@
                 readonly
             ></textarea>
         </div>
-        <div class="file-attachment">
-            <label class="font-semibold">File đính kèm</label>
-            <div class="file-box">
-                <i class="pi pi-file"></i> <!-- Icon file -->
-                <span class="file-name">biennghiemthu.pdf</span>
-                
-                    <i class="pi pi-download"></i> Tải xuống
-                
+        <div class="file-attachment mt-4">
+            <label class="mb-2 block">File đính kèm</label>
+            <div class="file-box" style="background-color: #fff3eb; padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 10px;max-width: 300px;">
+                <i class="pi pi-file" style="font-size: 18px;"></i> 
+                <span class="file-name" style="flex-grow: 1; color: #333; font-weight: 500;">biennghiemthu.pdf</span>             
+                <i class="pi pi-download" style="color: #ff6600; font-weight: bold; cursor: pointer;"></i> Tải xuống              
             </div>
         </div>
         
@@ -142,6 +140,15 @@
               <textarea pInputTextarea [(ngModel)]="selectedItem.content" rows="8" autoResize="true"
                   class="w-full p-2 rounded-md border"></textarea>
           </div>
+          <div class="file-attachment mt-4">
+            <label class="mb-2 block">File đính kèm</label>
+            <div class="file-box" style="background-color: #fff3eb; padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 10px;max-width: 300px;">
+                <i class="pi pi-file" style="font-size: 18px;"></i> 
+                <span class="file-name" style="flex-grow: 1; color: #333; font-weight: 500;">biennghiemthu.pdf</span>             
+                <i class="pi pi-download" style="color: #ff6600; font-weight: bold; cursor: pointer;"></i> Tải xuống              
+            </div>
+        </div>
+        
       </section>
   </ng-template>
 

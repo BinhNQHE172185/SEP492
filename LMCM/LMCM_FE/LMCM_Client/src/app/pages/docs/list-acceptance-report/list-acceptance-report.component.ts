@@ -32,7 +32,7 @@ export class ListAcceptanceReportComponent implements OnInit {
     reports: any[] = [];
     filteredReports: any[] = [];
     searchKey: string = '';
-    initialFinalPrice: number = 0;
+    
     displayDetailDialog: boolean = false;
     displayEditDialog: boolean = false;
     detailReport: any;
@@ -96,7 +96,7 @@ export class ListAcceptanceReportComponent implements OnInit {
     openEditDialog(report: any) {
         this.selectedItem = { ...report }; // Copy để tránh thay đổi trực tiếp dữ liệu
         this.displayEditDialog = true;
-        this.initialFinalPrice = report.finalPrice; 
+      
     }
 
     saveEdit() {

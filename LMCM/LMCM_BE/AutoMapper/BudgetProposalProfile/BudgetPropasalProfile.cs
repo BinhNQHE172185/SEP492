@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LMCM_BE.DTOs.BudgetProposalDtos;
+using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.Models;
 
 namespace LMCM_BE.AutoMapper.BudgetProposalProfile
@@ -18,6 +19,12 @@ namespace LMCM_BE.AutoMapper.BudgetProposalProfile
                 .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Author));
             CreateMap<BudgetProposal, BudgetPropasalDetailDto>()
                 .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Author));
+            CreateMap<BudgetProposalUpdateDto, BudgetProposal>()
+                .ForMember(dest => dest.ProposalId, opt => opt.Ignore())
+                .ForMember(dest => dest.AuthorId, opt => opt.Ignore())
+                .ForMember(dest => dest.Status, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
         }
     }
 }

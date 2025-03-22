@@ -96,28 +96,25 @@ export class ListTemplateComponent implements OnInit {
             doc.name.toLowerCase().includes(this.searchKey.toLowerCase())
         );
     }
-
     openAddDialog() {
-        this.newDocument = { name: '', type: '', status: '', createdBy: '', createdAt: '', lastModified: '', description: '' };
+        this.newDocument = { name: '', type: '', status: '' };
         this.displayAddDialog = true;
     }
+    
 
     saveNewDocument() {
-        if (!this.newDocument.name || !this.newDocument.type || !this.newDocument.status || !this.newDocument.createdBy || !this.newDocument.description) {
+        if (!this.newDocument.name || !this.newDocument.type || !this.newDocument.status) {
             this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng điền đầy đủ thông tin!' });
             return;
         }
-
-        this.newDocument.createdAt = new Date().toISOString().split('T')[0];
-        this.newDocument.lastModified = new Date().toISOString().split('T')[0];
-
+    
         this.documents.push({ ...this.newDocument });
         this.filteredDocuments = [...this.documents];
         this.displayAddDialog = false;
-
+    
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Thêm tài liệu thành công!' });
     }
-
+    
     openEditDialog(document: any) {
         this.selectedDocument = { ...document }; 
         this.displayEditDialog = true;

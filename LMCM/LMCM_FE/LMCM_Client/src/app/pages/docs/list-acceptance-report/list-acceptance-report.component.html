@@ -33,10 +33,11 @@
                   <td>{{ report.contractNumber }}</td>
                   <td>{{ report.finalPrice | currency:'VND' }}</td>
                   <td>
-                      <p-button label="Chi tiết" class="p-button-sm" outlined (click)="openDetailDialog(report)"></p-button>
-                      <p-button label="Sửa" class="p-button-sm mr-2" outlined (click)="openEditDialog(report)"></p-button>
-                      <p-button label="Xóa" class="p-button-sm mr-2" outlined (click)="deleteReport(rowIndex)"></p-button>
-                  </td>
+                    <p-button label="Chi tiết" class="p-button-sm" outlined (click)="openDetailDialog(report)"></p-button>
+                    <p-button label="Sửa" class="p-button-sm mr-2" outlined (click)="openEditDialog(report)"></p-button>
+                    <p-button label="Xóa" class="p-button-sm mr-2" outlined (click)="confirmDelete(report, rowIndex)"></p-button>
+                </td>
+                
               </tr>
           </ng-template>
 
@@ -167,3 +168,5 @@
       </div>
   </ng-template>
 </p-dialog>
+<p-confirmDialog></p-confirmDialog>
+

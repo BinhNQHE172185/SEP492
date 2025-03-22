@@ -15,18 +15,18 @@ import { TextareaModule } from 'primeng/textarea';
 import { CalendarModule } from 'primeng/calendar';
 import { MessageService } from 'primeng/api';
 
+import { ConfirmationService } from 'primeng/api';
 @Component({
     selector: 'app-list-acceptance-report',
     standalone: true,
     imports: [
         CommonModule, TableModule, ButtonModule, InputTextModule, InputGroupModule, 
         CardModule, ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, 
-        FormsModule, TagModule, TextareaModule, CalendarModule
+        FormsModule, TagModule, TextareaModule, CalendarModule, ConfirmDialogModule, 
     ],
     templateUrl: './list-acceptance-report.component.html',
     styleUrls: ['./list-acceptance-report.component.scss'],
-
-    providers: [MessageService]
+    providers: [ConfirmationService, MessageService]
 })
 export class ListAcceptanceReportComponent implements OnInit {
     reports: any[] = [];
@@ -38,7 +38,8 @@ export class ListAcceptanceReportComponent implements OnInit {
     detailReport: any;
     selectedItem: any = {};
 
-    constructor(private messageService: MessageService) {}
+    constructor(private messageService: MessageService, private confirmationService: ConfirmationService) {}
+    
 
     ngOnInit() {
         this.loadData();
@@ -94,28 +95,39 @@ export class ListAcceptanceReportComponent implements OnInit {
     }
 
     openEditDialog(report: any) {
-        this.selectedItem = { ...report }; // Copy để tránh thay đổi trực tiếp dữ liệu
+        this.selectedItem = { ...report }; 
         this.displayEditDialog = true;
       
     }
+    confirmDelete(report: any, index: number) {
+        this.confirmationService.confirm({
+            message: 'Bạn có chắc chắn muốn xóa biên bản này?',
+            header: 'Xác nhận xóa',
+         
+            accept: () => {
+                this.deleteReport(index);
+            }
+        });
+    }
+    
+
+    deleteReport(index: number) {
+        this.filteredReports.splice(index, 1);
+        this.reports = [...this.filteredReports]; 
+        this.messageService.add({ severity: 'warn', summary: 'Đã xóa', detail: 'Biên bản đã bị xóa' });
+    }
+    
 
     saveEdit() {
         const index = this.reports.findIndex(report => report.contractNumber === this.selectedItem.contractNumber);
         if (index !== -1) {
             this.reports[index] = { ...this.selectedItem };
-            this.filteredReports = [...this.reports]; // Cập nhật danh sách
+            this.filteredReports = [...this.reports]; 
             this.displayEditDialog = false;
             this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Cập nhật biên bản thành công!' });
         }
     }
 
-    deleteReport(index: number) {
-        if (confirm('Bạn có chắc chắn muốn xóa biên bản này?')) {
-            this.filteredReports.splice(index, 1);
-            this.reports = [...this.filteredReports];
-            this.messageService.add({ severity: 'warn', summary: 'Đã xóa', detail: 'Biên bản đã bị xóa' });
-        }
-    }
 
     closeDialog(dialogType: string) {
         if (dialogType === 'detail') {

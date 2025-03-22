@@ -10,17 +10,14 @@ import { TagModule } from 'primeng/tag';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { FileUploadModule } from 'primeng/fileupload';
-import { TextareaModule } from 'primeng/textarea';
 import { MessageService, ConfirmationService } from 'primeng/api';
-
+import { DropdownModule } from 'primeng/dropdown';
 @Component({
     selector: 'app-list-template',
     standalone: true,
     imports: [
         CommonModule, TableModule, ButtonModule, InputTextModule, InputGroupModule, 
-        CardModule, ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, 
-        FormsModule, TagModule, TextareaModule
+        CardModule, ConfirmDialogModule, ToastModule, DialogModule, FormsModule, TagModule, DropdownModule
     ],
     templateUrl: './list-template.component.html',
     styleUrls: ['./list-template.component.scss'],
@@ -32,6 +29,7 @@ export class ListTemplateComponent implements OnInit {
     searchKey: string = '';
     displayAddDialog: boolean = false;
     displayEditDialog: boolean = false;
+    displayDetailDialog: boolean = false;
     selectedDocument: any = {};
     newDocument: any = {};
 
@@ -40,13 +38,55 @@ export class ListTemplateComponent implements OnInit {
     ngOnInit() {
         this.loadData();
     }
+    documentTypes = [
+        { label: 'Tờ trình', value: 'Tờ trình' },
+        { label: 'Hợp đồng', value: 'Hợp đồng' },
+        { label: 'Biên bản', value: 'Biên bản' },
+        { label: 'Quyết định', value: 'Quyết định' }
+    ];
     
+    documentStatuses = [
+        { label: 'Đang sử dụng', value: 'Đang sử dụng' },
+        { label: 'Tạm ngưng', value: 'Tạm ngưng' }
+    ];
     loadData() {
         this.documents = [
-            { name: 'Mẫu tờ trình số 01/2024', type: 'Tờ trình', status: 'Đang sử dụng' },
-            { name: 'Mẫu hợp đồng xây dựng học liệu', type: 'Hợp đồng', status: 'Đang sử dụng' },
-            { name: 'Biên bản nghiệm thu học liệu', type: 'Biên bản', status: 'Tạm ngưng' },
-            { name: 'Quyết định định mức xây dựng học liệu', type: 'Quyết định', status: 'Đang sử dụng' }
+            { 
+                name: 'Mẫu tờ trình số 01/2024', 
+                type: 'Tờ trình', 
+                status: 'Đang sử dụng', 
+                createdBy: 'Nguyễn Văn A',
+                createdAt: '2024-01-10',
+                lastModified: '2024-03-20',
+                description: 'Chi tiết về mẫu tờ trình số 01/2024' 
+            },
+            { 
+                name: 'Mẫu hợp đồng xây dựng học liệu', 
+                type: 'Hợp đồng', 
+                status: 'Đang sử dụng',
+                createdBy: 'Trần Thị B',
+                createdAt: '2024-02-05',
+                lastModified: '2024-03-18',
+                description: 'Chi tiết về hợp đồng xây dựng học liệu' 
+            },
+            { 
+                name: 'Biên bản nghiệm thu học liệu', 
+                type: 'Biên bản', 
+                status: 'Tạm ngưng',
+                createdBy: 'Lê Minh C',
+                createdAt: '2024-02-15',
+                lastModified: '2024-03-19',
+                description: 'Chi tiết về biên bản nghiệm thu học liệu' 
+            },
+            { 
+                name: 'Quyết định định mức xây dựng học liệu', 
+                type: 'Quyết định', 
+                status: 'Đang sử dụng',
+                createdBy: 'Phạm Duy D',
+                createdAt: '2024-03-01',
+                lastModified: '2024-03-21',
+                description: 'Chi tiết về quyết định định mức' 
+            }
         ];
         this.filteredDocuments = [...this.documents];
     }
@@ -58,15 +98,18 @@ export class ListTemplateComponent implements OnInit {
     }
 
     openAddDialog() {
-        this.newDocument = { name: '', type: '', status: '' };
+        this.newDocument = { name: '', type: '', status: '', createdBy: '', createdAt: '', lastModified: '', description: '' };
         this.displayAddDialog = true;
     }
 
     saveNewDocument() {
-        if (!this.newDocument.name || !this.newDocument.type || !this.newDocument.status) {
+        if (!this.newDocument.name || !this.newDocument.type || !this.newDocument.status || !this.newDocument.createdBy || !this.newDocument.description) {
             this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng điền đầy đủ thông tin!' });
             return;
         }
+
+        this.newDocument.createdAt = new Date().toISOString().split('T')[0];
+        this.newDocument.lastModified = new Date().toISOString().split('T')[0];
 
         this.documents.push({ ...this.newDocument });
         this.filteredDocuments = [...this.documents];
@@ -78,6 +121,11 @@ export class ListTemplateComponent implements OnInit {
     openEditDialog(document: any) {
         this.selectedDocument = { ...document }; 
         this.displayEditDialog = true;
+    }
+
+    openDetailDialog(document: any) {
+        this.selectedDocument = { ...document }; 
+        this.displayDetailDialog = true;
     }
 
     confirmDelete(document: any, index: number) {
@@ -105,12 +153,13 @@ export class ListTemplateComponent implements OnInit {
             this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Cập nhật tài liệu thành công!' });
         }
     }
-
     closeDialog(dialogType: string) {
         if (dialogType === 'edit') {
             this.displayEditDialog = false;
         } else if (dialogType === 'add') {
             this.displayAddDialog = false;
+        } else if (dialogType === 'detail') {
+            this.displayDetailDialog = false;
         }
     }
 }

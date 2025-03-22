@@ -32,15 +32,31 @@ export class ListAcceptanceReportComponent implements OnInit {
     reports: any[] = [];
     filteredReports: any[] = [];
     searchKey: string = '';
-    
+    displayAddDialog: boolean = false;
     displayDetailDialog: boolean = false;
     displayEditDialog: boolean = false;
     detailReport: any;
     selectedItem: any = {};
-
+    newReport: any = {};
     constructor(private messageService: MessageService, private confirmationService: ConfirmationService) {}
     
+    openAddDialog() {
+        this.newReport = { date: '', contractNumber: '', finalPrice: null, observer: '', content: '' }; // Reset form
+        this.displayAddDialog = true;
+    }
 
+    saveNewReport() {
+        if (!this.newReport.date || !this.newReport.contractNumber || !this.newReport.finalPrice || !this.newReport.observer || !this.newReport.content) {
+            this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng điền đầy đủ thông tin!' });
+            return;
+        }
+
+        this.reports.push({ ...this.newReport });
+        this.filteredReports = [...this.reports];
+        this.displayAddDialog = false;
+
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Thêm biên bản nghiệm thu thành công!' });
+    }
     ngOnInit() {
         this.loadData();
     }
@@ -85,9 +101,7 @@ export class ListAcceptanceReportComponent implements OnInit {
         );
     }
 
-    openAddDialog() {
-        console.log('Mở form thêm mới');
-    }
+    
 
     openDetailDialog(report: any) {
         this.detailReport = report;
@@ -134,6 +148,8 @@ export class ListAcceptanceReportComponent implements OnInit {
             this.displayDetailDialog = false;
         } else if (dialogType === 'edit') {
             this.displayEditDialog = false;
+        } else if (dialogType === 'add') {
+            this.displayAddDialog = false;
         }
     }
 }

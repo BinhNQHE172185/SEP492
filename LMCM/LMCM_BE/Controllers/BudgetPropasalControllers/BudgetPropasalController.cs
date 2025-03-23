@@ -110,7 +110,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
             }
         }
         [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateBudgetPropasalAsync(Guid id, [FromBody] BudgetProposalUpdateDto newPropasal)
+        public async Task<IActionResult> UpdateBudgetPropasalAsync(Guid id, [FromForm] BudgetProposalUpdateDto newPropasal)
         {
             try
             {

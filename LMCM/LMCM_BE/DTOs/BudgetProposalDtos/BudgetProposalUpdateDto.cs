@@ -19,5 +19,6 @@ namespace LMCM_BE.DTOs.BudgetProposalDtos
         public DateTime? UpdatedAt { get; set; }
 
         public virtual ListUserResponseDto Author { get; set; } = null!;
+        public IFormFile? File { get; set; }
     }
 }

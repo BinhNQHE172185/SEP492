@@ -52,7 +52,7 @@ namespace LMCM_BE.Services.GoogleDriveService
             var uploadedFile = request.ResponseBody;
             return uploadedFile.WebViewLink; // Return Google Drive File URL
         }
-        public async Task<string?> UploadBudgetPropasalFileAsync(IFormFile file)
+        public async Task<string?> UploadBudgetProposalFileAsync(IFormFile file)
         {
             if (file == null || file.Length == 0)
                 return null;

@@ -125,9 +125,29 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             if(newPropasal.AuthorId!=propasal.AuthorId)
                 throw new ArgumentNullException(nameof(newPropasal.AuthorId), "User is not authorized to update this material.");
 
+            string? fileUrl = null;
+
+            if (newPropasal.File != null)
+            {
+                // Check file type
+                if (newPropasal.File.ContentType != "application/pdf")
+                {
+                    throw new Exception("Only PDF files are allowed.");
+                }
+
+                // Check file size (5MB = 5 * 1024 * 1024 bytes)
+                if (newPropasal.File.Length > 5 * 1024 * 1024)
+                {
+                    throw new Exception("File size must not exceed 5MB.");
+                }
+
+                fileUrl = await _googleDriveService.UploadBudgetPropasalFileAsync(newPropasal.File);
+            }
+
             // Use AutoMapper to update existing entity
             _mapper.Map(newPropasal, propasal);
             propasal.UpdatedAt = DateTime.UtcNow;
+            if(fileUrl != null)propasal.Url = fileUrl;
 
             try
             {

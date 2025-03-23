@@ -96,9 +96,9 @@
     <ng-template pTemplate="content">
       <!-- Main section for form -->
       <section class="p-8 w-full bg-white rounded-xl">
-        <div class="grid gap-4">
+        <div class="flex flex-wrap gap-4">
           <!-- Tên chuyên gia -->
-          <div class="col-12 md:col-6">
+          <div class="w-full md:w-1/2">
             <label class="block font-semibold mb-2">Tên chuyên gia <span class="text-red-500">*</span></label>
             <input
               pInputText
@@ -107,9 +107,9 @@
               placeholder="Nhập tên chuyên gia"
             />
           </div>
-  
+      
           <!-- Email -->
-          <div class="col-12 md:col-6">
+          <div class="w-full md:w-1/2">
             <label class="block font-semibold mb-2">Email <span class="text-red-500">*</span></label>
             <input
               pInputText
@@ -118,9 +118,9 @@
               placeholder="Nhập email"
             />
           </div>
-  
+      
           <!-- Số điện thoại -->
-          <div class="col-12 md:col-6">
+          <div class="w-full md:w-1/2">
             <label class="block font-semibold mb-2">Số điện thoại</label>
             <input
               pInputText
@@ -129,9 +129,9 @@
               placeholder="Nhập số điện thoại"
             />
           </div>
-  
+      
           <!-- MST -->
-          <div class="col-12 md:col-6">
+          <div class="w-full md:w-1/2">
             <label class="block font-semibold mb-2">MST</label>
             <input
               pInputText
@@ -140,9 +140,9 @@
               placeholder="Nhập mã số thuế"
             />
           </div>
-  
+      
           <!-- Địa chỉ -->
-          <div class="col-12">
+          <div class="w-full">
             <label class="block font-semibold mb-2">Địa chỉ</label>
             <textarea
               pInputTextarea
@@ -154,6 +154,7 @@
           </div>
         </div>
       </section>
+      
     </ng-template>
   
     <!-- Dialog Footer -->
@@ -189,37 +190,41 @@
     [resizable]="false"
     class="custom-dialog"
   >
-    <!-- Dialog Content -->
-    <ng-template pTemplate="content">
-      <section class="p-8 w-full bg-white rounded-xl" *ngIf="detailExpert">
-        <div class="grid gap-4 md:grid-cols-2">
-          <div>
-            <label class="block font-semibold mb-2">Tên chuyên gia</label>
-            <p>{{ detailExpert.name }}</p>
-          </div>
-          <div>
-            <label class="block font-semibold mb-2">Email</label>
-            <p>{{ detailExpert.email }}</p>
-          </div>
+  <ng-template pTemplate="content">
+    <section class="p-8 w-full bg-white rounded-xl" *ngIf="detailExpert">
+      <div class="flex flex-wrap gap-4">
+        <div class="flex-1 min-w-[250px]">
+          <label class="block font-semibold mb-2">Tên chuyên gia</label>
+          <p class="p-2 border border-gray-300 rounded">{{ detailExpert.name }}</p>
         </div>
   
-        <div class="grid gap-4 md:grid-cols-2 mt-4">
-          <div>
-            <label class="block font-semibold mb-2">Số điện thoại</label>
-            <p>{{ detailExpert.phone }}</p>
-          </div>
-          <div>
-            <label class="block font-semibold mb-2">MST</label>
-            <p>{{ detailExpert.taxNumber }}</p>
-          </div>
+        <div class="flex-1 min-w-[250px]">
+          <label class="block font-semibold mb-2">Email</label>
+          <p class="p-2 border border-gray-300 rounded">{{ detailExpert.email }}</p>
+        </div>
+      </div>
+  
+      <div class="flex flex-wrap gap-4 mt-4">
+        <div class="flex-1 min-w-[250px]">
+          <label class="block font-semibold mb-2">Số điện thoại</label>
+          <p class="p-2 border border-gray-300 rounded">{{ detailExpert.phone }}</p>
         </div>
   
-        <div class="mt-4">
-          <label class="block font-semibold mb-2">Địa chỉ</label>
-          <p class="whitespace-pre-line">{{ detailExpert.address }}</p>
+        <div class="flex-1 min-w-[250px]">
+          <label class="block font-semibold mb-2">MST</label>
+          <p class="p-2 border border-gray-300 rounded">{{ detailExpert.taxNumber }}</p>
         </div>
-      </section>
-    </ng-template>
+      </div>
+  
+      <div class="mt-4">
+        <label class="block font-semibold mb-2">Địa chỉ</label>
+        <p class="p-2 border border-gray-300 rounded whitespace-pre-line">
+          {{ detailExpert.address }}
+        </p>
+      </div>
+    </section>
+  </ng-template>
+  
   
     <!-- Dialog Footer -->
     <ng-template pTemplate="footer">
@@ -247,63 +252,45 @@
     [resizable]="false"
     class="custom-dialog"
   >
-    <!-- Dialog Content -->
-    <ng-template pTemplate="content">
-      <section class="p-8 w-full bg-white rounded-xl">
-        <div class="grid gap-4">
-          <!-- Tên chuyên gia -->
-          <div class="col-12 md:col-6">
-            <label class="block font-semibold mb-2">Tên chuyên gia <span class="text-red-500">*</span></label>
-            <input
-              pInputText
-              [(ngModel)]="editName"
-              class="w-full p-2 border border-gray-300 rounded"
-            />
-          </div>
-  
-          <!-- Email -->
-          <div class="col-12 md:col-6">
-            <label class="block font-semibold mb-2">Email <span class="text-red-500">*</span></label>
-            <input
-              pInputText
-              [(ngModel)]="editEmail"
-              class="w-full p-2 border border-gray-300 rounded"
-            />
-          </div>
-  
-          <!-- Số điện thoại -->
-          <div class="col-12 md:col-6">
-            <label class="block font-semibold mb-2">Số điện thoại</label>
-            <input
-              pInputText
-              [(ngModel)]="editPhone"
-              class="w-full p-2 border border-gray-300 rounded"
-            />
-          </div>
-  
-          <!-- MST -->
-          <div class="col-12 md:col-6">
-            <label class="block font-semibold mb-2">MST</label>
-            <input
-              pInputText
-              [(ngModel)]="editTaxNumber"
-              class="w-full p-2 border border-gray-300 rounded"
-            />
-          </div>
-  
-          <!-- Địa chỉ -->
-          <div class="col-12">
-            <label class="block font-semibold mb-2">Địa chỉ</label>
-            <textarea
-              pInputTextarea
-              [(ngModel)]="editAddress"
-              rows="3"
-              class="w-full p-2 border border-gray-300 rounded"
-            ></textarea>
-          </div>
+  <ng-template pTemplate="content">
+    <section class="p-8 w-full bg-white rounded-xl">
+      <div class="flex flex-wrap gap-4">
+        <!-- Tên chuyên gia -->
+        <div class="flex-1 min-w-[250px]">
+          <label class="block font-semibold mb-2">Tên chuyên gia <span class="text-red-500">*</span></label>
+          <input pInputText [(ngModel)]="editName" class="w-full p-2 border border-gray-300 rounded" />
         </div>
-      </section>
-    </ng-template>
+  
+        <!-- Email -->
+        <div class="flex-1 min-w-[250px]">
+          <label class="block font-semibold mb-2">Email <span class="text-red-500">*</span></label>
+          <input pInputText [(ngModel)]="editEmail" class="w-full p-2 border border-gray-300 rounded" />
+        </div>
+      </div>
+  
+      <div class="flex flex-wrap gap-4 mt-4">
+        <!-- Số điện thoại -->
+        <div class="flex-1 min-w-[250px]">
+          <label class="block font-semibold mb-2">Số điện thoại</label>
+          <input pInputText [(ngModel)]="editPhone" class="w-full p-2 border border-gray-300 rounded" />
+        </div>
+  
+        <!-- MST -->
+        <div class="flex-1 min-w-[250px]">
+          <label class="block font-semibold mb-2">MST</label>
+          <input pInputText [(ngModel)]="editTaxNumber" class="w-full p-2 border border-gray-300 rounded" />
+        </div>
+      </div>
+  
+      <div class="mt-4">
+        <label class="block font-semibold mb-2">Địa chỉ</label>
+        <textarea pInputTextarea [(ngModel)]="editAddress" rows="4"
+          class="w-full p-2 border border-gray-300 rounded"></textarea>
+      </div>
+    </section>
+  </ng-template>
+  
+  
   
     <!-- Dialog Footer -->
     <ng-template pTemplate="footer">

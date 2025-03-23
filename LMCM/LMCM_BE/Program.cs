@@ -47,6 +47,9 @@ using LMCM_BE.AutoMapper.PloProfiles;
 using LMCM_BE.Services.ContractorService;
 using LMCM_BE.Repositories.ContractorRepository;
 using LMCM_BE.Utilities;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Drive.v3;
+using Google.Apis.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -88,6 +91,22 @@ builder.Services.AddCors(options =>
                         .AllowAnyHeader()
                         .AllowAnyMethod());
 });
+
+builder.Services.AddSingleton<DriveService>(provider =>
+{
+    GoogleCredential credential;
+    using (var stream = new FileStream("google-drive-credentials.json", FileMode.Open, FileAccess.Read))
+    {
+        credential = GoogleCredential.FromStream(stream).CreateScoped(DriveService.Scope.Drive);
+    }
+
+    return new DriveService(new BaseClientService.Initializer
+    {
+        HttpClientInitializer = credential,
+        ApplicationName = "LMCM"
+    });
+});
+
 //AutoMapper
 builder.Services.AddAutoMapper(typeof(SubjectProfile));
 builder.Services.AddAutoMapper(typeof(SyllabusProfile));

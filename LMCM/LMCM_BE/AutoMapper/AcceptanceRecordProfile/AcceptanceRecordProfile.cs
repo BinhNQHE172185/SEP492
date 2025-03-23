@@ -12,8 +12,14 @@ namespace LMCM_BE.AutoMapper.AcceptanceRecordProfile
         public AcceptanceRecordProfile()
         {
             CreateMap<AcceptanceRecord, AcceptanceRecordListDto>();
-            CreateMap<AcceptanceRecordCreateDto, AcceptanceRecord>();
-            CreateMap<AcceptanceRecordUpdateDto, AcceptanceRecord>();
+            CreateMap<AcceptanceRecordCreateDto, AcceptanceRecord>()
+                .ForMember(dest => dest.Url, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
+            CreateMap<AcceptanceRecordUpdateDto, AcceptanceRecord>()
+                .ForMember(dest => dest.Url, opt => opt.Ignore()) 
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) 
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore()); 
 
             CreateMap<AcceptanceRecord, AcceptanceRecordDetailDto>()
                 .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Author))

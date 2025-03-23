@@ -220,12 +220,7 @@ export class ListExpertComponent implements OnInit {
             this.loadExperts();
         },
         error: (err) => {
-            console.error('Lỗi xoá nhà thầu:', err);
-            this.messageService.add({ 
-                severity: 'error', 
-                summary: 'Lỗi', 
-                detail: 'Xóa nhà thầu thất bại' 
-            });
+           
         }
     });
 }

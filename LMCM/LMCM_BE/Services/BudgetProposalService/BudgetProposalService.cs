@@ -18,7 +18,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
             return await _budgetProposalRepository.CreateBudgetProposal(proposal);  
         }
 
-        public async Task<BudgetProposalDetailDto> GetBudgetProposalById(Guid? proposalId)
+        public async Task<BudgetProposalDetailDto> GetBudgetProposalById(Guid proposalId)
         {
             return await _budgetProposalRepository.GetBudgetProposalById(proposalId);
         }

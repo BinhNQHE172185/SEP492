@@ -64,19 +64,32 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             return newProposal;
         }
 
-        public async Task<BudgetProposalDetailDto> GetBudgetProposalById(Guid? proposalId)
+        public async Task<BudgetProposalDetailDto> GetBudgetProposalById(Guid proposalId)
         {
-            if (proposalId == null)
-                throw new ArgumentNullException(nameof(proposalId), "proposal ID cannot be null.");
+            if (proposalId == Guid.Empty)
+                throw new ArgumentException("Proposal ID cannot be empty.", nameof(proposalId));
+
             var budgetProposal = await _dbContext.BudgetProposals
                 .AsNoTracking()
                 .Where(s => s.ProposalId == proposalId)
                 .SingleOrDefaultAsync();
 
             if (budgetProposal == null)
-                throw new KeyNotFoundException($"No syllabus found with ID: {proposalId}");
-            var budgetPropasalDto = _mapper.Map<BudgetProposalDetailDto>(budgetProposal);
-            return budgetPropasalDto;
+                throw new KeyNotFoundException($"No budget proposal found with ID: {proposalId}");
+
+            var budgetProposalDto = _mapper.Map<BudgetProposalDetailDto>(budgetProposal);
+
+            // Check if there's a file URL and fetch the file
+            if (!string.IsNullOrEmpty(budgetProposal.Url))
+            {
+                using var httpClient = new HttpClient();
+                var fileBytes = await httpClient.GetByteArrayAsync(budgetProposal.Url);
+
+                budgetProposalDto.FileContent = fileBytes; // Add the file as a byte array
+                budgetProposalDto.FileName = $"BudgetProposal_{proposalId}.pdf"; 
+            }
+
+            return budgetProposalDto;
         }
 
         public async Task<PagedResult<BudgetProposalListDto>> GetBudgetProposalsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
@@ -114,7 +127,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
 
         public async Task<Guid?> UpdateBudgetProposalAsync(Guid proposalId, BudgetProposalUpdateDto newProposal)
         {
-            if (proposalId == null)
+            if (proposalId == Guid.Empty)
                 throw new ArgumentNullException(nameof(proposalId), "proposal id cannot be null.");
 
             if (newProposal == null)

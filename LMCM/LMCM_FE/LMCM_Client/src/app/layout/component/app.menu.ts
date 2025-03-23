@@ -83,12 +83,17 @@ export class AppMenu {
                     {
                         label: 'Quản lý biên bản nghiệm thu',
                         icon: 'pi pi-fw pi-print',
-                        routerLink: ['document/contracts']
+                        routerLink: ['document/acceptance-report']
                     },
                     {
                         label: 'Quản lý chuyên gia',
                         icon: 'pi pi-fw pi-print',
                         routerLink: ['document/expert']
+                    },
+                    {
+                        label: 'Quản lý mẫu tài liệu',
+                        icon: 'pi pi-fw pi-print',
+                        routerLink: ['document/template']
                     },
                 ]
             },

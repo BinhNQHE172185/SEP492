@@ -28,7 +28,7 @@
                     <td>
                         <p-button label="Chi tiết" class="p-button-sm" outlined (click)="openDetailDialog(expert.contractorId)"></p-button>
                         <p-button label="Sửa" class="p-button-sm mr-2" outlined (click)="openEditDialog(expert.contractorId)"></p-button>
-                        <p-button label="Xóa" class="p-button-sm mr-2" outlined></p-button>
+                        <p-button label="Xóa" class="p-button-sm mr-2" outlined  (click)="confirmDelete(expert.contractorId)"></p-button>
                     </td>
                 </tr>
             </ng-template>
@@ -265,3 +265,4 @@
         </div>
     </ng-template>
 </p-dialog>
+<p-confirmDialog></p-confirmDialog>

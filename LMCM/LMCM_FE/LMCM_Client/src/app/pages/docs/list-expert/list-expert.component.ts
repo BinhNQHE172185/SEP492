@@ -14,7 +14,7 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { TextareaModule } from 'primeng/textarea';
 import { CalendarModule } from 'primeng/calendar';
 import { ContractorApiService } from '../../../apis/contractorAPIs/contractor-api.service';
-import { MessageService } from 'primeng/api';
+import {ConfirmationService, MessageService } from 'primeng/api';
 
 interface Expert {
     id: string;
@@ -35,7 +35,7 @@ interface Expert {
     selector: 'app-list-expert',
     standalone: true,
     imports: [CommonModule, TableModule, ButtonModule, InputTextModule, InputGroupModule, CardModule, ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, FormsModule, TagModule, TextareaModule, CalendarModule],
-    providers: [MessageService],
+    providers: [MessageService,ConfirmationService],
     templateUrl: './list-expert.component.html',
     styleUrls: ['./list-expert.component.scss']
 })
@@ -78,7 +78,8 @@ export class ListExpertComponent implements OnInit {
 
     constructor(
         private contractorService: ContractorApiService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private confirmationService: ConfirmationService
     ) {}
 
     ngOnInit() {
@@ -191,6 +192,44 @@ export class ListExpertComponent implements OnInit {
             (error) => {}
         );
     }
+
+    confirmDelete(id: any) {
+      this.confirmationService.confirm({
+          message: 'Bạn có chắc muốn xoá nhà thầu này?',
+          header: 'Xác nhận xoá',
+          acceptLabel: 'Xác nhận',
+          rejectLabel: 'Hủy',
+          accept: () => {
+              this.deleteContractor(id);
+          }
+      });
+  }
+  
+  deleteContractor(id: any) {
+    this.contractorService.deleteContractor(id).subscribe({
+        next: () => {
+            
+            this.experts = this.experts.filter(c => c.id !== id);
+            this.filteredExperts = [...this.experts];
+
+            this.messageService.add({ 
+                severity: 'success', 
+                summary: 'Thành công', 
+                detail: 'Xóa nhà thầu thành công' 
+            });
+            this.loadExperts();
+        },
+        error: (err) => {
+            console.error('Lỗi xoá nhà thầu:', err);
+            this.messageService.add({ 
+                severity: 'error', 
+                summary: 'Lỗi', 
+                detail: 'Xóa nhà thầu thất bại' 
+            });
+        }
+    });
+}
+
 
     saveEditedExpert() {
         if (!this.editContractorName || !this.editEmail) {

@@ -14,22 +14,9 @@ namespace LMCM_BE.Services.GoogleDriveService
         private readonly string _contractFolderId = "1D-BiSw2okv50bU3C85NS4Z1YE4it0374";
         private readonly string _budgetPropasalFolderId = "1-Wl5_HyRdbG9j3vBI5ynSHr7vykF7P3S";
 
-        public GoogleDriveService()
+        public GoogleDriveService(DriveService driveService)
         {
-            GoogleCredential credential;
-
-            //  Load credentials only ONCE
-            using (var stream = new FileStream("google-drive-credentials.json", FileMode.Open, FileAccess.Read))
-            {
-                credential = GoogleCredential.FromStream(stream)
-                    .CreateScoped(new[] { DriveService.Scope.Drive }); //  Full Drive access
-            }
-
-            _driveService = new DriveService(new BaseClientService.Initializer
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = "LMCM"
-            });
+            _driveService = driveService;
         }
 
         private string ExtractFileIdFromUrl(string fileUrl)
@@ -45,16 +32,16 @@ namespace LMCM_BE.Services.GoogleDriveService
         public async Task<string> ComputeGoogleDriveFileHashAsync(string fileUrl)
         {
             string fileId = ExtractFileIdFromUrl(fileUrl);
+
             var request = _driveService.Files.Get(fileId);
-            using var stream = new MemoryStream();
+            request.Fields = "md5Checksum";  // Request only the MD5 checksum
 
-            await request.DownloadAsync(stream);
-            stream.Position = 0; // Reset the stream position
+            var file = await request.ExecuteAsync();
 
-            using var sha256 = SHA256.Create();
-            var hashBytes = await sha256.ComputeHashAsync(stream);
+            if (file.Md5Checksum == null)
+                throw new Exception("MD5 checksum not available for this file.");
 
-            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+            return file.Md5Checksum.ToLower();
         }
 
         public async Task<string?> UploadContractFileAsync(IFormFile file)

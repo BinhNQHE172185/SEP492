@@ -6,9 +6,9 @@ namespace LMCM_BE.Utilities
     {
         public async Task<string> ComputeFileHashAsync(IFormFile file)
         {
-            using var sha256 = SHA256.Create();
+            using var md5 = MD5.Create();
             using var stream = file.OpenReadStream();
-            var hashBytes = await sha256.ComputeHashAsync(stream);
+            var hashBytes = await md5.ComputeHashAsync(stream);
             return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
         }
     }

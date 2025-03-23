@@ -17,7 +17,7 @@ namespace LMCM_BE.AutoMapper.BudgetProposalProfile
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
             CreateMap<BudgetProposal, BudgetProposalListDto>()
                 .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Author));
-            CreateMap<BudgetProposal, BudgetPropasalDetailDto>()
+            CreateMap<BudgetProposal, BudgetProposalDetailDto>()
                 .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Author));
             CreateMap<BudgetProposalUpdateDto, BudgetProposal>()
                 .ForMember(dest => dest.ProposalId, opt => opt.Ignore())

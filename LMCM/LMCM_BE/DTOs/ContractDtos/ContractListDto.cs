@@ -35,6 +35,6 @@ namespace LMCM_BE.DTOs.ContractDtos
 
         //public virtual ICollection<LearningMaterialChangesHistory> LearningMaterialChangesHistories { get; set; } = new List<LearningMaterialChangesHistory>(); todo
 
-        public virtual BudgetPropasalDetailDto Proposal { get; set; } = null!;
+        public virtual BudgetProposalDetailDto Proposal { get; set; } = null!;
     }
 }

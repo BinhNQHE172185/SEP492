@@ -2,7 +2,7 @@
 
 namespace LMCM_BE.DTOs.BudgetProposalDtos
 {
-    public class BudgetPropasalDetailDto
+    public class BudgetProposalDetailDto
     {
         public Guid ProposalId { get; set; }
 

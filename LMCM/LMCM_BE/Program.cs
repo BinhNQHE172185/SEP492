@@ -136,8 +136,8 @@ builder.Services.AddScoped<ILearningMaterialDetailsService, LearningMaterialDeta
 builder.Services.AddScoped<GoogleDriveService>();
 builder.Services.AddScoped<IContractRepository, ContractRepository>();
 builder.Services.AddScoped<IContractService, ContractService>();
-builder.Services.AddScoped<IBudgetPropasalRepository, BudgetPropasalRepository>();
-builder.Services.AddScoped<IBudgetPropasalService, BudgetPropasalService>();
+builder.Services.AddScoped<IBudgetProposalRepository, BudgetProposalRepository>();
+builder.Services.AddScoped<IBudgetProposalService, BudgetProposalService>();
 builder.Services.AddScoped<IContractorRepository, ContractorRepository>();
 builder.Services.AddScoped<IContractorService, ContractorService>();
 

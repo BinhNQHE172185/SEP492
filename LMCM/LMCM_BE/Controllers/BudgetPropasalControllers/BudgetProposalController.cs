@@ -9,21 +9,21 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
 {
     [Route("api/budgetPropasal")]
     [ApiController]
-    public class BudgetPropasalController : Controller
+    public class BudgetProposalController : Controller
     {
-        private readonly IBudgetPropasalService _budgetPropasalService;
+        private readonly IBudgetProposalService _budgetProposalService;
 
-        public BudgetPropasalController(IBudgetPropasalService budgetPropasalService)
+        public BudgetProposalController(IBudgetProposalService budgetProposalService)
         {
-            _budgetPropasalService = budgetPropasalService; 
+            _budgetProposalService = budgetProposalService; 
         }
 
-        [HttpPost("getBudgetPropasalList")]
-        public async Task<IActionResult> GetBudgetPropasalsAsync([FromBody] PagingRequest request)
+        [HttpPost("getBudgetProposalList")]
+        public async Task<IActionResult> GetBudgetProposalsAsync([FromBody] PagingRequest request)
         {
             try
             {
-                var data = await _budgetPropasalService.GetBudgetPropasalsAsync(request.SearchKey, request.pageIndex, request.PageSize);
+                var data = await _budgetProposalService.GetBudgetProposalsAsync(request.SearchKey, request.pageIndex, request.PageSize);
                 if (data != null)
                 {
                     return Ok(data);
@@ -35,12 +35,12 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
-        [HttpGet("getbudgetPropasalDetail")]
-        public async Task<IActionResult> GetBudgetPropasalDetailAsync(Guid propasalId)
+        [HttpGet("getBudgetProposalDetail")]
+        public async Task<IActionResult> GetBudgetProposalDetailAsync(Guid proposalId)
         {
             try
             {
-                var data = await _budgetPropasalService.GetBudgetPropasalById(propasalId);
+                var data = await _budgetProposalService.GetBudgetProposalById(proposalId);
                 if (data != null)
                 {
                     return Ok(data);
@@ -52,28 +52,28 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
-        [HttpPost("createBudgetPropasal")]
-        public async Task<IActionResult> CreateBudgetPropasal([FromForm] BudgetProposalInsertDto propasalDto)
+        [HttpPost("createBudgetProposal")]
+        public async Task<IActionResult> CreateBudgetProposal([FromForm] BudgetProposalInsertDto proposalDto)
         {
             try
             {
-                if (propasalDto.File == null)
+                if (proposalDto.File == null)
                 {
                     return BadRequest(new { Success = false, Message = "Không tìm thấy file." });
                 }
                 // Check file type
-                if (propasalDto.File.ContentType != "application/pdf")
+                if (proposalDto.File.ContentType != "application/pdf")
                 {
                     return BadRequest(new { Success = false, Message = "Chỉ file pdf mới được tải lên." });
                 }
 
                 // Check file size (5MB = 5 * 1024 * 1024 bytes)
-                if (propasalDto.File.Length > 5 * 1024 * 1024)
+                if (proposalDto.File.Length > 5 * 1024 * 1024)
                 {
                     return BadRequest(new { Success = false, Message = "Dung lượng file không được vượt quá 5MB." });
                 }
 
-                var propasal = await _budgetPropasalService.CreateBudgetPropasal(propasalDto);
+                var propasal = await _budgetProposalService.CreateBudgetProposal(proposalDto);
                 return Ok(new
                 {
                     Success = true,
@@ -109,12 +109,12 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 });
             }
         }
-        [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateBudgetPropasalAsync(Guid id, [FromForm] BudgetProposalUpdateDto newPropasal)
+        [HttpPut("updateBudgetProposal/{id}")]
+        public async Task<IActionResult> UpdateBudgetProposalAsync(Guid id, [FromForm] BudgetProposalUpdateDto newPropasal)
         {
             try
             {
-                Guid? propasalId = await _budgetPropasalService.UpdateBudgetPropasalAsync(id, newPropasal);
+                Guid? propasalId = await _budgetProposalService.UpdateBudgetProposalAsync(id, newPropasal);
                 if (propasalId.HasValue)
                     return Ok(new
                     {

@@ -3,6 +3,8 @@ using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
 using Google.Apis.Services;
 using Google.Apis.Upload;
+using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 
 namespace LMCM_BE.Services.GoogleDriveService
 {
@@ -28,6 +30,31 @@ namespace LMCM_BE.Services.GoogleDriveService
                 HttpClientInitializer = credential,
                 ApplicationName = "LMCM"
             });
+        }
+
+        private string ExtractFileIdFromUrl(string fileUrl)
+        {
+            var match = Regex.Match(fileUrl, @"\/d\/([^\/]+)");
+            if (match.Success)
+            {
+                return match.Groups[1].Value;
+            }
+            throw new Exception("Invalid Google Drive URL format.");
+        }
+
+        public async Task<string> ComputeGoogleDriveFileHashAsync(string fileUrl)
+        {
+            string fileId = ExtractFileIdFromUrl(fileUrl);
+            var request = _driveService.Files.Get(fileId);
+            using var stream = new MemoryStream();
+
+            await request.DownloadAsync(stream);
+            stream.Position = 0; // Reset the stream position
+
+            using var sha256 = SHA256.Create();
+            var hashBytes = await sha256.ComputeHashAsync(stream);
+
+            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
         }
 
         public async Task<string?> UploadContractFileAsync(IFormFile file)

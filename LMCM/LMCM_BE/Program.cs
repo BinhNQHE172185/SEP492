@@ -46,6 +46,7 @@ using LMCM_BE.Services.BudgetPropasalService;
 using LMCM_BE.AutoMapper.PloProfiles;
 using LMCM_BE.Services.ContractorService;
 using LMCM_BE.Repositories.ContractorRepository;
+using LMCM_BE.Utilities;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -140,6 +141,7 @@ builder.Services.AddScoped<IBudgetProposalRepository, BudgetProposalRepository>(
 builder.Services.AddScoped<IBudgetProposalService, BudgetProposalService>();
 builder.Services.AddScoped<IContractorRepository, ContractorRepository>();
 builder.Services.AddScoped<IContractorService, ContractorService>();
+builder.Services.AddScoped<IFileHelper, FileHelper>();
 
 builder.Services.AddScoped<IGoogleDriveService, GoogleDriveService>();
 

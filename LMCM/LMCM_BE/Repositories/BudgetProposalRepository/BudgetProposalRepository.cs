@@ -6,6 +6,7 @@ using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Services.GoogleDriveService;
+using LMCM_BE.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.BudgetPropasalRepository
@@ -15,12 +16,14 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
         private readonly LMCM_DBContext _dbContext;
         private readonly IGoogleDriveService _googleDriveService;
         private readonly IMapper _mapper;
+        private readonly IFileHelper _fileHelper;
 
-        public BudgetProposalRepository(LMCM_DBContext dbContext, IGoogleDriveService googleDriveService, IMapper mapper)
+        public BudgetProposalRepository(LMCM_DBContext dbContext, IGoogleDriveService googleDriveService, IMapper mapper, IFileHelper fileHelper)
         {
             _dbContext = dbContext;
             _googleDriveService = googleDriveService;
             _mapper = mapper;
+            _fileHelper = fileHelper;
         }
         public async Task<BudgetProposal> CreateBudgetProposal(BudgetProposalInsertDto proposal)
         {
@@ -64,19 +67,33 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             return newProposal;
         }
 
-        public async Task<BudgetProposalDetailDto> GetBudgetProposalById(Guid? proposalId)
+        public async Task<BudgetProposalDetailDto> GetBudgetProposalById(Guid proposalId)
         {
-            if (proposalId == null)
-                throw new ArgumentNullException(nameof(proposalId), "proposal ID cannot be null.");
+            if (proposalId == Guid.Empty)
+                throw new ArgumentException("Proposal ID cannot be empty.", nameof(proposalId));
+
             var budgetProposal = await _dbContext.BudgetProposals
                 .AsNoTracking()
+                .Include(s=>s.Author)
                 .Where(s => s.ProposalId == proposalId)
                 .SingleOrDefaultAsync();
 
             if (budgetProposal == null)
-                throw new KeyNotFoundException($"No syllabus found with ID: {proposalId}");
-            var budgetPropasalDto = _mapper.Map<BudgetProposalDetailDto>(budgetProposal);
-            return budgetPropasalDto;
+                throw new KeyNotFoundException($"No budget proposal found with ID: {proposalId}");
+
+            var budgetProposalDto = _mapper.Map<BudgetProposalDetailDto>(budgetProposal);
+
+            // Check if there's a file URL and fetch the file
+            if (!string.IsNullOrEmpty(budgetProposal.Url))
+            {
+                using var httpClient = new HttpClient();
+                var fileBytes = await httpClient.GetByteArrayAsync(budgetProposal.Url);
+
+                budgetProposalDto.FileContent = fileBytes; // Add the file as a byte array
+                budgetProposalDto.FileName = $"BudgetProposal_{proposalId}.pdf"; 
+            }
+
+            return budgetProposalDto;
         }
 
         public async Task<PagedResult<BudgetProposalListDto>> GetBudgetProposalsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
@@ -114,52 +131,61 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
 
         public async Task<Guid?> UpdateBudgetProposalAsync(Guid proposalId, BudgetProposalUpdateDto newProposal)
         {
-            if (proposalId == null)
-                throw new ArgumentNullException(nameof(proposalId), "proposal id cannot be null.");
+            if (proposalId == Guid.Empty)
+                throw new ArgumentException("Proposal ID cannot be empty.", nameof(proposalId));
 
             if (newProposal == null)
                 throw new ArgumentNullException(nameof(newProposal), "New proposal data cannot be null.");
 
-            var propasal = await _dbContext.BudgetProposals
-                    .Include(lm => lm.Author)
-                    .FirstOrDefaultAsync(lm => lm.ProposalId == proposalId);
+            var proposal = await _dbContext.BudgetProposals
+                .Include(lm => lm.Author)
+                .FirstOrDefaultAsync(lm => lm.ProposalId == proposalId);
 
-            if (propasal == null)
-                throw new ArgumentNullException(nameof(propasal), "propasal data not found.");
-            if(newProposal.AuthorId!=propasal.AuthorId)
-                throw new ArgumentNullException(nameof(newProposal.AuthorId), "User is not authorized to update this proposal.");
+            if (proposal == null)
+                throw new KeyNotFoundException($"No budget proposal found with ID: {proposalId}");
+
+            if (newProposal.AuthorId != proposal.AuthorId)
+                throw new UnauthorizedAccessException("User is not authorized to update this proposal.");
 
             string? fileUrl = null;
 
             if (newProposal.File != null)
             {
-                // Check file type
+                // Validate file type
                 if (newProposal.File.ContentType != "application/pdf")
-                {
-                    throw new Exception("Only PDF files are allowed.");
-                }
+                    throw new InvalidOperationException("Only PDF files are allowed.");
 
-                // Check file size (5MB = 5 * 1024 * 1024 bytes)
-                if (newProposal.File.Length > 5 * 1024 * 1024)
-                {
-                    throw new Exception("File size must not exceed 5MB.");
-                }
+                // Validate file size (5MB limit)
+                const int maxFileSize = 5 * 1024 * 1024;
+                if (newProposal.File.Length > maxFileSize)
+                    throw new InvalidOperationException("File size must not exceed 5MB.");
 
-                fileUrl = await _googleDriveService.UploadBudgetProposalFileAsync(newProposal.File);
+                //Validate upload new file only
+                var uploadedFileHash = await _fileHelper.ComputeFileHashAsync(newProposal.File);
+                var existingFileHash = await _googleDriveService.ComputeGoogleDriveFileHashAsync(proposal.Url);
+
+                if (uploadedFileHash != existingFileHash)
+                {
+                    fileUrl = await _googleDriveService.UploadBudgetProposalFileAsync(newProposal.File);
+                }
             }
 
-            // Use AutoMapper to update existing entity
-            _mapper.Map(newProposal, propasal);
-            propasal.UpdatedAt = DateTime.UtcNow;
-            if(fileUrl != null)propasal.Url = fileUrl;
+            // Use AutoMapper to update the entity
+            _mapper.Map(newProposal, proposal);
+            proposal.UpdatedAt = DateTime.UtcNow;
+
+            // Only update file URL if a new file was uploaded
+            if (fileUrl != null)
+                proposal.Url = fileUrl;
 
             try
             {
                 await _dbContext.SaveChangesAsync();
-                return propasal.ProposalId;
+                return proposal.ProposalId;
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error updating budget proposal: {ex.Message}");
                 return null;
             }
         }

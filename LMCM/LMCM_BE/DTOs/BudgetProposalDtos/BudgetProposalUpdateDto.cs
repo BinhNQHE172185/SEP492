@@ -9,16 +9,7 @@ namespace LMCM_BE.DTOs.BudgetProposalDtos
         public string Title { get; set; } = null!;
 
         public DateTime? ProposalDate { get; set; }
-
-        public string? Url { get; set; }
-
-        public string? Status { get; set; }
-
-        public DateTime? CreatedAt { get; set; }
-
         public DateTime? UpdatedAt { get; set; }
-
-        public virtual ListUserResponseDto Author { get; set; } = null!;
         public IFormFile? File { get; set; }
     }
 }

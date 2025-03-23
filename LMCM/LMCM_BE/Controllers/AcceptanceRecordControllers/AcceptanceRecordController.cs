@@ -116,56 +116,19 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
         {
             try
             {
-                if (request.File == null)
-                {
-                    return BadRequest(new
-                    {
-                        Success = false,
-                        Message = "Không tìm thấy file.",
-                        Error = "File is required."
-                    });
-                }
-
-                // Check file type
-                if (request.File.ContentType != "application/pdf")
-                {
-                    return BadRequest(new
-                    {
-                        Success = false,
-                        Message = "Chỉ file pdf mới được tải lên.",
-                        Error = "Invalid file type."
-                    });
-                }
-
-                // Check file size (5MB = 5 * 1024 * 1024 bytes)
-                if (request.File.Length > 5 * 1024 * 1024)
-                {
-                    return BadRequest(new
-                    {
-                        Success = false,
-                        Message = "Dung lượng file không được vượt quá 5MB.",
-                        Error = "File size exceeds 5MB limit."
-                    });
-                }
-
                 var updatedRecord = await _acceptanceRecordService.UpdateAcceptanceRecordAsync(acceptanceId, request);
 
-                if (updatedRecord == null)
-                {
-                    return NotFound(new
+                if (updatedRecord.HasValue)
+                    return Ok(new
                     {
-                        Success = false,
-                        Message = "Không tìm thấy biên bản hoặc cập nhật thất bại.",
-                        Error = "Record not found or update unsuccessful."
-                    });
-                }
+                        message = "Update thành công.",
+                        Data = updatedRecord,
 
-                return Ok(new
+                    });
+                else
                 {
-                    Success = true,
-                    Message = "Cập nhật biên bản nghiệm thu thành công.",
-                    Data = updatedRecord
-                });
+                    return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+                }
             }
             catch (KeyNotFoundException ex)
             {
@@ -181,7 +144,7 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
                 return StatusCode(StatusCodes.Status403Forbidden, new
                 {
                     Success = false,
-                    Message = "Bạn không có quyền cập nhật biên bản nghiệm thu.",
+                    Message = ex.Message,
                     Error = ex.Message
                 });
             }
@@ -190,7 +153,7 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
                 return BadRequest(new
                 {
                     Success = false,
-                    Message = "Dữ liệu đầu vào không hợp lệ.",
+                    Message = ex.Message,
                     Error = ex.Message
                 });
             }
@@ -199,7 +162,16 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
                 return BadRequest(new
                 {
                     Success = false,
-                    Message = "Dữ liệu đầu vào không hợp lệ.",
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(new
+                {
+                    Success = false,
+                    Message = ex.Message,
                     Error = ex.Message
                 });
             }
@@ -208,7 +180,7 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
                 return StatusCode(500, new
                 {
                     Success = false,
-                    Message = "Lỗi hệ thống.",
+                    Message = ex.Message,
                     Error = ex.Message
                 });
             }

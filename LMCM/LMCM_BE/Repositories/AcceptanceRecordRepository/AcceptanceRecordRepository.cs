@@ -5,6 +5,7 @@ using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.ContractRepository;
 using LMCM_BE.Services.GoogleDriveService;
+using LMCM_BE.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.AcceptanceRecordRepository
@@ -15,17 +16,21 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
         private readonly IMapper _mapper;
         private readonly IContractRepository _contractRepository;
         private readonly IGoogleDriveService _googleDriveService;
+        private readonly IFileHelper _fileHelper;
+
 
         public AcceptanceRecordRepository(
             LMCM_DBContext dbContext,
             IMapper mapper,
             IContractRepository contractRepository,
-            IGoogleDriveService googleDriveService)
+            IGoogleDriveService googleDriveService,
+            IFileHelper fileHelper)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _contractRepository = contractRepository;
             _googleDriveService = googleDriveService;
+            _fileHelper = fileHelper;
         }
 
         public async Task<PagedResult<AcceptanceRecordListDto>> GetAcceptanceRecordsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
@@ -103,19 +108,56 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
 
         public async Task<Guid?> UpdateAcceptanceRecordAsync(Guid acceptanceId, AcceptanceRecordUpdateDto dto)
         {
+            if (acceptanceId == Guid.Empty)
+                throw new ArgumentException("ID biên bản nghiệm thu không được để trống.", nameof(acceptanceId));
+
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto), "Dữ liệu cập nhật không được để trống.");
+
             var acceptanceRecord = await _dbContext.AcceptanceRecords
+                .Include(ar => ar.Author)
                 .FirstOrDefaultAsync(ar => ar.AcceptanceId == acceptanceId && ar.Status == "Active");
 
             if (acceptanceRecord == null)
                 throw new KeyNotFoundException("Không tìm thấy biên bản nghiệm thu.");
 
-            // Không cập nhật URL (chỉ tải tệp lên khi tạo mới)
+            if (dto.AuthorId != acceptanceRecord.AuthorId)
+                throw new UnauthorizedAccessException("Bạn không có quyền cập nhật biên bản nghiệm thu này.");
+
+            string? fileUrl = null;
+
+            if (dto.File != null)
+            {
+                // Kiểm tra định dạng tệp
+                if (dto.File.ContentType != "application/pdf")
+                    throw new InvalidOperationException("Chỉ cho phép tải lên tệp PDF.");
+
+                // Giới hạn kích thước tệp (5MB)
+                const int maxFileSize = 5 * 1024 * 1024;
+                if (dto.File.Length > maxFileSize)
+                    throw new InvalidOperationException("Kích thước tệp không được vượt quá 5MB.");
+
+                // Kiểm tra nếu tệp mới khác tệp cũ trước khi tải lên
+                var uploadedFileHash = await _fileHelper.ComputeFileHashAsync(dto.File);
+                var existingFileHash = await _googleDriveService.ComputeGoogleDriveFileHashAsync(acceptanceRecord.Url);
+
+                if (uploadedFileHash != existingFileHash)
+                {
+                    fileUrl = await _googleDriveService.UploadAcceptanceRecordFileAsync(dto.File);
+                    if (string.IsNullOrWhiteSpace(fileUrl))
+                    {
+                        throw new Exception("Tải tệp lên thất bại. Vui lòng thử lại.");
+                    }
+                }
+            }
+
             _mapper.Map(dto, acceptanceRecord);
             acceptanceRecord.UpdatedAt = DateTime.UtcNow;
 
-            _dbContext.AcceptanceRecords.Update(acceptanceRecord);
-            await _dbContext.SaveChangesAsync();
+            if (fileUrl != null)
+                acceptanceRecord.Url = fileUrl;
 
+            await _dbContext.SaveChangesAsync();
             return acceptanceRecord.AcceptanceId;
         }
 
@@ -157,7 +199,19 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
             if (acceptanceRecord == null)
                 throw new KeyNotFoundException("Không tìm thấy biên bản nghiệm thu.");
 
-            return _mapper.Map<AcceptanceRecordDetailDto>(acceptanceRecord);
+            var acceptanceRecordDto = _mapper.Map<AcceptanceRecordDetailDto>(acceptanceRecord);
+
+            // Check if there's a file URL and fetch the file
+            if (!string.IsNullOrEmpty(acceptanceRecord.Url))
+            {
+                using var httpClient = new HttpClient();
+                var fileBytes = await httpClient.GetByteArrayAsync(acceptanceRecord.Url);
+
+                acceptanceRecordDto.FileContent = fileBytes; // Add the file as a byte array
+                acceptanceRecordDto.FileName = $"AcceptanceRecord_{acceptanceId}.pdf";
+            }
+
+            return acceptanceRecordDto;
         }
     }
 }

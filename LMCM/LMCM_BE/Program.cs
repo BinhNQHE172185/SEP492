@@ -49,6 +49,10 @@ using LMCM_BE.Repositories.ContractorRepository;
 using LMCM_BE.AutoMapper.AcceptanceRecordProfile;
 using LMCM_BE.Services.AcceptanceRecordService;
 using LMCM_BE.Repositories.AcceptanceRecordRepository;
+using LMCM_BE.Utilities;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Drive.v3;
+using Google.Apis.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -90,6 +94,22 @@ builder.Services.AddCors(options =>
                         .AllowAnyHeader()
                         .AllowAnyMethod());
 });
+
+builder.Services.AddSingleton<DriveService>(provider =>
+{
+    GoogleCredential credential;
+    using (var stream = new FileStream("google-drive-credentials.json", FileMode.Open, FileAccess.Read))
+    {
+        credential = GoogleCredential.FromStream(stream).CreateScoped(DriveService.Scope.Drive);
+    }
+
+    return new DriveService(new BaseClientService.Initializer
+    {
+        HttpClientInitializer = credential,
+        ApplicationName = "LMCM"
+    });
+});
+
 //AutoMapper
 builder.Services.AddAutoMapper(typeof(SubjectProfile));
 builder.Services.AddAutoMapper(typeof(SyllabusProfile));
@@ -140,12 +160,13 @@ builder.Services.AddScoped<ILearningMaterialDetailsService, LearningMaterialDeta
 builder.Services.AddScoped<GoogleDriveService>();
 builder.Services.AddScoped<IContractRepository, ContractRepository>();
 builder.Services.AddScoped<IContractService, ContractService>();
-builder.Services.AddScoped<IBudgetPropasalRepository, BudgetPropasalRepository>();
-builder.Services.AddScoped<IBudgetPropasalService, BudgetPropasalService>();
+builder.Services.AddScoped<IBudgetProposalRepository, BudgetProposalRepository>();
+builder.Services.AddScoped<IBudgetProposalService, BudgetProposalService>();
 builder.Services.AddScoped<IContractorRepository, ContractorRepository>();
 builder.Services.AddScoped<IContractorService, ContractorService>();
 builder.Services.AddScoped<IAcceptanceRecordRepository, AcceptanceRecordRepository>();
 builder.Services.AddScoped<IAcceptanceRecordService, AcceptanceRecordService>();
+builder.Services.AddScoped<IFileHelper, FileHelper>();
 
 builder.Services.AddScoped<IGoogleDriveService, GoogleDriveService>();
 

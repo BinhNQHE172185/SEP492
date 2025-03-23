@@ -3,6 +3,8 @@ using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
 using Google.Apis.Services;
 using Google.Apis.Upload;
+using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 
 namespace LMCM_BE.Services.GoogleDriveService
 {
@@ -13,22 +15,34 @@ namespace LMCM_BE.Services.GoogleDriveService
         private readonly string _budgetPropasalFolderId = "1-Wl5_HyRdbG9j3vBI5ynSHr7vykF7P3S";
         private readonly string _acceptanceRecordFolderId = "1065sqU0hsl1EwZuiibSLya5DFmQMZ6s2";
 
-        public GoogleDriveService()
+        public GoogleDriveService(DriveService driveService)
         {
-            GoogleCredential credential;
+            _driveService = driveService;
+        }
 
-            //  Load credentials only ONCE
-            using (var stream = new FileStream("google-drive-credentials.json", FileMode.Open, FileAccess.Read))
+        private string ExtractFileIdFromUrl(string fileUrl)
+        {
+            var match = Regex.Match(fileUrl, @"\/d\/([^\/]+)");
+            if (match.Success)
             {
-                credential = GoogleCredential.FromStream(stream)
-                    .CreateScoped(new[] { DriveService.Scope.Drive }); //  Full Drive access
+                return match.Groups[1].Value;
             }
+            throw new Exception("Invalid Google Drive URL format.");
+        }
 
-            _driveService = new DriveService(new BaseClientService.Initializer
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = "LMCM"
-            });
+        public async Task<string> ComputeGoogleDriveFileHashAsync(string fileUrl)
+        {
+            string fileId = ExtractFileIdFromUrl(fileUrl);
+
+            var request = _driveService.Files.Get(fileId);
+            request.Fields = "md5Checksum";  // Request only the MD5 checksum
+
+            var file = await request.ExecuteAsync();
+
+            if (file.Md5Checksum == null)
+                throw new Exception("MD5 checksum not available for this file.");
+
+            return file.Md5Checksum.ToLower();
         }
         public async Task<string?> UploadAcceptanceRecordFileAsync(IFormFile file)
         {
@@ -74,7 +88,7 @@ namespace LMCM_BE.Services.GoogleDriveService
             var uploadedFile = request.ResponseBody;
             return uploadedFile.WebViewLink; // Return Google Drive File URL
         }
-        public async Task<string?> UploadBudgetPropasalFileAsync(IFormFile file)
+        public async Task<string?> UploadBudgetProposalFileAsync(IFormFile file)
         {
             if (file == null || file.Length == 0)
                 return null;

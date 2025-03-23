@@ -2,7 +2,7 @@
 
 namespace LMCM_BE.DTOs.BudgetProposalDtos
 {
-    public class BudgetPropasalDetailDto
+    public class BudgetProposalDetailDto
     {
         public Guid ProposalId { get; set; }
 
@@ -21,5 +21,7 @@ namespace LMCM_BE.DTOs.BudgetProposalDtos
         public DateTime? UpdatedAt { get; set; }
 
         public virtual ListUserResponseDto Author { get; set; } = null!;
+        public byte[]? FileContent { get; set; } 
+        public string? FileName { get; set; } 
     }
 }

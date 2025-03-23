@@ -74,7 +74,7 @@ namespace LMCM_BE.Repositories.ContractorRepository
                 .FirstOrDefaultAsync(c => c.ContractorId == contractorId && c.Status == "Active");
 
             if (contractor == null)
-                return null;
+                throw new KeyNotFoundException("Không tìm thấy nhà thầu.");
 
             _mapper.Map(dto, contractor);
             contractor.UpdatedAt = DateTime.UtcNow;

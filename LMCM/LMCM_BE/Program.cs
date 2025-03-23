@@ -46,6 +46,9 @@ using LMCM_BE.Services.BudgetPropasalService;
 using LMCM_BE.AutoMapper.PloProfiles;
 using LMCM_BE.Services.ContractorService;
 using LMCM_BE.Repositories.ContractorRepository;
+using LMCM_BE.AutoMapper.AcceptanceRecordProfile;
+using LMCM_BE.Services.AcceptanceRecordService;
+using LMCM_BE.Repositories.AcceptanceRecordRepository;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -102,6 +105,7 @@ builder.Services.AddAutoMapper(typeof(ContractProfile));
 builder.Services.AddAutoMapper(typeof(BudgetPropasalProfile));
 builder.Services.AddAutoMapper(typeof(PloProfile));
 builder.Services.AddAutoMapper(typeof(ContractProfile));
+builder.Services.AddAutoMapper(typeof(AcceptanceRecordProfile));
 
 //DI
 builder.Services.AddScoped<RoleManager<IdentityRole<Guid>>>();
@@ -140,6 +144,8 @@ builder.Services.AddScoped<IBudgetPropasalRepository, BudgetPropasalRepository>(
 builder.Services.AddScoped<IBudgetPropasalService, BudgetPropasalService>();
 builder.Services.AddScoped<IContractorRepository, ContractorRepository>();
 builder.Services.AddScoped<IContractorService, ContractorService>();
+builder.Services.AddScoped<IAcceptanceRecordRepository, AcceptanceRecordRepository>();
+builder.Services.AddScoped<IAcceptanceRecordService, AcceptanceRecordService>();
 
 builder.Services.AddScoped<IGoogleDriveService, GoogleDriveService>();
 

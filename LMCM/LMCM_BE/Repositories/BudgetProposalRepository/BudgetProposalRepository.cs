@@ -27,7 +27,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             _fileHelper = fileHelper;
             _userRepositoriy = userRepository;
         }
-        public async Task<BudgetProposal> CreateBudgetProposalAsync(BudgetProposalInsertDto proposal)
+        public async Task<bool> CreateBudgetProposalAsync(BudgetProposalInsertDto proposal)
         {
             if (proposal == null)
             {
@@ -60,9 +60,8 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
                 {
                     UserProfileResponseDto user = await _userRepositoriy.GetProfile(proposal.AuthorId.ToString());
                     if (user == null || string.IsNullOrEmpty(user.Email))
-                        throw new Exception("Không tìm thấy email");
-                    //bool status = await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
-                    Console.WriteLine(user.Email);
+                        throw new Exception("Email not found");
+                    await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
                 }
             }
 
@@ -79,7 +78,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             _dbContext.BudgetProposals.Add(newProposal);
             await _dbContext.SaveChangesAsync();
 
-            return newProposal;
+            return true;
         }
 
         public async Task<BudgetProposalDetailDto> GetBudgetProposalByIdAsync(Guid proposalId)
@@ -224,7 +223,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
 
                     var user = await _userRepositoriy.GetProfile(proposal.AuthorId.ToString());
                     if (user == null || string.IsNullOrEmpty(user.Email))
-                        throw new Exception("Không tìm thấy email");
+                        throw new Exception("Email not found");
                     await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
 
                     // Update the proposal's file URL **only if a new file was uploaded**

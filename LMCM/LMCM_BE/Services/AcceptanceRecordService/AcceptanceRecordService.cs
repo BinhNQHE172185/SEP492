@@ -21,7 +21,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
             return await _acceptanceRecordRepository.GetAcceptanceRecordsAsync(searchKey, pageIndex, pageSize);
         }
 
-        public async Task<AcceptanceRecordDetailDto> CreateAcceptanceRecordAsync(AcceptanceRecordCreateDto dto)
+        public async Task<bool> CreateAcceptanceRecordAsync(AcceptanceRecordCreateDto dto)
         {
             return await _acceptanceRecordRepository.CreateAcceptanceRecordAsync(dto);
         }

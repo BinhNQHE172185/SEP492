@@ -64,7 +64,7 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
             };
         }
 
-        public async Task<AcceptanceRecordDetailDto> CreateAcceptanceRecordAsync(AcceptanceRecordCreateDto dto)
+        public async Task<bool> CreateAcceptanceRecordAsync(AcceptanceRecordCreateDto dto)
         {
             // Bước 1: Tải tệp lên Google Drive nếu có
             string? fileUrl = null;
@@ -113,7 +113,7 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
             await _dbContext.AcceptanceRecords.AddAsync(acceptanceRecord);
             await _dbContext.SaveChangesAsync();
 
-            return _mapper.Map<AcceptanceRecordDetailDto>(acceptanceRecord);
+            return true;
         }
 
         public async Task<Guid?> UpdateAcceptanceRecordAsync(Guid acceptanceId, AcceptanceRecordUpdateDto dto)

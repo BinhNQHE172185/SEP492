@@ -28,7 +28,7 @@ namespace LMCM_BE.Repositories.ContractRepository
             _userRepository = userRepository;   
         }
 
-        public async Task<Contract> CreateContract(ContractInsertDto contractDto)
+        public async Task<bool> CreateContract(ContractInsertDto contractDto)
         {
             // Step 1: Upload contract file to Google Drive (if provided)
             string? fileUrl = null;
@@ -56,7 +56,7 @@ namespace LMCM_BE.Repositories.ContractRepository
                 {
                     var user = await _userRepository.GetProfile(contractDto.AuthorId.ToString());
                     if (user == null || string.IsNullOrEmpty(user.Email))
-                        throw new Exception("Không tìm thấy email");
+                        throw new Exception("Email not found");
                     await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
                 }
             }
@@ -74,7 +74,7 @@ namespace LMCM_BE.Repositories.ContractRepository
             _dbContext.Contracts.Add(newContract);
             await _dbContext.SaveChangesAsync();
 
-            return newContract;
+            return true;
         }
 
         public async Task<ContractDetailDto> GetContractByIdAsync(Guid contractId)
@@ -234,7 +234,7 @@ namespace LMCM_BE.Repositories.ContractRepository
 
                     var user = await _userRepository.GetProfile(newContract.AuthorId.ToString());
                     if (user == null || string.IsNullOrEmpty(user.Email))
-                        throw new Exception("Không tìm thấy email");
+                        throw new Exception("Email not found");
                     await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
 
                     // Update the contract's file URL **only if a new file was uploaded**

@@ -8,7 +8,7 @@ namespace LMCM_BE.Repositories.ContractRepository
 {
     public interface IContractRepository
     {
-        Task<Contract> CreateContract(ContractInsertDto contract);
+        Task<bool> CreateContract(ContractInsertDto contract);
         Task<ContractDetailDto> GetContractByIdAsync(Guid contractId);
         Task<PagedResult<ContractListDto>> GetContractsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<bool> HasActiveContractsAsync(Guid contractorId);

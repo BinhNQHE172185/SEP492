@@ -13,7 +13,7 @@ namespace LMCM_BE.Services.ContractService
         {
             _contractRepository = contractRepository;
         }
-        public async Task<Contract> CreateContract(ContractInsertDto contractDto)
+        public async Task<bool> CreateContract(ContractInsertDto contractDto)
         {
             return await _contractRepository.CreateContract(contractDto);   
         }

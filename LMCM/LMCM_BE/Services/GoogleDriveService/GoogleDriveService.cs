@@ -178,6 +178,7 @@ namespace LMCM_BE.Services.GoogleDriveService
 
                 string fileId = await ExtractFileId(url);
 
+                Console.WriteLine(fileId);
                 // Share the specific PDF file
                 if (fileId != null)
                     await _driveService.Permissions.Create(permission, fileId).ExecuteAsync();

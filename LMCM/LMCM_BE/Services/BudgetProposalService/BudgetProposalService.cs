@@ -13,7 +13,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
         {
             _budgetProposalRepository = budgetPropasalRepository;
         }
-        public async Task<BudgetProposal> CreateBudgetProposalAsync(BudgetProposalInsertDto proposal)
+        public async Task<bool> CreateBudgetProposalAsync(BudgetProposalInsertDto proposal)
         {
             return await _budgetProposalRepository.CreateBudgetProposalAsync(proposal);  
         }

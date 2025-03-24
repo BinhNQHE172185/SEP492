@@ -3,6 +3,7 @@ using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
 using Google.Apis.Services;
 using Google.Apis.Upload;
+using LMCM_BE.Utilities;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
@@ -11,28 +12,20 @@ namespace LMCM_BE.Services.GoogleDriveService
     public class GoogleDriveService: IGoogleDriveService
     {
         private readonly DriveService _driveService;
+        private readonly IFileHelper _fileHelper;
         private readonly string _contractFolderId = "1D-BiSw2okv50bU3C85NS4Z1YE4it0374";
         private readonly string _budgetPropasalFolderId = "1-Wl5_HyRdbG9j3vBI5ynSHr7vykF7P3S";
         private readonly string _acceptanceRecordFolderId = "1065sqU0hsl1EwZuiibSLya5DFmQMZ6s2";
 
-        public GoogleDriveService(DriveService driveService)
+        public GoogleDriveService(DriveService driveService,IFileHelper fileHelper)
         {
             _driveService = driveService;
-        }
-
-        private string ExtractFileIdFromUrl(string fileUrl)
-        {
-            var match = Regex.Match(fileUrl, @"\/d\/([^\/]+)");
-            if (match.Success)
-            {
-                return match.Groups[1].Value;
-            }
-            throw new Exception("Invalid Google Drive URL format.");
+            _fileHelper = fileHelper;
         }
 
         public async Task<string> ComputeGoogleDriveFileHashAsync(string fileUrl)
         {
-            string fileId = ExtractFileIdFromUrl(fileUrl);
+            string fileId = await _fileHelper.ExtractFileIdFromUrl(fileUrl);
 
             var request = _driveService.Files.Get(fileId);
             request.Fields = "md5Checksum";  // Request only the MD5 checksum
@@ -88,6 +81,39 @@ namespace LMCM_BE.Services.GoogleDriveService
             var uploadedFile = request.ResponseBody;
             return uploadedFile.WebViewLink; // Return Google Drive File URL
         }
+
+        public async Task<(byte[]? FileContent, string? FileName)> FetchFileAsync(string fileId)
+        {
+            if (string.IsNullOrEmpty(fileId))
+                return (null, null);
+
+            try
+            {
+                // Retrieve file metadata (including name)
+                var request = _driveService.Files.Get(fileId);
+                request.Fields = "name"; // Only fetch the file name
+                var fileMetadata = await request.ExecuteAsync();
+                string fileName = fileMetadata?.Name ?? "UnknownFile.pdf";
+
+                // Download file content
+                using var stream = new MemoryStream();
+                await _driveService.Files.Get(fileId).DownloadAsync(stream);
+
+                return (stream.ToArray(), fileName);
+            }
+            catch (Google.GoogleApiException ex) when (ex.HttpStatusCode == System.Net.HttpStatusCode.Forbidden)
+            {
+                Console.WriteLine($"Error: Unauthorized access to file {fileId}");
+                return (null, null);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching file: {ex.Message}");
+                return (null, null);
+            }
+        }
+
+
         public async Task<string?> UploadBudgetProposalFileAsync(IFormFile file)
         {
             if (file == null || file.Length == 0)

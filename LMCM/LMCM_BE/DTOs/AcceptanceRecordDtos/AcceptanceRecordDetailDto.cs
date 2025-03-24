@@ -28,7 +28,7 @@ namespace LMCM_BE.DTOs.AcceptanceRecordDtos
         public virtual ListUserResponseDto Author { get; set; } = null!;
 
         public virtual ContractListDto Contract { get; set; } = null!;
-        public byte[]? FileContent { get; set; }
-        public string? FileName { get; set; }
+        //public byte[]? FileContent { get; set; }
+        //public string? FileName { get; set; }
     }
 }

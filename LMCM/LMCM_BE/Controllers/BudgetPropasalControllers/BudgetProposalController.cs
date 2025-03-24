@@ -40,7 +40,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
         {
             try
             {
-                var data = await _budgetProposalService.GetBudgetProposalById(proposalId);
+                var data = await _budgetProposalService.GetBudgetProposalByIdAsync(proposalId);
                 if (data != null)
                 {
                     return Ok(data);
@@ -53,7 +53,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
             }
         }
         [HttpPost("createBudgetProposal")]
-        public async Task<IActionResult> CreateBudgetProposal([FromForm] BudgetProposalInsertDto proposalDto)
+        public async Task<IActionResult> CreateBudgetProposalAsync([FromForm] BudgetProposalInsertDto proposalDto)
         {
             try
             {
@@ -73,7 +73,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                     return BadRequest(new { Success = false, Message = "Dung lượng file không được vượt quá 5MB." });
                 }
 
-                var propasal = await _budgetProposalService.CreateBudgetProposal(proposalDto);
+                var propasal = await _budgetProposalService.CreateBudgetProposalAsync(proposalDto);
                 return Ok(new
                 {
                     Success = true,
@@ -130,6 +130,36 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = ex.Message });
+            }
+        }
+        [HttpDelete("deleteBudgetProposal/{proposalId}")]
+        public async Task<IActionResult> DeleteBudgetProposalASync(Guid proposalId, Guid authorId)
+        {
+            try
+            {
+                var result = await _budgetProposalService.SoftDeleteBudgetProposalAsync(proposalId, authorId);
+                return result ? Ok(new { message = "Xóa thành công." }) : NotFound(new { message = "Không tìm thấy ." });
+            }
+            catch (UnauthorizedAccessException ex) // Handle permission errors
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    Success = false,
+                    Message = "Bạn không có quyền xóa tờ trình.",
+                    Error = ex.Message
+                });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
     }

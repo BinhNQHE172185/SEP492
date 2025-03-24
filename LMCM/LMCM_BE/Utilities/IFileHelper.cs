@@ -3,5 +3,6 @@
     public interface IFileHelper
     {
         Task<string> ComputeFileHashAsync(IFormFile file);
+        Task<string> ExtractFileIdFromUrl(string fileUrl);
     }
 }

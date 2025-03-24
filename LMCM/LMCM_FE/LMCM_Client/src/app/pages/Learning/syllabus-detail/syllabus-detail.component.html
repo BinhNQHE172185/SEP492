@@ -72,7 +72,7 @@
         <h2 class="text-orange-500 m-0">Học Liệu</h2>
         <div>
           <button pButton icon="pi pi-plus" label="Thêm Học Liệu" class="p-button-warning"
-            (click)="openNewMaterialDialog()"></button>
+            (click)="openMaterialDialog()"></button>
         </div>
       </div>
 
@@ -102,7 +102,7 @@
             <td>{{ material.note }}</td>
             <td>
               <div class="flex gap-1">
-                <p-button label="Sửa" outlined (click)="openEditMaterialDialog(material.materialId)"></p-button>
+                <p-button label="Sửa" outlined (click)="openMaterialDialog(material.materialId)"></p-button>
                 <p-button label="Xóa" outlined (click)="confirmDeleteMaterial(material.materialId)"></p-button>
               </div>
             </td>
@@ -252,93 +252,15 @@
 </div>
 
 <!-- Material Dialog -->
-<p-dialog [(visible)]="materialDialog"
-  [header]="isEdit ? 'Chỉnh Sửa Học Liệu' : 'Thêm Học Liệu Mới'" [modal]="true" [draggable]="false" [resizable]="true">
+<p-dialog [(visible)]="materialDialog" [header]="isEdit ? 'Chỉnh Sửa Học Liệu' : 'Thêm Học Liệu Mới'" [modal]="true"
+  [draggable]="false" [resizable]="true">
 
-  <form [formGroup]="materialForm" class="p-3">
-    <div class="flex flex-col gap-4">
-      <div class="flex flex-wrap gap-4">
-        <div class="flex flex-col grow basis-0 gap-2">
-          <label for="description">Tên giáo trình <span class="text-red-500">*</span></label>
-          <input id="description" type="text" pInputText formControlName="description" class="w-full" />
-          <small class="p-error"
-            *ngIf="materialForm.get('description')?.invalid && materialForm.get('description')?.touched">
-            Tên giáo trình là bắt buộc
-          </small>
-        </div>
-        <div class="flex flex-col grow basis-0 gap-2">
-          <label for="type">Loại giáo trình <span class="text-red-500">*</span></label>
-          <p-dropdown id="type" [options]="materialTypes" formControlName="type" optionLabel="label" optionValue="value"
-            [showClear]="false" appendTo="body" class="w-full"></p-dropdown>
-        </div>
-      </div>
-
-      <div class="flex flex-wrap gap-4">
-        <div class="flex flex-col grow basis-0 gap-2">
-          <label for="publishedDate">Năm xuất bản giáo trình</label>
-          <p-calendar id="publishedDate" formControlName="publishedDate" [showIcon]="true" view="year" dateFormat="yy"
-            [yearNavigator]="true" yearRange="2000:2030"></p-calendar>
-        </div>
-        <div class="flex flex-col grow basis-0 gap-2">
-          <label for="originalBook">Sách gốc</label>
-          <input id="originalBook" type="text" pInputText formControlName="originalBook" class="w-full" />
-        </div>
-      </div>
-
-      <!-- Tác giả -->
-      <!-- <div class="flex flex-wrap gap-4">
-        <label>Tác giả <span class="text-red-500">*</span></label>
-        <input type="text" pInputText formControlName="author" placeholder="Nhập tên tác giả" class="flex-grow-1" />
-        <button pButton type="button" label="Thêm tác giả" icon="pi pi-plus"
-          class="p-button-outlined p-button-secondary" (click)="addAuthor()"></button>
-        <div class="flex flex-column">
-          <div *ngIf="authors.length > 0" class="mt-2">
-            <div class="flex flex-wrap gap-2">
-              <div *ngFor="let author of authors; let i = index"
-                class="flex align-items-center bg-gray-50 border-round p-2">
-                <span>{{author}}</span>
-                <button pButton type="button" icon="pi pi-times"
-                  class="p-button-text p-button-rounded p-button-danger ml-2" (click)="removeAuthor(i)"></button>
-              </div>
-            </div>
-          </div>
-
-          <small class="p-error" *ngIf="authors.length === 0 && materialForm.get('author')?.touched">
-            Vui lòng thêm ít nhất một tác giả
-          </small>
-        </div>
-      </div> -->
-
-      <div class="flex flex-wrap gap-4">
-        <div class="flex flex-col grow basis-0 gap-2">
-          <label for="originalPublishedDate">Năm xuất bản sách gốc</label>
-          <p-calendar id="originalPublishedDate" formControlName="originalPublishedDate" [showIcon]="true" view="year"
-            dateFormat="yy" [yearNavigator]="true" yearRange="2000:2030"></p-calendar>
-        </div>
-        <div class="flex flex-col grow basis-0 gap-2">
-          <label for="publisher">Nhà xuất bản sách gốc</label>
-          <p-dropdown id="publisher" [options]="publishers" formControlName="publisher" optionLabel="label"
-            optionValue="value" [showClear]="true" [filter]="true" filterBy="label" placeholder="Chọn nhà xuất bản"
-            appendTo="body" class="w-full"></p-dropdown>
-        </div>
-      </div>
-
-      <div class="flex flex-wrap gap-4">
-        <div class="flex flex-col grow basis-0 gap-2">
-          <label for="edition">Phiên bản sách gốc</label>
-          <input id="edition" type="text" pInputText formControlName="edition" class="w-full" />
-        </div>
-        <div class="flex flex-col grow basis-0 gap-2">
-          <label for="isbn">ISBN</label>
-          <input id="isbn" type="text" pInputText formControlName="isbn" />
-        </div>
-      </div>
-    </div>
-  </form>
+  <app-learning-material [selectedMaterial]="selectedMaterial" (closeDialog)="closeMaterialDialog()">
+  </app-learning-material>
 
   <ng-template pTemplate="footer">
     <div class="flex justify-content-end gap-2">
-      <button pButton outlined label="Hủy" class="p-button-text" (click)="cancelDialog()"></button>
+      <button pButton outlined label="Hủy" class="p-button-text" (click)="closeMaterialDialog()"></button>
       <button pButton pRipple label="Lưu thay đổi" class="p-button-warning" (click)="saveMaterial()"></button>
     </div>
   </ng-template>

@@ -1,16 +1,13 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using LMCM_BE.DbContext;
-using LMCM_BE.DTOs.BudgetProposalDtos;
 using LMCM_BE.DTOs.ContractDtos;
-using LMCM_BE.DTOs.ContractorDtos;
 using LMCM_BE.DTOs.ShareDtos;
-using LMCM_BE.DTOs.SyllabusDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Repositories.UserRepositoriy;
 using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Utilities;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace LMCM_BE.Repositories.ContractRepository
 {
@@ -20,16 +17,18 @@ namespace LMCM_BE.Repositories.ContractRepository
         private readonly IGoogleDriveService _googleDriveService;
         private readonly IMapper _mapper;
         private readonly IFileHelper _fileHelper;
+        IUserRepository _userRepository;
 
-        public ContractRepository(LMCM_DBContext dbContext, IGoogleDriveService googleDriveService, IMapper mapper,IFileHelper fileHelper)
+        public ContractRepository(LMCM_DBContext dbContext, IGoogleDriveService googleDriveService, IMapper mapper, IFileHelper fileHelper,IUserRepository userRepository)
         {
             _dbContext = dbContext;
             _googleDriveService = googleDriveService;
             _mapper = mapper;
             _fileHelper = fileHelper;
+            _userRepository = userRepository;   
         }
 
-        public async Task<Contract> CreateContract(ContractInsertDto contractDto)
+        public async Task<bool> CreateContract(ContractInsertDto contractDto)
         {
             // Step 1: Upload contract file to Google Drive (if provided)
             string? fileUrl = null;
@@ -48,6 +47,18 @@ namespace LMCM_BE.Repositories.ContractRepository
                 }
 
                 fileUrl = await _googleDriveService.UploadContractFileAsync(contractDto.File);
+
+                if (string.IsNullOrWhiteSpace(fileUrl))
+                {
+                    throw new Exception("Failed to upload the file.");
+                }
+                else
+                {
+                    var user = await _userRepository.GetProfile(contractDto.AuthorId.ToString());
+                    if (user == null || string.IsNullOrEmpty(user.Email))
+                        throw new Exception("Email not found");
+                    await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
+                }
             }
 
             // Step 2: Create Contract object
@@ -63,8 +74,9 @@ namespace LMCM_BE.Repositories.ContractRepository
             _dbContext.Contracts.Add(newContract);
             await _dbContext.SaveChangesAsync();
 
-            return newContract;
+            return true;
         }
+
         public async Task<ContractDetailDto> GetContractByIdAsync(Guid contractId)
         {
             if (contractId == Guid.Empty)
@@ -117,7 +129,7 @@ namespace LMCM_BE.Repositories.ContractRepository
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .Include(s => s.Author)
-                .Include(s=>s.Proposal)
+                .Include(s => s.Proposal)
                 .ToListAsync();
 
             var data = _mapper.Map<List<ContractListDto>>(items);
@@ -130,6 +142,13 @@ namespace LMCM_BE.Repositories.ContractRepository
                 PageSize = pageSize
             };
         }
+
+        public async Task<bool> HasActiveConntractsAsync(Guid proposalId)
+        {
+            return await _dbContext.Contracts
+                  .AnyAsync(p => p.ProposalId == proposalId && p.Status == "Active");
+        }
+
         public async Task<bool> HasActiveContractsAsync(Guid contractorId)
         {
             return await _dbContext.Contracts
@@ -177,7 +196,7 @@ namespace LMCM_BE.Repositories.ContractRepository
             var contract = await _dbContext.Contracts
                 .Include(lm => lm.Author)
                 .Include(lm => lm.Proposal)
-                .Include(lm=>lm.Contractor)
+                .Include(lm => lm.Contractor)
                 .FirstOrDefaultAsync(lm => lm.ContractId == contractId);
 
             if (contract == null)
@@ -185,6 +204,10 @@ namespace LMCM_BE.Repositories.ContractRepository
 
             if (newContract.AuthorId != contract.AuthorId)
                 throw new UnauthorizedAccessException("User is not authorized to update this contract.");
+
+            // Update contract fields (excluding file)
+            _mapper.Map(newContract, contract);
+            contract.UpdatedAt = DateTime.UtcNow;
 
             string? fileUrl = null;
 
@@ -199,23 +222,25 @@ namespace LMCM_BE.Repositories.ContractRepository
                 if (newContract.File.Length > maxFileSize)
                     throw new InvalidOperationException("File size must not exceed 5MB.");
 
-                //Validate upload new file only
+                // Validate if the new file is different from the existing one
                 var uploadedFileHash = await _fileHelper.ComputeFileHashAsync(newContract.File);
                 var existingFileHash = await _googleDriveService.ComputeGoogleDriveFileHashAsync(contract.Url);
 
                 if (uploadedFileHash != existingFileHash)
                 {
                     fileUrl = await _googleDriveService.UploadContractFileAsync(newContract.File);
+                    if (string.IsNullOrWhiteSpace(fileUrl))
+                        throw new Exception("Failed to upload the file.");
+
+                    var user = await _userRepository.GetProfile(newContract.AuthorId.ToString());
+                    if (user == null || string.IsNullOrEmpty(user.Email))
+                        throw new Exception("Email not found");
+                    await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
+
+                    // Update the contract's file URL **only if a new file was uploaded**
+                    contract.Url = fileUrl;
                 }
             }
-
-            // Use AutoMapper to update the entity
-            _mapper.Map(newContract, contract);
-            contract.UpdatedAt = DateTime.UtcNow;
-
-            // Only update file URL if a new file was uploaded
-            if (fileUrl != null)
-                contract.Url = fileUrl;
 
             try
             {
@@ -228,5 +253,6 @@ namespace LMCM_BE.Repositories.ContractRepository
                 return null;
             }
         }
+
     }
 }

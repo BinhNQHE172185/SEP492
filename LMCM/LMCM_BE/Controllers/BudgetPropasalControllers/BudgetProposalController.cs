@@ -1,8 +1,8 @@
 ﻿using LMCM_BE.DTOs.BudgetProposalDtos;
-using LMCM_BE.DTOs.ContractDtos;
-using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Services.BudgetPropasalService;
+using LMCM_BE.Services.ContractorService;
+using LMCM_BE.Services.ContractService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMCM_BE.Controllers.BudgetPropasalControllers
@@ -12,10 +12,12 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
     public class BudgetProposalController : Controller
     {
         private readonly IBudgetProposalService _budgetProposalService;
+        private readonly IContractService _contractService;
 
-        public BudgetProposalController(IBudgetProposalService budgetProposalService)
+        public BudgetProposalController(IBudgetProposalService budgetProposalService, IContractService contractService)
         {
             _budgetProposalService = budgetProposalService; 
+            _contractService = contractService;
         }
 
         [HttpPost("getBudgetProposalList")]
@@ -137,6 +139,14 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
         {
             try
             {
+                if (await _contractService.HasActiveConntractsAsync(proposalId))
+                {
+                    return BadRequest(new
+                    {
+                        Success = false,
+                        Message = "Không thể xóa do có hợp đồng lệ thuộc."
+                    });
+                }
                 var result = await _budgetProposalService.SoftDeleteBudgetProposalAsync(proposalId, authorId);
                 return result ? Ok(new { message = "Xóa thành công." }) : NotFound(new { message = "Không tìm thấy ." });
             }

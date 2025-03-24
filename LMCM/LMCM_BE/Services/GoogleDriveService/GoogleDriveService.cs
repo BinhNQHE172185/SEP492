@@ -1,15 +1,13 @@
-﻿using Google.Apis.Auth.OAuth2;
-using Google.Apis.Drive.v3;
+﻿using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
-using Google.Apis.Services;
 using Google.Apis.Upload;
+using LMCM_BE.Services.UserService;
 using LMCM_BE.Utilities;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
 namespace LMCM_BE.Services.GoogleDriveService
 {
-    public class GoogleDriveService: IGoogleDriveService
+    public class GoogleDriveService : IGoogleDriveService
     {
         private readonly DriveService _driveService;
         private readonly IFileHelper _fileHelper;
@@ -17,7 +15,7 @@ namespace LMCM_BE.Services.GoogleDriveService
         private readonly string _budgetPropasalFolderId = "1-Wl5_HyRdbG9j3vBI5ynSHr7vykF7P3S";
         private readonly string _acceptanceRecordFolderId = "1065sqU0hsl1EwZuiibSLya5DFmQMZ6s2";
 
-        public GoogleDriveService(DriveService driveService,IFileHelper fileHelper)
+        public GoogleDriveService(DriveService driveService, IFileHelper fileHelper)
         {
             _driveService = driveService;
             _fileHelper = fileHelper;
@@ -161,5 +159,38 @@ namespace LMCM_BE.Services.GoogleDriveService
                 return false;
             }
         }
+        private async Task<string> ExtractFileId(string url)
+        {
+            var match = Regex.Match(url, @"(?:/d/|id=)([a-zA-Z0-9_-]+)");
+            return match.Success ? match.Groups[1].Value : null;
+        }
+
+        public async Task<bool> SharePdfFileWithUser(string url, string email, string role = "reader")
+        {
+            try
+            {
+                var permission = new Permission
+                {
+                    Type = "user",
+                    Role = role, // "reader" (view-only) or "writer" (edit)
+                    EmailAddress = email,
+                };
+
+                string fileId = await ExtractFileId(url);
+
+                Console.WriteLine(fileId);
+                // Share the specific PDF file
+                if (fileId != null)
+                    await _driveService.Permissions.Create(permission, fileId).ExecuteAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sharing PDF file: {ex.Message}");
+                return false;
+            }
+        }
+
     }
 }

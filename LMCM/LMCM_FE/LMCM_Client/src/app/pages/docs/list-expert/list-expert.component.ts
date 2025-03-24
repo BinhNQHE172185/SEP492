@@ -13,209 +13,247 @@ import { ToastModule } from 'primeng/toast';
 import { FileUploadModule } from 'primeng/fileupload';
 import { TextareaModule } from 'primeng/textarea';
 import { CalendarModule } from 'primeng/calendar';
+import { ContractorApiService } from '../../../apis/contractorAPIs/contractor-api.service';
+import {ConfirmationService, MessageService } from 'primeng/api';
 
 interface Expert {
-  name: string;
-  email: string;
-  phone: string;
-  taxNumber: string;
-  address: string;
+    id: string;
+    contractorName: string;
+    address: string;
+    phoneNumber: string;
+    taxCode: string;
+    email: string;
+    employeeCode: string;
+    idCardNumber: string;
+    idIssuedPlace: string;
+    position: string;
+    bankAccountNumber: string;
+    bankName: string;
 }
 
 @Component({
-  selector: 'app-list-expert',
-  standalone: true,
-  imports: [
-    CommonModule,
-    TableModule,
-    ButtonModule,
-    InputTextModule,
-    InputGroupModule,
-    CardModule,
-    ConfirmDialogModule,
-    ToastModule,
-    FileUploadModule,
-    DialogModule,
-    FormsModule,
-    TagModule,
-    TextareaModule,
-    CalendarModule
-  ],
-  templateUrl: './list-expert.component.html',
-  styleUrls: ['./list-expert.component.scss'] // <-- Ensure this matches your file name
+    selector: 'app-list-expert',
+    standalone: true,
+    imports: [CommonModule, TableModule, ButtonModule, InputTextModule, InputGroupModule, CardModule, ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, FormsModule, TagModule, TextareaModule, CalendarModule],
+    providers: [MessageService,ConfirmationService],
+    templateUrl: './list-expert.component.html',
+    styleUrls: ['./list-expert.component.scss']
 })
 export class ListExpertComponent implements OnInit {
-  // --------------------------
-  // Mock Data
-  // --------------------------
-  experts: Expert[] = [
-    {
-      name: 'Dr. John Smith',
-      email: 'john@example.com',
-      phone: '0912345678',
-      taxNumber: 'MST123456789',
-      address: '123 Đường Nguyễn Huệ, Quận 1, TP.HCM'
-    },
-    {
-      name: 'Dr. Sarah Johnson',
-      email: 'sarah@example.com',
-      phone: '0987654321',
-      taxNumber: 'MST987654321',
-      address: '456 Đường Lê Lợi, Quận 3, TP.HCM'
-    },
-    {
-      name: 'Dr. Michael Brown',
-      email: 'michael@example.com',
-      phone: '0909123456',
-      taxNumber: 'MST555999222',
-      address: '789 Đường Pasteur, Quận 1, TP.HCM'
-    }
-  ];
+    experts: Expert[] = [];
+    filteredExperts: Expert[] = [];
+    searchKey = '';
 
-  // --------------------------
-  // Dialog States
-  // --------------------------
-  displayAddDialog = false;
-  displayDetailDialog = false;
-  displayEditDialog = false;
+    displayAddDialog = false;
+    displayDetailDialog = false;
+    displayEditDialog = false;
 
-  // --------------------------
-  // Add Dialog Fields
-  // --------------------------
-  addName = '';
-  addEmail = '';
-  addPhone = '';
-  addTaxNumber = '';
-  addAddress = '';
+    addContractorName = '';
+    addPhoneNumber = '';
+    addTaxCode = '';
+    addEmail = '';
+    addEmployeeCode = '';
+    addIdCardNumber = '';
+    addIdIssuedPlace = '';
+    addPosition = '';
+    addBankAccountNumber = '';
+    addBankName = '';
+    addAddress = '';
 
-  // --------------------------
-  // Edit Dialog Fields
-  // --------------------------
-  editName = '';
-  editEmail = '';
-  editPhone = '';
-  editTaxNumber = '';
-  editAddress = '';
-  editIndex = -1; // Keep track of which item we are editing
+    editId = '';
+    editContractorName = '';
+    editAddress = '';
+    editPhoneNumber = '';
+    editTaxCode = '';
+    editEmail = '';
+    editEmployeeCode = '';
+    editIdCardNumber = '';
+    editIdIssuedPlace = '';
+    editPosition = '';
+    editBankAccountNumber = '';
+    editBankName = '';
+    editStatus = '';
 
-  // --------------------------
-  // Detail Dialog Fields
-  // --------------------------
-  detailExpert: Expert | null = null;
+    detailExpert: Expert | null = null;
 
-  // --------------------------
-  // Search
-  // --------------------------
-  searchKey = '';
-  filteredExperts: Expert[] = [];
+    constructor(
+        private contractorService: ContractorApiService,
+        private messageService: MessageService,
+        private confirmationService: ConfirmationService
+    ) {}
 
-  ngOnInit() {
-    // Initialize filtered list
-    this.filteredExperts = [...this.experts];
-  }
-
-  // --------------------------
-  // Search Handler
-  // --------------------------
-  onSearchChange() {
-    const key = this.searchKey.toLowerCase().trim();
-    this.filteredExperts = this.experts.filter((expert) =>
-      expert.name.toLowerCase().includes(key) ||
-      expert.email.toLowerCase().includes(key) ||
-      expert.phone.toLowerCase().includes(key) ||
-      expert.taxNumber.toLowerCase().includes(key) ||
-      expert.address.toLowerCase().includes(key)
-    );
-  }
-
-  // --------------------------
-  // Open Dialogs
-  // --------------------------
-  openAddDialog() {
-    // Reset fields
-    this.addName = '';
-    this.addEmail = '';
-    this.addPhone = '';
-    this.addTaxNumber = '';
-    this.addAddress = '';
-    this.displayAddDialog = true;
-  }
-
-  openDetailDialog(expert: Expert) {
-    // Show detail data
-    this.detailExpert = expert;
-    this.displayDetailDialog = true;
-  }
-
-  openEditDialog(index: number) {
-    this.editIndex = index;
-    const expert = this.filteredExperts[index];
-    this.editName = expert.name;
-    this.editEmail = expert.email;
-    this.editPhone = expert.phone;
-    this.editTaxNumber = expert.taxNumber;
-    this.editAddress = expert.address;
-    this.displayEditDialog = true;
-  }
-
-  // --------------------------
-  // Close Dialogs
-  // --------------------------
-  closeDialog(dialogType: string) {
-    if (dialogType === 'add') {
-      this.displayAddDialog = false;
-    } else if (dialogType === 'detail') {
-      this.displayDetailDialog = false;
-    } else if (dialogType === 'edit') {
-      this.displayEditDialog = false;
-    }
-  }
-
-  // --------------------------
-  // Add Dialog Save
-  // --------------------------
-  saveNewExpert() {
-    const newExpert: Expert = {
-      name: this.addName,
-      email: this.addEmail,
-      phone: this.addPhone,
-      taxNumber: this.addTaxNumber,
-      address: this.addAddress
-    };
-    this.experts.push(newExpert);
-    this.onSearchChange(); // refresh filtered data
-    this.displayAddDialog = false;
-  }
-
-  // --------------------------
-  // Edit Dialog Save
-  // --------------------------
-  saveEditedExpert() {
-    if (this.editIndex < 0 || this.editIndex >= this.filteredExperts.length) {
-      return;
+    ngOnInit() {
+        this.loadExperts();
     }
 
-    // Update the original array item
-    const globalIndex = this.experts.indexOf(this.filteredExperts[this.editIndex]);
-    this.experts[globalIndex] = {
-      name: this.editName,
-      email: this.editEmail,
-      phone: this.editPhone,
-      taxNumber: this.editTaxNumber,
-      address: this.editAddress
-    };
+    loadExperts() {
+        const request = { searchKey: '', pageIndex: 1, pageSize: 10 };
 
-    // Re-filter after edit
-    this.onSearchChange();
-    this.displayEditDialog = false;
-  }
+        this.contractorService.getContractors(request).subscribe(
+            (response) => {
+                this.experts = response.items;
+                this.filteredExperts = [...this.experts];
+            },
+            (error) => {}
+        );
+    }
 
-  // --------------------------
-  // Delete
-  // --------------------------
-  deleteExpert(index: number) {
-    const globalIndex = this.experts.indexOf(this.filteredExperts[index]);
-    this.experts.splice(globalIndex, 1);
-    this.onSearchChange();
+    onSearchChange() {
+        const key = this.searchKey.toLowerCase().trim();
+        this.filteredExperts = this.experts.filter(
+            (expert) =>
+                expert.contractorName.toLowerCase().includes(key) ||
+                expert.email.toLowerCase().includes(key) ||
+                expert.phoneNumber.toLowerCase().includes(key) ||
+                expert.taxCode.toLowerCase().includes(key) ||
+                expert.address.toLowerCase().includes(key)
+        );
+    }
+
+    openAddDialog() {
+        this.addContractorName = '';
+        this.addPhoneNumber = '';
+        this.addTaxCode = '';
+        this.addEmail = '';
+        this.addEmployeeCode = '';
+        this.addIdCardNumber = '';
+        this.addIdIssuedPlace = '';
+        this.addPosition = '';
+        this.addBankAccountNumber = '';
+        this.addBankName = '';
+        this.addAddress = '';
+        this.displayAddDialog = true;
+    }
+
+    openDetailDialog(expertId: string) {
+        this.contractorService.getContractorDetail(expertId).subscribe(
+            (response) => {
+                this.detailExpert = response;
+                this.displayDetailDialog = true;
+            },
+            (error) => {}
+        );
+    }
+
+    openEditDialog(expertId: any) {
+        if (!expertId || (typeof expertId !== 'string' && typeof expertId !== 'number')) {
+            return;
+        }
+        this.editId = expertId.toString();
+
+        this.contractorService.getContractorDetail(expertId).subscribe(
+            (response) => {
+                this.editContractorName = response.contractorName;
+                this.editAddress = response.address;
+                this.editPhoneNumber = response.phoneNumber;
+                this.editTaxCode = response.taxCode;
+                this.editEmail = response.email;
+                this.editEmployeeCode = response.employeeCode;
+                this.editIdCardNumber = response.idCardNumber;
+                this.editIdIssuedPlace = response.idIssuedPlace;
+                this.editPosition = response.position;
+                this.editBankAccountNumber = response.bankAccountNumber;
+                this.editBankName = response.bankName;
+                this.editStatus = response.status ?? 'Active';
+
+                this.displayEditDialog = true;
+            },
+            (error) => {}
+        );
+    }
+
+    closeDialog(dialogType: string) {
+        if (dialogType === 'add') this.displayAddDialog = false;
+        if (dialogType === 'detail') this.displayDetailDialog = false;
+        if (dialogType === 'edit') this.displayEditDialog = false;
+    }
+
+    saveNewExpert() {
+        const newExpert = {
+            contractorName: this.addContractorName,
+            phoneNumber: this.addPhoneNumber,
+            taxCode: this.addTaxCode,
+            email: this.addEmail,
+            employeeCode: this.addEmployeeCode,
+            idCardNumber: this.addIdCardNumber,
+            idIssuedPlace: this.addIdIssuedPlace,
+            position: this.addPosition,
+            bankAccountNumber: this.addBankAccountNumber,
+            bankName: this.addBankName,
+            address: this.addAddress
+        };
+
+        this.contractorService.createContractor(newExpert).subscribe(
+            (response) => {
+                this.loadExperts();
+                this.displayAddDialog = false;
+                this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Chuyên gia đã được thêm' });
+            },
+            (error) => {}
+        );
+    }
+
+    confirmDelete(id: any) {
+      this.confirmationService.confirm({
+          message: 'Bạn có chắc muốn xoá nhà thầu này?',
+          header: 'Xác nhận xoá',
+          acceptLabel: 'Xác nhận',
+          rejectLabel: 'Hủy',
+          accept: () => {
+              this.deleteContractor(id);
+          }
+      });
   }
+  
+  deleteContractor(id: any) {
+    this.contractorService.deleteContractor(id).subscribe({
+        next: () => {
+            
+            this.experts = this.experts.filter(c => c.id !== id);
+            this.filteredExperts = [...this.experts];
+
+            this.messageService.add({ 
+                severity: 'success', 
+                summary: 'Thành công', 
+                detail: 'Xóa nhà thầu thành công' 
+            });
+            this.loadExperts();
+        },
+        error: (err) => {
+           
+        }
+    });
+}
+
+
+    saveEditedExpert() {
+        if (!this.editContractorName || !this.editEmail) {
+            return;
+        }
+
+        this.contractorService
+            .updateContractor(this.editId, {
+                id: this.editId,
+                contractorName: this.editContractorName,
+                address: this.editAddress,
+                phoneNumber: this.editPhoneNumber,
+                taxCode: this.editTaxCode,
+                email: this.editEmail,
+                employeeCode: this.editEmployeeCode,
+                idCardNumber: this.editIdCardNumber,
+                idIssuedPlace: this.editIdIssuedPlace,
+                position: this.editPosition,
+                bankAccountNumber: this.editBankAccountNumber,
+                status: this.editStatus ?? 'Active',
+                bankName: this.editBankName
+            })
+            .subscribe({
+                next: (response) => {
+                    this.loadExperts();
+                    this.displayEditDialog = false;
+                    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Chuyên gia đã được cập nhật' });
+                },
+                error: (err) => {}
+            });
+    }
 }

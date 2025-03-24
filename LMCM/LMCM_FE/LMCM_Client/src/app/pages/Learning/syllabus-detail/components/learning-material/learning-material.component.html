@@ -1,0 +1,116 @@
+<p-tabs [value]="0">
+    <p-tablist>
+        <p-tab [value]="0">Tài liệu</p-tab>
+        <p-tab [value]="1">Giáo Trình</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+        <p-tabpanel [value]="0"> <!-- Tai lieu -->
+            <form [formGroup]="materialForm" class="p-3">
+                <div class="flex flex-col gap-4">
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="description">Tên tài liệu <span class="text-red-500">*</span></label>
+                            <input id="description" type="text" pInputText formControlName="description"
+                                class="w-full" />
+                            <small class="p-error" style="color: red;"
+                                *ngIf="materialForm.get('description')?.invalid && materialForm.get('description')?.touched">
+                                Tên giáo trình là bắt buộc
+                            </small>
+                        </div>
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="quantity"> Số lượng </label>
+                            <input id="quantity" type="text" pInputText formControlName="quantity" class="w-full" />
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="purpuse">Mục đích</label>
+                            <input id="purpuse" type="text" pInputText formControlName="purpuse" class="w-full" />
+                        </div>
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="isbn"> ISBN</label>
+                            <input id="isbn" type="text" pInputText formControlName="isbn" class="w-full" />
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="type">Loại</label>
+                            <p-select id="type" [options]="type" formControlName="selectedType" optionLabel="name"
+                                optionValue="value" placeholder="Select a type" class="w-full md:w-56">
+                            </p-select>
+                        </div>
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="url"> URL </label>
+                            <input id="url" type="text" pInputText formControlName="url" class="w-full" />
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="note"> Ghi chú </label>
+                            <textarea id="note" type="text" pTextarea formControlName="note" class="w-full"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </p-tabpanel>
+        <p-tabpanel [value]="1"> <!-- Giao trinh -->
+            <form [formGroup]="materialDetailForm" class="p-3">
+                <div class="flex flex-col gap-4">
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="materialName">Tên giáo trình <span class="text-red-500">*</span></label>
+                            <input id="materialName" type="text" pInputText formControlName="materialName"
+                                class="w-full" />
+                            <small class="p-error"
+                                *ngIf="materialDetailForm.get('materialName')?.invalid && materialDetailForm.get('materialName')?.touched">
+                                Tên giáo trình là bắt buộc
+                            </small>
+                        </div>
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="type">Loại giáo trình <span class="text-red-500">*</span></label>
+                            <p-select id="type" [options]="materialTypes" formControlName="type" optionLabel="name"
+                                optionValue="value" placeholder="Chọn loại giáo trình" class="w-full"></p-select>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="publishedDate">Năm xuất bản giáo trình</label>
+                            <p-calendar id="publishedDate" formControlName="publishedDate" class="w-full"></p-calendar>
+                        </div>
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="originalBook">Sách gốc</label>
+                            <input id="originalBook" type="text" pInputText formControlName="originalBook"
+                                class="w-full" />
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="originalPublishedDate">Năm xuất bản sách gốc</label>
+                            <p-calendar id="originalPublishedDate" formControlName="originalPublishedDate"
+                                class="w-full"></p-calendar>
+                        </div>
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="publisher">Nhà xuất bản sách gốc</label>
+                            <p-select id="publisher" [options]="publishers" formControlName="publisher"
+                                optionLabel="name" optionValue="value" placeholder="Chọn nhà xuất bản"
+                                class="w-full"></p-select>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="edition">Phiên bản sách gốc</label>
+                            <input id="edition" type="text" pInputText formControlName="edition" class="w-full" />
+                        </div>
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="isbn">ISBN</label>
+                            <input id="isbn" type="text" pInputText formControlName="isbn" class="w-full" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </p-tabpanel>
+    </p-tabpanels>
+</p-tabs>

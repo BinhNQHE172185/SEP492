@@ -213,5 +213,11 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
 
             return acceptanceRecordDto;
         }
+
+        public async Task<bool> HasActiveAcceptanceRecordsAsync(Guid contractId)
+        {
+            return await _dbContext.AcceptanceRecords
+                .AnyAsync(p => p.ContractId == contractId && p.Status == "Active");
+        }
     }
 }

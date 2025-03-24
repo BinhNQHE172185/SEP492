@@ -25,7 +25,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             _mapper = mapper;
             _fileHelper = fileHelper;
         }
-        public async Task<BudgetProposal> CreateBudgetProposal(BudgetProposalInsertDto proposal)
+        public async Task<BudgetProposal> CreateBudgetProposalAsync(BudgetProposalInsertDto proposal)
         {
             if (proposal == null)
             {
@@ -67,7 +67,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             return newProposal;
         }
 
-        public async Task<BudgetProposalDetailDto> GetBudgetProposalById(Guid proposalId)
+        public async Task<BudgetProposalDetailDto> GetBudgetProposalByIdAsync(Guid proposalId)
         {
             if (proposalId == Guid.Empty)
                 throw new ArgumentException("Proposal ID cannot be empty.", nameof(proposalId));
@@ -129,13 +129,16 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             };
         }
 
-        public async Task<bool> SoftDeleteBudgetProposalAsync(Guid proposalId)
+        public async Task<bool> SoftDeleteBudgetProposalAsync(Guid proposalId, Guid authorId)
         {
             var budgetProposal = await _dbContext.BudgetProposals
                 .FirstOrDefaultAsync(ar => ar.ProposalId == proposalId && ar.Status == "Active");
 
             if (budgetProposal == null)
                 throw new KeyNotFoundException("Data not found.");
+
+            if (authorId != budgetProposal.AuthorId)
+                throw new UnauthorizedAccessException("User is not authorized to update this budget proposal.");
 
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
             try

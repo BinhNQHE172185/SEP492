@@ -1,10 +1,14 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.BudgetProposalDtos;
 using LMCM_BE.DTOs.ContractDtos;
+using LMCM_BE.DTOs.ContractorDtos;
 using LMCM_BE.DTOs.ShareDtos;
+using LMCM_BE.DTOs.SyllabusDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Services.GoogleDriveService;
+using LMCM_BE.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -15,12 +19,14 @@ namespace LMCM_BE.Repositories.ContractRepository
         private readonly LMCM_DBContext _dbContext;
         private readonly IGoogleDriveService _googleDriveService;
         private readonly IMapper _mapper;
+        private readonly IFileHelper _fileHelper;
 
-        public ContractRepository(LMCM_DBContext dbContext, IGoogleDriveService googleDriveService, IMapper mapper)
+        public ContractRepository(LMCM_DBContext dbContext, IGoogleDriveService googleDriveService, IMapper mapper,IFileHelper fileHelper)
         {
             _dbContext = dbContext;
             _googleDriveService = googleDriveService;
             _mapper = mapper;
+            _fileHelper = fileHelper;
         }
 
         public async Task<Contract> CreateContract(ContractInsertDto contractDto)
@@ -59,10 +65,33 @@ namespace LMCM_BE.Repositories.ContractRepository
 
             return newContract;
         }
-        public async Task<Contract?> GetContractByIdAsync(Guid contractId)
+        public async Task<ContractDetailDto> GetContractByIdAsync(Guid contractId)
         {
-            return await _dbContext.Contracts
-                .FirstOrDefaultAsync(c => c.ContractId == contractId && c.Status == "Active");
+            if (contractId == Guid.Empty)
+                throw new ArgumentException("Contract ID cannot be empty.", nameof(contractId));
+
+            var contract = await _dbContext.Contracts
+                .AsNoTracking()
+                .ProjectTo<ContractDetailDto>(_mapper.ConfigurationProvider)
+                .Where(s => s.ProposalId == contractId)
+                .SingleOrDefaultAsync();
+
+            if (contract == null)
+                throw new KeyNotFoundException($"No contract found with ID: {contractId}");
+
+            var contractDto = _mapper.Map<ContractDetailDto>(contract);
+
+            // Check if there's a file URL and fetch the file
+            if (!string.IsNullOrEmpty(contract.Url))
+            {
+                using var httpClient = new HttpClient();
+                var fileBytes = await httpClient.GetByteArrayAsync(contract.Url);
+
+                contractDto.FileContent = fileBytes; // Add the file as a byte array
+                contractDto.FileName = $"Contract_{contractId}.pdf";
+            }
+
+            return contractDto;
         }
 
         public async Task<PagedResult<ContractListDto>> GetContractsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
@@ -102,6 +131,99 @@ namespace LMCM_BE.Repositories.ContractRepository
         {
             return await _dbContext.Contracts
                 .AnyAsync(p => p.ContractorId == contractorId && p.Status == "Active");
+        }
+
+        public async Task<bool> SoftDeleteContractAsync(Guid contractId, Guid authorId)
+        {
+            var contract = await _dbContext.Contracts
+                .FirstOrDefaultAsync(ar => ar.ContractId == contractId && ar.Status == "Active");
+
+            if (contract == null)
+                throw new KeyNotFoundException("Data not found.");
+
+            if (authorId != contract.AuthorId)
+                throw new UnauthorizedAccessException("User is not authorized to update this contract.");
+
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            try
+            {
+                contract.Status = "Inactive";
+                contract.UpdatedAt = DateTime.UtcNow;
+                _dbContext.Contracts.Update(contract);
+
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        public async Task<Guid?> UpdateContractAsync(Guid contractId, ContractUpdateDto newContract)
+        {
+            if (contractId == Guid.Empty)
+                throw new ArgumentException("Contract ID cannot be empty.", nameof(contractId));
+
+            if (newContract == null)
+                throw new ArgumentNullException(nameof(newContract), "New contract data cannot be null.");
+
+            var contract = await _dbContext.Contracts
+                .Include(lm => lm.Author)
+                .Include(lm => lm.Proposal)
+                .Include(lm=>lm.Contractor)
+                .FirstOrDefaultAsync(lm => lm.ContractId == contractId);
+
+            if (contract == null)
+                throw new KeyNotFoundException($"No contract found with ID: {contractId}");
+
+            if (newContract.AuthorId != contract.AuthorId)
+                throw new UnauthorizedAccessException("User is not authorized to update this contract.");
+
+            string? fileUrl = null;
+
+            if (newContract.File != null)
+            {
+                // Validate file type
+                if (newContract.File.ContentType != "application/pdf")
+                    throw new InvalidOperationException("Only PDF files are allowed.");
+
+                // Validate file size (5MB limit)
+                const int maxFileSize = 5 * 1024 * 1024;
+                if (newContract.File.Length > maxFileSize)
+                    throw new InvalidOperationException("File size must not exceed 5MB.");
+
+                //Validate upload new file only
+                var uploadedFileHash = await _fileHelper.ComputeFileHashAsync(newContract.File);
+                var existingFileHash = await _googleDriveService.ComputeGoogleDriveFileHashAsync(contract.Url);
+
+                if (uploadedFileHash != existingFileHash)
+                {
+                    fileUrl = await _googleDriveService.UploadContractFileAsync(newContract.File);
+                }
+            }
+
+            // Use AutoMapper to update the entity
+            _mapper.Map(newContract, contract);
+            contract.UpdatedAt = DateTime.UtcNow;
+
+            // Only update file URL if a new file was uploaded
+            if (fileUrl != null)
+                contract.Url = fileUrl;
+
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+                return contract.ContractId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating Contract: {ex.Message}");
+                return null;
+            }
         }
     }
 }

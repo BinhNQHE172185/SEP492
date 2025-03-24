@@ -40,5 +40,10 @@ namespace LMCM_BE.Services.AcceptanceRecordService
         {
             return await _acceptanceRecordRepository.GetAcceptanceRecordDetailAsync(acceptanceId);
         }
+
+        public async Task<bool> HasActiveAcceptanceRecordsAsync(Guid contractId)
+        {
+            return await _acceptanceRecordRepository.HasActiveAcceptanceRecordsAsync(contractId);
+        }
     }
 }

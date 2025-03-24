@@ -21,6 +21,7 @@ import { DividerModule } from 'primeng/divider';
 import { PanelModule } from 'primeng/panel';
 import { SyllabusApiService } from '../../../apis/syllabusAPIs/syllabus-api.service';
 import { LearningMaterialApiService } from '../../../apis/learning-materialAPIs/learning-material-api.service';
+import { LearningMaterialComponent } from './components/learning-material/learning-material.component';
 interface Material {
   id: number;
   no: number;
@@ -66,7 +67,8 @@ interface MenuItem {
     FieldsetModule,
     DividerModule,
     PanelModule,
-    TextareaModule
+    TextareaModule,
+    LearningMaterialComponent
   ],
   providers: [ConfirmationService, MessageService]
 })
@@ -85,7 +87,6 @@ export class SyllabusDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private fb: FormBuilder,
   ) {
-    this.initForm();
   }
 
   ngOnInit() {
@@ -108,7 +109,7 @@ export class SyllabusDetailComponent implements OnInit {
     }
   }
 
-  getLearningMaterial(){
+  getLearningMaterial() {
     const id = this.syllabusId;
     if (id) {
       this.materialService.getLearningMaterialList(id).subscribe({
@@ -122,7 +123,7 @@ export class SyllabusDetailComponent implements OnInit {
     }
   }
 
-  getLearningMaterialById(){
+  getLearningMaterialById() {
     const id = this.syllabusId;
     if (id) {
       this.materialService.getLearningMaterialById(id).subscribe({
@@ -138,80 +139,21 @@ export class SyllabusDetailComponent implements OnInit {
 
   // Material dialog properties
   materialDialog: boolean = false;
+  selectedMaterial: any = null;
   deleteDialogVisible: boolean = false;
   materialForm!: FormGroup;
   isEdit: boolean = false;
   currentMaterialId: number | null = null;
   authors: string[] = [];
 
-  // Material type options
-  materialTypes = [
-    { label: 'Sách', value: 'Book' },
-    { label: 'Bài báo', value: 'Article' },
-    { label: 'Website', value: 'Website' },
-    { label: 'Video', value: 'Video' },
-    { label: 'Phần mềm', value: 'Software' },
-    { label: 'Khác', value: 'Other' }
-  ];
-
-  // Publisher options (for dropdown)
-  publishers = [
-    { label: 'NXB Giáo dục', value: 'NXB Giáo dục' },
-    { label: 'NXB Đại học Quốc gia', value: 'NXB Đại học Quốc gia' },
-    { label: 'NXB Khoa học Kỹ thuật', value: 'NXB Khoa học Kỹ thuật' },
-    { label: 'NXB Thông tin và Truyền thông', value: 'NXB Thông tin và Truyền thông' }
-  ];
-
-
-
-  initForm(): void {
-    this.materialForm = this.fb.group({
-      description: ['', Validators.required],
-      publishedDate: [''],
-      originalBook: [''],
-      author: [''],
-      publisher: [''],
-      originalPublishedDate: [''],
-      edition: [''],
-      isbn: [''],
-      type: ['Book', Validators.required]
-    });
+  openMaterialDialog(material?: any) {
+    this.isEdit = !!material;  // Nếu có dữ liệu, chuyển sang edit mode
+    this.selectedMaterial = material || {}; // Nếu không có, tạo mới
+    this.materialDialog = true; // Hiển thị dialog
   }
 
-  openNewMaterialDialog(): void {
-    this.isEdit = false;
-    this.currentMaterialId = null;
-    this.materialForm.reset({ type: 'Book' });
-    this.authors = [];
-    this.materialDialog = true;
-  }
-
-  openEditMaterialDialog(material: Material): void {
-    this.isEdit = true;
-    this.currentMaterialId = material.id;
-
-    // Parse and set dates properly
-    let publishedDate = null;
-    if (material.publishedDate) {
-      try {
-        publishedDate = new Date(material.publishedDate);
-      } catch (e) {
-        publishedDate = null;
-      }
-    }
-
-    this.materialForm.patchValue({
-      description: material.description,
-      publishedDate: publishedDate,
-      publisher: material.publisher,
-      isbn: material.isbn,
-      type: material.type
-    });
-
-    // Set authors array
-    this.authors = material.author ? material.author.split(', ') : [];
-
-    this.materialDialog = true;
+  closeMaterialDialog() {
+    this.materialDialog = false; // Đóng dialog
   }
 
   confirmDeleteMaterial(material: Material): void {

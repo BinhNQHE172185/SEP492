@@ -22,15 +22,18 @@ namespace LMCM_BE.Repositories.UserRepositoriy
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
         private readonly LMCM_DBContext _dbContext;
-        private readonly IGoogleDriveService _googleDriveService;
-        public UserRepository(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration, IMapper mapper, LMCM_DBContext dbContext,IGoogleDriveService googleDriveService)
+        //private readonly IGoogleDriveService _googleDriveService;
+        public UserRepository(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration, 
+            IMapper mapper, LMCM_DBContext dbContext
+            //,IGoogleDriveService googleDriveService
+            )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _mapper = mapper;
             _dbContext = dbContext;
-            _googleDriveService = googleDriveService;
+            //_googleDriveService = googleDriveService;
         }
 
         public async Task<bool> CreateStaff(StaffRequest request)
@@ -48,12 +51,12 @@ namespace LMCM_BE.Repositories.UserRepositoriy
                     await _userManager.AddToRoleAsync(newStaff, "Staff");
 
                     // Share Google Drive folders with new staff
-                    bool isShared = await _googleDriveService.ShareFoldersWithUser( email, "reader"); // "writer" for edit access, "reader" for view access
+                    //bool isShared = await _googleDriveService.ShareFoldersWithUser( email, "reader"); // "writer" for edit access, "reader" for view access
 
-                    if (!isShared)
-                    {
-                        Console.WriteLine("Failed to share Google Drive folder with user.");
-                    }
+                    //if (!isShared)
+                    //{
+                    //    Console.WriteLine("Failed to share Google Drive folder with user.");
+                    //}
 
                     return true;
                 }

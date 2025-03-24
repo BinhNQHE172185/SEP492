@@ -4,6 +4,7 @@ using LMCM_BE.DTOs.AcceptanceRecordDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.ContractRepository;
+using LMCM_BE.Repositories.UserRepositoriy;
 using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Utilities;
 using Microsoft.EntityFrameworkCore;
@@ -17,20 +18,22 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
         private readonly IContractRepository _contractRepository;
         private readonly IGoogleDriveService _googleDriveService;
         private readonly IFileHelper _fileHelper;
-
+        private readonly IUserRepository _userRepository;
 
         public AcceptanceRecordRepository(
             LMCM_DBContext dbContext,
             IMapper mapper,
             IContractRepository contractRepository,
             IGoogleDriveService googleDriveService,
-            IFileHelper fileHelper)
+            IFileHelper fileHelper,
+            IUserRepository userRepository)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _contractRepository = contractRepository;
             _googleDriveService = googleDriveService;
             _fileHelper = fileHelper;
+            _userRepository = userRepository;
         }
 
         public async Task<PagedResult<AcceptanceRecordListDto>> GetAcceptanceRecordsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
@@ -84,6 +87,13 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
                 if (string.IsNullOrWhiteSpace(fileUrl))
                 {
                     throw new Exception("Tải tệp lên thất bại. Vui lòng thử lại.");
+                }
+                else
+                {
+                    var user = await _userRepository.GetProfile(dto.AuthorId.ToString());
+                    if (user == null||string.IsNullOrEmpty(user.Email))
+                        throw new Exception("Không tìm thấy email");
+                    await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
                 }
             }
             else
@@ -147,6 +157,13 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
                     if (string.IsNullOrWhiteSpace(fileUrl))
                     {
                         throw new Exception("Tải tệp lên thất bại. Vui lòng thử lại.");
+                    }
+                    else
+                    {
+                        var user = await _userRepository.GetProfile(dto.AuthorId.ToString());
+                        if (user == null || string.IsNullOrEmpty(user.Email))
+                            throw new Exception("Không tìm thấy email");
+                        await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
                     }
                 }
             }

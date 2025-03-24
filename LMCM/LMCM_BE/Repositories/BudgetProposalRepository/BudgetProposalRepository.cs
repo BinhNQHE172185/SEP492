@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.BudgetProposalDtos;
-using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
-using LMCM_BE.DTOs.SyllabusDtos;
+using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Repositories.UserRepositoriy;
 using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Utilities;
 using Microsoft.EntityFrameworkCore;
@@ -17,13 +17,15 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
         private readonly IGoogleDriveService _googleDriveService;
         private readonly IMapper _mapper;
         private readonly IFileHelper _fileHelper;
+        private readonly IUserRepository _userRepositoriy;
 
-        public BudgetProposalRepository(LMCM_DBContext dbContext, IGoogleDriveService googleDriveService, IMapper mapper, IFileHelper fileHelper)
+        public BudgetProposalRepository(LMCM_DBContext dbContext, IGoogleDriveService googleDriveService, IMapper mapper, IFileHelper fileHelper, IUserRepository userRepository)
         {
             _dbContext = dbContext;
             _googleDriveService = googleDriveService;
             _mapper = mapper;
             _fileHelper = fileHelper;
+            _userRepositoriy = userRepository;
         }
         public async Task<BudgetProposal> CreateBudgetProposalAsync(BudgetProposalInsertDto proposal)
         {
@@ -49,6 +51,19 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
                 }
 
                 fileUrl = await _googleDriveService.UploadBudgetProposalFileAsync(proposal.File);
+
+                if (string.IsNullOrWhiteSpace(fileUrl))
+                {
+                    throw new Exception("Failed to upload the file.");
+                }
+                else
+                {
+                    UserProfileResponseDto user = await _userRepositoriy.GetProfile(proposal.AuthorId.ToString());
+                    if (user == null || string.IsNullOrEmpty(user.Email))
+                        throw new Exception("Không tìm thấy email");
+                    //bool status = await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
+                    Console.WriteLine(user.Email);
+                }
             }
 
             // Step 2: Create Contract object
@@ -180,6 +195,10 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             if (newProposal.AuthorId != proposal.AuthorId)
                 throw new UnauthorizedAccessException("User is not authorized to update this proposal.");
 
+            // Update proposal fields (excluding file)
+            _mapper.Map(newProposal, proposal);
+            proposal.UpdatedAt = DateTime.UtcNow;
+
             string? fileUrl = null;
 
             if (newProposal.File != null)
@@ -193,23 +212,25 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
                 if (newProposal.File.Length > maxFileSize)
                     throw new InvalidOperationException("File size must not exceed 5MB.");
 
-                //Validate upload new file only
+                // Validate if the new file is different from the existing one
                 var uploadedFileHash = await _fileHelper.ComputeFileHashAsync(newProposal.File);
                 var existingFileHash = await _googleDriveService.ComputeGoogleDriveFileHashAsync(proposal.Url);
 
                 if (uploadedFileHash != existingFileHash)
                 {
                     fileUrl = await _googleDriveService.UploadBudgetProposalFileAsync(newProposal.File);
+                    if (string.IsNullOrWhiteSpace(fileUrl))
+                        throw new Exception("Failed to upload the file.");
+
+                    var user = await _userRepositoriy.GetProfile(proposal.AuthorId.ToString());
+                    if (user == null || string.IsNullOrEmpty(user.Email))
+                        throw new Exception("Không tìm thấy email");
+                    await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
+
+                    // Update the proposal's file URL **only if a new file was uploaded**
+                    proposal.Url = fileUrl;
                 }
             }
-
-            // Use AutoMapper to update the entity
-            _mapper.Map(newProposal, proposal);
-            proposal.UpdatedAt = DateTime.UtcNow;
-
-            // Only update file URL if a new file was uploaded
-            if (fileUrl != null)
-                proposal.Url = fileUrl;
 
             try
             {

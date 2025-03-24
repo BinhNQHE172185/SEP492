@@ -34,8 +34,6 @@ namespace LMCM_BE.DTOs.ContractDtos
 
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual List<AcceptanceRecordListDto> AcceptanceRecords { get; set; } = new List<AcceptanceRecordListDto>();
-
         public virtual ListUserResponseDto Author { get; set; } = null!;
 
         public virtual ContractorDetailDto Contractor { get; set; } = null!;
@@ -43,7 +41,7 @@ namespace LMCM_BE.DTOs.ContractDtos
         public virtual List<ChangesHistoryListDto> LearningMaterialChangesHistories { get; set; } = new List<ChangesHistoryListDto>();
 
         public virtual BudgetProposalDetailDto Proposal { get; set; } = null!;
-        public byte[]? FileContent { get; set; }
-        public string? FileName { get; set; }
+        //public byte[]? FileContent { get; set; }
+        //public string? FileName { get; set; }
     }
 }

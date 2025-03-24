@@ -3,6 +3,7 @@
     public interface IGoogleDriveService
     {
         Task<string> ComputeGoogleDriveFileHashAsync(string fileUrl);
+        Task<(byte[]? FileContent, string? FileName)> FetchFileAsync(string fileId);
         Task<string?> UploadContractFileAsync(IFormFile file);
         Task<string?> UploadBudgetProposalFileAsync(IFormFile file);
         Task<string?> UploadAcceptanceRecordFileAsync(IFormFile file);

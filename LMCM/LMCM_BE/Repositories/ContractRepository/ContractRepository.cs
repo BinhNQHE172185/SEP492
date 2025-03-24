@@ -73,7 +73,7 @@ namespace LMCM_BE.Repositories.ContractRepository
             var contract = await _dbContext.Contracts
                 .AsNoTracking()
                 .ProjectTo<ContractDetailDto>(_mapper.ConfigurationProvider)
-                .Where(s => s.ProposalId == contractId)
+                .Where(s => s.ContractId == contractId)
                 .SingleOrDefaultAsync();
 
             if (contract == null)
@@ -82,14 +82,17 @@ namespace LMCM_BE.Repositories.ContractRepository
             var contractDto = _mapper.Map<ContractDetailDto>(contract);
 
             // Check if there's a file URL and fetch the file
-            if (!string.IsNullOrEmpty(contract.Url))
-            {
-                using var httpClient = new HttpClient();
-                var fileBytes = await httpClient.GetByteArrayAsync(contract.Url);
+            //if (!string.IsNullOrEmpty(contract.Url))
+            //{
+            //    var fileId = await _fileHelper.ExtractFileIdFromUrl(contract.Url);
+            //    var (fileContent, fileName) = await _googleDriveService.FetchFileAsync(fileId);
 
-                contractDto.FileContent = fileBytes; // Add the file as a byte array
-                contractDto.FileName = $"Contract_{contractId}.pdf";
-            }
+            //    if (fileContent != null)
+            //    {
+            //        contractDto.FileContent = fileContent;
+            //        contractDto.FileName = fileName;
+            //    }
+            //}
 
             return contractDto;
         }

@@ -95,11 +95,11 @@ namespace LMCM_BE.Controllers.ContractControllers
             }
         }
         [HttpGet("getContractDetail")]
-        public async Task<IActionResult> GetContractDetailAsync(Guid proposalId)
+        public async Task<IActionResult> GetContractDetailAsync(Guid contractId)
         {
             try
             {
-                var data = await _contractService.GetContractByIdAsync(proposalId);
+                var data = await _contractService.GetContractByIdAsync(contractId);
                 if (data != null)
                 {
                     return Ok(data);

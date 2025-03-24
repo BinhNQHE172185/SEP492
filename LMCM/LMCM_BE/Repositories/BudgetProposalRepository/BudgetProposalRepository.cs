@@ -84,14 +84,17 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             var budgetProposalDto = _mapper.Map<BudgetProposalDetailDto>(budgetProposal);
 
             // Check if there's a file URL and fetch the file
-            if (!string.IsNullOrEmpty(budgetProposal.Url))
-            {
-                using var httpClient = new HttpClient();
-                var fileBytes = await httpClient.GetByteArrayAsync(budgetProposal.Url);
+            //if (!string.IsNullOrEmpty(budgetProposal.Url))
+            //{
+            //    var fileId = await _fileHelper.ExtractFileIdFromUrl(budgetProposal.Url);
+            //    var (fileContent, fileName) = await _googleDriveService.FetchFileAsync(fileId);
 
-                budgetProposalDto.FileContent = fileBytes; // Add the file as a byte array
-                budgetProposalDto.FileName = $"BudgetProposal_{proposalId}.pdf"; 
-            }
+            //    if (fileContent != null)
+            //    {
+            //        budgetProposalDto.FileContent = fileContent;
+            //        budgetProposalDto.FileName = fileName;
+            //    }
+            //}
 
             return budgetProposalDto;
         }

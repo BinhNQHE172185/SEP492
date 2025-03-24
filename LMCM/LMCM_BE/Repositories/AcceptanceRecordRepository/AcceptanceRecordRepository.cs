@@ -202,14 +202,18 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
             var acceptanceRecordDto = _mapper.Map<AcceptanceRecordDetailDto>(acceptanceRecord);
 
             // Check if there's a file URL and fetch the file
-            if (!string.IsNullOrEmpty(acceptanceRecord.Url))
-            {
-                using var httpClient = new HttpClient();
-                var fileBytes = await httpClient.GetByteArrayAsync(acceptanceRecord.Url);
+            //if (!string.IsNullOrEmpty(acceptanceRecord.Url))
+            //{
+            //    var fileId =await _fileHelper.ExtractFileIdFromUrl(acceptanceRecord.Url);
+            //    var (fileContent, fileName) = await _googleDriveService.FetchFileAsync(fileId);
 
-                acceptanceRecordDto.FileContent = fileBytes; // Add the file as a byte array
-                acceptanceRecordDto.FileName = $"AcceptanceRecord_{acceptanceId}.pdf";
-            }
+            //    if (fileContent != null)
+            //    {
+            //        acceptanceRecordDto.FileContent = fileContent;
+            //        acceptanceRecordDto.FileName = fileName;
+            //    }
+
+            //}
 
             return acceptanceRecordDto;
         }

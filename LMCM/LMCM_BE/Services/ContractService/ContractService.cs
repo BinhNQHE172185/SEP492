@@ -17,7 +17,7 @@ namespace LMCM_BE.Services.ContractService
         {
             return await _contractRepository.CreateContract(contractDto);   
         }
-        public async Task<Contract?> GetContractByIdAsync(Guid contractId)
+        public async Task<ContractDetailDto> GetContractByIdAsync(Guid contractId)
         {
             return await _contractRepository.GetContractByIdAsync(contractId);
         }
@@ -25,6 +25,16 @@ namespace LMCM_BE.Services.ContractService
         public async Task<PagedResult<ContractListDto>> GetContractsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             return await _contractRepository.GetContractsAsync(searchKey, pageIndex, pageSize); 
+        }
+
+        public async Task<bool> SoftDeleteContractAsync(Guid contractId, Guid authorId)
+        {
+            return await _contractRepository.SoftDeleteContractAsync(contractId, authorId);
+        }
+
+        public async Task<Guid?> UpdateContractAsync(Guid contractId, ContractUpdateDto newContract)
+        {
+             return await _contractRepository.UpdateContractAsync(contractId, newContract); 
         }
     }
 }

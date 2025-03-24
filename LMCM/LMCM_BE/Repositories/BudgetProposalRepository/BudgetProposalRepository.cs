@@ -25,7 +25,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             _mapper = mapper;
             _fileHelper = fileHelper;
         }
-        public async Task<BudgetProposal> CreateBudgetProposal(BudgetProposalInsertDto proposal)
+        public async Task<BudgetProposal> CreateBudgetProposalAsync(BudgetProposalInsertDto proposal)
         {
             if (proposal == null)
             {
@@ -67,7 +67,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             return newProposal;
         }
 
-        public async Task<BudgetProposalDetailDto> GetBudgetProposalById(Guid proposalId)
+        public async Task<BudgetProposalDetailDto> GetBudgetProposalByIdAsync(Guid proposalId)
         {
             if (proposalId == Guid.Empty)
                 throw new ArgumentException("Proposal ID cannot be empty.", nameof(proposalId));
@@ -84,14 +84,17 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             var budgetProposalDto = _mapper.Map<BudgetProposalDetailDto>(budgetProposal);
 
             // Check if there's a file URL and fetch the file
-            if (!string.IsNullOrEmpty(budgetProposal.Url))
-            {
-                using var httpClient = new HttpClient();
-                var fileBytes = await httpClient.GetByteArrayAsync(budgetProposal.Url);
+            //if (!string.IsNullOrEmpty(budgetProposal.Url))
+            //{
+            //    var fileId = await _fileHelper.ExtractFileIdFromUrl(budgetProposal.Url);
+            //    var (fileContent, fileName) = await _googleDriveService.FetchFileAsync(fileId);
 
-                budgetProposalDto.FileContent = fileBytes; // Add the file as a byte array
-                budgetProposalDto.FileName = $"BudgetProposal_{proposalId}.pdf"; 
-            }
+            //    if (fileContent != null)
+            //    {
+            //        budgetProposalDto.FileContent = fileContent;
+            //        budgetProposalDto.FileName = fileName;
+            //    }
+            //}
 
             return budgetProposalDto;
         }
@@ -129,13 +132,16 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             };
         }
 
-        public async Task<bool> SoftDeleteBudgetProposalAsync(Guid proposalId)
+        public async Task<bool> SoftDeleteBudgetProposalAsync(Guid proposalId, Guid authorId)
         {
             var budgetProposal = await _dbContext.BudgetProposals
                 .FirstOrDefaultAsync(ar => ar.ProposalId == proposalId && ar.Status == "Active");
 
             if (budgetProposal == null)
                 throw new KeyNotFoundException("Data not found.");
+
+            if (authorId != budgetProposal.AuthorId)
+                throw new UnauthorizedAccessException("User is not authorized to update this budget proposal.");
 
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
             try

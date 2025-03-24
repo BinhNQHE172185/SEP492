@@ -129,6 +129,33 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             };
         }
 
+        public async Task<bool> SoftDeleteBudgetProposalAsync(Guid proposalId)
+        {
+            var budgetProposal = await _dbContext.BudgetProposals
+                .FirstOrDefaultAsync(ar => ar.ProposalId == proposalId && ar.Status == "Active");
+
+            if (budgetProposal == null)
+                throw new KeyNotFoundException("Data not found.");
+
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            try
+            {
+                budgetProposal.Status = "Inactive";
+                budgetProposal.UpdatedAt = DateTime.UtcNow;
+                _dbContext.BudgetProposals.Update(budgetProposal);
+
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
         public async Task<Guid?> UpdateBudgetProposalAsync(Guid proposalId, BudgetProposalUpdateDto newProposal)
         {
             if (proposalId == Guid.Empty)

@@ -132,5 +132,26 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBudgetProposal(Guid proposalId)
+        {
+            try
+            {
+                var result = await _budgetProposalService.SoftDeleteBudgetProposalAsync(proposalId);
+                return result ? Ok(new { message = "Xóa thành công." }) : NotFound(new { message = "Không tìm thấy ." });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
+            }
+        }
     }
 }

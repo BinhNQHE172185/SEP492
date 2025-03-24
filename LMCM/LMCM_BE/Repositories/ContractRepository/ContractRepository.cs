@@ -11,6 +11,7 @@ using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Diagnostics.Contracts;
 
 namespace LMCM_BE.Repositories.ContractRepository
 {
@@ -21,7 +22,7 @@ namespace LMCM_BE.Repositories.ContractRepository
         private readonly IMapper _mapper;
         private readonly IFileHelper _fileHelper;
 
-        public ContractRepository(LMCM_DBContext dbContext, IGoogleDriveService googleDriveService, IMapper mapper,IFileHelper fileHelper)
+        public ContractRepository(LMCM_DBContext dbContext, IGoogleDriveService googleDriveService, IMapper mapper, IFileHelper fileHelper)
         {
             _dbContext = dbContext;
             _googleDriveService = googleDriveService;
@@ -117,7 +118,7 @@ namespace LMCM_BE.Repositories.ContractRepository
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .Include(s => s.Author)
-                .Include(s=>s.Proposal)
+                .Include(s => s.Proposal)
                 .ToListAsync();
 
             var data = _mapper.Map<List<ContractListDto>>(items);
@@ -130,6 +131,13 @@ namespace LMCM_BE.Repositories.ContractRepository
                 PageSize = pageSize
             };
         }
+
+        public async Task<bool> HasActiveConntractsAsync(Guid proposalId)
+        {
+            return await _dbContext.Contracts
+                  .AnyAsync(p => p.ProposalId == proposalId && p.Status == "Active");
+        }
+
         public async Task<bool> HasActiveContractsAsync(Guid contractorId)
         {
             return await _dbContext.Contracts
@@ -177,7 +185,7 @@ namespace LMCM_BE.Repositories.ContractRepository
             var contract = await _dbContext.Contracts
                 .Include(lm => lm.Author)
                 .Include(lm => lm.Proposal)
-                .Include(lm=>lm.Contractor)
+                .Include(lm => lm.Contractor)
                 .FirstOrDefaultAsync(lm => lm.ContractId == contractId);
 
             if (contract == null)

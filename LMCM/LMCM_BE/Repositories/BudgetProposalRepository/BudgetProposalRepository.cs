@@ -81,7 +81,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             return true;
         }
 
-        public async Task<BudgetProposalDetailDto> GetBudgetProposalByIdAsync(Guid proposalId, Guid userId)
+        public async Task<BudgetProposalDetailDto> GetBudgetProposalByIdAsync(Guid proposalId)
         {
             if (proposalId == Guid.Empty)
                 throw new ArgumentException("Proposal ID cannot be empty.", nameof(proposalId));
@@ -95,12 +95,12 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             if (budgetProposal == null)
                 throw new KeyNotFoundException($"No budget proposal found with ID: {proposalId}");
 
-            UserProfileResponseDto user = await _userRepositoriy.GetProfile(userId.ToString());
-            if (user == null|| userId != budgetProposal.AuthorId||!user.Roles.Contains("Admin"))
+            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
+            if (user == null || user.Id != budgetProposal.AuthorId || !user.Roles.Contains("Admin"))
                 throw new UnauthorizedAccessException("User is not authorized to view this budget proposal.");
 
             var budgetProposalDto = _mapper.Map<BudgetProposalDetailDto>(budgetProposal);
-            budgetProposalDto.DownloadUrl=await _googleDriveService.GetDownloadUrl(budgetProposal.Url);
+            budgetProposalDto.DownloadUrl = await _googleDriveService.GetDownloadUrl(budgetProposal.Url);
 
             // Check if there's a file URL and fetch the file
             //if (!string.IsNullOrEmpty(budgetProposal.Url))
@@ -118,15 +118,13 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             return budgetProposalDto;
         }
 
-        public async Task<PagedResult<BudgetProposalListDto>> GetBudgetProposalsAsync(Guid? userId, string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<PagedResult<BudgetProposalListDto>> GetBudgetProposalsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.BudgetProposals.AsQueryable();
 
-            if (userId != Guid.Empty)
-            {
-                UserProfileResponseDto user = await _userRepositoriy.GetProfile(userId.ToString());
-                if (user != null && !user.Roles.Contains("Admin")) query = query.Where(s => s.AuthorId == userId);
-            }
+            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
+            if (user != null && !user.Roles.Contains("Admin")) query = query.Where(s => s.AuthorId == user.Id);
+
             query = query.Where(s => s.Status != "Inactive");
 
             if (!string.IsNullOrWhiteSpace(searchKey))

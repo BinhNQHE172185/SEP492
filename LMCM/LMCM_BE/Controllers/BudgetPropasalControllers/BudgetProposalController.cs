@@ -25,7 +25,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
         {
             try
             {
-                var data = await _budgetProposalService.GetBudgetProposalsAsync(request.Id,request.SearchKey, request.pageIndex, request.PageSize);
+                var data = await _budgetProposalService.GetBudgetProposalsAsync(request.SearchKey, request.pageIndex, request.PageSize);
                 if (data != null)
                 {
                     return Ok(data);
@@ -38,11 +38,11 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
             }
         }
         [HttpGet("getBudgetProposalDetail")]
-        public async Task<IActionResult> GetBudgetProposalDetailAsync(Guid proposalId,Guid userId)
+        public async Task<IActionResult> GetBudgetProposalDetailAsync(Guid proposalId)
         {
             try
             {
-                var data = await _budgetProposalService.GetBudgetProposalByIdAsync(proposalId, userId);
+                var data = await _budgetProposalService.GetBudgetProposalByIdAsync(proposalId);
                 if (data != null)
                 {
                     return Ok(data);

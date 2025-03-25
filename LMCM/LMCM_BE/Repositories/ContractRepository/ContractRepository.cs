@@ -20,13 +20,13 @@ namespace LMCM_BE.Repositories.ContractRepository
         private readonly IFileHelper _fileHelper;
         IUserRepository _userRepository;
 
-        public ContractRepository(LMCM_DBContext dbContext, IGoogleDriveService googleDriveService, IMapper mapper, IFileHelper fileHelper,IUserRepository userRepository)
+        public ContractRepository(LMCM_DBContext dbContext, IGoogleDriveService googleDriveService, IMapper mapper, IFileHelper fileHelper, IUserRepository userRepository)
         {
             _dbContext = dbContext;
             _googleDriveService = googleDriveService;
             _mapper = mapper;
             _fileHelper = fileHelper;
-            _userRepository = userRepository;   
+            _userRepository = userRepository;
         }
 
         public async Task<bool> CreateContract(ContractInsertDto contractDto)
@@ -78,7 +78,7 @@ namespace LMCM_BE.Repositories.ContractRepository
             return true;
         }
 
-        public async Task<ContractDetailDto> GetContractByIdAsync(Guid contractId, Guid userId)
+        public async Task<ContractDetailDto> GetContractByIdAsync(Guid contractId)
         {
             if (contractId == Guid.Empty)
                 throw new ArgumentException("Contract ID cannot be empty.", nameof(contractId));
@@ -87,12 +87,12 @@ namespace LMCM_BE.Repositories.ContractRepository
                 .AsNoTracking()
                 .Where(s => s.ContractId == contractId)
                 .SingleOrDefaultAsync();
-  
+
             if (contract == null)
                 throw new KeyNotFoundException($"No contract found with ID: {contractId}");
 
-            UserProfileResponseDto user = await _userRepository.GetProfile(userId.ToString());
-            if (user == null || userId != contract.AuthorId || !user.Roles.Contains("Admin"))
+            UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
+            if (user == null || user.Id != contract.AuthorId || !user.Roles.Contains("Admin"))
                 throw new UnauthorizedAccessException("User is not authorized to view this budget proposal.");
 
             var contractDto = _mapper.Map<ContractDetailDto>(contract);
@@ -114,15 +114,13 @@ namespace LMCM_BE.Repositories.ContractRepository
             return contractDto;
         }
 
-        public async Task<PagedResult<ContractListDto>> GetContractsAsync(Guid? userId,string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<PagedResult<ContractListDto>> GetContractsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.Contracts.AsQueryable();
 
-            if(userId != Guid.Empty)
-            {
-                UserProfileResponseDto user = await _userRepository.GetProfile(userId.ToString());
-                if (user != null && !user.Roles.Contains("Admin")) query = query.Where(s => s.AuthorId == userId);
-            }
+            UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
+            if (user != null && !user.Roles.Contains("Admin")) query = query.Where(s => s.AuthorId == user.Id);
+
             query = query.Where(s => s.Status != "Inactive");
 
             if (!string.IsNullOrWhiteSpace(searchKey))

@@ -1,4 +1,4 @@
-using LMCM_BE.DbContext;
+﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -53,6 +53,7 @@ using LMCM_BE.Utilities;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -71,16 +72,35 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = false;
+    options.RequireHttpsMetadata = false; // Set to true in production
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("F-JaNdRfUserjd89#5*6Xn2r5usErw8x/A?D(G+KbPeShV")),
-        ValidateIssuer = false,
-        ValidateAudience = false,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+            builder.Configuration["Jwt:Secret"])), // Use configuration, NOT hardcoded keys!
+
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"], // Validate issuer
+
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["Jwt:Audience"], // Validate audience
+
+        RequireExpirationTime = true,
+        ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
     };
+});
+builder.Services.AddDistributedMemoryCache(); // Required for session
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(3); 
+    options.Cookie.HttpOnly = true; 
+    options.Cookie.IsEssential = true; 
+});
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.Secure = CookieSecurePolicy.None; // Allow HTTP (For develovment)
 });
 
 builder.Services.AddIdentity<User, IdentityRole<Guid>>()
@@ -90,7 +110,8 @@ builder.Services.AddIdentity<User, IdentityRole<Guid>>()
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp",
-        policy => policy.WithOrigins("http://localhost:4200")
+        policy => policy.WithOrigins("https://localhost:4200")
+                        .AllowCredentials()
                         .AllowAnyHeader()
                         .AllowAnyMethod());
 });
@@ -193,6 +214,10 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseSession();
+
+app.UseCookiePolicy();
 
 app.MapControllers();
 

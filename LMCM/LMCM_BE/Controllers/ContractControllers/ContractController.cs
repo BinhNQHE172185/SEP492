@@ -26,7 +26,7 @@ namespace LMCM_BE.Controllers.ContractControllers
         {
             try
             {
-                var data = await _contractService.GetContractsAsync(request.Id, request.SearchKey, request.pageIndex, request.PageSize);
+                var data = await _contractService.GetContractsAsync(request.SearchKey, request.pageIndex, request.PageSize);
                 if (data != null)
                 {
                     return Ok(data);
@@ -94,11 +94,11 @@ namespace LMCM_BE.Controllers.ContractControllers
             }
         }
         [HttpGet("getContractDetail")]
-        public async Task<IActionResult> GetContractDetailAsync(Guid contractId,Guid userId)
+        public async Task<IActionResult> GetContractDetailAsync(Guid contractId)
         {
             try
             {
-                var data = await _contractService.GetContractByIdAsync(contractId, userId);
+                var data = await _contractService.GetContractByIdAsync(contractId);
                 if (data != null)
                 {
                     return Ok(data);

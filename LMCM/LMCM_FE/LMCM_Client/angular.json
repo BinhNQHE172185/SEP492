@@ -67,8 +67,12 @@
                             "buildTarget": "sakai-ng:build:production"
                         },
                         "development": {
-                            "buildTarget": "sakai-ng:build:development"
+                            "buildTarget": "sakai-ng:build:development",
+                            "ssl": true,
+                            "sslCert": "localhost.pem",
+                            "sslKey": "localhost-key.pem"
                         }
+
                     },
                     "defaultConfiguration": "development"
                 },

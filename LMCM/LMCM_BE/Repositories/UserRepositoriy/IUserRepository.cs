@@ -9,5 +9,6 @@ namespace LMCM_BE.Repositories.UserRepositoriy
         Task<bool> CreateStaff(StaffRequest request);
         Task<UserProfileResponseDto> GetProfile(string userId);
         Task<PagedResult<ListUserResponseDto>> GetListUser(string? searchKey, int pageIndex = 1, int pageSize = 10);
+        Task<UserProfileResponseDto> GetProfileFromCookie();
     }
 }

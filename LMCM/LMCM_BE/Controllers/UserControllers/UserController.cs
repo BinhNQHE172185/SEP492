@@ -99,6 +99,23 @@ namespace LMCM_BE.Controllers.UserControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+        [HttpPost("profileCookie")]
+        public async Task<IActionResult> GetProfileAsync()
+        {
+            try
+            {
+                var data = await _userService.GetProfileFromCookie();
+                if (data != null)
+                {
+                    return Ok(data);
+                }
+                return NotFound(new { message = "User not found" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
         /// <summary>
         /// Lấy danh sách User
         /// </summary>

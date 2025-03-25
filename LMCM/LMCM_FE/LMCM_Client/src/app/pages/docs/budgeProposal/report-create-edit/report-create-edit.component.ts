@@ -130,6 +130,7 @@ export class ReportCreateEditComponent {
   }
 
   closeDialog() {
+    this.selectedReportId = '';
     this.displayAddDialog = false;
     this.closeDialogEvent.emit();
   }

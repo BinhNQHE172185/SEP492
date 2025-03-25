@@ -143,7 +143,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
             }
         }
         [HttpDelete("deleteBudgetProposal/{proposalId}")]
-        public async Task<IActionResult> DeleteBudgetProposalASync(Guid proposalId, Guid authorId)
+        public async Task<IActionResult> DeleteBudgetProposalASync(Guid proposalId)
         {
             try
             {
@@ -155,7 +155,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                         Message = "Không thể xóa do có hợp đồng lệ thuộc."
                     });
                 }
-                var result = await _budgetProposalService.SoftDeleteBudgetProposalAsync(proposalId, authorId);
+                var result = await _budgetProposalService.SoftDeleteBudgetProposalAsync(proposalId);
                 return result ? Ok(new { message = "Xóa thành công." }) : NotFound(new { message = "Không tìm thấy ." });
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors

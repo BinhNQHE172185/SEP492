@@ -1,9 +1,9 @@
-<p-dialog header="Thêm tờ trình" [(visible)]="displayAddDialog" [modal]="true" [resizable]="true" class="custom-dialog">
+<p-dialog header="Thêm tờ trình" [(visible)]="displayAddDialog" [modal]="true" [resizable]="true" class="custom-dialog" (onHide)="closeDialog()">
     <ng-template pTemplate="content">
         <section class="p-8 w-full bg-white rounded-xl">
             <div class="flex flex-col gap-4">
                 <div class="flex flex-col gap-2">
-                    <label class="block font-semibold ">Tiêu đề <span class="text-red-500">*</span></label>
+                    <label class="block font-semibold ">Tiêu đề</label>
                     <input pInputText [(ngModel)]="addTitle" class="w-full p-2 border border-gray-300 rounded"
                         placeholder="Nhập tiêu đề" />
                 </div>

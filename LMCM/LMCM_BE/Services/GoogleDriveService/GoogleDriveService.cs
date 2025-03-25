@@ -164,6 +164,15 @@ namespace LMCM_BE.Services.GoogleDriveService
             var match = Regex.Match(url, @"(?:/d/|id=)([a-zA-Z0-9_-]+)");
             return match.Success ? match.Groups[1].Value : null;
         }
+        public async Task<string> GetDownloadUrl(string fileUrl)
+        {
+            string fileId = await ExtractFileId(fileUrl);
+
+            // Generate a direct download link
+            string downloadUrl = $"https://drive.google.com/uc?export=download&id={fileId}";
+
+            return downloadUrl;
+        }
 
         public async Task<bool> SharePdfFileWithUser(string url, string email, string role = "reader")
         {

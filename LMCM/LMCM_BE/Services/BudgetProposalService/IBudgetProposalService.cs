@@ -7,8 +7,8 @@ namespace LMCM_BE.Services.BudgetPropasalService
     public interface IBudgetProposalService
     {
         Task<bool> CreateBudgetProposalAsync(BudgetProposalInsertDto proposal);
-        Task<PagedResult<BudgetProposalListDto>> GetBudgetProposalsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
-        Task<BudgetProposalDetailDto> GetBudgetProposalByIdAsync(Guid proposalId);
+        Task<PagedResult<BudgetProposalListDto>> GetBudgetProposalsAsync(Guid? userId, string? searchKey, int pageIndex = 1, int pageSize = 10);
+        Task<BudgetProposalDetailDto> GetBudgetProposalByIdAsync(Guid proposalId, Guid userId);
         Task<bool> SoftDeleteBudgetProposalAsync(Guid proposalId, Guid authorId);
         Task<Guid?> UpdateBudgetProposalAsync(Guid propasalId, BudgetProposalUpdateDto newProposal);
     }

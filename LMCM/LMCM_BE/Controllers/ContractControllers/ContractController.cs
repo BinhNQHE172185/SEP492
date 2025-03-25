@@ -26,7 +26,7 @@ namespace LMCM_BE.Controllers.ContractControllers
         {
             try
             {
-                var data = await _contractService.GetContractsAsync(request.SearchKey, request.pageIndex, request.PageSize);
+                var data = await _contractService.GetContractsAsync(request.Id, request.SearchKey, request.pageIndex, request.PageSize);
                 if (data != null)
                 {
                     return Ok(data);
@@ -62,8 +62,7 @@ namespace LMCM_BE.Controllers.ContractControllers
                 return Ok(new
                 {
                     Success = true,
-                    Message = "Hợp đồng đã được tạo thành công.",
-                    Data = contract
+                    Message = "Hợp đồng đã được tạo thành công."
                 });
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors
@@ -95,16 +94,25 @@ namespace LMCM_BE.Controllers.ContractControllers
             }
         }
         [HttpGet("getContractDetail")]
-        public async Task<IActionResult> GetContractDetailAsync(Guid contractId)
+        public async Task<IActionResult> GetContractDetailAsync(Guid contractId,Guid userId)
         {
             try
             {
-                var data = await _contractService.GetContractByIdAsync(contractId);
+                var data = await _contractService.GetContractByIdAsync(contractId, userId);
                 if (data != null)
                 {
                     return Ok(data);
                 }
                 return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+            }
+            catch (UnauthorizedAccessException ex) // Handle permission errors
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    Success = false,
+                    Message = "Bạn không có quyền xem hợp đồng.",
+                    Error = ex.Message
+                });
             }
             catch (Exception ex)
             {
@@ -148,7 +156,7 @@ namespace LMCM_BE.Controllers.ContractControllers
                     });
                 }
                 var result = await _contractService.SoftDeleteContractAsync(contractId, authorId);
-                return result ? Ok(new { message = "Xóa thành công." }) : NotFound(new { message = "Không tìm thấy ." });
+                return result ? Ok(new { message = "Xóa hợp đồng thành công." }) : NotFound(new { message = "Không tìm thấy ." });
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors
             {

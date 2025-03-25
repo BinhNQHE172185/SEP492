@@ -69,6 +69,11 @@ namespace LMCM_BE.Repositories.UserRepositoriy
             if (data != null)
             {
                 var profile = _mapper.Map<UserProfileResponseDto>(data);
+
+                var roles = await _userManager.GetRolesAsync(data); // Get roles as a list
+
+                profile.Roles = roles.ToList(); 
+
                 return profile;
             }
             return null;

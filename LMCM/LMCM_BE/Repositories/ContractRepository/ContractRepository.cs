@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.ContractDtos;
 using LMCM_BE.DTOs.ShareDtos;
+using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.UserRepositoriy;
 using LMCM_BE.Services.GoogleDriveService;
@@ -77,21 +78,25 @@ namespace LMCM_BE.Repositories.ContractRepository
             return true;
         }
 
-        public async Task<ContractDetailDto> GetContractByIdAsync(Guid contractId)
+        public async Task<ContractDetailDto> GetContractByIdAsync(Guid contractId, Guid userId)
         {
             if (contractId == Guid.Empty)
                 throw new ArgumentException("Contract ID cannot be empty.", nameof(contractId));
 
             var contract = await _dbContext.Contracts
                 .AsNoTracking()
-                .ProjectTo<ContractDetailDto>(_mapper.ConfigurationProvider)
                 .Where(s => s.ContractId == contractId)
                 .SingleOrDefaultAsync();
-
+  
             if (contract == null)
                 throw new KeyNotFoundException($"No contract found with ID: {contractId}");
 
+            UserProfileResponseDto user = await _userRepository.GetProfile(userId.ToString());
+            if (user == null || userId != contract.AuthorId || !user.Roles.Contains("Admin"))
+                throw new UnauthorizedAccessException("User is not authorized to view this budget proposal.");
+
             var contractDto = _mapper.Map<ContractDetailDto>(contract);
+            contractDto.DownloadUrl = await _googleDriveService.GetDownloadUrl(contract.Url);
 
             // Check if there's a file URL and fetch the file
             //if (!string.IsNullOrEmpty(contract.Url))
@@ -109,10 +114,15 @@ namespace LMCM_BE.Repositories.ContractRepository
             return contractDto;
         }
 
-        public async Task<PagedResult<ContractListDto>> GetContractsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<PagedResult<ContractListDto>> GetContractsAsync(Guid? userId,string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.Contracts.AsQueryable();
 
+            if(userId != Guid.Empty)
+            {
+                UserProfileResponseDto user = await _userRepository.GetProfile(userId.ToString());
+                if (user != null && !user.Roles.Contains("Admin")) query = query.Where(s => s.AuthorId == userId);
+            }
             query = query.Where(s => s.Status != "Inactive");
 
             if (!string.IsNullOrWhiteSpace(searchKey))

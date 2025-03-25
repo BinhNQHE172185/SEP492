@@ -18,14 +18,14 @@ namespace LMCM_BE.Services.BudgetPropasalService
             return await _budgetProposalRepository.CreateBudgetProposalAsync(proposal);  
         }
 
-        public async Task<BudgetProposalDetailDto> GetBudgetProposalByIdAsync(Guid proposalId)
+        public async Task<BudgetProposalDetailDto> GetBudgetProposalByIdAsync(Guid proposalId, Guid userId)
         {
-            return await _budgetProposalRepository.GetBudgetProposalByIdAsync(proposalId);
+            return await _budgetProposalRepository.GetBudgetProposalByIdAsync(proposalId, userId);
         }
 
-        public async Task<PagedResult<BudgetProposalListDto>> GetBudgetProposalsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<PagedResult<BudgetProposalListDto>> GetBudgetProposalsAsync(Guid? userId, string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
-            return await _budgetProposalRepository.GetBudgetProposalsAsync(searchKey, pageIndex, pageSize);
+            return await _budgetProposalRepository.GetBudgetProposalsAsync(userId, searchKey, pageIndex, pageSize);
         }
 
         public async Task<bool> SoftDeleteBudgetProposalAsync(Guid proposalId, Guid authorId)

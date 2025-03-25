@@ -25,7 +25,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
         {
             try
             {
-                var data = await _budgetProposalService.GetBudgetProposalsAsync(request.SearchKey, request.pageIndex, request.PageSize);
+                var data = await _budgetProposalService.GetBudgetProposalsAsync(request.Id,request.SearchKey, request.pageIndex, request.PageSize);
                 if (data != null)
                 {
                     return Ok(data);
@@ -38,16 +38,25 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
             }
         }
         [HttpGet("getBudgetProposalDetail")]
-        public async Task<IActionResult> GetBudgetProposalDetailAsync(Guid proposalId)
+        public async Task<IActionResult> GetBudgetProposalDetailAsync(Guid proposalId,Guid userId)
         {
             try
             {
-                var data = await _budgetProposalService.GetBudgetProposalByIdAsync(proposalId);
+                var data = await _budgetProposalService.GetBudgetProposalByIdAsync(proposalId, userId);
                 if (data != null)
                 {
                     return Ok(data);
                 }
                 return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+            }
+            catch (UnauthorizedAccessException ex) // Handle permission errors
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    Success = false,
+                    Message = "Bạn không có quyền xem tờ trình.",
+                    Error = ex.Message
+                });
             }
             catch (Exception ex)
             {
@@ -79,8 +88,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 return Ok(new
                 {
                     Success = true,
-                    Message = "Biên bản nghiệm thu đã được tạo thành công.",
-                    Data = propasal
+                    Message = "Tờ trình đã được tạo thành công."
                 });
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors
@@ -88,7 +96,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 return StatusCode(StatusCodes.Status403Forbidden, new
                 {
                     Success = false,
-                    Message = "Bạn không có quyền tạo biên bản nghiệm thu.",
+                    Message = "Bạn không có quyền tạo tờ trình.",
                     Error = ex.Message
                 });
             }
@@ -106,7 +114,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new
                 {
                     Success = false,
-                    Message = "Đã xảy ra lỗi khi tạo hợp đồng. Vui lòng thử lại sau.",
+                    Message = "Đã xảy ra lỗi khi tạo tờ trình. Vui lòng thử lại sau.",
                     Error = ex.Message
                 });
             }
@@ -120,7 +128,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 if (propasalId.HasValue)
                     return Ok(new
                     {
-                        message = "Update thành công.",
+                        message = "Update tờ trình thành công.",
                         Data = propasalId,
 
                     });

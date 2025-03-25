@@ -220,7 +220,7 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
 
             if (historyDto.ContractId.HasValue)
             {
-                var contract = await _contractService.GetContractByIdAsync(historyDto.ContractId.Value);
+                var contract = await _contractService.GetContractByIdAsync(historyDto.ContractId.Value,historyDto.UserId);
                 if (contract == null)
                     return BadRequest(new { message = "Invalid ContractId." });
             }

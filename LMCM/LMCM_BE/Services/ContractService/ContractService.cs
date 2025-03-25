@@ -17,14 +17,14 @@ namespace LMCM_BE.Services.ContractService
         {
             return await _contractRepository.CreateContract(contractDto);   
         }
-        public async Task<ContractDetailDto> GetContractByIdAsync(Guid contractId)
+        public async Task<ContractDetailDto> GetContractByIdAsync(Guid contractId, Guid userId)
         {
-            return await _contractRepository.GetContractByIdAsync(contractId);
+            return await _contractRepository.GetContractByIdAsync(contractId,userId);
         }
 
-        public async Task<PagedResult<ContractListDto>> GetContractsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<PagedResult<ContractListDto>> GetContractsAsync(Guid? userId, string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
-            return await _contractRepository.GetContractsAsync(searchKey, pageIndex, pageSize); 
+            return await _contractRepository.GetContractsAsync(userId,searchKey, pageIndex, pageSize); 
         }
 
         public async Task<bool> HasActiveConntractsAsync(Guid proposalId)

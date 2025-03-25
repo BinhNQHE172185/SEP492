@@ -15,6 +15,8 @@ import { TextareaModule } from 'primeng/textarea';
 import { CalendarModule } from 'primeng/calendar';
 import { ContractorApiService } from '../../../apis/contractorAPIs/contractor-api.service';
 import {ConfirmationService, MessageService } from 'primeng/api';
+import { searchService } from '../../service/search/search-service.service';
+import { Subscription } from 'rxjs';
 
 interface Expert {
     id: string;
@@ -30,6 +32,11 @@ interface Expert {
     bankAccountNumber: string;
     bankName: string;
 }
+interface PagingRequest {
+    searchKey?: string;
+    pageIndex: number;
+    pageSize: number;
+}
 
 @Component({
     selector: 'app-list-expert',
@@ -41,7 +48,9 @@ interface Expert {
 })
 export class ListExpertComponent implements OnInit {
     experts: Expert[] = [];
-    filteredExperts: Expert[] = [];
+    totalCount = 0;
+    pageNumber = 1;
+    pageSize = 10;
     searchKey = '';
 
     displayAddDialog = false;
@@ -75,41 +84,47 @@ export class ListExpertComponent implements OnInit {
     editStatus = '';
 
     detailExpert: Expert | null = null;
+    private searchSubscription!: Subscription;
 
     constructor(
         private contractorService: ContractorApiService,
         private messageService: MessageService,
+        private searchService: searchService,
         private confirmationService: ConfirmationService
     ) {}
 
     ngOnInit() {
-        this.loadExperts();
+        this.searchSubscription = this.searchService.searchQuery$.subscribe((query) => {
+            this.searchKey = query;
+            this.loadExperts();
+        });
     }
 
-    loadExperts() {
-        const request = { searchKey: '', pageIndex: 1, pageSize: 10 };
+    loadExperts(event?: any) {
+        if (event) {
+            this.pageNumber = Math.floor(event.first / event.rows) + 1;
+            this.pageSize = event.rows;
+        }
 
+        const request: PagingRequest = {
+            pageIndex: this.pageNumber,
+            pageSize: this.pageSize,
+            searchKey: this.searchKey
+        };
         this.contractorService.getContractors(request).subscribe(
             (response) => {
                 this.experts = response.items;
-                this.filteredExperts = [...this.experts];
+                this.totalCount = response.totalCount;
             },
-            (error) => {}
+            (error) => {
+                console.error('Lỗi khi tải danh sách môn học:', error);
+            }
         );
     }
 
-    onSearchChange() {
-        const key = this.searchKey.toLowerCase().trim();
-        this.filteredExperts = this.experts.filter(
-            (expert) =>
-                expert.contractorName.toLowerCase().includes(key) ||
-                expert.email.toLowerCase().includes(key) ||
-                expert.phoneNumber.toLowerCase().includes(key) ||
-                expert.taxCode.toLowerCase().includes(key) ||
-                expert.address.toLowerCase().includes(key)
-        );
+    onSearchChange(query: string) {
+        this.searchService.updateSearchQuery(query);
     }
-
     openAddDialog() {
         this.addContractorName = '';
         this.addPhoneNumber = '';
@@ -210,7 +225,7 @@ export class ListExpertComponent implements OnInit {
         next: () => {
             
             this.experts = this.experts.filter(c => c.id !== id);
-            this.filteredExperts = [...this.experts];
+          
 
             this.messageService.add({ 
                 severity: 'success', 

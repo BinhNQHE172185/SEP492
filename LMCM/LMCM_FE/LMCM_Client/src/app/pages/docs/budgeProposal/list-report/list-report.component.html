@@ -15,7 +15,7 @@
         <p-button label="Tìm kiếm"></p-button>
         <input
           [(ngModel)]="searchKey"
-          (ngModelChange)="onSearchChange()"
+          (ngModelChange)="onSearchChange($event)"
           pInputText
           placeholder="Từ khóa"
         />
@@ -25,7 +25,7 @@
     <!-- Table -->
     <div class="mt-4">
       <p-table
-        [value]="filteredReports"
+        [value]="reports"
         [rows]="5"
         [paginator]="true"
         class="w-full"
@@ -46,8 +46,8 @@
         <!-- Table Body -->
         <ng-template pTemplate="body" let-report let-rowIndex="rowIndex">
           <tr>
-            <td>{{ report.date }}</td>
-            <td>{{ report.author }}</td>
+            <td>{{ report.proposalDate }}</td>
+            <td>{{ report.authorId }}</td>
             <td>{{ report.title }}</td>
             <td>
               <p-button
@@ -93,78 +93,7 @@
 >
   <!-- Dialog Content -->
   <ng-template pTemplate="content">
-    <!-- Main section for form -->
-    <section class="p-8 w-full bg-white rounded-xl">
-      <div class="grid gap-4">
-        <!-- Ngày -->
-        <div class="col-12 md:col-6">
-          <label class="block font-semibold mb-2">Ngày <span class="text-red-500">*</span></label>
-          <p-calendar
-            [(ngModel)]="addDate"
-            dateFormat="yy-mm-dd"
-            [showIcon]="true"
-            class="w-full"
-          ></p-calendar>
-        </div>
-
-        <!-- Người viết -->
-        <div class="col-12 md:col-6">
-          <label class="block font-semibold mb-2">Người viết <span class="text-red-500">*</span></label>
-          <input
-            pInputText
-            [(ngModel)]="addAuthor"
-            class="w-full p-2 border border-gray-300 rounded"
-            placeholder="Nhập tên người viết"
-          />
-        </div>
-        <!-- Tiêu đề -->
-        <div class="col-12 md:col-6">
-          <label class="block font-semibold mb-2">Tiêu đề <span class="text-red-500">*</span></label>
-          <input
-            pInputText
-            [(ngModel)]="addTitle"
-            class="w-full p-2 border border-gray-300 rounded"
-            placeholder="Nhập tiêu đề"
-          />
-        </div>
-
-        <!-- Nội dung tờ trình -->
-        <div class="col-12">
-          <label class="block font-semibold mb-2">Nội dung tờ trình <span class="text-red-500">*</span></label>
-          <textarea
-            pInputTextarea
-            [(ngModel)]="addContent"
-            rows="5"
-            class="w-full p-2 border border-gray-300 rounded"
-            placeholder="Nội dung tờ trình"
-          ></textarea>
-        </div>
-
-        <!-- File đính kèm -->
-        <div class="col-12">
-          <label class="block font-semibold mb-2">File đính kèm</label>
-          <div class="flex items-center gap-2">
-            <p-fileUpload
-              name="file"
-              [customUpload]="true"
-              (uploadHandler)="onAddFileSelect($event)"
-              [multiple]="false"
-              accept=".pdf"
-              maxFileSize="5000000"
-              mode="basic"
-              chooseLabel="Tải lên file PDF"
-              class="mr-2"
-            ></p-fileUpload>
-          </div>
-          <p class="text-sm text-gray-500 mt-1">Chỉ chấp nhận file PDF, dung lượng tối đa 5 MB</p>
-
-          <!-- Show selected file name -->
-          <p *ngIf="addFileName" class="mt-2 text-orange-500 text-sm">
-            {{ addFileName }}
-          </p>
-        </div>
-      </div>
-    </section>
+    <app-report-detail></app-report-detail>
   </ng-template>
 
   <!-- Dialog Footer -->
@@ -207,11 +136,11 @@
       <div class="grid gap-4 md:grid-cols-2">
         <div>
           <label class="block font-semibold mb-2">Ngày</label>
-          <p>{{ detailReport.date }}</p>
+          <p>{{ detailReport.proposalDate }}</p>
         </div>
         <div>
           <label class="block font-semibold mb-2">Người viết</label>
-          <p>{{ detailReport.author }}</p>
+          <p>{{ detailReport.authorId }}</p>
         </div>
       </div>
 
@@ -220,23 +149,18 @@
         <label class="block font-semibold mb-2">Tiêu đề tờ trình</label>
         <p class="whitespace-pre-line">{{ detailReport.title }}</p>
       </div>
-      <!-- Nội dung tờ trình -->
-      <div class="mt-4">
-        <label class="block font-semibold mb-2">Nội dung tờ trình</label>
-        <p class="whitespace-pre-line">{{ detailReport.content }}</p>
-      </div>
 
       <!-- File đính kèm -->
       <div class="mt-4">
         <label class="block font-semibold mb-2">File đính kèm</label>
-        <div *ngIf="detailReport.fileName; else noFile">
-          <span>{{ detailReport.fileName }}</span>
+        <div *ngIf="detailReport.file; else noFile">
+          <span>{{ detailReport.file }}</span>
           <button
             pButton
             type="button"
             label="Tải xuống"
             class="p-button-text text-orange-500 ml-2"
-            (click)="downloadFile(detailReport.fileName!)"
+            (click)="downloadFile(detailReport.file!)"
           ></button>
         </div>
         <ng-template #noFile>Không có file đính kèm</ng-template>
@@ -305,17 +229,6 @@
             class="w-full p-2 border border-gray-300 rounded"
             placeholder="Nhập tên tiêu đề"
           />
-        </div>
-
-        <!-- Nội dung tờ trình -->
-        <div class="col-12">
-          <label class="block font-semibold mb-2">Nội dung tờ trình <span class="text-red-500">*</span></label>
-          <textarea
-            pInputTextarea
-            [(ngModel)]="editContent"
-            rows="5"
-            class="w-full p-2 border border-gray-300 rounded"
-          ></textarea>
         </div>
 
         <!-- File đính kèm -->

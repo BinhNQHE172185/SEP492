@@ -1,0 +1,33 @@
+<!-- <section class="p-8 w-full bg-white rounded-xl">
+    <div class="grid gap-4">
+        <div class="col-12 md:col-6">
+            <label class="block font-semibold mb-2">Ngày <span class="text-red-500">*</span></label>
+            <p-calendar [(ngModel)]="addDate" dateFormat="yy-mm-dd" [showIcon]="true" class="w-full"></p-calendar>
+        </div>
+
+        <div class="col-12 md:col-6">
+            <label class="block font-semibold mb-2">Người viết <span class="text-red-500">*</span></label>
+            <input pInputText [(ngModel)]="addAuthor" class="w-full p-2 border border-gray-300 rounded"
+                placeholder="Nhập tên người viết" />
+        </div>
+        <div class="col-12 md:col-6">
+            <label class="block font-semibold mb-2">Tiêu đề <span class="text-red-500">*</span></label>
+            <input pInputText [(ngModel)]="addTitle" class="w-full p-2 border border-gray-300 rounded"
+                placeholder="Nhập tiêu đề" />
+        </div>
+
+        <div class="col-12">
+            <label class="block font-semibold mb-2">File đính kèm</label>
+            <div class="flex items-center gap-2">
+                <p-fileUpload name="file" [customUpload]="true" (uploadHandler)="onAddFileSelect($event)"
+                    [multiple]="false" accept=".pdf" maxFileSize="5000000" mode="basic" chooseLabel="Tải lên file PDF"
+                    class="mr-2"></p-fileUpload>
+            </div>
+            <p class="text-sm text-gray-500 mt-1">Chỉ chấp nhận file PDF, dung lượng tối đa 5 MB</p>
+
+            <p *ngIf="addFileName" class="mt-2 text-orange-500 text-sm">
+                {{ addFileName }}
+            </p>
+        </div>
+    </div>
+</section> -->

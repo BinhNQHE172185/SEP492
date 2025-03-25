@@ -32,4 +32,15 @@ export class BudgetApiService {
   createBudget(request: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/budgetPropasal/createBudgetProposal`, request);
   }
+
+  getBudgetDetail(request: any): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/budgetPropasal/getBudgetProposalDetail?proposalId=${request}`);
+  }
+
+  updateBudget(id: string, request: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/budgetPropasal/updateBudgetProposal/${id}`, request);
+  }
+  deleteBudget(id: string, authorId: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/budgetPropasal/deleteBudgetProposal/${id}?authorId=${authorId}`);
+  }
 }

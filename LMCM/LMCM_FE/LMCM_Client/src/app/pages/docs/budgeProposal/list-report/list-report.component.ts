@@ -18,6 +18,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ReportDetailComponent } from '../report-detail/report-detail.component';
 import { BudgetApiService } from '../../../../apis/budgetProposalAPIs/budget-api.service';
 import { searchService } from '../../../service/search/search-service.service';
+import { ReportCreateEditComponent } from '../report-create-edit/report-create-edit.component';
 
 interface Report {
   proposalDate: string;
@@ -51,7 +52,9 @@ interface PagingRequest {
     TextareaModule,
     CalendarModule,
     FormsModule,
-    ReportDetailComponent
+    ToastModule,
+    ReportDetailComponent,
+    ReportCreateEditComponent
   ],
   templateUrl: './list-report.component.html',
   styleUrls: ['./list-report.component.scss'],
@@ -67,48 +70,26 @@ export class ListReportComponent implements OnInit {
   pageSize = 10;
   searchKey = '';
 
+  isDetail: boolean = true;
+
   selectedFile: File | null = null;
+  selectedReportId: string | null = null;
 
   private searchSubscription!: Subscription;
 
   constructor(private reportService: BudgetApiService,
     private searchService: searchService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService) { }
+    private confirmationService: ConfirmationService
+  ) { }
 
-  // --------------------------
-  // Dialog States
-  // --------------------------
   displayAddDialog = false;
   displayDetailDialog = false;
-  displayEditDialog = false;
 
-  // --------------------------
-  // Add Dialog Fields
-  // --------------------------
-  addDate: Date | null = null;
-  addAuthor = '';
-  addTitle = '';
-  addContent = '';
-  addFileName = '';
-
-  // --------------------------
-  // Edit Dialog Fields
-  // --------------------------
-  editDate: Date | null = null;
-  editAuthor = '';
-  editTitle = '';
-  editContent = '';
-  editFileName = '';
-  editIndex = -1; // Keep track of which item we are editing
-
-  // --------------------------
-  // Detail Dialog Fields
-  // --------------------------
-  detailReport: Report | null = null;
+  detailReport: any;
+  proposalId: string | null = null;
 
   ngOnInit() {
-    // Initialize filtered list
     this.searchSubscription = this.searchService.searchQuery$.subscribe(
       (query) => {
         this.searchKey = query;
@@ -150,140 +131,50 @@ export class ListReportComponent implements OnInit {
     this.searchService.updateSearchQuery(query);
   }
 
-  // --------------------------
-  // Open Dialogs
-  // --------------------------
-  openAddDialog() {
-    // Reset fields
-    this.addDate = null;
-    this.addAuthor = '';
-    this.addTitle = '';
-    this.addFileName = '';
-    this.displayAddDialog = true;
-  }
-
-  openDetailDialog(report: Report) {
-    // Show detail data
-    this.detailReport = report;
+  openDetailDialog(id: string) {
+    this.proposalId = id;
     this.displayDetailDialog = true;
   }
 
-  openEditDialog(index: number) {
-    // const report = this.filteredReports[index];
-    // this.editIndex = index;
-    // // Convert string date -> Date object (if needed)
-    // // For demonstration, we assume the date is in YYYY-MM-DD format
-    // const parts = report.date.split('-'); // [YYYY, MM, DD]
-    // this.editDate = new Date(
-    //   parseInt(parts[0], 10),
-    //   parseInt(parts[1], 10) - 1,
-    //   parseInt(parts[2], 10)
-    // );
-    // this.editAuthor = report.author;
-    // this.editTitle = report.title;
-    // this.editContent = report.content;
-    // this.editFileName = report.fileName || '';
-    // this.displayEditDialog = true;
-  }
-
-  // --------------------------
-  // Close Dialogs
-  // --------------------------
-  closeDialog(dialogType: string) {
-    if (dialogType === 'add') {
+  handleCloseDialog(isDetail: boolean) {
+    if (isDetail) {
+      this.displayDetailDialog = false;
+    } else {
       this.displayAddDialog = false;
-    } else if (dialogType === 'detail') {
-      this.displayDetailDialog = false;
-    } else if (dialogType === 'title') {
-      this.displayDetailDialog = false;
-    } else if (dialogType === 'edit') {
-      this.displayEditDialog = false;
+      this.selectedReportId = null;
     }
+    this.loadBudget();
   }
 
-  // --------------------------
-  // Add Dialog Save
-  // --------------------------
-  saveNewReport() {
-    if (!this.selectedFile) {
-      console.error('Vui lòng chọn file trước khi lưu.');
-      return;
+  openAddDialog(id?: string) {
+    if (id) {
+      this.selectedReportId = id;
     }
-    // Convert Date -> string (YYYY-MM-DD)
-    const dateString = this.addDate
-      ? `${this.addDate.getFullYear()}-${(this.addDate.getMonth() + 1)
-        .toString()
-        .padStart(2, '0')}-${this.addDate.getDate().toString().padStart(2, '0')}`
-      : '';
+    else {
+      this.selectedReportId = null;
+    }
+    this.displayAddDialog = true;
+  }
 
-    const newReport: Report = {
-      proposalDate: dateString,
-      authorId: this.addAuthor,
-      title: this.addTitle,
-      file: this.selectedFile
-    };
-
-    this.reportService.createBudget(newReport).subscribe(
-      (response) => {
-        this.displayAddDialog = false;
-      },
-      (error) => {
-        console.error("Lỗi khi tải danh sách môn học:", error);
+  deleteBudgetProposal(id: any) {
+    console.log("true")
+    const authorId = localStorage.getItem("userId");
+    this.confirmationService.confirm({
+      header: 'Xóa dữ liệu',
+      message: 'Bạn có chắc chắn muốn xóa? Hành động này là không thể hoàn tác.',
+      acceptLabel: 'Đồng ý',
+      rejectLabel: 'Hủy',
+      accept: () => {
+        this.reportService.deleteBudget(id, authorId!).subscribe(
+          (response) => {
+            this.loadBudget();
+            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
+          },
+          (error) => {
+            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+          }
+        );
       }
-    );
-  }
-
-  // --------------------------
-  // Edit Dialog Save
-  // --------------------------
-  saveEditedReport() {
-    // if (this.editIndex < 0 || this.editIndex >= this.filteredReports.length) {
-    //   return;
-    // }
-    // const dateString = this.editDate
-    //   ? `${this.editDate.getFullYear()}-${(this.editDate.getMonth() + 1)
-    //     .toString()
-    //     .padStart(2, '0')}-${this.editDate.getDate().toString().padStart(2, '0')}`
-    //   : '';
-
-    // // Update the original array item
-    // const globalIndex = this.reports.indexOf(this.filteredReports[this.editIndex]);
-    // this.reports[globalIndex] = {
-    //   date: dateString,
-    //   author: this.editAuthor,
-    //   title: this.editTitle,
-    //   content: this.editContent,
-    //   fileName: this.editFileName
-    // };
-
-    // // Re-filter after edit
-    // this.onSearchChange();
-    // this.displayEditDialog = false;
-  }
-
-  // --------------------------
-  // Delete
-  // --------------------------
-  deleteReport(index: number) {
-    // const globalIndex = this.reports.indexOf(this.filteredReports[index]);
-    // this.reports.splice(globalIndex, 1);
-    // this.onSearchChange();
-  }
-
-  // --------------------------
-  // File Upload Handlers
-  // --------------------------
-  onAddFileSelect(event: any) {
-    this.selectedFile = event.files[0];
-  }
-
-  onEditFileSelect(event: any) {
-    const file = event.files[0];
-    this.editFileName = file.name;
-  }
-
-  downloadFile(fileName: File) {
-    // In real usage, you'd handle actual file download
-    alert(`Tải xuống: ${fileName}`);
+    });
   }
 }

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LMCM_BE.Controllers.BudgetPropasalControllers
 {
-    [Route("api/budgetPropasal")]
+    [Route("api/budgetProposal")]
     [ApiController]
     public class BudgetProposalController : Controller
     {
@@ -137,13 +137,22 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                     return NotFound(new { message = "Dữ liệu không được tìm thấy." });
                 }
             }
+            catch (UnauthorizedAccessException ex) // Handle permission errors
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    Success = false,
+                    Message = "Bạn không có quyền update tờ trình.",
+                    Error = ex.Message
+                });
+            }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = ex.Message });
             }
         }
         [HttpDelete("deleteBudgetProposal/{proposalId}")]
-        public async Task<IActionResult> DeleteBudgetProposalASync(Guid proposalId, Guid authorId)
+        public async Task<IActionResult> DeleteBudgetProposalASync(Guid proposalId)
         {
             try
             {
@@ -155,7 +164,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                         Message = "Không thể xóa do có hợp đồng lệ thuộc."
                     });
                 }
-                var result = await _budgetProposalService.SoftDeleteBudgetProposalAsync(proposalId, authorId);
+                var result = await _budgetProposalService.SoftDeleteBudgetProposalAsync(proposalId);
                 return result ? Ok(new { message = "Xóa thành công." }) : NotFound(new { message = "Không tìm thấy ." });
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors

@@ -26,21 +26,41 @@ export class BudgetApiService {
   constructor(private http: HttpClient) { }
 
   getBudget(request: PagingRequest): Observable<PagedResult<any>> {
-    return this.http.post<PagedResult<any>>(`${this.apiUrl}/budgetPropasal/getBudgetProposalList`, request);
+    return this.http.post<PagedResult<any>>(
+      `${this.apiUrl}/budgetProposal/getBudgetProposalList`, 
+      request,
+      { withCredentials: true } // Enable sending cookies
+    );
   }
-
+  
   createBudget(request: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/budgetPropasal/createBudgetProposal`, request);
+    return this.http.post<any>(
+      `${this.apiUrl}/budgetProposal/createBudgetProposal`,
+      request,
+      { withCredentials: true }
+    );
   }
-
-  getBudgetDetail(request: any): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/budgetPropasal/getBudgetProposalDetail?proposalId=${request}`);
+  
+  getBudgetDetail(proposalId: string): Observable<any> {
+    return this.http.get<any>(
+      `${this.apiUrl}/budgetProposal/getBudgetProposalDetail?proposalId=${proposalId}`,
+      { withCredentials: true }
+    );
   }
-
+  
   updateBudget(id: string, request: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/budgetPropasal/updateBudgetProposal/${id}`, request);
+    return this.http.put<any>(
+      `${this.apiUrl}/budgetProposal/updateBudgetProposal/${id}`,
+      request,
+      { withCredentials: true }
+    );
   }
+  
   deleteBudget(id: string, authorId: string): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/budgetPropasal/deleteBudgetProposal/${id}?authorId=${authorId}`);
+    return this.http.delete<any>(
+      `${this.apiUrl}/budgetProposal/deleteBudgetProposal/${id}`,
+      { withCredentials: true }
+    );
   }
+  
 }

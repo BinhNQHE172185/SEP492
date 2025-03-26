@@ -28,9 +28,9 @@ namespace LMCM_BE.Services.BudgetPropasalService
             return await _budgetProposalRepository.GetBudgetProposalsAsync(searchKey, pageIndex, pageSize);
         }
 
-        public async Task<bool> SoftDeleteBudgetProposalAsync(Guid proposalId, Guid authorId)
+        public async Task<bool> SoftDeleteBudgetProposalAsync(Guid proposalId)
         {
-            return await _budgetProposalRepository.SoftDeleteBudgetProposalAsync(proposalId,authorId);   
+            return await _budgetProposalRepository.SoftDeleteBudgetProposalAsync(proposalId);   
         }
 
         public async Task<Guid?> UpdateBudgetProposalAsync(Guid proposalId, BudgetProposalUpdateDto newProposal)

@@ -4,8 +4,6 @@ namespace LMCM_BE.DTOs.ContractDtos
 {
     public class ContractUpdateDto
     {
-        public Guid ProposalId { get; set; }
-
         public Guid ContractorId { get; set; }
 
         public string Title { get; set; } = null!;
@@ -18,7 +16,6 @@ namespace LMCM_BE.DTOs.ContractDtos
 
         public DateTime? EndDate { get; set; }
 
-        public string? Url { get; set; }
         public IFormFile? File { get; set; }
     }
 }

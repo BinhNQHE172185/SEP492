@@ -67,6 +67,7 @@ namespace LMCM_BE.Repositories.ContractRepository
 
             newContract.ContractId = Guid.NewGuid();
             newContract.Url = fileUrl;
+            newContract.AuthorId = user.Id;
             newContract.Status = "Active";
             newContract.CreatedAt = DateTime.UtcNow;
             newContract.UpdatedAt = DateTime.UtcNow;
@@ -86,6 +87,10 @@ namespace LMCM_BE.Repositories.ContractRepository
             var contract = await _dbContext.Contracts
                 .AsNoTracking()
                 .Where(s => s.ContractId == contractId)
+                .Include(s => s.Author)
+                .Include(s => s.Proposal)
+                .Include(s => s.Contractor)
+                .Include(S=> S.LearningMaterialChangesHistories)
                 .SingleOrDefaultAsync();
 
             if (contract == null)
@@ -140,6 +145,7 @@ namespace LMCM_BE.Repositories.ContractRepository
                 .Take(pageSize)
                 .Include(s => s.Author)
                 .Include(s => s.Proposal)
+                .Include(s=>s.Contractor)
                 .ToListAsync();
 
             var data = _mapper.Map<List<ContractListDto>>(items);

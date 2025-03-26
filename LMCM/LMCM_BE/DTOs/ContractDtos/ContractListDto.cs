@@ -1,10 +1,12 @@
 ﻿using LMCM_BE.DTOs.BudgetProposalDtos;
+using LMCM_BE.DTOs.ContractorDtos;
 using LMCM_BE.DTOs.UserDtos;
 
 namespace LMCM_BE.DTOs.ContractDtos
 {
     public class ContractListDto
     {
+        public Guid ContractId { get; set; }
         public Guid ProposalId { get; set; }
 
         public Guid AuthorId { get; set; }
@@ -31,7 +33,7 @@ namespace LMCM_BE.DTOs.ContractDtos
 
         public virtual ListUserResponseDto Author { get; set; } = null!;
 
-        //public virtual Contractor Contractor { get; set; } = null!; todo
+        public virtual ContractorDetailDto Contractor { get; set; } = null!; 
 
         //public virtual ICollection<LearningMaterialChangesHistory> LearningMaterialChangesHistories { get; set; } = new List<LearningMaterialChangesHistory>(); todo
 

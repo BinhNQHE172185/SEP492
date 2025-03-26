@@ -99,7 +99,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
-            if (user.Id != budgetProposal.AuthorId && !user.Roles.Contains("Staff"))
+            if (user.Id != budgetProposal.AuthorId && user.Roles.Contains("Staff"))
                 throw new UnauthorizedAccessException("User is not authorized to view this budget proposal.");
 
             var budgetProposalDto = _mapper.Map<BudgetProposalDetailDto>(budgetProposal);

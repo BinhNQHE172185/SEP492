@@ -54,15 +54,14 @@ export class ReportDetailComponent implements OnChanges {
     this.closeDialogEvent.emit();
   }
 
-  downloadFile(file: any) {
-    if (file) {
-      const link = document.createElement("a");
-      link.href = file;
-      link.download = this.file.split('/').pop();
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+  downloadFile(url: string) {
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'file'); 
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
+
 }
 

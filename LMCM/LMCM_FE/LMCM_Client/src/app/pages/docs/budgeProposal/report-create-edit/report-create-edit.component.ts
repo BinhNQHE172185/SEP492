@@ -57,7 +57,7 @@ export class ReportCreateEditComponent {
           this.addTitle = this.report.title;
           this.addAuthor = this.report.author.name;
           this.addDate = new Date(this.report.proposalDate);
-          this.file = this.report.url;
+          this.file = this.report.downloadUrl;
         },
         (error) => {
           this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
@@ -118,15 +118,13 @@ export class ReportCreateEditComponent {
     }
   }
 
-  downloadFile(file: any) {
-    if (file) {
-      const link = document.createElement("a");
-      link.href = file;
-      link.download = this.file.split('/').pop();
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+  downloadFile(url: string) {
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'file'); 
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   closeDialog() {

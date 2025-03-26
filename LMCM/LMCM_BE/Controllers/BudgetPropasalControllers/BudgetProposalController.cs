@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LMCM_BE.Controllers.BudgetPropasalControllers
 {
-    [Route("api/budgetPropasal")]
+    [Route("api/budgetProposal")]
     [ApiController]
     public class BudgetProposalController : Controller
     {
@@ -136,6 +136,15 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 {
                     return NotFound(new { message = "Dữ liệu không được tìm thấy." });
                 }
+            }
+            catch (UnauthorizedAccessException ex) // Handle permission errors
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    Success = false,
+                    Message = "Bạn không có quyền update tờ trình.",
+                    Error = ex.Message
+                });
             }
             catch (Exception ex)
             {

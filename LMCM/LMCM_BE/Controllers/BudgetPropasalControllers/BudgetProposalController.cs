@@ -4,6 +4,7 @@ using LMCM_BE.Services.BudgetPropasalService;
 using LMCM_BE.Services.ContractorService;
 using LMCM_BE.Services.ContractService;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace LMCM_BE.Controllers.BudgetPropasalControllers
 {
@@ -68,20 +69,19 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
         {
             try
             {
-                if (proposalDto.File == null)
+                // Check if ModelState is valid (DTO validation will catch issues)
+                if (!ModelState.IsValid)
                 {
-                    return BadRequest(new { Success = false, Message = "Không tìm thấy file." });
-                }
-                // Check file type
-                if (proposalDto.File.ContentType != "application/pdf")
-                {
-                    return BadRequest(new { Success = false, Message = "Chỉ file pdf mới được tải lên." });
-                }
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                  .Select(e => e.ErrorMessage)
+                                                  .ToList();
 
-                // Check file size (5MB = 5 * 1024 * 1024 bytes)
-                if (proposalDto.File.Length > 5 * 1024 * 1024)
-                {
-                    return BadRequest(new { Success = false, Message = "Dung lượng file không được vượt quá 5MB." });
+                    return BadRequest(new
+                    {
+                        Success = false,
+                        Message = "Dữ liệu đầu vào không hợp lệ.",
+                        Errors = errors
+                    });
                 }
 
                 var propasal = await _budgetProposalService.CreateBudgetProposalAsync(proposalDto);
@@ -124,6 +124,20 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
         {
             try
             {
+                // Check if ModelState is valid (DTO validation will catch issues)
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                  .Select(e => e.ErrorMessage)
+                                                  .ToList();
+
+                    return BadRequest(new
+                    {
+                        Success = false,
+                        Message = "Dữ liệu đầu vào không hợp lệ.",
+                        Errors = errors
+                    });
+                }
                 Guid? propasalId = await _budgetProposalService.UpdateBudgetProposalAsync(id, newPropasal);
                 if (propasalId.HasValue)
                     return Ok(new

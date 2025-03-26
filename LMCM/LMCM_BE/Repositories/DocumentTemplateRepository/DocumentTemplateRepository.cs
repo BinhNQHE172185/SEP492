@@ -100,8 +100,8 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
             UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
-            //if (user.Id != template.AuthorId && user.Roles.Contains("Staff"))
-            //    throw new UnauthorizedAccessException("User is not authorized to view this template.");
+            if (user.Id != template.AuthorId && user.Roles.Contains("Staff"))
+                throw new UnauthorizedAccessException("User is not authorized to view this template.");
 
             var templateDto = _mapper.Map<DocumentTemplateDetailDto>(template);
             templateDto.DownloadUrl = await _googleDriveService.GetDownloadUrl(template.Url);
@@ -116,7 +116,7 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
             UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
-            //if (!user.Roles.Contains("Admin")) query = query.Where(s => s.AuthorId == user.Id);
+            if (user.Roles.Contains("Staff")) query = query.Where(s => s.AuthorId == user.Id);
 
             query = query.Where(s => s.Status != "Inactive");
 
@@ -159,7 +159,7 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
             UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
-            if (user.Id != template.AuthorId)
+            if (user.Id != template.AuthorId && user.Roles.Contains("Staff"))
                 throw new UnauthorizedAccessException("User is not authorized to update this budget proposal.");
 
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
@@ -199,7 +199,7 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
             UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
-            if (user.Id != template.AuthorId)
+            if (user.Id != template.AuthorId && user.Roles.Contains("Staff"))
                 throw new UnauthorizedAccessException("User is not authorized to update this template.");
 
             // Update template fields (excluding file)

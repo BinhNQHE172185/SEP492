@@ -182,7 +182,7 @@ namespace LMCM_BE.Repositories.ContractRepository
             UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
-            if (user.Id != contract.AuthorId)
+            if (user.Id != contract.AuthorId && user.Roles.Contains("Staff"))
                 throw new UnauthorizedAccessException("User is not authorized to delete this contract.");
 
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
@@ -224,7 +224,7 @@ namespace LMCM_BE.Repositories.ContractRepository
             UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
-            if (user.Id != contract.AuthorId)
+            if (user.Id != contract.AuthorId && user.Roles.Contains("Staff"))
                 throw new UnauthorizedAccessException("User is not authorized to update this contract.");
 
             // Update contract fields (excluding file)

@@ -27,6 +27,11 @@ namespace LMCM_BE.Services.ContractService
             return await _contractRepository.GetContractsAsync(searchKey, pageIndex, pageSize); 
         }
 
+        public async Task<List<ContractListDto>> GetContractsAsync(string? searchKey)
+        {
+            return await _contractRepository.GetContractsAsync(searchKey);
+        }
+
         public async Task<bool> HasActiveConntractsAsync(Guid proposalId)
         {
             return await _contractRepository.HasActiveContractsAsync(proposalId);

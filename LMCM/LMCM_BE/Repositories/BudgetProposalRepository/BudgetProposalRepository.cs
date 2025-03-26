@@ -8,6 +8,7 @@ using LMCM_BE.Repositories.UserRepositoriy;
 using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Utilities;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Printing;
 
 namespace LMCM_BE.Repositories.BudgetPropasalRepository
 {
@@ -144,6 +145,34 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
                 CurrentPage = pageIndex,
                 PageSize = pageSize
             };
+        }
+
+        public async Task<List<BudgetProposalListDto>> GetBudgetProposalsAsync(string? searchKey)
+        {
+            var query = _dbContext.BudgetProposals.AsQueryable();
+
+            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("User not found");
+            if (!user.Roles.Contains("Head of Department")) query = query.Where(s => s.AuthorId == user.Id);
+
+            query = query.Where(s => s.Status != "Inactive");
+
+            if (!string.IsNullOrWhiteSpace(searchKey))
+            {
+                string search = searchKey.Trim().ToLower();
+                query = query.Where(s => s.Author.Email.ToLower().Contains(search) ||
+                                         s.Title.ToLower().Contains(search) ||
+                                         s.Author.UserName.ToLower().Contains(search));
+            }
+
+            var items = await query
+                .Include(s => s.Author)
+                .ToListAsync();
+
+            var data = _mapper.Map<List<BudgetProposalListDto>>(items);
+
+            return data;
         }
 
         public async Task<bool> SoftDeleteBudgetProposalAsync(Guid proposalId)

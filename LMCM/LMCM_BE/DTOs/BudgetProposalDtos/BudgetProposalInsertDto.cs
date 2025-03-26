@@ -11,7 +11,6 @@ namespace LMCM_BE.DTOs.BudgetProposalDtos
         [RegularExpression(@"^\s*\S.*$", ErrorMessage = "Tên tiêu đề không được chỉ chứa khoảng trắng")]
         public string Title { get; set; } = null!;
 
-        [DateMustBePresentOrFuture]
         public DateTime? ProposalDate { get; set; }
 
         [Required(ErrorMessage = "File đính kèm là bắt buộc")]

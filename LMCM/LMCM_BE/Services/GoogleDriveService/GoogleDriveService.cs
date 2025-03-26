@@ -11,14 +11,19 @@ namespace LMCM_BE.Services.GoogleDriveService
     {
         private readonly DriveService _driveService;
         private readonly IFileHelper _fileHelper;
-        private readonly string _contractFolderId = "1D-BiSw2okv50bU3C85NS4Z1YE4it0374";
-        private readonly string _budgetPropasalFolderId = "1-Wl5_HyRdbG9j3vBI5ynSHr7vykF7P3S";
-        private readonly string _acceptanceRecordFolderId = "1065sqU0hsl1EwZuiibSLya5DFmQMZ6s2";
+        private readonly string _contractFolderId;
+        private readonly string _budgetProposalFolderId;
+        private readonly string _acceptanceRecordFolderId;
+        private readonly string _documentTemplateFolderId;
 
-        public GoogleDriveService(DriveService driveService, IFileHelper fileHelper)
+        public GoogleDriveService(DriveService driveService, IFileHelper fileHelper, IConfiguration configuration)
         {
             _driveService = driveService;
             _fileHelper = fileHelper;
+            _contractFolderId = configuration["GoogleDriveFolders:Contract"];
+            _budgetProposalFolderId = configuration["GoogleDriveFolders:BudgetProposal"];
+            _acceptanceRecordFolderId = configuration["GoogleDriveFolders:AcceptanceRecord"];
+            _documentTemplateFolderId = configuration["GoogleDriveFolders:DocumentTemplate"];
         }
 
         public async Task<string> ComputeGoogleDriveFileHashAsync(string fileUrl)
@@ -120,7 +125,7 @@ namespace LMCM_BE.Services.GoogleDriveService
             var fileMetadata = new Google.Apis.Drive.v3.Data.File
             {
                 Name = file.FileName,
-                Parents = new List<string> { _budgetPropasalFolderId }
+                Parents = new List<string> { _budgetProposalFolderId }
             };
 
             using var stream = file.OpenReadStream();
@@ -145,11 +150,12 @@ namespace LMCM_BE.Services.GoogleDriveService
                     EmailAddress = email,
                 };
 
-                var contractPermissionTask = _driveService.Permissions.Create(permission, _contractFolderId).ExecuteAsync();
-                var budgetProposalPermissionTask = _driveService.Permissions.Create(permission, _budgetPropasalFolderId).ExecuteAsync();
-                var acceptanceRecordPermissionTask = _driveService.Permissions.Create(permission, _acceptanceRecordFolderId).ExecuteAsync();
+                //var contractPermissionTask = _driveService.Permissions.Create(permission, _contractFolderId).ExecuteAsync();
+                //var budgetProposalPermissionTask = _driveService.Permissions.Create(permission, _budgetProposalFolderId).ExecuteAsync();
+                //var acceptanceRecordPermissionTask = _driveService.Permissions.Create(permission, _acceptanceRecordFolderId).ExecuteAsync();
+                var DocumentTemplatePermissionTask = _driveService.Permissions.Create(permission, _documentTemplateFolderId).ExecuteAsync();
 
-                await Task.WhenAll(contractPermissionTask, budgetProposalPermissionTask, acceptanceRecordPermissionTask);
+                await Task.WhenAll(DocumentTemplatePermissionTask);
 
                 return true;
             }
@@ -201,5 +207,27 @@ namespace LMCM_BE.Services.GoogleDriveService
             }
         }
 
+        public async Task<string?> UploadDocumentTemplateFileAsync(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return null;
+
+            var fileMetadata = new Google.Apis.Drive.v3.Data.File
+            {
+                Name = file.FileName,
+                Parents = new List<string> { _documentTemplateFolderId }
+            };
+
+            using var stream = file.OpenReadStream();
+            var request = _driveService.Files.Create(fileMetadata, stream, file.ContentType);
+            request.Fields = "id,webViewLink";
+
+            var result = await request.UploadAsync();
+            if (result.Status != UploadStatus.Completed)
+                return null;
+
+            var uploadedFile = request.ResponseBody;
+            return uploadedFile.WebViewLink; // Return Google Drive File URL
+        }
     }
 }

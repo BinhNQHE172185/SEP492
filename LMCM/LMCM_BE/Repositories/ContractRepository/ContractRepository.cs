@@ -126,7 +126,7 @@ namespace LMCM_BE.Repositories.ContractRepository
             var query = _dbContext.Contracts.AsQueryable();
 
             UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
-            if (user != null && !user.Roles.Contains("Admin")) query = query.Where(s => s.AuthorId == user.Id);
+            if (user != null && !user.Roles.Contains("Head of Department")) query = query.Where(s => s.AuthorId == user.Id);
 
             query = query.Where(s => s.Status != "Inactive");
 

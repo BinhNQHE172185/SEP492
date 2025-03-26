@@ -31,6 +31,9 @@ namespace LMCM_BE.Repositories.ContractRepository
 
         public async Task<bool> CreateContract(ContractInsertDto contractDto)
         {
+            UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("User not found");
             // Step 1: Upload contract file to Google Drive (if provided)
             string? fileUrl = null;
             if (contractDto.File != null)
@@ -55,9 +58,6 @@ namespace LMCM_BE.Repositories.ContractRepository
                 }
                 else
                 {
-                    var user = await _userRepository.GetProfile(contractDto.AuthorId.ToString());
-                    if (user == null || string.IsNullOrEmpty(user.Email))
-                        throw new Exception("Email not found");
                     await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
                 }
             }
@@ -92,8 +92,10 @@ namespace LMCM_BE.Repositories.ContractRepository
                 throw new KeyNotFoundException($"No contract found with ID: {contractId}");
 
             UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
-            if (user == null || user.Id != contract.AuthorId || !user.Roles.Contains("Admin"))
-                throw new UnauthorizedAccessException("User is not authorized to view this budget proposal.");
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("User not found");
+            if (user.Id != contract.AuthorId && user.Roles.Contains("Staff"))
+                throw new UnauthorizedAccessException("User is not authorized to view this contract.");
 
             var contractDto = _mapper.Map<ContractDetailDto>(contract);
             contractDto.DownloadUrl = await _googleDriveService.GetDownloadUrl(contract.Url);
@@ -163,7 +165,7 @@ namespace LMCM_BE.Repositories.ContractRepository
                 .AnyAsync(p => p.ContractorId == contractorId && p.Status == "Active");
         }
 
-        public async Task<bool> SoftDeleteContractAsync(Guid contractId, Guid authorId)
+        public async Task<bool> SoftDeleteContractAsync(Guid contractId)
         {
             var contract = await _dbContext.Contracts
                 .FirstOrDefaultAsync(ar => ar.ContractId == contractId && ar.Status == "Active");
@@ -171,8 +173,11 @@ namespace LMCM_BE.Repositories.ContractRepository
             if (contract == null)
                 throw new KeyNotFoundException("Data not found.");
 
-            if (authorId != contract.AuthorId)
-                throw new UnauthorizedAccessException("User is not authorized to update this contract.");
+            UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("User not found");
+            if (user.Id != contract.AuthorId)
+                throw new UnauthorizedAccessException("User is not authorized to delete this contract.");
 
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
             try
@@ -210,7 +215,10 @@ namespace LMCM_BE.Repositories.ContractRepository
             if (contract == null)
                 throw new KeyNotFoundException($"No contract found with ID: {contractId}");
 
-            if (newContract.AuthorId != contract.AuthorId)
+            UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("User not found");
+            if (user.Id != contract.AuthorId)
                 throw new UnauthorizedAccessException("User is not authorized to update this contract.");
 
             // Update contract fields (excluding file)
@@ -240,9 +248,6 @@ namespace LMCM_BE.Repositories.ContractRepository
                     if (string.IsNullOrWhiteSpace(fileUrl))
                         throw new Exception("Failed to upload the file.");
 
-                    var user = await _userRepository.GetProfile(newContract.AuthorId.ToString());
-                    if (user == null || string.IsNullOrEmpty(user.Email))
-                        throw new Exception("Email not found");
                     await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
 
                     // Update the contract's file URL **only if a new file was uploaded**

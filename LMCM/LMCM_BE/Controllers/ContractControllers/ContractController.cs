@@ -143,7 +143,7 @@ namespace LMCM_BE.Controllers.ContractControllers
             }
         }
         [HttpDelete("deleteContract/{contractId}")]
-        public async Task<IActionResult> DeleteContractAsync(Guid contractId,Guid authorId)
+        public async Task<IActionResult> DeleteContractAsync(Guid contractId)
         {
             try
             {
@@ -155,7 +155,7 @@ namespace LMCM_BE.Controllers.ContractControllers
                         Message = "Không thể xóa do có biên bản nghiệm thu lệ thuộc."
                     });
                 }
-                var result = await _contractService.SoftDeleteContractAsync(contractId, authorId);
+                var result = await _contractService.SoftDeleteContractAsync(contractId);
                 return result ? Ok(new { message = "Xóa hợp đồng thành công." }) : NotFound(new { message = "Không tìm thấy ." });
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors

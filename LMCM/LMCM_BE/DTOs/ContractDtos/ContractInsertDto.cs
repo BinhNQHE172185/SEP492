@@ -2,7 +2,6 @@
 {
     public class ContractInsertDto
     {
-        public Guid AuthorId { get; set; }
         public Guid ProposalId { get; set; }
         public Guid ContractorId { get; set; }
         public string Title { get; set; } = null!;

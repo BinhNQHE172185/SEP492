@@ -12,7 +12,7 @@ namespace LMCM_BE
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
             var googleDriveService = serviceProvider.GetRequiredService<IGoogleDriveService>();
 
-            string[] roles = { "Admin", "Staff" };
+            string[] roles = { "Head of Department", "Staff" };
 
             // Create roles if they do not exist
             foreach (var role in roles)
@@ -23,24 +23,24 @@ namespace LMCM_BE
                 }
             }
 
-            // Create default Admin user
-            string adminEmail = "binhnqhe172185@fpt.edu.vn";
-            var adminUser = await userManager.FindByEmailAsync(adminEmail);
+            // Create default Head of Department user
+            string hodEmail = "binhnqhe172185@fpt.edu.vn";
+            var hodUser = await userManager.FindByEmailAsync(hodEmail);
 
-            if (adminUser == null)
+            if (hodUser == null)
             {
-                var newAdmin = new User
+                var newHOD = new User
                 {
-                    UserName = adminEmail,
-                    Email = adminEmail,
+                    UserName = hodEmail,
+                    Email = hodEmail,
                     Status = "2"
                 };
 
-                var result = await userManager.CreateAsync(newAdmin);
+                var result = await userManager.CreateAsync(newHOD);
 
                 if (result.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(newAdmin, "Admin");
+                    await userManager.AddToRoleAsync(newHOD, "Head of Department");
 
                     // Share Google Drive folders with the new admin
                     bool isShared = await googleDriveService.ShareFoldersWithUser(adminEmail, "reader");
@@ -52,7 +52,7 @@ namespace LMCM_BE
                 }
                 else
                 {
-                    Console.WriteLine("Failed to create admin user: " + string.Join(", ", result.Errors));
+                    Console.WriteLine("Failed to create Head of Department user: " + string.Join(", ", result.Errors));
                 }
             }
         }

@@ -38,6 +38,23 @@ namespace LMCM_BE.Controllers.ContractControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+        [HttpPost("getContractListNoPaging")]
+        public async Task<IActionResult> GetContractsNoPagingAsync(string? searchKey)
+        {
+            try
+            {
+                var data = await _contractService.GetContractsAsync(searchKey);
+                if (data != null)
+                {
+                    return Ok(data);
+                }
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
         [HttpPost("createContract")]
         public async Task<IActionResult> CreateContractAsync([FromForm] ContractInsertDto contractDto)
         {

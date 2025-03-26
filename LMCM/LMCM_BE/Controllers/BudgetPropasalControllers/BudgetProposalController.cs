@@ -39,7 +39,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
             }
         }
         [HttpPost("getBudgetProposalNoPagingList")]
-        public async Task<IActionResult> GetBudgetProposalsNoPagingAsync(string searchKey)
+        public async Task<IActionResult> GetBudgetProposalsNoPagingAsync(string? searchKey)
         {
             try
             {

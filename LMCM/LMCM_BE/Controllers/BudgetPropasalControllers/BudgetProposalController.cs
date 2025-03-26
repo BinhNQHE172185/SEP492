@@ -38,6 +38,23 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+        [HttpPost("getBudgetProposalNoPagingList")]
+        public async Task<IActionResult> GetBudgetProposalsNoPagingAsync(string searchKey)
+        {
+            try
+            {
+                var data = await _budgetProposalService.GetBudgetProposalsAsync(searchKey);
+                if (data != null)
+                {
+                    return Ok(data);
+                }
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
         [HttpGet("getBudgetProposalDetail")]
         public async Task<IActionResult> GetBudgetProposalDetailAsync(Guid proposalId)
         {

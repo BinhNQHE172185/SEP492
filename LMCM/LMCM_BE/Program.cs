@@ -54,6 +54,9 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using LMCM_BE.AutoMapper.TemplateProfiles;
+using LMCM_BE.Repositories.DocumentTemplateRepository;
+using LMCM_BE.Services.DocumentTemplateService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -147,6 +150,7 @@ builder.Services.AddAutoMapper(typeof(BudgetPropasalProfile));
 builder.Services.AddAutoMapper(typeof(PloProfile));
 builder.Services.AddAutoMapper(typeof(ContractProfile));
 builder.Services.AddAutoMapper(typeof(AcceptanceRecordProfile));
+builder.Services.AddAutoMapper(typeof(DocumentTemplateProfile));
 
 //DI
 builder.Services.AddScoped<RoleManager<IdentityRole<Guid>>>();
@@ -188,6 +192,8 @@ builder.Services.AddScoped<IContractorService, ContractorService>();
 builder.Services.AddScoped<IAcceptanceRecordRepository, AcceptanceRecordRepository>();
 builder.Services.AddScoped<IAcceptanceRecordService, AcceptanceRecordService>();
 builder.Services.AddScoped<IFileHelper, FileHelper>();
+builder.Services.AddScoped<IDocumentTemplateRepository, DocumentTemplateRepository>();
+builder.Services.AddScoped<IDocumentTemplateService, DocumentTemplateService>();
 
 builder.Services.AddScoped<IGoogleDriveService, GoogleDriveService>();
 

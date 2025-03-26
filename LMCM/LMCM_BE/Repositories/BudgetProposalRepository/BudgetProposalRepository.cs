@@ -115,7 +115,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
-            if (!user.Roles.Contains("Admin")) query = query.Where(s => s.AuthorId == user.Id);
+            if (!user.Roles.Contains("Head of Department")) query = query.Where(s => s.AuthorId == user.Id);
 
             query = query.Where(s => s.Status != "Inactive");
 
@@ -157,7 +157,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
-            if (user.Id != budgetProposal.AuthorId)
+            if (user.Id != budgetProposal.AuthorId && user.Roles.Contains("Staff"))
                 throw new UnauthorizedAccessException("User is not authorized to update this budget proposal.");
 
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
@@ -197,7 +197,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
-            if (user.Id != proposal.AuthorId)
+            if (user.Id != proposal.AuthorId && user.Roles.Contains("Staff"))
                 throw new UnauthorizedAccessException("User is not authorized to update this proposal.");
 
             // Update proposal fields (excluding file)

@@ -54,6 +54,19 @@ namespace LMCM_BE.Repositories.ContractorRepository
             };
         }
 
+        public async Task<List<ContractorListDto>> GetContractorsListAsync()
+        {
+            var query = _dbContext.Contractors
+                .Where(c => c.Status == "Active")
+                .AsQueryable();
+
+            var items = await query.ToListAsync();
+
+            var data = _mapper.Map<List<ContractorListDto>>(items);
+
+            return data;
+        }
+
         public async Task<ContractorDetailDto> CreateContractorAsync(ContractorCreateDto dto)
         {
             var contractor = _mapper.Map<Contractor>(dto);

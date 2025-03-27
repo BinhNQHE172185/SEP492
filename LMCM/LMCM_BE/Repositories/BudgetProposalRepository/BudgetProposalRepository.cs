@@ -151,10 +151,10 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
         {
             var query = _dbContext.BudgetProposals.AsQueryable();
 
-            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
-            if (user == null || string.IsNullOrEmpty(user.Email))
-                throw new Exception("User not found");
-            if (!user.Roles.Contains("Head of Department")) query = query.Where(s => s.AuthorId == user.Id);
+            //UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
+            //if (user == null || string.IsNullOrEmpty(user.Email))
+            //    throw new Exception("User not found");
+            //if (!user.Roles.Contains("Head of Department")) query = query.Where(s => s.AuthorId == user.Id);
 
             query = query.Where(s => s.Status != "Inactive");
 

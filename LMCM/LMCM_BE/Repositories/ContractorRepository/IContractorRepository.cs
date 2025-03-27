@@ -6,6 +6,7 @@ namespace LMCM_BE.Repositories.ContractorRepository
     public interface IContractorRepository
     {
         Task<PagedResult<ContractorListDto>> GetContractorsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
+        Task<List<ContractorListDto>> GetContractorsListAsync();
         Task<bool> SoftDeleteContractorAsync(Guid contractorId);
         Task<ContractorDetailDto?> GetContractorDetailAsync(Guid contractorId);
         Task<ContractorDetailDto> CreateContractorAsync(ContractorCreateDto dto);

@@ -18,6 +18,11 @@ namespace LMCM_BE.Services.ContractorService
         {
             return await _contractorRepository.GetContractorsAsync(searchKey, pageIndex, pageSize);
         }
+        
+        public async Task<List<ContractorListDto>> GetContractorsListAsync()
+        {
+            return await _contractorRepository.GetContractorsListAsync();
+        }
 
         public async Task<bool> SoftDeleteContractorAsync(Guid contractorId)
         {

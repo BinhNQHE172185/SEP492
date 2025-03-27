@@ -1,0 +1,106 @@
+<p-dialog header="Thêm hợp đồng" [(visible)]="displayAddDialog" [modal]="true" [draggable]="false" [resizable]="false"
+  (onHide)="closeDialog()" class="custom-dialog">
+  <ng-template pTemplate="content">
+    <section class="p-8 w-full bg-white rounded-xl">
+      <div class="flex flex-col gap-6">
+        <div class="flex flex-col gap-2">
+          <label class="block font-semibold text-orange-500">Tiêu đề <span class="text-red-500">*</span></label>
+          <input pInputText [(ngModel)]="contract.title" placeholder="Nhập tiêu đề"
+            class="w-full border border-gray-300 rounded p-2" />
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="flex flex-col gap-2">
+            <label class="block font-semibold text-orange-500">Chọn nhà thầu<span class="text-red-500">*</span></label>
+            <p-dropdown [options]="contractor" [(ngModel)]="contract.contractorId" optionLabel="title"
+              placeholder="Chọn nhà thầu" [filter]="true" class="w-full border border-gray-300 rounded"
+              optionValue="contractorId">
+              <ng-template let-contractor pTemplate="item">
+                {{ contractor.contractorName.length > 25 ? (contractor.contractorName | slice:0:25) + '...' :
+                contractor.contractorName }}
+              </ng-template>
+              <ng-template let-selectedContractor pTemplate="selectedItem">
+                {{ selectedContractor?.contractorName.length > 25 ? (selectedContractor.contractorName | slice:0:25) +
+                '...' :
+                selectedContractor.contractorName }}
+              </ng-template>
+            </p-dropdown>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label class="block font-semibold text-orange-500">Tờ trình <span class="text-red-500">*</span></label>
+
+            <p-dropdown [options]="budgetProposal" [(ngModel)]="contract.proposalId" optionLabel="title"
+              placeholder="Chọn tờ trình" [filter]="true" class="w-full border border-gray-300 rounded"
+              optionValue="proposalId">
+              <ng-template let-proposal pTemplate="item">
+                {{ proposal.title.length > 25 ? (proposal.title | slice:0:25) + '...' : proposal.title }}
+              </ng-template>
+              <ng-template let-selectedProposal pTemplate="selectedItem">
+                {{ selectedProposal?.title.length > 25 ? (selectedProposal.title | slice:0:25) + '...' :
+                selectedProposal.title }}
+              </ng-template>
+            </p-dropdown>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="flex flex-col gap-2">
+            <label class="block font-semibold text-orange-500">Ngày bắt đầu <span class="text-red-500">*</span></label>
+            <p-datepicker [(ngModel)]="contract.startDate" dateFormat="dd-mm-yy" [showIcon]="true" class="w-full"
+              appendTo="body"></p-datepicker>
+          </div>
+          <div class="flex flex-col gap-2">
+            <label class="block font-semibold text-orange-500">Ngày kết thúc <span class="text-red-500">*</span></label>
+            <p-datepicker [(ngModel)]="contract.endDate" dateFormat="dd-mm-yy" [showIcon]="true" class="w-full"
+              appendTo="body"></p-datepicker>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label class="block font-semibold text-orange-500">Giá trị hợp đồng <span
+              class="text-red-500">*</span></label>
+          <p-inputNumber [(ngModel)]="contract.contractValue" mode="currency" currency="VND" locale="vi-VN"
+            placeholder="Nhập giá trị" class="border border-gray-300 rounded p-2 w-full">
+          </p-inputNumber>
+        </div>
+
+
+        <!-- File đính kèm -->
+        <div class="flex flex-col gap-2">
+          <label class="block font-semibold text-orange-500">File đính kèm</label>
+          <!-- Upload File -->
+          <p-fileupload (onSelect)="onFileSelect($event)" [showUploadButton]="false" [multiple]="false" accept=".pdf"
+            maxFileSize="5000000" mode="advanced">
+            <ng-template #empty>
+              <div>Kéo thả file để đăng tải.</div>
+            </ng-template>
+            <ng-template #content>
+              <ul *ngIf="uploadedFiles.length">
+                <li *ngFor="let file of uploadedFiles">{{ file.name }} - {{ file.size }} bytes</li>
+              </ul>
+            </ng-template>
+          </p-fileupload>
+
+          <!-- Nút tải file đính kèm -->
+          <div *ngIf="file && selectedContractId" class="flex items-center gap-4">
+            <p-button (click)="downloadFile(file)" outlined>
+              <i class="pi pi-download"></i> Tải file đính kèm
+            </p-button>
+            <span class="text-gray-500 text-sm">(Chọn file mới nếu muốn thay đổi)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-4 p-2">
+      <button pButton type="button" label="Hủy" class="p-button-text text-gray-500 hover:text-gray-700"
+        (click)="closeDialog()"></button>
+      <button pButton type="button" label="Lưu" class="p-button-warning" (click)="save()"></button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>

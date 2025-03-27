@@ -32,6 +32,20 @@ namespace LMCM_BE.Controllers.ContractorControllers
             }
         }
 
+        [HttpGet("getAllContractorList")]
+        public async Task<IActionResult> GetContractorsListAsync()
+        {
+            try
+            {
+                var data = await _contractorService.GetContractorsListAsync();
+                return data != null ? Ok(data) : NotFound(new { message = "Không tìm thấy dữ liệu nhà thầu." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
+            }
+        }
+
         [HttpPost("create")]
         public async Task<IActionResult> CreateContractor([FromBody] ContractorCreateDto request)
         {

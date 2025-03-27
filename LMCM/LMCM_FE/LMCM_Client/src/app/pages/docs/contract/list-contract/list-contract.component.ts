@@ -14,11 +14,11 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { TextareaModule } from 'primeng/textarea';
 import { CalendarModule } from 'primeng/calendar';
 import { Subscription } from 'rxjs';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { ReportDetailComponent } from '../report-detail/report-detail.component';
-import { BudgetApiService } from '../../../../apis/budgetProposalAPIs/budget-api.service';
 import { searchService } from '../../../service/search/search-service.service';
-import { ReportCreateEditComponent } from '../report-create-edit/report-create-edit.component';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ContractApiService } from '../../../../apis/contractAPIs/contract-api.service';
+import { ContractCreateEditComponent } from '../contract-create-edit/contract-create-edit.component';
+import { ContractDetailComponent } from '../contract-detail/contract-detail.component';
 
 interface PagingRequest {
   searchKey?: string;
@@ -27,7 +27,7 @@ interface PagingRequest {
 }
 
 @Component({
-  selector: 'app-list-report',
+  selector: 'app-list-contract',
   standalone: true,
   imports: [
     CommonModule,
@@ -44,20 +44,18 @@ interface PagingRequest {
     TagModule,
     TextareaModule,
     CalendarModule,
-    FormsModule,
-    ToastModule,
-    ReportDetailComponent,
-    ReportCreateEditComponent
+    ContractCreateEditComponent,
+    ContractDetailComponent
   ],
-  templateUrl: './list-report.component.html',
-  styleUrls: ['./list-report.component.scss'],
+  templateUrl: './list-contract.component.html',
+  styleUrls: ['./list-contract.component.scss'],
   providers: [
     MessageService,
     ConfirmationService
   ]
 })
-export class ListReportComponent implements OnInit {
-  reports: any = [];
+export class ListContractComponent implements OnInit {
+  contracts: any = [];
   totalCount = 0;
   pageNumber = 1;
   pageSize = 10;
@@ -65,12 +63,11 @@ export class ListReportComponent implements OnInit {
 
   isDetail: boolean = true;
 
-  selectedFile: File | null = null;
-  selectedReportId: string | null = null;
+  selectedContractId: string | null = null;
 
   private searchSubscription!: Subscription;
 
-  constructor(private reportService: BudgetApiService,
+  constructor(private contractService: ContractApiService,
     private searchService: searchService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService
@@ -79,19 +76,19 @@ export class ListReportComponent implements OnInit {
   displayAddDialog = false;
   displayDetailDialog = false;
 
-  detailReport: any;
-  proposalId: string | null = null;
+  detailContract: any;
+  contractId: string | null = null;
 
   ngOnInit() {
     this.searchSubscription = this.searchService.searchQuery$.subscribe(
       (query) => {
         this.searchKey = query;
-        this.loadBudget();
+        this.loadContract();
       }
     );
   }
 
-  loadBudget(event?: any) {
+  loadContract(event?: any) {
     if (event) {
       this.pageNumber = Math.floor(event.first / event.rows) + 1;
       this.pageSize = event.rows;
@@ -102,13 +99,12 @@ export class ListReportComponent implements OnInit {
       pageSize: this.pageSize,
       searchKey: this.searchKey,
     };
-    this.reportService.getBudget(request).subscribe(
+    this.contractService.getContract(request).subscribe(
       (response) => {
-        this.reports = response.items;
+        this.contracts = response.items;
         this.totalCount = response.totalCount;
       },
       (error) => {
-        console.error("Lỗi khi tải danh sách môn học:", error);
       }
     );
   }
@@ -125,8 +121,9 @@ export class ListReportComponent implements OnInit {
   }
 
   openDetailDialog(id: string) {
-    this.proposalId = id;
+    this.contractId = id;
     this.displayDetailDialog = true;
+    console.log(id);
   }
 
   handleCloseDialog(isDetail: boolean) {
@@ -134,33 +131,31 @@ export class ListReportComponent implements OnInit {
       this.displayDetailDialog = false;
     } else {
       this.displayAddDialog = false;
-      this.selectedReportId = null;
+      this.selectedContractId = null;
     }
-    this.loadBudget();
+    this.loadContract();
   }
 
   openAddDialog(id?: string) {
     if (id) {
-      this.selectedReportId = id;
+      this.selectedContractId = id;
     }
     else {
-      this.selectedReportId = null;
+      this.selectedContractId = null;
     }
     this.displayAddDialog = true;
   }
 
-  deleteBudgetProposal(id: any) {
-    console.log("true")
-    const authorId = localStorage.getItem("userId");
+  deleteContract(id: any) {
     this.confirmationService.confirm({
       header: 'Xóa dữ liệu',
       message: 'Bạn có chắc chắn muốn xóa? Hành động này là không thể hoàn tác.',
       acceptLabel: 'Đồng ý',
       rejectLabel: 'Hủy',
       accept: () => {
-        this.reportService.deleteBudget(id, authorId!).subscribe(
+        this.contractService.deleteContract(id!).subscribe(
           (response) => {
-            this.loadBudget();
+            this.loadContract();
             this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
           },
           (error) => {

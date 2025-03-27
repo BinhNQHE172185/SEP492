@@ -144,7 +144,7 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
             UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("Không tìm thấy người dùng");
-            if (user.Id != acceptanceRecord.AuthorId)
+            if (user.Id != acceptanceRecord.AuthorId && !user.Roles.Contains("Head of Department"))
                 throw new UnauthorizedAccessException("Người dùng không có quyền cập nhật biên bản nghiệm thu này.");
 
             string? fileUrl = null;
@@ -199,7 +199,7 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
             UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("Không tìm thấy người dùng");
-            if (user.Id != acceptanceRecord.AuthorId)
+            if (user.Id != acceptanceRecord.AuthorId && !user.Roles.Contains("Head of Department"))
                 throw new UnauthorizedAccessException("Người dùng không có quyền xóa biên bản nghiệm thu này.");
 
             using var transaction = await _dbContext.Database.BeginTransactionAsync();

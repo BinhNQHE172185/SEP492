@@ -13,9 +13,9 @@ import { ToastModule } from 'primeng/toast';
 import { FileUploadModule } from 'primeng/fileupload';
 import { TextareaModule } from 'primeng/textarea';
 import { CalendarModule } from 'primeng/calendar';
-import { ContractorApiService } from '../../../apis/contractorAPIs/contractor-api.service';
+import { ContractorApiService } from '../../../../apis/contractorAPIs/contractor-api.service';
 import {ConfirmationService, MessageService } from 'primeng/api';
-import { searchService } from '../../service/search/search-service.service';
+import { searchService } from '../../../service/search/search-service.service';
 import { Subscription } from 'rxjs';
 
 interface Expert {

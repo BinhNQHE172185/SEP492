@@ -1,4 +1,4 @@
-using LMCM_BE.DbContext;
+﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -53,6 +53,10 @@ using LMCM_BE.Utilities;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using LMCM_BE.AutoMapper.TemplateProfiles;
+using LMCM_BE.Repositories.DocumentTemplateRepository;
+using LMCM_BE.Services.DocumentTemplateService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -71,16 +75,35 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = false;
+    options.RequireHttpsMetadata = false; // Set to true in production
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("F-JaNdRfUserjd89#5*6Xn2r5usErw8x/A?D(G+KbPeShV")),
-        ValidateIssuer = false,
-        ValidateAudience = false,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+            builder.Configuration["Jwt:Secret"])), // Use configuration, NOT hardcoded keys!
+
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"], // Validate issuer
+
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["Jwt:Audience"], // Validate audience
+
+        RequireExpirationTime = true,
+        ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
     };
+});
+builder.Services.AddDistributedMemoryCache(); // Required for session
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(3); 
+    options.Cookie.HttpOnly = true; 
+    options.Cookie.IsEssential = true; 
+});
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.Secure = CookieSecurePolicy.None; // Allow HTTP (For develovment)
 });
 
 builder.Services.AddIdentity<User, IdentityRole<Guid>>()
@@ -90,7 +113,8 @@ builder.Services.AddIdentity<User, IdentityRole<Guid>>()
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp",
-        policy => policy.WithOrigins("http://localhost:4200")
+        policy => policy.WithOrigins("https://localhost:4200")
+                        .AllowCredentials()
                         .AllowAnyHeader()
                         .AllowAnyMethod());
 });
@@ -126,6 +150,7 @@ builder.Services.AddAutoMapper(typeof(BudgetPropasalProfile));
 builder.Services.AddAutoMapper(typeof(PloProfile));
 builder.Services.AddAutoMapper(typeof(ContractProfile));
 builder.Services.AddAutoMapper(typeof(AcceptanceRecordProfile));
+builder.Services.AddAutoMapper(typeof(DocumentTemplateProfile));
 
 //DI
 builder.Services.AddScoped<RoleManager<IdentityRole<Guid>>>();
@@ -167,6 +192,8 @@ builder.Services.AddScoped<IContractorService, ContractorService>();
 builder.Services.AddScoped<IAcceptanceRecordRepository, AcceptanceRecordRepository>();
 builder.Services.AddScoped<IAcceptanceRecordService, AcceptanceRecordService>();
 builder.Services.AddScoped<IFileHelper, FileHelper>();
+builder.Services.AddScoped<IDocumentTemplateRepository, DocumentTemplateRepository>();
+builder.Services.AddScoped<IDocumentTemplateService, DocumentTemplateService>();
 
 builder.Services.AddScoped<IGoogleDriveService, GoogleDriveService>();
 
@@ -193,6 +220,10 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseSession();
+
+app.UseCookiePolicy();
 
 app.MapControllers();
 

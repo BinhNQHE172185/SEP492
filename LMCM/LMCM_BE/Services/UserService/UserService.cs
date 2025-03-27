@@ -32,5 +32,10 @@ namespace LMCM_BE.Services.UserService
         {
             return await _userRepository.GetProfile(userId);
         }
+
+        public async Task<UserProfileResponseDto> GetProfileFromCookie()
+        {
+            return await _userRepository.GetProfileFromCookie();
+        }
     }
 }

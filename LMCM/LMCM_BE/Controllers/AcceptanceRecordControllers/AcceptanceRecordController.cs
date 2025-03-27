@@ -78,7 +78,7 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
                 return StatusCode(StatusCodes.Status403Forbidden, new
                 {
                     Success = false,
-                    Message = "Bạn không có quyền tạo biên bản nghiệm thu.",
+                    Message = ex.Message,
                     Error = ex.Message
                 });
             }
@@ -87,7 +87,7 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
                 return BadRequest(new
                 {
                     Success = false,
-                    Message = "Dữ liệu đầu vào không hợp lệ.",
+                    Message = ex.Message,
                     Error = ex.Message
                 });
             }
@@ -96,7 +96,7 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
                 return BadRequest(new
                 {
                     Success = false,
-                    Message = "Dữ liệu đầu vào không hợp lệ.",
+                    Message = ex.Message,
                     Error = ex.Message
                 });
             }
@@ -198,6 +198,15 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
             {
                 return NotFound(new { message = ex.Message });
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
+            }
             catch (InvalidOperationException ex)
             {
                 return BadRequest(new { message = ex.Message });
@@ -219,6 +228,15 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
             }
             catch (Exception ex)
             {

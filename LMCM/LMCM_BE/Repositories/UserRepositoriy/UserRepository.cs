@@ -2,7 +2,6 @@
 using Google.Apis.Auth;
 using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.ShareDtos;
-using LMCM_BE.DTOs.SubjectDtos;
 using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Services.GoogleDriveService;
@@ -22,18 +21,25 @@ namespace LMCM_BE.Repositories.UserRepositoriy
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
         private readonly LMCM_DBContext _dbContext;
-        //private readonly IGoogleDriveService _googleDriveService;
-        public UserRepository(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration, 
-            IMapper mapper, LMCM_DBContext dbContext
-            //,IGoogleDriveService googleDriveService
-            )
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IGoogleDriveService _googleDriveService;
+
+        public UserRepository(
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
+            IConfiguration configuration,
+            IMapper mapper,
+            LMCM_DBContext dbContext,
+            IHttpContextAccessor httpContextAccessor,
+            IGoogleDriveService googleDriveService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _mapper = mapper;
             _dbContext = dbContext;
-            //_googleDriveService = googleDriveService;
+            _httpContextAccessor = httpContextAccessor;
+            _googleDriveService = googleDriveService;
         }
 
         public async Task<bool> CreateStaff(StaffRequest request)
@@ -50,14 +56,13 @@ namespace LMCM_BE.Repositories.UserRepositoriy
                 {
                     await _userManager.AddToRoleAsync(newStaff, "Staff");
 
-                    // Share Google Drive folders with new staff
-                    //bool isShared = await _googleDriveService.ShareFoldersWithUser( email, "reader"); // "writer" for edit access, "reader" for view access
+                    // Share Google Drive folders with the new staff
+                    bool isShared = await _googleDriveService.ShareFoldersWithUser(email, "reader");
 
-                    //if (!isShared)
-                    //{
-                    //    Console.WriteLine("Failed to share Google Drive folder with user.");
-                    //}
-
+                    if (!isShared)
+                    {
+                        Console.WriteLine("Failed to share Google Drive folder with user.");
+                    }
                     return true;
                 }
             }
@@ -69,11 +74,8 @@ namespace LMCM_BE.Repositories.UserRepositoriy
             if (data != null)
             {
                 var profile = _mapper.Map<UserProfileResponseDto>(data);
-
-                var roles = await _userManager.GetRolesAsync(data); // Get roles as a list
-
-                profile.Roles = roles.ToList(); 
-
+                var roles = await _userManager.GetRolesAsync(data);
+                profile.Roles = roles.ToList();
                 return profile;
             }
             return null;
@@ -91,11 +93,9 @@ namespace LMCM_BE.Repositories.UserRepositoriy
             }
 
             int totalCount = await query.CountAsync();
-
             var items = await query.Skip((pageIndex - 1) * pageSize)
                                    .Take(pageSize)
                                    .ToListAsync();
-
             var data = _mapper.Map<List<ListUserResponseDto>>(items);
 
             return new PagedResult<ListUserResponseDto>
@@ -111,7 +111,7 @@ namespace LMCM_BE.Repositories.UserRepositoriy
         {
             var payload = await GoogleJsonWebSignature.ValidateAsync(request.Token, new GoogleJsonWebSignature.ValidationSettings
             {
-                Audience = new[] { "433474498165-m4uv6c6h9hc3ss9vk74d9v7u8t57irr5.apps.googleusercontent.com" }
+                Audience = new[] { "1095920474772-fa8ijvdj17nggcb9q1f9p6fal5psft6l.apps.googleusercontent.com" }
             });
 
             var user = await _userManager.FindByEmailAsync(payload.Email);
@@ -120,31 +120,32 @@ namespace LMCM_BE.Repositories.UserRepositoriy
             {
                 return null;
             }
-            else if (user.Name.IsNullOrEmpty())
+
+            if (string.IsNullOrEmpty(user.Name))
             {
-                {
-                    user.Name = payload.Name;
-                    user.Picture = payload.Picture;
-                    user.Status = "2";
-                    await _userManager.UpdateAsync(user);
-                }
+                user.Name = payload.Name;
+                user.Picture = payload.Picture;
+                user.Status = "2";
+                await _userManager.UpdateAsync(user);
             }
             var token = GenerateJwtToken(user);
-            var data = new UserLoginResponseDto
+
+            SetAuthCookie(token);
+
+            return new UserLoginResponseDto
             {
                 Id = user.Id,
                 Token = token,
             };
-            return data;
         }
         private string GenerateJwtToken(User user)
         {
             var claims = new[]
             {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim(JwtRegisteredClaimNames.Name, user.Name),
-        };
+        new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString(), ClaimValueTypes.String, "utf-8"), 
+        new Claim(JwtRegisteredClaimNames.Email, user.Email, ClaimValueTypes.String, "utf-8"),
+        new Claim(JwtRegisteredClaimNames.Name, user.Name ?? "", ClaimValueTypes.String, "utf-8"),
+    };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -156,5 +157,85 @@ namespace LMCM_BE.Repositories.UserRepositoriy
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        private void SetAuthCookie(string token)
+        {
+            try
+            {
+                var cookieOptions = new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Lax, // Allows cookies in API calls
+                    Expires = DateTime.UtcNow.AddHours(3),
+                    Domain = "localhost",
+                    Path = "/" // Ensures cookie is available across requests
+                };
+
+                var response = _httpContextAccessor.HttpContext.Response;
+                response.Cookies.Append("AuthToken", token, cookieOptions);
+
+                Console.WriteLine("Auth cookie set successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error setting auth cookie: {ex.Message}");
+            }
+        }
+        public async Task<UserProfileResponseDto> GetProfileFromCookie()
+        {
+            try
+            {
+                var request = _httpContextAccessor.HttpContext.Request;
+                var authToken = request.Cookies["AuthToken"];
+
+                if (string.IsNullOrEmpty(authToken))
+                {
+                    return null;
+                }
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]);
+
+                try
+                {
+                    var principal = tokenHandler.ValidateToken(authToken, new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ClockSkew = TimeSpan.Zero
+                    }, out SecurityToken validatedToken);
+
+                    Console.WriteLine("Token validated successfully.");
+                    foreach (var claim in principal.Claims)
+                    {
+                        Console.WriteLine($"🔹 Decoded Claim: {claim.Type} = {claim.Value}");
+                    }
+                    var userId = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                    Console.WriteLine($"Extracted User ID: {userId}");
+
+                    if (string.IsNullOrEmpty(userId))
+                    {
+                        Console.WriteLine("User ID is empty.");
+                        return null;
+                    }
+
+                    return await GetProfile(userId);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Token validation error: {ex.Message}");
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving profile from cookie: {ex.Message}");
+                return null;
+            }
+        }
+
     }
 }

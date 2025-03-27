@@ -8,6 +8,7 @@ using LMCM_BE.Repositories.UserRepositoriy;
 using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Utilities;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Printing;
 
 namespace LMCM_BE.Repositories.BudgetPropasalRepository
 {
@@ -33,6 +34,9 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             {
                 throw new ArgumentNullException(nameof(proposal), "Proposal data is required.");
             }
+            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("User not found");
             // Step 1: Upload contract file to Google Drive (if provided)
             string? fileUrl = null;
 
@@ -58,9 +62,6 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
                 }
                 else
                 {
-                    UserProfileResponseDto user = await _userRepositoriy.GetProfile(proposal.AuthorId.ToString());
-                    if (user == null || string.IsNullOrEmpty(user.Email))
-                        throw new Exception("Email not found");
                     await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
                 }
             }
@@ -70,6 +71,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
 
             newProposal.ProposalId = Guid.NewGuid();
             newProposal.Url = fileUrl;
+            newProposal.AuthorId=user.Id;   
             newProposal.Status = "Active";
             newProposal.CreatedAt = DateTime.UtcNow;
             newProposal.UpdatedAt = DateTime.UtcNow;
@@ -81,7 +83,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             return true;
         }
 
-        public async Task<BudgetProposalDetailDto> GetBudgetProposalByIdAsync(Guid proposalId, Guid userId)
+        public async Task<BudgetProposalDetailDto> GetBudgetProposalByIdAsync(Guid proposalId)
         {
             if (proposalId == Guid.Empty)
                 throw new ArgumentException("Proposal ID cannot be empty.", nameof(proposalId));
@@ -95,38 +97,27 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             if (budgetProposal == null)
                 throw new KeyNotFoundException($"No budget proposal found with ID: {proposalId}");
 
-            UserProfileResponseDto user = await _userRepositoriy.GetProfile(userId.ToString());
-            if (user == null|| userId != budgetProposal.AuthorId||!user.Roles.Contains("Admin"))
+            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("User not found");
+            if (user.Id != budgetProposal.AuthorId && user.Roles.Contains("Staff"))
                 throw new UnauthorizedAccessException("User is not authorized to view this budget proposal.");
 
             var budgetProposalDto = _mapper.Map<BudgetProposalDetailDto>(budgetProposal);
-            budgetProposalDto.DownloadUrl=await _googleDriveService.GetDownloadUrl(budgetProposal.Url);
-
-            // Check if there's a file URL and fetch the file
-            //if (!string.IsNullOrEmpty(budgetProposal.Url))
-            //{
-            //    var fileId = await _fileHelper.ExtractFileIdFromUrl(budgetProposal.Url);
-            //    var (fileContent, fileName) = await _googleDriveService.FetchFileAsync(fileId);
-
-            //    if (fileContent != null)
-            //    {
-            //        budgetProposalDto.FileContent = fileContent;
-            //        budgetProposalDto.FileName = fileName;
-            //    }
-            //}
+            budgetProposalDto.DownloadUrl = await _googleDriveService.GetDownloadUrl(budgetProposal.Url);
 
             return budgetProposalDto;
         }
 
-        public async Task<PagedResult<BudgetProposalListDto>> GetBudgetProposalsAsync(Guid? userId, string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<PagedResult<BudgetProposalListDto>> GetBudgetProposalsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.BudgetProposals.AsQueryable();
 
-            if (userId != Guid.Empty)
-            {
-                UserProfileResponseDto user = await _userRepositoriy.GetProfile(userId.ToString());
-                if (user != null && !user.Roles.Contains("Admin")) query = query.Where(s => s.AuthorId == userId);
-            }
+            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("User not found");
+            if (!user.Roles.Contains("Head of Department")) query = query.Where(s => s.AuthorId == user.Id);
+
             query = query.Where(s => s.Status != "Inactive");
 
             if (!string.IsNullOrWhiteSpace(searchKey))
@@ -156,7 +147,35 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             };
         }
 
-        public async Task<bool> SoftDeleteBudgetProposalAsync(Guid proposalId, Guid authorId)
+        public async Task<List<BudgetProposalListDto>> GetBudgetProposalsAsync(string? searchKey)
+        {
+            var query = _dbContext.BudgetProposals.AsQueryable();
+
+            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("User not found");
+            if (!user.Roles.Contains("Head of Department")) query = query.Where(s => s.AuthorId == user.Id);
+
+            query = query.Where(s => s.Status != "Inactive");
+
+            if (!string.IsNullOrWhiteSpace(searchKey))
+            {
+                string search = searchKey.Trim().ToLower();
+                query = query.Where(s => s.Author.Email.ToLower().Contains(search) ||
+                                         s.Title.ToLower().Contains(search) ||
+                                         s.Author.UserName.ToLower().Contains(search));
+            }
+
+            var items = await query
+                .Include(s => s.Author)
+                .ToListAsync();
+
+            var data = _mapper.Map<List<BudgetProposalListDto>>(items);
+
+            return data;
+        }
+
+        public async Task<bool> SoftDeleteBudgetProposalAsync(Guid proposalId)
         {
             var budgetProposal = await _dbContext.BudgetProposals
                 .FirstOrDefaultAsync(ar => ar.ProposalId == proposalId && ar.Status == "Active");
@@ -164,7 +183,10 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             if (budgetProposal == null)
                 throw new KeyNotFoundException("Data not found.");
 
-            if (authorId != budgetProposal.AuthorId)
+            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("User not found");
+            if (user.Id != budgetProposal.AuthorId && user.Roles.Contains("Staff"))
                 throw new UnauthorizedAccessException("User is not authorized to update this budget proposal.");
 
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
@@ -201,7 +223,10 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             if (proposal == null)
                 throw new KeyNotFoundException($"No budget proposal found with ID: {proposalId}");
 
-            if (newProposal.AuthorId != proposal.AuthorId)
+            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("User not found");
+            if (user.Id != proposal.AuthorId && user.Roles.Contains("Staff"))
                 throw new UnauthorizedAccessException("User is not authorized to update this proposal.");
 
             // Update proposal fields (excluding file)
@@ -231,9 +256,6 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
                     if (string.IsNullOrWhiteSpace(fileUrl))
                         throw new Exception("Failed to upload the file.");
 
-                    var user = await _userRepositoriy.GetProfile(proposal.AuthorId.ToString());
-                    if (user == null || string.IsNullOrEmpty(user.Email))
-                        throw new Exception("Email not found");
                     await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
 
                     // Update the proposal's file URL **only if a new file was uploaded**

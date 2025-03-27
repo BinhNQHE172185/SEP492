@@ -24,6 +24,8 @@ namespace LMCM_BE.DTOs.AcceptanceRecordDtos
         public DateTime? CreatedAt { get; set; }
 
         public DateTime? UpdatedAt { get; set; }
+        public string? DownloadUrl { get; set; }
+
 
         public virtual ListUserResponseDto Author { get; set; } = null!;
 

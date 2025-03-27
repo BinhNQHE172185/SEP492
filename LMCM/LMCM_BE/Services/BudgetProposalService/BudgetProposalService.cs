@@ -18,19 +18,24 @@ namespace LMCM_BE.Services.BudgetPropasalService
             return await _budgetProposalRepository.CreateBudgetProposalAsync(proposal);  
         }
 
-        public async Task<BudgetProposalDetailDto> GetBudgetProposalByIdAsync(Guid proposalId, Guid userId)
+        public async Task<BudgetProposalDetailDto> GetBudgetProposalByIdAsync(Guid proposalId)
         {
-            return await _budgetProposalRepository.GetBudgetProposalByIdAsync(proposalId, userId);
+            return await _budgetProposalRepository.GetBudgetProposalByIdAsync(proposalId);
         }
 
-        public async Task<PagedResult<BudgetProposalListDto>> GetBudgetProposalsAsync(Guid? userId, string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<PagedResult<BudgetProposalListDto>> GetBudgetProposalsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
-            return await _budgetProposalRepository.GetBudgetProposalsAsync(userId, searchKey, pageIndex, pageSize);
+            return await _budgetProposalRepository.GetBudgetProposalsAsync(searchKey, pageIndex, pageSize);
         }
 
-        public async Task<bool> SoftDeleteBudgetProposalAsync(Guid proposalId, Guid authorId)
+        public async Task<List<BudgetProposalListDto>> GetBudgetProposalsAsync(string? searchKey)
         {
-            return await _budgetProposalRepository.SoftDeleteBudgetProposalAsync(proposalId,authorId);   
+            return await _budgetProposalRepository.GetBudgetProposalsAsync(searchKey);
+        }
+
+        public async Task<bool> SoftDeleteBudgetProposalAsync(Guid proposalId)
+        {
+            return await _budgetProposalRepository.SoftDeleteBudgetProposalAsync(proposalId);   
         }
 
         public async Task<Guid?> UpdateBudgetProposalAsync(Guid proposalId, BudgetProposalUpdateDto newProposal)

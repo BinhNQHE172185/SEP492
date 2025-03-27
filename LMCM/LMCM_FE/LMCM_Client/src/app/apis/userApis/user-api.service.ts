@@ -36,7 +36,9 @@ export class UserApiService {
 
   login(token: string): Observable<LoginResponse> {
     const loginData = { token };
-    return this.http.post<any>(`${this.apiUrl}/User/google-login`, loginData);
+    return this.http.post<LoginResponse>(`${this.apiUrl}/User/google-login`, loginData, {
+      withCredentials: true // Ensures cookies are sent and received
+    });
   }
 
   createAccount(staffId: string): Observable<any> {

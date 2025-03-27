@@ -2,12 +2,14 @@
 using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.AcceptanceRecordDtos;
 using LMCM_BE.DTOs.ShareDtos;
+using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.ContractRepository;
 using LMCM_BE.Repositories.UserRepositoriy;
 using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Utilities;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Contracts;
 
 namespace LMCM_BE.Repositories.AcceptanceRecordRepository
 {
@@ -38,9 +40,15 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
 
         public async Task<PagedResult<AcceptanceRecordListDto>> GetAcceptanceRecordsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
-            var query = _dbContext.AcceptanceRecords
-                .Where(ar => ar.Status == "Active")
-                .AsQueryable();
+            UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
+            var query = _dbContext.AcceptanceRecords.AsQueryable();
+
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("User not found");
+
+            if (!user.Roles.Contains("Head of Department")) query = query.Where(s => s.AuthorId == user.Id);
+
+            query = query.Where(ar => ar.Status == "Active");
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
@@ -66,6 +74,10 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
 
         public async Task<bool> CreateAcceptanceRecordAsync(AcceptanceRecordCreateDto dto)
         {
+            UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("User not found");
+
             // Bước 1: Tải tệp lên Google Drive nếu có
             string? fileUrl = null;
             if (dto.File != null)
@@ -90,9 +102,6 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
                 }
                 else
                 {
-                    var user = await _userRepository.GetProfile(dto.AuthorId.ToString());
-                    if (user == null||string.IsNullOrEmpty(user.Email))
-                        throw new Exception("Không tìm thấy email");
                     await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
                 }
             }
@@ -103,6 +112,7 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
 
             // Bước 2: Chuyển đổi DTO sang entity
             var acceptanceRecord = _mapper.Map<AcceptanceRecord>(dto);
+            acceptanceRecord.AuthorId = user.Id;
             acceptanceRecord.AcceptanceId = Guid.NewGuid();
             acceptanceRecord.Url = fileUrl; // Lưu URL của tệp đã tải lên
             acceptanceRecord.Status = "Active";
@@ -131,8 +141,11 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
             if (acceptanceRecord == null)
                 throw new KeyNotFoundException("Không tìm thấy biên bản nghiệm thu.");
 
-            if (dto.AuthorId != acceptanceRecord.AuthorId)
-                throw new UnauthorizedAccessException("Bạn không có quyền cập nhật biên bản nghiệm thu này.");
+            UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("Không tìm thấy người dùng");
+            if (user.Id != acceptanceRecord.AuthorId)
+                throw new UnauthorizedAccessException("Người dùng không có quyền cập nhật biên bản nghiệm thu này.");
 
             string? fileUrl = null;
 
@@ -160,9 +173,6 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
                     }
                     else
                     {
-                        var user = await _userRepository.GetProfile(dto.AuthorId.ToString());
-                        if (user == null || string.IsNullOrEmpty(user.Email))
-                            throw new Exception("Không tìm thấy email");
                         await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
                     }
                 }
@@ -186,6 +196,12 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
             if (acceptanceRecord == null)
                 throw new KeyNotFoundException("Không tìm thấy biên bản nghiệm thu hoặc đã bị xóa.");
 
+            UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("Không tìm thấy người dùng");
+            if (user.Id != acceptanceRecord.AuthorId)
+                throw new UnauthorizedAccessException("Người dùng không có quyền xóa biên bản nghiệm thu này.");
+
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
             try
             {
@@ -207,16 +223,26 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
 
         public async Task<AcceptanceRecordDetailDto> GetAcceptanceRecordDetailAsync(Guid acceptanceId)
         {
+            if (acceptanceId == Guid.Empty)
+                throw new ArgumentException("Biên bản nghiệm thu ID không được để trống.", nameof(acceptanceId));
+
             var acceptanceRecord = await _dbContext.AcceptanceRecords
                 .Include(ar => ar.Contract)
                 .Include(ar => ar.Author)
-                .Where(ar => ar.AcceptanceId == acceptanceId && ar.Status == "Active")
+                .Where(ar => ar.AcceptanceId == acceptanceId)
                 .FirstOrDefaultAsync();
 
             if (acceptanceRecord == null)
                 throw new KeyNotFoundException("Không tìm thấy biên bản nghiệm thu.");
 
+            UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("Không tìm thấy người dùng");
+            if (user.Id != acceptanceRecord.AuthorId && user.Roles.Contains("Head of Department"))
+                throw new UnauthorizedAccessException("Người dùng không có quyền xem biên bản nghiệm thu này.");
+
             var acceptanceRecordDto = _mapper.Map<AcceptanceRecordDetailDto>(acceptanceRecord);
+            acceptanceRecordDto.DownloadUrl = await _googleDriveService.GetDownloadUrl(acceptanceRecord.Url);
 
             // Check if there's a file URL and fetch the file
             //if (!string.IsNullOrEmpty(acceptanceRecord.Url))

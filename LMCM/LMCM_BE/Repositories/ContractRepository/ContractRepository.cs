@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using LMCM_BE.DbContext;
+using LMCM_BE.DTOs.BudgetProposalDtos;
 using LMCM_BE.DTOs.ContractDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.UserDtos;
@@ -9,6 +10,7 @@ using LMCM_BE.Repositories.UserRepositoriy;
 using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Utilities;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Printing;
 
 namespace LMCM_BE.Repositories.ContractRepository
 {
@@ -20,17 +22,20 @@ namespace LMCM_BE.Repositories.ContractRepository
         private readonly IFileHelper _fileHelper;
         IUserRepository _userRepository;
 
-        public ContractRepository(LMCM_DBContext dbContext, IGoogleDriveService googleDriveService, IMapper mapper, IFileHelper fileHelper,IUserRepository userRepository)
+        public ContractRepository(LMCM_DBContext dbContext, IGoogleDriveService googleDriveService, IMapper mapper, IFileHelper fileHelper, IUserRepository userRepository)
         {
             _dbContext = dbContext;
             _googleDriveService = googleDriveService;
             _mapper = mapper;
             _fileHelper = fileHelper;
-            _userRepository = userRepository;   
+            _userRepository = userRepository;
         }
 
         public async Task<bool> CreateContract(ContractInsertDto contractDto)
         {
+            UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("User not found");
             // Step 1: Upload contract file to Google Drive (if provided)
             string? fileUrl = null;
             if (contractDto.File != null)
@@ -55,9 +60,6 @@ namespace LMCM_BE.Repositories.ContractRepository
                 }
                 else
                 {
-                    var user = await _userRepository.GetProfile(contractDto.AuthorId.ToString());
-                    if (user == null || string.IsNullOrEmpty(user.Email))
-                        throw new Exception("Email not found");
                     await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
                 }
             }
@@ -67,6 +69,7 @@ namespace LMCM_BE.Repositories.ContractRepository
 
             newContract.ContractId = Guid.NewGuid();
             newContract.Url = fileUrl;
+            newContract.AuthorId = user.Id;
             newContract.Status = "Active";
             newContract.CreatedAt = DateTime.UtcNow;
             newContract.UpdatedAt = DateTime.UtcNow;
@@ -78,7 +81,35 @@ namespace LMCM_BE.Repositories.ContractRepository
             return true;
         }
 
-        public async Task<ContractDetailDto> GetContractByIdAsync(Guid contractId, Guid userId)
+        public async Task<List<ContractListDto>> GetContractsAsync(string? searchKey)
+        {
+            var query = _dbContext.Contracts.AsQueryable();
+
+            UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
+            if (user != null && !user.Roles.Contains("Head of Department")) query = query.Where(s => s.AuthorId == user.Id);
+
+            query = query.Where(s => s.Status != "Inactive");
+
+            if (!string.IsNullOrWhiteSpace(searchKey))
+            {
+                string search = searchKey.Trim().ToLower();
+                query = query.Where(s => s.Author.Email.ToLower().Contains(search) ||
+                                         s.Title.ToLower().Contains(search) ||
+                                         s.Author.UserName.ToLower().Contains(search));
+            }
+
+            var items = await query
+                .Include(s => s.Author)
+                .Include(s => s.Proposal)
+                .Include(s => s.Contractor)
+                .ToListAsync();
+
+            var data = _mapper.Map<List<ContractListDto>>(items);
+            
+            return data;    
+        }
+
+        public async Task<ContractDetailDto> GetContractByIdAsync(Guid contractId)
         {
             if (contractId == Guid.Empty)
                 throw new ArgumentException("Contract ID cannot be empty.", nameof(contractId));
@@ -86,14 +117,20 @@ namespace LMCM_BE.Repositories.ContractRepository
             var contract = await _dbContext.Contracts
                 .AsNoTracking()
                 .Where(s => s.ContractId == contractId)
+                .Include(s => s.Author)
+                .Include(s => s.Proposal)
+                .Include(s => s.Contractor)
+                .Include(S=> S.LearningMaterialChangesHistories)
                 .SingleOrDefaultAsync();
-  
+
             if (contract == null)
                 throw new KeyNotFoundException($"No contract found with ID: {contractId}");
 
-            UserProfileResponseDto user = await _userRepository.GetProfile(userId.ToString());
-            if (user == null || userId != contract.AuthorId || !user.Roles.Contains("Admin"))
-                throw new UnauthorizedAccessException("User is not authorized to view this budget proposal.");
+            UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("User not found");
+            if (user.Id != contract.AuthorId && user.Roles.Contains("Staff"))
+                throw new UnauthorizedAccessException("User is not authorized to view this contract.");
 
             var contractDto = _mapper.Map<ContractDetailDto>(contract);
             contractDto.DownloadUrl = await _googleDriveService.GetDownloadUrl(contract.Url);
@@ -114,15 +151,13 @@ namespace LMCM_BE.Repositories.ContractRepository
             return contractDto;
         }
 
-        public async Task<PagedResult<ContractListDto>> GetContractsAsync(Guid? userId,string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<PagedResult<ContractListDto>> GetContractsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.Contracts.AsQueryable();
 
-            if(userId != Guid.Empty)
-            {
-                UserProfileResponseDto user = await _userRepository.GetProfile(userId.ToString());
-                if (user != null && !user.Roles.Contains("Admin")) query = query.Where(s => s.AuthorId == userId);
-            }
+            UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
+            if (user != null && !user.Roles.Contains("Head of Department")) query = query.Where(s => s.AuthorId == user.Id);
+
             query = query.Where(s => s.Status != "Inactive");
 
             if (!string.IsNullOrWhiteSpace(searchKey))
@@ -140,6 +175,7 @@ namespace LMCM_BE.Repositories.ContractRepository
                 .Take(pageSize)
                 .Include(s => s.Author)
                 .Include(s => s.Proposal)
+                .Include(s=>s.Contractor)
                 .ToListAsync();
 
             var data = _mapper.Map<List<ContractListDto>>(items);
@@ -165,7 +201,7 @@ namespace LMCM_BE.Repositories.ContractRepository
                 .AnyAsync(p => p.ContractorId == contractorId && p.Status == "Active");
         }
 
-        public async Task<bool> SoftDeleteContractAsync(Guid contractId, Guid authorId)
+        public async Task<bool> SoftDeleteContractAsync(Guid contractId)
         {
             var contract = await _dbContext.Contracts
                 .FirstOrDefaultAsync(ar => ar.ContractId == contractId && ar.Status == "Active");
@@ -173,8 +209,11 @@ namespace LMCM_BE.Repositories.ContractRepository
             if (contract == null)
                 throw new KeyNotFoundException("Data not found.");
 
-            if (authorId != contract.AuthorId)
-                throw new UnauthorizedAccessException("User is not authorized to update this contract.");
+            UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("User not found");
+            if (user.Id != contract.AuthorId && user.Roles.Contains("Staff"))
+                throw new UnauthorizedAccessException("User is not authorized to delete this contract.");
 
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
             try
@@ -212,7 +251,10 @@ namespace LMCM_BE.Repositories.ContractRepository
             if (contract == null)
                 throw new KeyNotFoundException($"No contract found with ID: {contractId}");
 
-            if (newContract.AuthorId != contract.AuthorId)
+            UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("User not found");
+            if (user.Id != contract.AuthorId && user.Roles.Contains("Staff"))
                 throw new UnauthorizedAccessException("User is not authorized to update this contract.");
 
             // Update contract fields (excluding file)
@@ -242,9 +284,6 @@ namespace LMCM_BE.Repositories.ContractRepository
                     if (string.IsNullOrWhiteSpace(fileUrl))
                         throw new Exception("Failed to upload the file.");
 
-                    var user = await _userRepository.GetProfile(newContract.AuthorId.ToString());
-                    if (user == null || string.IsNullOrEmpty(user.Email))
-                        throw new Exception("Email not found");
                     await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
 
                     // Update the contract's file URL **only if a new file was uploaded**

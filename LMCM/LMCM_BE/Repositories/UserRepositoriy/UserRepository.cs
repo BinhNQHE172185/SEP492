@@ -4,6 +4,7 @@ using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Services.GoogleDriveService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -21,6 +22,7 @@ namespace LMCM_BE.Repositories.UserRepositoriy
         private readonly IMapper _mapper;
         private readonly LMCM_DBContext _dbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IGoogleDriveService _googleDriveService;
 
         public UserRepository(
             UserManager<User> userManager,
@@ -28,7 +30,8 @@ namespace LMCM_BE.Repositories.UserRepositoriy
             IConfiguration configuration,
             IMapper mapper,
             LMCM_DBContext dbContext,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IGoogleDriveService googleDriveService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -36,6 +39,7 @@ namespace LMCM_BE.Repositories.UserRepositoriy
             _mapper = mapper;
             _dbContext = dbContext;
             _httpContextAccessor = httpContextAccessor;
+            _googleDriveService = googleDriveService;
         }
 
         public async Task<bool> CreateStaff(StaffRequest request)
@@ -51,6 +55,14 @@ namespace LMCM_BE.Repositories.UserRepositoriy
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(newStaff, "Staff");
+
+                    // Share Google Drive folders with the new staff
+                    bool isShared = await _googleDriveService.ShareFoldersWithUser(email, "reader");
+
+                    if (!isShared)
+                    {
+                        Console.WriteLine("Failed to share Google Drive folder with user.");
+                    }
                     return true;
                 }
             }

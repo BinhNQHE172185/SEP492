@@ -42,13 +42,13 @@ namespace LMCM_BE
                 {
                     await userManager.AddToRoleAsync(newHOD, "Head of Department");
 
-                    //// Share Google Drive folders with the new admin
-                    //bool isShared = await googleDriveService.ShareFoldersWithUser(adminEmail, "reader");
+                    // Share Google Drive folders with the Head of Department
+                    bool isShared = await googleDriveService.ShareFoldersWithUser(hodEmail, "reader");
 
-                    //if (!isShared)
-                    //{
-                    //    Console.WriteLine("Failed to share Google Drive folder with user.");
-                    //}
+                    if (!isShared)
+                    {
+                        Console.WriteLine("Failed to share Google Drive folder with user.");
+                    }
                 }
                 else
                 {

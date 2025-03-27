@@ -38,26 +38,43 @@ namespace LMCM_BE.Controllers.ContractControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+        [HttpPost("getContractListNoPaging")]
+        public async Task<IActionResult> GetContractsNoPagingAsync(string? searchKey)
+        {
+            try
+            {
+                var data = await _contractService.GetContractsAsync(searchKey);
+                if (data != null)
+                {
+                    return Ok(data);
+                }
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
         [HttpPost("createContract")]
         public async Task<IActionResult> CreateContractAsync([FromForm] ContractInsertDto contractDto)
         {
             try
             {
-                if (contractDto.File == null)
+                // Check if ModelState is valid (DTO validation will catch issues)
+                if (!ModelState.IsValid)
                 {
-                    return BadRequest(new { Success = false, Message = "Không tìm thấy file." });
-                }
-                // Check file type
-                if (contractDto.File.ContentType != "application/pdf")
-                {
-                    return BadRequest(new { Success = false, Message = "Chỉ file pdf mới được tải lên." });
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                  .Select(e => e.ErrorMessage)
+                                                  .ToList();
+
+                    return BadRequest(new
+                    {
+                        Success = false,
+                        Message = "Dữ liệu đầu vào không hợp lệ.",
+                        Errors = errors
+                    });
                 }
 
-                // Check file size (5MB = 5 * 1024 * 1024 bytes)
-                if (contractDto.File.Length > 5 * 1024 * 1024)
-                {
-                    return BadRequest(new { Success = false, Message = "Dung lượng file không được vượt quá 5MB." });
-                }
                 var contract = await _contractService.CreateContract(contractDto);
                 return Ok(new
                 {
@@ -124,6 +141,21 @@ namespace LMCM_BE.Controllers.ContractControllers
         {
             try
             {
+                // Check if ModelState is valid (DTO validation will catch issues)
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                  .Select(e => e.ErrorMessage)
+                                                  .ToList();
+
+                    return BadRequest(new
+                    {
+                        Success = false,
+                        Message = "Dữ liệu đầu vào không hợp lệ.",
+                        Errors = errors
+                    });
+                }
+
                 Guid? contractId = await _contractService.UpdateContractAsync(id, newContract);
                 if (contractId.HasValue)
                     return Ok(new

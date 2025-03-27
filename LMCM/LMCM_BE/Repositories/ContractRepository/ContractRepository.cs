@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using LMCM_BE.DbContext;
+using LMCM_BE.DTOs.BudgetProposalDtos;
 using LMCM_BE.DTOs.ContractDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.UserDtos;
@@ -9,6 +10,7 @@ using LMCM_BE.Repositories.UserRepositoriy;
 using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Utilities;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Printing;
 
 namespace LMCM_BE.Repositories.ContractRepository
 {
@@ -67,6 +69,7 @@ namespace LMCM_BE.Repositories.ContractRepository
 
             newContract.ContractId = Guid.NewGuid();
             newContract.Url = fileUrl;
+            newContract.AuthorId = user.Id;
             newContract.Status = "Active";
             newContract.CreatedAt = DateTime.UtcNow;
             newContract.UpdatedAt = DateTime.UtcNow;
@@ -78,6 +81,34 @@ namespace LMCM_BE.Repositories.ContractRepository
             return true;
         }
 
+        public async Task<List<ContractListDto>> GetContractsAsync(string? searchKey)
+        {
+            var query = _dbContext.Contracts.AsQueryable();
+
+            UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
+            if (user != null && !user.Roles.Contains("Head of Department")) query = query.Where(s => s.AuthorId == user.Id);
+
+            query = query.Where(s => s.Status != "Inactive");
+
+            if (!string.IsNullOrWhiteSpace(searchKey))
+            {
+                string search = searchKey.Trim().ToLower();
+                query = query.Where(s => s.Author.Email.ToLower().Contains(search) ||
+                                         s.Title.ToLower().Contains(search) ||
+                                         s.Author.UserName.ToLower().Contains(search));
+            }
+
+            var items = await query
+                .Include(s => s.Author)
+                .Include(s => s.Proposal)
+                .Include(s => s.Contractor)
+                .ToListAsync();
+
+            var data = _mapper.Map<List<ContractListDto>>(items);
+            
+            return data;    
+        }
+
         public async Task<ContractDetailDto> GetContractByIdAsync(Guid contractId)
         {
             if (contractId == Guid.Empty)
@@ -86,6 +117,10 @@ namespace LMCM_BE.Repositories.ContractRepository
             var contract = await _dbContext.Contracts
                 .AsNoTracking()
                 .Where(s => s.ContractId == contractId)
+                .Include(s => s.Author)
+                .Include(s => s.Proposal)
+                .Include(s => s.Contractor)
+                .Include(S=> S.LearningMaterialChangesHistories)
                 .SingleOrDefaultAsync();
 
             if (contract == null)
@@ -140,6 +175,7 @@ namespace LMCM_BE.Repositories.ContractRepository
                 .Take(pageSize)
                 .Include(s => s.Author)
                 .Include(s => s.Proposal)
+                .Include(s=>s.Contractor)
                 .ToListAsync();
 
             var data = _mapper.Map<List<ContractListDto>>(items);
@@ -176,7 +212,7 @@ namespace LMCM_BE.Repositories.ContractRepository
             UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
-            if (user.Id != contract.AuthorId)
+            if (user.Id != contract.AuthorId && user.Roles.Contains("Staff"))
                 throw new UnauthorizedAccessException("User is not authorized to delete this contract.");
 
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
@@ -218,7 +254,7 @@ namespace LMCM_BE.Repositories.ContractRepository
             UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
-            if (user.Id != contract.AuthorId)
+            if (user.Id != contract.AuthorId && user.Roles.Contains("Staff"))
                 throw new UnauthorizedAccessException("User is not authorized to update this contract.");
 
             // Update contract fields (excluding file)

@@ -13,7 +13,6 @@ namespace LMCM_BE.DTOs.BudgetProposalDtos
 
         public DateTime? ProposalDate { get; set; }
 
-        [Required(ErrorMessage = "File đính kèm là bắt buộc")]
         [AllowedFileExtensions(new string[] { ".pdf" }, ErrorMessage = "Chỉ chấp nhận các tệp có định dạng .pdf")]
         [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Dung lượng tệp không được vượt quá 5MB")]
         public IFormFile? File { get; set; }

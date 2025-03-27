@@ -36,6 +36,7 @@ export class BudgetApiService {
   getBudgetList(): Observable<PagedResult<any>> {
     return this.http.post<PagedResult<any>>(
       `${this.apiUrl}/budgetProposal/getBudgetProposalNoPagingList`,
+      {},
       { withCredentials: true }
     );
   }

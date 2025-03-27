@@ -55,6 +55,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .Include(s => s.Subject)
+                .OrderBy(s => s.CourseCode)
                 .ToListAsync();
 
             var data = _mapper.Map<List<SyllabusListViewDto>>(items);

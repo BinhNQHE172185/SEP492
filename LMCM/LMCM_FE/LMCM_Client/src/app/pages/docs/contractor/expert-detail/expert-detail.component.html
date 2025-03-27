@@ -1,0 +1,73 @@
+<p-dialog header="Chi tiết chuyên gia" [(visible)]="displayDetailDialog" [modal]="true" [style]="{ width: '700px' }" [draggable]="false" [resizable]="false" class="custom-dialog">
+    <ng-template pTemplate="content">
+        <section class="p-6 bg-white rounded-xl" *ngIf="detailExpert">
+            <div class="flex flex-wrap gap-4">
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Tên nhà thầu</label>
+                    <input pInputText [ngModel]="detailExpert.contractorName" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
+                </div>
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Tên ngân hàng</label>
+                    <input pInputText [ngModel]="detailExpert.bankName" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 mt-4">
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Số điện thoại</label>
+                    <input pInputText [ngModel]="detailExpert.phoneNumber" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
+                </div>
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Mã số thuế</label>
+                    <input pInputText [ngModel]="detailExpert.taxCode" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 mt-4">
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Email</label>
+                    <input pInputText [ngModel]="detailExpert.email" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
+                </div>
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Mã nhân viên</label>
+                    <input pInputText [ngModel]="detailExpert.employeeCode" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 mt-4">
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Số CMND/CCCD</label>
+                    <input pInputText [ngModel]="detailExpert.idCardNumber" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
+                </div>
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Nơi cấp CMND/CCCD</label>
+                    <input pInputText [ngModel]="detailExpert.idIssuedPlace" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 mt-4">
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Chức vụ</label>
+                    <input pInputText [ngModel]="detailExpert.position" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
+                </div>
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Số tài khoản ngân hàng</label>
+                    <input pInputText [ngModel]="detailExpert.bankAccountNumber" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 mt-4">
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Địa chỉ</label>
+                    <input pInputText [ngModel]="detailExpert.address" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
+                </div>
+            </div>
+        </section>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <div class="flex justify-end gap-4 p-2">
+            <button pButton type="button" label="Đóng" class="p-button-text text-gray-500 hover:text-gray-700" (click)="displayDetailDialog = false"></button>
+        </div>
+    </ng-template>
+</p-dialog>

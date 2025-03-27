@@ -271,4 +271,10 @@ export class ListExpertComponent implements OnInit {
                 error: (err) => {}
             });
     }
+    ngOnDestroy(): void {
+        if (this.searchSubscription) {
+            this.searchService.updateSearchQuery('');
+            this.searchSubscription.unsubscribe();
+        }
+    }
 }

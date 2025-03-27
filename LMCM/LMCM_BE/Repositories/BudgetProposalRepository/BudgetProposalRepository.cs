@@ -134,6 +134,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .Include(s => s.Author)
+                .OrderByDescending(s => s.UpdatedAt)
                 .ToListAsync();
 
             var data = _mapper.Map<List<BudgetProposalListDto>>(items);
@@ -151,10 +152,10 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
         {
             var query = _dbContext.BudgetProposals.AsQueryable();
 
-            //UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
-            //if (user == null || string.IsNullOrEmpty(user.Email))
-            //    throw new Exception("User not found");
-            //if (!user.Roles.Contains("Head of Department")) query = query.Where(s => s.AuthorId == user.Id);
+            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("User not found");
+            if (!user.Roles.Contains("Head of Department")) query = query.Where(s => s.AuthorId == user.Id);
 
             query = query.Where(s => s.Status != "Inactive");
 
@@ -168,6 +169,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
 
             var items = await query
                 .Include(s => s.Author)
+                .OrderByDescending(s => s.UpdatedAt)
                 .ToListAsync();
 
             var data = _mapper.Map<List<BudgetProposalListDto>>(items);

@@ -57,6 +57,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using LMCM_BE.AutoMapper.TemplateProfiles;
 using LMCM_BE.Repositories.DocumentTemplateRepository;
 using LMCM_BE.Services.DocumentTemplateService;
+using LMCM_BE.Repositories.ContractValueItemRepository;
+using LMCM_BE.Services.ContractValueItemService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -189,6 +191,8 @@ builder.Services.AddScoped<IBudgetProposalRepository, BudgetProposalRepository>(
 builder.Services.AddScoped<IBudgetProposalService, BudgetProposalService>();
 builder.Services.AddScoped<IContractorRepository, ContractorRepository>();
 builder.Services.AddScoped<IContractorService, ContractorService>();
+builder.Services.AddScoped<IContractValueItemRepository, ContractValueItemRepository>();
+builder.Services.AddScoped<IContractValueItemService, ContractValueItemService>();
 builder.Services.AddScoped<IAcceptanceRecordRepository, AcceptanceRecordRepository>();
 builder.Services.AddScoped<IAcceptanceRecordService, AcceptanceRecordService>();
 builder.Services.AddScoped<IFileHelper, FileHelper>();

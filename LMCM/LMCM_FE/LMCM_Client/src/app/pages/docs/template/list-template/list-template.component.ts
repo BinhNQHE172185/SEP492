@@ -10,153 +10,160 @@ import { TagModule } from 'primeng/tag';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { MessageService, ConfirmationService } from 'primeng/api';
-import { DropdownModule } from 'primeng/dropdown';
+import { FileUploadModule } from 'primeng/fileupload';
+import { TextareaModule } from 'primeng/textarea';
+import { CalendarModule } from 'primeng/calendar';
+import { Subscription } from 'rxjs';
+import { searchService } from '../../../service/search/search-service.service';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ContractApiService } from '../../../../apis/contractAPIs/contract-api.service';
+import { TemplateCreateEditComponent } from '../template-create-edit/template-create-edit.component';
+import { TemplateDetailComponent } from '../template-detail/template-detail.component';
+import { DocumentTemplateApiService } from '../../../../apis/templateAPIs/template-api.service';
+
+interface PagingRequest {
+  searchKey?: string;
+  pageIndex: number;
+  pageSize: number;
+}
+
 @Component({
-    selector: 'app-list-template',
-    standalone: true,
-    imports: [
-        CommonModule, TableModule, ButtonModule, InputTextModule, InputGroupModule, 
-        CardModule, ConfirmDialogModule, ToastModule, DialogModule, FormsModule, TagModule, DropdownModule
-    ],
-    templateUrl: './list-template.component.html',
-    styleUrls: ['./list-template.component.scss'],
-    providers: [ConfirmationService, MessageService]
+  selector: 'app-list-template',
+  standalone: true,
+  imports: [
+    CommonModule,
+    TableModule,
+    ButtonModule,
+    InputTextModule,
+    InputGroupModule,
+    CardModule,
+    ConfirmDialogModule,
+    ToastModule,
+    FileUploadModule,
+    DialogModule,
+    FormsModule,
+    TagModule,
+    TextareaModule,
+    CalendarModule,
+    // TemplateCreateEditComponent,
+    // TemplateDetailComponent
+  ],
+  templateUrl: './list-template.component.html',
+  styleUrls: ['./list-template.component.scss'],
+  providers: [
+    MessageService,
+    ConfirmationService
+  ]
 })
 export class ListTemplateComponent implements OnInit {
-    documents: any[] = [];
-    filteredDocuments: any[] = [];
-    searchKey: string = '';
-    displayAddDialog: boolean = false;
-    displayEditDialog: boolean = false;
-    displayDetailDialog: boolean = false;
-    selectedDocument: any = {};
-    newDocument: any = {};
+  templates: any = [];
+  totalCount = 0;
+  pageNumber = 1;
+  pageSize = 10;
+  searchKey = '';
 
-    constructor(private messageService: MessageService, private confirmationService: ConfirmationService) {}
+  isDetail: boolean = true;
 
-    ngOnInit() {
-        this.loadData();
-    }
-    documentTypes = [
-        { label: 'Tờ trình', value: 'Tờ trình' },
-        { label: 'Hợp đồng', value: 'Hợp đồng' },
-        { label: 'Biên bản', value: 'Biên bản' },
-        { label: 'Quyết định', value: 'Quyết định' }
-    ];
-    
-    documentStatuses = [
-        { label: 'Đang sử dụng', value: 'Đang sử dụng' },
-        { label: 'Tạm ngưng', value: 'Tạm ngưng' }
-    ];
-    loadData() {
-        this.documents = [
-            { 
-                name: 'Mẫu tờ trình số 01/2024', 
-                type: 'Tờ trình', 
-                status: 'Đang sử dụng', 
-                createdBy: 'Nguyễn Văn A',
-                createdAt: '2024-01-10',
-                lastModified: '2024-03-20',
-                description: 'Chi tiết về mẫu tờ trình số 01/2024' 
-            },
-            { 
-                name: 'Mẫu hợp đồng xây dựng học liệu', 
-                type: 'Hợp đồng', 
-                status: 'Đang sử dụng',
-                createdBy: 'Trần Thị B',
-                createdAt: '2024-02-05',
-                lastModified: '2024-03-18',
-                description: 'Chi tiết về hợp đồng xây dựng học liệu' 
-            },
-            { 
-                name: 'Biên bản nghiệm thu học liệu', 
-                type: 'Biên bản', 
-                status: 'Tạm ngưng',
-                createdBy: 'Lê Minh C',
-                createdAt: '2024-02-15',
-                lastModified: '2024-03-19',
-                description: 'Chi tiết về biên bản nghiệm thu học liệu' 
-            },
-            { 
-                name: 'Quyết định định mức xây dựng học liệu', 
-                type: 'Quyết định', 
-                status: 'Đang sử dụng',
-                createdBy: 'Phạm Duy D',
-                createdAt: '2024-03-01',
-                lastModified: '2024-03-21',
-                description: 'Chi tiết về quyết định định mức' 
-            }
-        ];
-        this.filteredDocuments = [...this.documents];
+  seletecId: string | null = null;
+
+  private searchSubscription!: Subscription;
+
+  constructor(private templateService: DocumentTemplateApiService,
+    private searchService: searchService,
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService
+  ) { }
+
+  displayAddDialog = false;
+  displayDetailDialog = false;
+
+  detailTemplate: any;
+  templateId: string | null = null;
+
+  ngOnInit() {
+    this.searchSubscription = this.searchService.searchQuery$.subscribe(
+      (query) => {
+        this.searchKey = query;
+        this.loadTemplate();
+      }
+    );
+  }
+
+  loadTemplate(event?: any) {
+    if (event) {
+      this.pageNumber = Math.floor(event.first / event.rows) + 1;
+      this.pageSize = event.rows;
     }
 
-    onSearchChange() {
-        this.filteredDocuments = this.documents.filter(doc =>
-            doc.name.toLowerCase().includes(this.searchKey.toLowerCase())
+    const request: PagingRequest = {
+      pageIndex: this.pageNumber,
+      pageSize: this.pageSize,
+      searchKey: this.searchKey,
+    };
+    this.templateService.getTemplates(request).subscribe(
+      (response) => {
+        this.templates = response.items;
+        this.totalCount = response.totalCount;
+      },
+      (error) => {
+      }
+    );
+  }
+
+  ngOnDestroy(): void {
+    if (this.searchSubscription) {
+      this.searchService.updateSearchQuery('');
+      this.searchSubscription.unsubscribe();
+    }
+  }
+
+  onSearchChange(query: string) {
+    this.searchService.updateSearchQuery(query);
+  }
+
+  openDetailDialog(id: string) {
+    this.templateId = id;
+    this.displayDetailDialog = true;
+    console.log(id);
+  }
+
+  handleCloseDialog(isDetail: boolean) {
+    if (isDetail) {
+      this.displayDetailDialog = false;
+    } else {
+      this.displayAddDialog = false;
+      this.seletecId = null;
+    }
+    this.loadTemplate();
+  }
+
+  openAddDialog(id?: string) {
+    if (id) {
+      this.seletecId = id;
+    }
+    else {
+      this.seletecId = null;
+    }
+    this.displayAddDialog = true;
+  }
+
+  deleteContract(id: any) {
+    this.confirmationService.confirm({
+      header: 'Xóa dữ liệu',
+      message: 'Bạn có chắc chắn muốn xóa? Hành động này là không thể hoàn tác.',
+      acceptLabel: 'Đồng ý',
+      rejectLabel: 'Hủy',
+      accept: () => {
+        this.templateService.deleteTemplate(id!).subscribe(
+          (response) => {
+            this.loadTemplate();
+            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
+          },
+          (error) => {
+            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+          }
         );
-    }
-    openAddDialog() {
-        this.newDocument = { name: '', type: '', status: '' };
-        this.displayAddDialog = true;
-    }
-    
-
-    saveNewDocument() {
-        if (!this.newDocument.name || !this.newDocument.type || !this.newDocument.status) {
-            this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng điền đầy đủ thông tin!' });
-            return;
-        }
-    
-        this.documents.push({ ...this.newDocument });
-        this.filteredDocuments = [...this.documents];
-        this.displayAddDialog = false;
-    
-        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Thêm tài liệu thành công!' });
-    }
-    
-    openEditDialog(document: any) {
-        this.selectedDocument = { ...document }; 
-        this.displayEditDialog = true;
-    }
-
-    openDetailDialog(document: any) {
-        this.selectedDocument = { ...document }; 
-        this.displayDetailDialog = true;
-    }
-
-    confirmDelete(document: any, index: number) {
-        this.confirmationService.confirm({
-            message: 'Bạn có chắc chắn muốn xóa tài liệu này?',
-            header: 'Xác nhận xóa',
-            accept: () => {
-                this.deleteDocument(index);
-            }
-        });
-    }
-
-    deleteDocument(index: number) {
-        this.filteredDocuments.splice(index, 1);
-        this.documents = [...this.filteredDocuments]; 
-        this.messageService.add({ severity: 'warn', summary: 'Đã xóa', detail: 'Tài liệu đã bị xóa' });
-    }
-
-    saveEdit() {
-        const index = this.documents.findIndex(doc => doc.name === this.selectedDocument.name);
-        if (index !== -1) {
-            this.documents[index] = { ...this.selectedDocument };
-            this.filteredDocuments = [...this.documents]; 
-            this.displayEditDialog = false;
-            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Cập nhật tài liệu thành công!' });
-        }
-    }
-    closeDialog(dialogType: string) {
-        if (dialogType === 'edit') {
-            this.displayEditDialog = false;
-        } else if (dialogType === 'add') {
-            this.displayAddDialog = false;
-        } else if (dialogType === 'detail') {
-            this.displayDetailDialog = false;
-        }
-    }
+      }
+    });
+  }
 }

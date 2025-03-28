@@ -8,13 +8,11 @@
         <p-inputGroup class="w-full">
             <p-button label="Tìm kiếm"></p-button>
             <input [(ngModel)]="searchKey" (ngModelChange)="onSearchChange($event)" pInputText placeholder="Tìm kiếm chuyên gia..." />
-
-
         </p-inputGroup>
     </div>
 
     <div class="mt-4">
-        <p-table [value]="experts" [rows]="5" [paginator]="true" class="w-full" currentPageReportTemplate="Hiện {first} tới {last} của {totalRecords} chuyên gia" [showCurrentPageReport]="true" [rowsPerPageOptions]="[5, 10, 20]">
+        <p-table [value]="expert" [rows]="5" [paginator]="true" class="w-full" currentPageReportTemplate="Hiện {first} tới {last} của {totalRecords} chuyên gia" [showCurrentPageReport]="true" [rowsPerPageOptions]="[5, 10, 20]">
             <ng-template pTemplate="header">
                 <tr>
                     <th>Chuyên Gia</th>
@@ -29,8 +27,8 @@
                     <td>{{ expert.email }}</td>
                     <td>
                         <p-button label="Chi tiết" class="p-button-sm" outlined (click)="openDetailDialog(expert.contractorId)"></p-button>
-                        <p-button label="Sửa" class="p-button-sm mr-2" outlined (click)="openEditDialog(expert.contractorId)"></p-button>
-                        <p-button label="Xóa" class="p-button-sm mr-2" outlined  (click)="confirmDelete(expert.contractorId)"></p-button>
+                        <p-button label="Sửa" class="p-button-sm mr-2" outlined (click)="openAddDialog(expert.contractorId)"></p-button>
+                        <p-button label="Xóa" class="p-button-sm mr-2" outlined (click)="deleteE(expert.contractorId)"></p-button>
                     </td>
                 </tr>
             </ng-template>
@@ -44,229 +42,9 @@
     </div>
 </p-card>
 
+<app-expert-create-edit [displayAddDialog]="displayAddDialog" [selectedId]="selectedId!" (closeDialogEvent)="handleCloseDialog(!isDetail)"> </app-expert-create-edit>
 
-<p-dialog header="Thêm chuyên gia" [(visible)]="displayAddDialog" [modal]="true" [style]="{ width: '800px' }" [draggable]="false" [resizable]="false" class="custom-dialog">
-    <ng-template pTemplate="content">
-        <section class="p-8 w-full bg-white rounded-xl">
-            <div class="flex flex-wrap gap-4">
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Tên chuyên gia <span class="text-red-500">*</span></label>
-                    <input pInputText [(ngModel)]="addContractorName" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập tên chuyên gia" />
-                </div>
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Email <span class="text-red-500">*</span></label>
-                    <input pInputText [(ngModel)]="addEmail" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập email" />
-                </div>
-            </div>
+<app-expert-detail [expertId]="expertId!" [displayDetailDialog]="displayDetailDialog" (closeDialogEvent)="handleCloseDialog(isDetail)" [hidden]="!displayDetailDialog"> </app-expert-detail>
 
-            <div class="flex flex-wrap gap-4 mt-4">
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Số điện thoại</label>
-                    <input pInputText [(ngModel)]="addPhoneNumber" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập số điện thoại" />
-                </div>
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Mã số thuế</label>
-                    <input pInputText [(ngModel)]="addTaxCode" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập mã số thuế" />
-                </div>
-            </div>
-
-            <div class="flex flex-wrap gap-4 mt-4">
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Mã nhân viên</label>
-                    <input pInputText [(ngModel)]="addEmployeeCode" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập mã nhân viên" />
-                </div>
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">CMND/CCCD</label>
-                    <input pInputText [(ngModel)]="addIdCardNumber" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập số CMND/CCCD" />
-                </div>
-            </div>
-
-            <div class="flex flex-wrap gap-4 mt-4">
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Nơi cấp CMND/CCCD</label>
-                    <input pInputText [(ngModel)]="addIdIssuedPlace" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập nơi cấp CMND/CCCD" />
-                </div>
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Chức vụ</label>
-                    <input pInputText [(ngModel)]="addPosition" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập chức vụ" />
-                </div>
-            </div>
-
-            <div class="flex flex-wrap gap-4 mt-4">
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Số tài khoản ngân hàng</label>
-                    <input pInputText [(ngModel)]="addBankAccountNumber" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập số tài khoản ngân hàng" />
-                </div>
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Tên ngân hàng</label>
-                    <input pInputText [(ngModel)]="addBankName" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập tên ngân hàng" />
-                </div>
-            </div>
-
-            <div class="flex flex-wrap gap-4 mt-4">
-                <div class="w-full">
-                    <label class="block mb-2">Địa chỉ</label>
-                    <textarea pInputTextarea [(ngModel)]="addAddress" rows="2" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập địa chỉ"></textarea>
-                </div>
-            </div>
-        </section>
-    </ng-template>
-
-    <ng-template pTemplate="footer">
-        <div class="flex justify-end gap-4 p-2">
-            <button pButton type="button" label="Hủy" class="p-button-text text-gray-500 hover:text-gray-700" (click)="closeDialog('add')"></button>
-            <button pButton type="button" label="Lưu" class="p-button-warning" (click)="saveNewExpert()"></button>
-        </div>
-    </ng-template>
-</p-dialog>
-
-<p-dialog header="Chỉnh sửa chuyên gia" [(visible)]="displayEditDialog" [modal]="true" [style]="{ width: '700px' }" [draggable]="false" [resizable]="false" class="custom-dialog">
-    <ng-template pTemplate="content">
-        <section class="p-6 bg-white rounded-xl">
-            <div class="flex flex-wrap gap-4">
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Tên nhà thầu <span class="text-red-500">*</span></label>
-                    <input pInputText [(ngModel)]="editContractorName" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập tên nhà thầu" />
-                </div>
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Tên ngân hàng</label>
-                    <input pInputText [(ngModel)]="editBankName" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập tên ngân hàng" />
-                </div>
-            </div>
-
-            <div class="flex flex-wrap gap-4 mt-4">
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Số điện thoại</label>
-                    <input pInputText [(ngModel)]="editPhoneNumber" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập số điện thoại" />
-                </div>
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Mã số thuế</label>
-                    <input pInputText [(ngModel)]="editTaxCode" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập mã số thuế" />
-                </div>
-            </div>
-
-            <div class="flex flex-wrap gap-4 mt-4">
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Email <span class="text-red-500">*</span></label>
-                    <input pInputText [(ngModel)]="editEmail" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập email" />
-                </div>
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Mã nhân viên</label>
-                    <input pInputText [(ngModel)]="editEmployeeCode" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập mã nhân viên" />
-                </div>
-            </div>
-
-            <div class="flex flex-wrap gap-4 mt-4">
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Số CMND/CCCD</label>
-                    <input pInputText [(ngModel)]="editIdCardNumber" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập số CMND/CCCD" />
-                </div>
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Nơi cấp CMND/CCCD</label>
-                    <input pInputText [(ngModel)]="editIdIssuedPlace" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập nơi cấp" />
-                </div>
-            </div>
-
-            <div class="flex flex-wrap gap-4 mt-4">
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Chức vụ</label>
-                    <input pInputText [(ngModel)]="editPosition" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập chức vụ" />
-                </div>
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Số tài khoản ngân hàng</label>
-                    <input pInputText [(ngModel)]="editBankAccountNumber" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập số tài khoản" />
-                </div>
-            </div>
-
-            <div class="flex flex-wrap gap-4 mt-4">
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Địa chỉ</label>
-                    <input pInputText [(ngModel)]="editAddress" class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập địa chỉ" />
-                </div>
-            </div>
-        </section>
-    </ng-template>
-
-    <ng-template pTemplate="footer">
-        <div class="flex justify-end gap-4 p-2">
-            <button pButton type="button" label="Hủy" class="p-button-text text-gray-500 hover:text-gray-700" (click)="closeDialog('edit')"></button>
-            <button pButton type="button" label="Lưu" class="p-button-warning" [disabled]="!editContractorName || !editEmail" (click)="saveEditedExpert()"></button>
-        </div>
-    </ng-template>
-</p-dialog>
-
-<p-dialog header="Chi tiết chuyên gia" [(visible)]="displayDetailDialog" [modal]="true" [style]="{ width: '700px' }" [draggable]="false" [resizable]="false" class="custom-dialog">
-    <ng-template pTemplate="content">
-        <section class="p-6 bg-white rounded-xl" *ngIf="detailExpert">
-            <div class="flex flex-wrap gap-4">
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Tên nhà thầu</label>
-                    <input pInputText [ngModel]="detailExpert.contractorName" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
-                </div>
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Tên ngân hàng</label>
-                    <input pInputText [ngModel]="detailExpert.bankName" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
-                </div>
-            </div>
-
-            <div class="flex flex-wrap gap-4 mt-4">
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Số điện thoại</label>
-                    <input pInputText [ngModel]="detailExpert.phoneNumber" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
-                </div>
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Mã số thuế</label>
-                    <input pInputText [ngModel]="detailExpert.taxCode" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
-                </div>
-            </div>
-
-            <div class="flex flex-wrap gap-4 mt-4">
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Email</label>
-                    <input pInputText [ngModel]="detailExpert.email" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
-                </div>
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Mã nhân viên</label>
-                    <input pInputText [ngModel]="detailExpert.employeeCode" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
-                </div>
-            </div>
-
-            <div class="flex flex-wrap gap-4 mt-4">
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Số CMND/CCCD</label>
-                    <input pInputText [ngModel]="detailExpert.idCardNumber" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
-                </div>
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Nơi cấp CMND/CCCD</label>
-                    <input pInputText [ngModel]="detailExpert.idIssuedPlace" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
-                </div>
-            </div>
-
-            <div class="flex flex-wrap gap-4 mt-4">
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Chức vụ</label>
-                    <input pInputText [ngModel]="detailExpert.position" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
-                </div>
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Số tài khoản ngân hàng</label>
-                    <input pInputText [ngModel]="detailExpert.bankAccountNumber" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
-                </div>
-            </div>
-
-            <div class="flex flex-wrap gap-4 mt-4">
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Địa chỉ</label>
-                    <input pInputText [ngModel]="detailExpert.address" readonly class="w-full p-2 border border-gray-300 rounded bg-gray-100" />
-                </div>
-            </div>
-        </section>
-    </ng-template>
-
-    <ng-template pTemplate="footer">
-        <div class="flex justify-end gap-4 p-2">
-            <button pButton type="button" label="Đóng" class="p-button-text text-gray-500 hover:text-gray-700" (click)="displayDetailDialog = false"></button>
-        </div>
-    </ng-template>
-</p-dialog>
-
+<p-toast></p-toast>
 <p-confirmDialog></p-confirmDialog>

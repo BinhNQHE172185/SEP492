@@ -14,24 +14,13 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { TextareaModule } from 'primeng/textarea';
 import { CalendarModule } from 'primeng/calendar';
 import { ContractorApiService } from '../../../../apis/contractorAPIs/contractor-api.service';
-import {ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { searchService } from '../../../service/search/search-service.service';
 import { Subscription } from 'rxjs';
+import { ExpertCreateEditComponent } from '../expert-create-edit/expert-create-edit.component';
+import { ExpertDetailComponent } from '../expert-detail/expert-detail.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
-interface Expert {
-    id: string;
-    contractorName: string;
-    address: string;
-    phoneNumber: string;
-    taxCode: string;
-    email: string;
-    employeeCode: string;
-    idCardNumber: string;
-    idIssuedPlace: string;
-    position: string;
-    bankAccountNumber: string;
-    bankName: string;
-}
 interface PagingRequest {
     searchKey?: string;
     pageIndex: number;
@@ -41,66 +30,64 @@ interface PagingRequest {
 @Component({
     selector: 'app-list-expert',
     standalone: true,
-    imports: [CommonModule, TableModule, ButtonModule, InputTextModule, InputGroupModule, CardModule, ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, FormsModule, TagModule, TextareaModule, CalendarModule],
-    providers: [MessageService,ConfirmationService],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    imports: [
+        CommonModule,
+        TableModule,
+        ButtonModule,
+        InputTextModule,
+        InputGroupModule,
+        CardModule,
+        ConfirmDialogModule,
+        ToastModule,
+        FileUploadModule,
+        DialogModule,
+        FormsModule,
+        TagModule,
+        TextareaModule,
+        CalendarModule,
+        ExpertCreateEditComponent,
+        ExpertDetailComponent
+    ],
+    providers: [MessageService, ConfirmationService],
     templateUrl: './list-expert.component.html',
     styleUrls: ['./list-expert.component.scss']
 })
 export class ListExpertComponent implements OnInit {
-    experts: Expert[] = [];
+    expert: any = [];
     totalCount = 0;
     pageNumber = 1;
     pageSize = 10;
     searchKey = '';
 
-    displayAddDialog = false;
-    displayDetailDialog = false;
-    displayEditDialog = false;
+    isDetail: boolean = true;
 
-    addContractorName = '';
-    addPhoneNumber = '';
-    addTaxCode = '';
-    addEmail = '';
-    addEmployeeCode = '';
-    addIdCardNumber = '';
-    addIdIssuedPlace = '';
-    addPosition = '';
-    addBankAccountNumber = '';
-    addBankName = '';
-    addAddress = '';
+    selectedFile: File | null = null;
+    selectedId: string | null = null;
 
-    editId = '';
-    editContractorName = '';
-    editAddress = '';
-    editPhoneNumber = '';
-    editTaxCode = '';
-    editEmail = '';
-    editEmployeeCode = '';
-    editIdCardNumber = '';
-    editIdIssuedPlace = '';
-    editPosition = '';
-    editBankAccountNumber = '';
-    editBankName = '';
-    editStatus = '';
-
-    detailExpert: Expert | null = null;
     private searchSubscription!: Subscription;
 
     constructor(
-        private contractorService: ContractorApiService,
-        private messageService: MessageService,
+        private ExpertService: ContractorApiService,
         private searchService: searchService,
+        private messageService: MessageService,
         private confirmationService: ConfirmationService
     ) {}
+
+    displayAddDialog = false;
+    displayDetailDialog = false;
+
+    detailExpert: any;
+    expertId: string | null = null;
 
     ngOnInit() {
         this.searchSubscription = this.searchService.searchQuery$.subscribe((query) => {
             this.searchKey = query;
-            this.loadExperts();
+            this.loadExpert();
         });
     }
 
-    loadExperts(event?: any) {
+    loadExpert(event?: any) {
         if (event) {
             this.pageNumber = Math.floor(event.first / event.rows) + 1;
             this.pageSize = event.rows;
@@ -111,9 +98,9 @@ export class ListExpertComponent implements OnInit {
             pageSize: this.pageSize,
             searchKey: this.searchKey
         };
-        this.contractorService.getContractors(request).subscribe(
+        this.ExpertService.getContractors(request).subscribe(
             (response) => {
-                this.experts = response.items;
+                this.expert = response.items;
                 this.totalCount = response.totalCount;
             },
             (error) => {
@@ -122,159 +109,60 @@ export class ListExpertComponent implements OnInit {
         );
     }
 
-    onSearchChange(query: string) {
-        this.searchService.updateSearchQuery(query);
-    }
-    openAddDialog() {
-        this.addContractorName = '';
-        this.addPhoneNumber = '';
-        this.addTaxCode = '';
-        this.addEmail = '';
-        this.addEmployeeCode = '';
-        this.addIdCardNumber = '';
-        this.addIdIssuedPlace = '';
-        this.addPosition = '';
-        this.addBankAccountNumber = '';
-        this.addBankName = '';
-        this.addAddress = '';
-        this.displayAddDialog = true;
-    }
-
-    openDetailDialog(expertId: string) {
-        this.contractorService.getContractorDetail(expertId).subscribe(
-            (response) => {
-                this.detailExpert = response;
-                this.displayDetailDialog = true;
-            },
-            (error) => {}
-        );
-    }
-
-    openEditDialog(expertId: any) {
-        if (!expertId || (typeof expertId !== 'string' && typeof expertId !== 'number')) {
-            return;
-        }
-        this.editId = expertId.toString();
-
-        this.contractorService.getContractorDetail(expertId).subscribe(
-            (response) => {
-                this.editContractorName = response.contractorName;
-                this.editAddress = response.address;
-                this.editPhoneNumber = response.phoneNumber;
-                this.editTaxCode = response.taxCode;
-                this.editEmail = response.email;
-                this.editEmployeeCode = response.employeeCode;
-                this.editIdCardNumber = response.idCardNumber;
-                this.editIdIssuedPlace = response.idIssuedPlace;
-                this.editPosition = response.position;
-                this.editBankAccountNumber = response.bankAccountNumber;
-                this.editBankName = response.bankName;
-                this.editStatus = response.status ?? 'Active';
-
-                this.displayEditDialog = true;
-            },
-            (error) => {}
-        );
-    }
-
-    closeDialog(dialogType: string) {
-        if (dialogType === 'add') this.displayAddDialog = false;
-        if (dialogType === 'detail') this.displayDetailDialog = false;
-        if (dialogType === 'edit') this.displayEditDialog = false;
-    }
-
-    saveNewExpert() {
-        const newExpert = {
-            contractorName: this.addContractorName,
-            phoneNumber: this.addPhoneNumber,
-            taxCode: this.addTaxCode,
-            email: this.addEmail,
-            employeeCode: this.addEmployeeCode,
-            idCardNumber: this.addIdCardNumber,
-            idIssuedPlace: this.addIdIssuedPlace,
-            position: this.addPosition,
-            bankAccountNumber: this.addBankAccountNumber,
-            bankName: this.addBankName,
-            address: this.addAddress
-        };
-
-        this.contractorService.createContractor(newExpert).subscribe(
-            (response) => {
-                this.loadExperts();
-                this.displayAddDialog = false;
-                this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Chuyên gia đã được thêm' });
-            },
-            (error) => {}
-        );
-    }
-
-    confirmDelete(id: any) {
-      this.confirmationService.confirm({
-          message: 'Bạn có chắc muốn xoá nhà thầu này?',
-          header: 'Xác nhận xoá',
-          acceptLabel: 'Xác nhận',
-          rejectLabel: 'Hủy',
-          accept: () => {
-              this.deleteContractor(id);
-          }
-      });
-  }
-  
-  deleteContractor(id: any) {
-    this.contractorService.deleteContractor(id).subscribe({
-        next: () => {
-            
-            this.experts = this.experts.filter(c => c.id !== id);
-          
-
-            this.messageService.add({ 
-                severity: 'success', 
-                summary: 'Thành công', 
-                detail: 'Xóa nhà thầu thành công' 
-            });
-            this.loadExperts();
-        },
-        error: (err) => {
-           
-        }
-    });
-}
-
-
-    saveEditedExpert() {
-        if (!this.editContractorName || !this.editEmail) {
-            return;
-        }
-
-        this.contractorService
-            .updateContractor(this.editId, {
-                id: this.editId,
-                contractorName: this.editContractorName,
-                address: this.editAddress,
-                phoneNumber: this.editPhoneNumber,
-                taxCode: this.editTaxCode,
-                email: this.editEmail,
-                employeeCode: this.editEmployeeCode,
-                idCardNumber: this.editIdCardNumber,
-                idIssuedPlace: this.editIdIssuedPlace,
-                position: this.editPosition,
-                bankAccountNumber: this.editBankAccountNumber,
-                status: this.editStatus ?? 'Active',
-                bankName: this.editBankName
-            })
-            .subscribe({
-                next: (response) => {
-                    this.loadExperts();
-                    this.displayEditDialog = false;
-                    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Chuyên gia đã được cập nhật' });
-                },
-                error: (err) => {}
-            });
-    }
     ngOnDestroy(): void {
         if (this.searchSubscription) {
             this.searchService.updateSearchQuery('');
             this.searchSubscription.unsubscribe();
         }
+    }
+
+    onSearchChange(query: string) {
+        this.searchService.updateSearchQuery(query);
+    }
+
+    openDetailDialog(id: string) {
+        this.expertId = id;
+        this.displayDetailDialog = true;
+    }
+
+    handleCloseDialog(isDetail: boolean) {
+        if (isDetail) {
+            this.displayDetailDialog = false;
+        } else {
+            this.displayAddDialog = false;
+            this.selectedId = null;
+        }
+        this.loadExpert();
+    }
+
+    openAddDialog(id?: string) {
+        if (id) {
+            this.selectedId = id;
+        } else {
+            this.selectedId = null;
+        }
+        this.displayAddDialog = true;
+    }
+
+    deleteE(id: any) {
+        console.log('true');
+        const authorId = localStorage.getItem('userId');
+        this.confirmationService.confirm({
+            header: 'Xóa dữ liệu',
+            message: 'Bạn có chắc chắn muốn xóa? Hành động này là không thể hoàn tác.',
+            acceptLabel: 'Đồng ý',
+            rejectLabel: 'Hủy',
+            accept: () => {
+                this.ExpertService.deleteContractor(id).subscribe(
+                    (response) => {
+                        this.loadExpert();
+                        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
+                    },
+                    (error) => {
+                        this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+                    }
+                );
+            }
+        });
     }
 }

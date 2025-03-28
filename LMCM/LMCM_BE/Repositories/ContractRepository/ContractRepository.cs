@@ -102,6 +102,7 @@ namespace LMCM_BE.Repositories.ContractRepository
                 .Include(s => s.Author)
                 .Include(s => s.Proposal)
                 .Include(s => s.Contractor)
+                .OrderByDescending(s => s.UpdatedAt)
                 .ToListAsync();
 
             var data = _mapper.Map<List<ContractListDto>>(items);
@@ -176,6 +177,7 @@ namespace LMCM_BE.Repositories.ContractRepository
                 .Include(s => s.Author)
                 .Include(s => s.Proposal)
                 .Include(s=>s.Contractor)
+                .OrderByDescending(s => s.UpdatedAt)
                 .ToListAsync();
 
             var data = _mapper.Map<List<ContractListDto>>(items);

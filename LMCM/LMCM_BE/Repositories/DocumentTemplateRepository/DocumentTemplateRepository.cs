@@ -135,6 +135,7 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .Include(s => s.Author)
+                .OrderByDescending(s => s.UpdatedAt)
                 .ToListAsync();
 
             var data = _mapper.Map<List<DocumentTemplateListDto>>(items);

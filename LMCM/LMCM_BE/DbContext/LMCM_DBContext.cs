@@ -26,6 +26,8 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
 
     public virtual DbSet<Contractor> Contractors { get; set; }
 
+    public virtual DbSet<ContractValueItem> ContractValueItems { get; set; }
+
     public virtual DbSet<Curriculum> Curriculums { get; set; }
 
     public virtual DbSet<CurriculumsSubject> CurriculumsSubjects { get; set; }
@@ -248,6 +250,45 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasMaxLength(255)
                 .HasColumnName("Tax_Code");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
+        });
+
+        modelBuilder.Entity<ContractValueItem>(entity =>
+        {
+            entity.HasKey(e => e.ValueId).HasName("PK__ContractValueItem");
+
+            entity.ToTable("Contract_Value_Item");
+            entity.Property(e => e.ValueId)
+                .HasColumnName("Value_ID");
+
+            entity.Property(e => e.Category)
+                .IsRequired()
+                .HasColumnType("nvarchar(max)")
+                .HasColumnName("Category");
+
+            entity.Property(e => e.MeasurementUnit)
+                .IsRequired()
+                .HasColumnType("nvarchar(max)")
+                .HasColumnName("Measurement_Unit");
+
+            entity.Property(e => e.StandardRate)
+                .HasColumnType("decimal(18,2)")
+                .HasColumnName("Standard_Rate");
+
+            entity.Property(e => e.ContractValue)
+                .HasColumnType("decimal(18,2)")
+                .HasColumnName("Contract_Value");
+
+            entity.Property(e => e.ValueRatioForUpdate)
+                .HasColumnType("decimal(18,2)")
+                .HasColumnName("Value_Ratio_For_Update");
+
+            entity.Property(e => e.QualityRequirements)
+                .HasColumnType("nvarchar(max)")
+                .HasColumnName("Quality_Requirements");
+
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("NULL")
+                .HasColumnName("Updated_At");
         });
 
         modelBuilder.Entity<Curriculum>(entity =>

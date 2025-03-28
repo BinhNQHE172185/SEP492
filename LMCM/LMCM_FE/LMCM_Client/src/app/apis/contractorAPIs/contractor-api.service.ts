@@ -29,6 +29,10 @@ export class ContractorApiService {
     return this.http.post<PagedResult<any>>(`${this.apiUrl}/Contractor/getContractorList`, request);
   }
 
+  getContractorsList(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/Contractor/getAllContractorList`);
+  }
+
   getContractorDetail(id: any): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/Contractor/${id}`);
   }

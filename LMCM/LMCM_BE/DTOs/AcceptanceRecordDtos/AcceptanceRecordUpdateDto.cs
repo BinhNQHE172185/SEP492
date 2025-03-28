@@ -2,8 +2,6 @@
 {
     public class AcceptanceRecordUpdateDto
     {
-        public Guid AuthorId { get; set; }
-
         public Guid ContractId { get; set; }
 
         public string Title { get; set; } = null!;

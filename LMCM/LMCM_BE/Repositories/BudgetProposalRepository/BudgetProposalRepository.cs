@@ -134,6 +134,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .Include(s => s.Author)
+                .OrderByDescending(s => s.UpdatedAt)
                 .ToListAsync();
 
             var data = _mapper.Map<List<BudgetProposalListDto>>(items);
@@ -168,6 +169,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
 
             var items = await query
                 .Include(s => s.Author)
+                .OrderByDescending(s => s.UpdatedAt)
                 .ToListAsync();
 
             var data = _mapper.Map<List<BudgetProposalListDto>>(items);

@@ -1,0 +1,58 @@
+<p-dialog header="Chi tiết hợp đồng" [(visible)]="displayDetailDialog" [modal]="true" [draggable]="false"
+    [resizable]="false" class="custom-dialog" (onHide)="closeDialog()"
+    [style]="{width: '600px', height: 'auto', 'max-width': '90vw', 'max-height': '80vh'}">
+    <ng-template pTemplate="content">
+        <section class="p-8 w-full bg-white rounded-xl" *ngIf="contract">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div class="flex flex-col gap-2 md:col-span-2">
+                    <label class="block font-semibold text-orange-500">Tiêu đề</label>
+                    <p class="truncate">{{ contract.title }}</p>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="block font-semibold text-orange-500">Người tạo hợp đồng</label>
+                    <p>{{ contract.author.name }}</p>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="block font-semibold text-orange-500">Bên nhận khoán</label>
+                    <p>{{ contract.contractor.contractorName }}</p>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="block font-semibold text-orange-500">Tiêu đề tờ trình</label>
+                    <p>{{ contract.proposal.title }}</p>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="block font-semibold text-orange-500">Giá trị hợp đồng</label>
+                    <p class="whitespace-pre-line">{{ contract.contractValue }}</p>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="block font-semibold text-orange-500">Ngày bắt đầu</label>
+                    <p class="whitespace-pre-line">{{ contract.startDate | date: 'dd/MM/yyyy' }}</p>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="block font-semibold text-orange-500">Ngày kết thúc</label>
+                    <p class="whitespace-pre-line">{{ contract.endDate | date: 'dd/MM/yyyy' }}</p>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="block font-semibold text-orange-500">File đính kèm</label>
+                    <div *ngIf="contract.url; else noFile" class="flex items-center gap-2">
+                        <p-button (click)="downloadFile(contract.url)" outlined>
+                            <i class="pi pi-download"></i> Tải file đính kèm
+                        </p-button>
+                    </div>
+                    <ng-template #noFile>
+                        <p class="text-gray-500 italic">Không có file đính kèm</p>
+                    </ng-template>
+                </div>
+            </div>
+        </section>
+    </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>

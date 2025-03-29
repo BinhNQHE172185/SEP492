@@ -224,5 +224,15 @@
   </ng-template>
 </p-dialog> -->
 
+
+<app-acceptance-report-create-edit [displayAddDialog]="displayAddDialog" [selectedId]="selectedId!"
+  (closeDialogEvent)="handleCloseDialog(!isDetail)">
+</app-acceptance-report-create-edit>
+
+<app-acceptance-report-detail [acceptanceId]="acceptanceId!" [displayDetailDialog]="displayDetailDialog"
+  (closeDialogEvent)="handleCloseDialog(isDetail)" [hidden]="!displayDetailDialog">
+</app-acceptance-report-detail>
+
+<p-toast></p-toast>
 <p-confirmDialog></p-confirmDialog>
 

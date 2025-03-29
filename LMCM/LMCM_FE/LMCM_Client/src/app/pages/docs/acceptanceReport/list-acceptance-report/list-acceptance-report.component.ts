@@ -16,8 +16,9 @@ import { CalendarModule } from 'primeng/calendar';
 import { Subscription } from 'rxjs';
 import { searchService } from '../../../service/search/search-service.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { ContractApiService } from '../../../../apis/contractAPIs/contract-api.service';
 import { AcceptanceRecordApiService } from '../../../../apis/acceptanceRecordAPIs/acceptance-api.service';
+import { AcceptanceReportDetailComponent } from '../acceptance-report-detail/acceptance-report-detail.component';
+import { AcceptanceReportCreateEditComponent } from '../acceptance-report-create-edit/acceptance-report-create-edit.component';
 
 interface PagingRequest {
   searchKey?: string;
@@ -43,7 +44,8 @@ interface PagingRequest {
     TagModule,
     TextareaModule,
     CalendarModule,
-
+    AcceptanceReportDetailComponent,
+    AcceptanceReportCreateEditComponent
   ],
   templateUrl: './list-acceptance-report.component.html',
   styleUrls: ['./list-acceptance-report.component.scss'],
@@ -61,7 +63,7 @@ export class ListAcceptanceReportComponent implements OnInit {
 
   isDetail: boolean = true;
 
-  selectedContractId: string | null = null;
+  selectedId: string | null = null;
 
   private searchSubscription!: Subscription;
 
@@ -75,7 +77,7 @@ export class ListAcceptanceReportComponent implements OnInit {
   displayDetailDialog = false;
 
   detailContract: any;
-  contractId: string | null = null;
+  acceptanceId: string | null = null;
 
   ngOnInit() {
     this.searchSubscription = this.searchService.searchQuery$.subscribe(
@@ -119,7 +121,7 @@ export class ListAcceptanceReportComponent implements OnInit {
   }
 
   openDetailDialog(id: string) {
-    this.contractId = id;
+    this.acceptanceId = id;
     this.displayDetailDialog = true;
     console.log(id);
   }
@@ -129,17 +131,17 @@ export class ListAcceptanceReportComponent implements OnInit {
       this.displayDetailDialog = false;
     } else {
       this.displayAddDialog = false;
-      this.selectedContractId = null;
+      this.selectedId = null;
     }
     this.loadContract();
   }
 
   openAddDialog(id?: string) {
     if (id) {
-      this.selectedContractId = id;
+      this.selectedId = id;
     }
     else {
-      this.selectedContractId = null;
+      this.selectedId = null;
     }
     this.displayAddDialog = true;
   }

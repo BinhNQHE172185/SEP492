@@ -46,7 +46,7 @@ interface PagingRequest {
     TextareaModule,
     CalendarModule,
     TemplateCreateEditComponent,
-    // TemplateDetailComponent
+    TemplateDetailComponent
   ],
   templateUrl: './list-template.component.html',
   styleUrls: ['./list-template.component.scss'],

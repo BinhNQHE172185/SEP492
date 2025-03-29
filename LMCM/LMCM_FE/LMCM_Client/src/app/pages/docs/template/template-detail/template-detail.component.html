@@ -1,1 +1,59 @@
-<p>template-detail works!</p>
+<p-dialog header="Chi tiết tài liệu" [(visible)]="displayDetailDialog" [modal]="true" [style]="{ width: '1000px', minHeight: '55vh' }" [draggable]="false" [resizable]="false" class="custom-dialog" (onHide)="closeDialog()">
+    <ng-template pTemplate="content">
+        
+        <section class="p-8 w-full bg-white rounded-xl" *ngIf="template">
+            <div class="flex flex-wrap gap-4">
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Tên tài liệu</label>
+                    <input pInputText [ngModel]="template.templateName" readonly class="w-full p-2 border border-gray-300 rounded" />
+                </div>
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Loại tài liệu</label>
+                    <input pInputText [ngModel]="template.templateType" readonly class="w-full p-2 border border-gray-300 rounded" />
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 mt-4">
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Trạng thái</label>
+                    <input pInputText [ngModel]="template.status" readonly class="w-full p-2 border border-gray-300 rounded" />
+                </div>
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Người tạo</label>
+                    <input pInputText [ngModel]="template.author.name" readonly class="w-full p-2 border border-gray-300 rounded" />
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 mt-4">
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Ngày tạo</label>
+                    <input pInputText [ngModel]="template.createdAt | date:'dd/MM/yyyy'" readonly class="w-full p-2 border border-gray-300 rounded" />
+                    
+                    
+                </div>
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Chỉnh sửa lần cuối</label>
+                    <input pInputText [ngModel]="template.updatedAt | date:'dd/MM/yyyy'" readonly class="w-full p-2 border border-gray-300 rounded" />
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-2 mt-4">
+                <label class="block font-semibold text-orange-500">File đính kèm</label>
+                <div *ngIf="template.url; else noFile" class="flex items-center gap-2">
+                    <p-button (click)="downloadFile(template.url)" outlined>
+                        <i class="pi pi-download"></i> Tải file đính kèm
+                    </p-button>
+                </div>
+                <ng-template #noFile>
+                    <p class="text-gray-500 italic">Không có file đính kèm</p>
+                </ng-template>
+            </div>
+        </section>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <div class="flex justify-end gap-4 p-2">
+            <p-button label="Đóng" class="p-button-text" (click)="closeDialog()"></p-button>
+        </div>
+    </ng-template>
+</p-dialog>

@@ -38,7 +38,7 @@
                     </td>
                     
                     <td>
-                        <p-button label="Chi tiết" class="p-button-sm" outlined (click)="openDetailDialog(template)"></p-button>
+                        <p-button label="Chi tiết" class="p-button-sm" outlined (click)="openDetailDialog(template.templateId)"></p-button>
                         <p-button label="Sửa" class="p-button-sm mr-2" outlined (click)="openAddDialog(template.templateId)"></p-button>
                         <p-button label="Xóa" class="p-button-sm" outlined (click)="deleteContract(template.templateId)"></p-button>
                     </td>
@@ -119,9 +119,9 @@
   (closeDialogEvent)="handleCloseDialog(!isDetail)">
 </app-template-create-edit>
 
-<!-- <app-template-detail [templateId]="templateId!" [displayDetailDialog]="displayDetailDialog"
+<app-template-detail [templateId]="templateId!" [displayDetailDialog]="displayDetailDialog"
   (closeDialogEvent)="handleCloseDialog(isDetail)" [hidden]="!displayDetailDialog">
-</app-template-detail> -->
+</app-template-detail>
 
 <p-toast></p-toast>
 <p-confirmDialog></p-confirmDialog>

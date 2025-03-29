@@ -10,7 +10,8 @@ namespace LMCM_BE.AutoMapper.ContractorProfile
         {
             CreateMap<Contractor, ContractorListDto>();
             CreateMap<ContractorCreateDto, Contractor>();
-            CreateMap<ContractorUpdateDto, Contractor>();
+            CreateMap<ContractorUpdateDto, Contractor>()
+                .ForMember(dest => dest.Status, opt => opt.Ignore());
             CreateMap<ContractorDetailDto, Contractor>();
             CreateMap<Contractor, ContractorDetailDto>();
         }

@@ -45,7 +45,7 @@ interface PagingRequest {
     TagModule,
     TextareaModule,
     CalendarModule,
-    // TemplateCreateEditComponent,
+    TemplateCreateEditComponent,
     // TemplateDetailComponent
   ],
   templateUrl: './list-template.component.html',
@@ -64,7 +64,7 @@ export class ListTemplateComponent implements OnInit {
 
   isDetail: boolean = true;
 
-  seletecId: string | null = null;
+  selectedId: string | null = null;
 
   private searchSubscription!: Subscription;
 
@@ -132,17 +132,17 @@ export class ListTemplateComponent implements OnInit {
       this.displayDetailDialog = false;
     } else {
       this.displayAddDialog = false;
-      this.seletecId = null;
+      this.selectedId = null;
     }
     this.loadTemplate();
   }
 
   openAddDialog(id?: string) {
     if (id) {
-      this.seletecId = id;
+      this.selectedId = id;
     }
     else {
-      this.seletecId = null;
+      this.selectedId = null;
     }
     this.displayAddDialog = true;
   }

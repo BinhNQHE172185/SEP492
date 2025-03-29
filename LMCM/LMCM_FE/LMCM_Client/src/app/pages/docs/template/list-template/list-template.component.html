@@ -26,21 +26,21 @@
                 </tr>
             </ng-template>
   
-            <ng-template pTemplate="body" let-document let-rowIndex="rowIndex">
+            <ng-template pTemplate="body" let-template let-rowIndex="rowIndex">
                 <tr>
-                    <td>{{ document.name }}</td>
-                    <td>{{ document.type }}</td>
+                    <td>{{ template.templateName }}</td>
+                    <td>{{ template.templateType }}</td>
                     <td>
                         <p-tag 
-                            [value]="document.status" 
-                            [severity]="document.status === 'Đang sử dụng' ? 'success' : 'warn'">
+                            [value]="template.status" 
+                            [severity]="template.status === 'Đang sử dụng' ? 'success' : 'warn'">
                         </p-tag>
                     </td>
                     
                     <td>
-                        <p-button label="Chi tiết" class="p-button-sm" outlined (click)="openDetailDialog(document)"></p-button>
-                        <p-button label="Sửa" class="p-button-sm mr-2" outlined (click)="openAddDialog(document)"></p-button>
-                        <p-button label="Xóa" class="p-button-sm" outlined (click)="deleteContract(document)"></p-button>
+                        <p-button label="Chi tiết" class="p-button-sm" outlined (click)="openDetailDialog(template)"></p-button>
+                        <p-button label="Sửa" class="p-button-sm mr-2" outlined (click)="openAddDialog(template.templateId)"></p-button>
+                        <p-button label="Xóa" class="p-button-sm" outlined (click)="deleteContract(template.templateId)"></p-button>
                     </td>
                 </tr>
             </ng-template>
@@ -115,5 +115,13 @@
         </div>
     </ng-template>
 </p-dialog> -->
+<app-template-create-edit [displayAddDialog]="displayAddDialog" [selectedId]="selectedId!"
+  (closeDialogEvent)="handleCloseDialog(!isDetail)">
+</app-template-create-edit>
 
+<!-- <app-template-detail [templateId]="templateId!" [displayDetailDialog]="displayDetailDialog"
+  (closeDialogEvent)="handleCloseDialog(isDetail)" [hidden]="!displayDetailDialog">
+</app-template-detail> -->
+
+<p-toast></p-toast>
 <p-confirmDialog></p-confirmDialog>

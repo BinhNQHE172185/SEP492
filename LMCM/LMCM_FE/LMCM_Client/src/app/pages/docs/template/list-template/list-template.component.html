@@ -1,0 +1,127 @@
+<p-card>
+   
+    <div class="flex justify-between items-center mb-3">
+        <h2 class="text-xl font-bold text-orange-500">Danh sách tài liệu</h2>
+        <p-button label="Thêm mới" class="p-button-warning" (click)="openAddDialog()"></p-button>
+    </div>
+  
+    <div class="mt-3">
+        <p-inputGroup class="w-full">
+            <p-button label="Tìm kiếm"></p-button>
+            <input [(ngModel)]="searchKey" (ngModelChange)="onSearchChange($event)" pInputText placeholder="Tìm kiếm tài liệu..." />
+        </p-inputGroup>
+    </div>
+  
+    <div class="mt-4">
+        <p-table [value]="templates" [paginator]="true" [rows]="10" class="w-full"
+            currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} bản ghi"
+            [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 20, 50]">
+            
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Tên tài liệu</th>
+                    <th>Loại tài liệu</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+            </ng-template>
+  
+            <ng-template pTemplate="body" let-template let-rowIndex="rowIndex">
+                <tr>
+                    <td>{{ template.templateName }}</td>
+                    <td>{{ template.templateType }}</td>
+                    <td>
+                        <p-tag 
+                            [value]="template.status" 
+                            [severity]="template.status === 'Đang sử dụng' ? 'success' : 'warn'">
+                        </p-tag>
+                    </td>
+                    
+                    <td>
+                        <p-button label="Chi tiết" class="p-button-sm" outlined (click)="openDetailDialog(template.templateId)"></p-button>
+                        <p-button label="Sửa" class="p-button-sm mr-2" outlined (click)="openAddDialog(template.templateId)"></p-button>
+                        <p-button label="Xóa" class="p-button-sm" outlined (click)="deleteContract(template.templateId)"></p-button>
+                    </td>
+                </tr>
+            </ng-template>
+  
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="4" class="text-center">Không có dữ liệu</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+  </p-card>
+
+ 
+
+<!-- <p-dialog 
+    header="Thêm tài liệu" 
+    [(visible)]="displayAddDialog" 
+    [modal]="true"
+    [style]="{ width: '1000px', minHeight: '55vh' }" 
+    [draggable]="false" 
+    [resizable]="false" 
+    class="custom-dialog">
+
+    <ng-template pTemplate="content">
+        <section class="p-8 w-full bg-white rounded-xl">
+            <div style="width: 50%;" class="flex flex-wrap gap-4">
+                <div class="flex-1 min-w-[250px] w-1/2">
+                    <label class="block mb-2">Tên tài liệu</label>
+                    <input type="text" class="w-full p-2 border rounded" [(ngModel)]="newDocument.name" />
+                </div>
+            </div>
+
+            <div style="width: 50%;" class="flex flex-wrap gap-4 mt-4">
+                <div class="flex-1 min-w-[250px] w-1/2">
+                    <label class="block mb-2">Loại tài liệu</label>
+                    <p-dropdown 
+                        [options]="documentTypes" 
+                        [(ngModel)]="newDocument.type" 
+                        placeholder="Chọn loại tài liệu"
+                        class="w-full">
+                    </p-dropdown>
+                </div>
+            </div>
+
+            <div style="width: 50%;" class="flex flex-wrap gap-4 mt-4">
+                <div class="flex-1 min-w-[250px] w-1/2">
+                    <label class="block mb-2">Trạng thái</label>
+                    <p-dropdown 
+                        [options]="documentStatuses" 
+                        [(ngModel)]="newDocument.status" 
+                        placeholder="Chọn trạng thái"
+                        class="w-full">
+                    </p-dropdown>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <div style="margin-top: 10px; display: flex; align-items: center; gap: 5px; background-color: white; border: 1px solid #ff9249; color: #eb6e1b; padding: 8px 12px; border-radius: 6px; font-weight: 500; cursor: pointer; max-width: fit-content;">
+                    <i class="pi pi-plus" style="font-size: 14px;"></i> 
+                    <span>Thêm file PDF</span>
+                </div>
+                <p style="font-size: 12px; color: gray; margin-top: 5px;">Chỉ chấp nhận file PDF, dung lượng tối đa 5MB</p>
+            </div>
+        </section>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <div class="flex justify-end gap-4 p-2">
+            <p-button label="Hủy" class="p-button-text" (click)="closeDialog('add')"></p-button>
+            <p-button label="Lưu" class="p-button-warning" (click)="saveNewDocument()"></p-button>
+        </div>
+    </ng-template>
+</p-dialog> -->
+<app-template-create-edit [displayAddDialog]="displayAddDialog" [selectedId]="selectedId!"
+  (closeDialogEvent)="handleCloseDialog(!isDetail)">
+</app-template-create-edit>
+
+<app-template-detail [templateId]="templateId!" [displayDetailDialog]="displayDetailDialog"
+  (closeDialogEvent)="handleCloseDialog(isDetail)" [hidden]="!displayDetailDialog">
+</app-template-detail>
+
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>

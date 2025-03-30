@@ -159,21 +159,21 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             {
                 material.MaterialId = Guid.NewGuid();
                 material.IsMainMaterial = false;
-                material.IsImportedMaterial=true;
+                material.IsImportedMaterial = true;
                 material.Status = "Active";
                 material.CreatedAt = DateTime.UtcNow;
                 material.UpdatedAt = DateTime.UtcNow;
-                if (oldSyllabusId != null && material.MaterialType=="Imported Material" && material.MaterialDetailId==null)
+                if (oldSyllabusId != null && material.MaterialType == "Imported Material" && material.MaterialDetailId == null)
                 {
                     var oldMaterial = await _dbContext.LearningMaterials
                         .Where(s => s.SyllabusId == oldSyllabusId && s.Url == material.Url)
                         .Include(s => s.MaterialDetail)
                         .FirstOrDefaultAsync();
-                    if(oldMaterial != null) material.MaterialDetailId = oldMaterial.MaterialDetailId;
+                    if (oldMaterial != null) material.MaterialDetailId = oldMaterial.MaterialDetailId;
                 }
             }
 
-            if (oldSyllabusId!=null)
+            if (oldSyllabusId != null)
             {
                 var existingMaterials = await _dbContext.LearningMaterials
                     .Where(s => s.SyllabusId == oldSyllabusId && s.Status == "Inactive" && s.IsImportedMaterial == false)
@@ -222,7 +222,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             return newMaterial.MaterialId;
         }
 
-        public async Task<Guid?> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial, bool createChangeHistory)
+        public async Task<Guid?> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial)
         {
             if (materialId == null)
                 throw new ArgumentNullException(nameof(materialId), "material id cannot be null.");
@@ -237,32 +237,22 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             if (learningMaterial == null)
                 throw new ArgumentNullException(nameof(learningMaterial), "material data not found.");
 
-            if (!createChangeHistory)
-            {
-                // Use AutoMapper to update existing entity
-                _mapper.Map(newMaterial, learningMaterial);
-                learningMaterial.UpdatedAt = DateTime.UtcNow;
+            // Use AutoMapper to update existing entity
+            _mapper.Map(newMaterial, learningMaterial);
+            learningMaterial.UpdatedAt = DateTime.UtcNow;
 
-                if (learningMaterial.MaterialDetail != null)
-                {
-                    learningMaterial.MaterialDetail.UpdatedAt = DateTime.UtcNow;
-                }
-                try
-                {
-                    await _dbContext.SaveChangesAsync();
-                    return learningMaterial.MaterialId;
-                }
-                catch (Exception ex)
-                {
-                    return null;
-                }
-            }
-            else
+            if (learningMaterial.MaterialDetail != null)
             {
-                LearningMaterialInsertDto learningMaterialInsertDto = _mapper.Map<LearningMaterialInsertDto>(newMaterial);
-                learningMaterialInsertDto.SyllabusId = learningMaterial.SyllabusId;
-                Guid? newMaterialId = await InsertLearningMaterialAsync(learningMaterialInsertDto);
-                return newMaterialId;
+                learningMaterial.MaterialDetail.UpdatedAt = DateTime.UtcNow;
+            }
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+                return learningMaterial.MaterialId;
+            }
+            catch (Exception ex)
+            {
+                return null;
             }
         }
     }

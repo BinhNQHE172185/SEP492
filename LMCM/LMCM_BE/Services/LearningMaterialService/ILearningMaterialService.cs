@@ -12,7 +12,7 @@ namespace LMCM_BE.Services.LearningMaterialService
         Task<bool> DeleteLearningMaterialsBySyllabusAsync(Guid syllabusId);
         Task<Guid?> InsertLearningMaterialAsync(LearningMaterialInsertDto material);
         Task<LearningMaterialViewDto> GetLearningMaterialByIdAsync(Guid materialId);
-        Task<Guid?> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial, bool createChangeHistory);
+        Task<Guid?> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial);
         Task<bool> DeleteLearningMaterialByIdAsync(Guid materialId);
     }
 }

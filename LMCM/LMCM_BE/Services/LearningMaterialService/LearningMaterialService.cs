@@ -48,9 +48,9 @@ namespace LMCM_BE.Services.LearningMaterialService
             return await _materialRepository.InsertLearningMaterialAsync(material); 
         }
 
-        public async Task<Guid?> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial,bool createChangeHistory)
+        public async Task<Guid?> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial)
         {
-            return await _materialRepository.UpdateLearningMaterialAsync(materialId, newMaterial,createChangeHistory);
+            return await _materialRepository.UpdateLearningMaterialAsync(materialId, newMaterial);
         }
     }
 }

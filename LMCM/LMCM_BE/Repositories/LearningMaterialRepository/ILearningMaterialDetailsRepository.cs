@@ -8,6 +8,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
     {
         Task<LearningMaterialDetail> InsertMaterialDetailsAsync(LearningMaterialDetailsInsertDto detail);
         Task<LearningMaterialDetail> GetMaterialDetailByIdAsync(Guid materialDetailId);
+        Task<List<string>> GetPublishersAsync();
         Task<bool> UpdateMaterialDetailAsync(Guid materialDetailId, LearningMaterialDetailsInsertDto newDetail);
         Task<bool> DeleteMaterialDetailByIdAsync(Guid materialDetailId);
         Task<PagedResult<LearningMaterialDetailDto>> GetMaterialDetailsListAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);

@@ -4,6 +4,7 @@ using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Printing;
 
 namespace LMCM_BE.Repositories.LearningMaterialRepository
 {
@@ -91,6 +92,16 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             };
         }
 
+        public async Task<List<string>> GetPublishersAsync()
+        {
+            var publishers = await _dbContext.LearningMaterialDetails
+                .Where(lm => !string.IsNullOrEmpty(lm.Publisher))
+                .Select(lm => lm.Publisher)
+                .Distinct()
+                .ToListAsync();
+
+            return publishers;
+        }
 
         public async Task<LearningMaterialDetail> InsertMaterialDetailsAsync(LearningMaterialDetailsInsertDto detail)
         {

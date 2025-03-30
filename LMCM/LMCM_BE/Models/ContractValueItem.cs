@@ -9,6 +9,5 @@
         public string? QualityRequirements { get; set; } 
         public decimal ValueRatioForUpdate { get; set; } = 0.5m; 
         public decimal ContractValue { get; set; }
-        public DateTime? UpdatedAt { get; set; }
     }
 }

@@ -22,11 +22,11 @@
                             class="text-red-500">*</span></label>
                     <p-dropdown [options]="contract" [(ngModel)]="report.contractId" optionLabel="title"
                         placeholder="Chọn hợp đồng" [filter]="true" class="w-full border border-gray-300 rounded"
-                        optionValue="contractId">
+                        optionValue="contractId" appendTo="body">
                         <ng-template let-contract pTemplate="item">
                             {{ contract.title.length > 30 ? (contract.title | slice:0:30) + '...'
                             :
-                            contract.contractorName }}
+                            contract.title }}
                         </ng-template>
                         <ng-template let-selectedContract pTemplate="selectedItem">
                             {{ selectedContract?.title.length > 30 ? (selectedContract.title |

@@ -69,7 +69,6 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
   ngOnChanges() {
     this.loadData();
     if (this.selectedId) {
-      console.log("Selected ID:", this.selectedId);
       this.acceptanceService.getAcceptanceRecordDetail(this.selectedId).subscribe(
         (response) => {
           if (response) {
@@ -142,6 +141,7 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
   resetForm() {
     this.report = {
       title: '',
+      contract: '',
       finalPrice: '',
       acceptanceDate: new Date(),
     };

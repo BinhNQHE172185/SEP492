@@ -1,0 +1,59 @@
+<p-dialog header="Sửa/Thêm mới biên bản nghiệm thu" [(visible)]="displayAddDialog" [modal]="true" [style]="{ width: '360px', minHeight: '55vh' }" [draggable]="false" [resizable]="false" class="custom-dialog" (onHide)="closeDialog()">
+    <ng-template pTemplate="content">
+        <section class="p-8 w-full bg-white rounded-xl">
+            <div class="flex flex-wrap gap-4">
+                
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Tên biên bản<span class="text-orange-500">*</span></label>
+                    <input pInputText [(ngModel)]="report.title" class="w-full" />
+                </div>
+
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Giá cả quyết toán<span mode="currency" class="text-orange-500">*</span></label>
+                    <input pInputText [(ngModel)]="report.finalPrice" class="w-full" />
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 mt-4">
+                
+                <div class="flex-1 min-w-[250px]">
+                    <label class="block mb-2">Ngày nghiệm thu<span class="text-orange-500">*</span></label>
+                    <p-datepicker [(ngModel)]="report.acceptanceDate" 
+                    dateFormat="dd/mm/yy" 
+                    [showIcon]="true" class="w-full" appendTo="body">
+                </p-datepicker>
+                
+
+                </div>
+            </div>
+            <!-- File đính kèm -->
+            <div class="flex flex-col gap-2 mt-4">
+                <label class="block font-semibold text-orange-500">File đính kèm</label>
+                <!-- Upload File -->
+                <p-fileupload (onSelect)="onFileSelect($event)" [showUploadButton]="false" [multiple]="false" accept=".pdf" maxFileSize="5000000" mode="advanced">
+                    <ng-template #empty>
+                        <div>Kéo thả file để đăng tải.</div>
+                    </ng-template>
+                    <ng-template #content>
+                        <ul *ngIf="uploadedFiles.length">
+                            <li *ngFor="let file of uploadedFiles">{{ file.name }} - {{ file.size }} bytes</li>
+                        </ul>
+                    </ng-template>
+                </p-fileupload>
+
+                <!-- Nút tải file đính kèm -->
+                <div *ngIf="file && selectedId" class="flex items-center gap-4">
+                    <p-button (click)="downloadFile(file)" outlined> <i class="pi pi-download"></i> Tải file đính kèm </p-button>
+                    <span class="text-gray-500 text-sm">(Chọn file mới nếu muốn thay đổi)</span>
+                </div>
+            </div>
+        </section>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <div class="flex justify-end gap-4 p-2">
+            <p-button label="Hủy" class="p-button-text" (click)="closeDialog()"></p-button>
+            <p-button label="Lưu" (click)="save()"></p-button>
+        </div>
+    </ng-template>
+</p-dialog>

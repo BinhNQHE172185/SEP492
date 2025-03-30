@@ -123,7 +123,6 @@ export class ListAcceptanceReportComponent implements OnInit {
   openDetailDialog(id: string) {
     this.acceptanceId = id;
     this.displayDetailDialog = true;
-    console.log(id);
   }
 
   handleCloseDialog(isDetail: boolean) {

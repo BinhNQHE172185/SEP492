@@ -285,10 +285,6 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.QualityRequirements)
                 .HasColumnType("nvarchar(max)")
                 .HasColumnName("Quality_Requirements");
-
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("NULL")
-                .HasColumnName("Updated_At");
         });
 
         modelBuilder.Entity<Curriculum>(entity =>

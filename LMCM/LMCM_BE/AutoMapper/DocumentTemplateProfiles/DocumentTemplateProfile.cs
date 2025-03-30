@@ -11,7 +11,6 @@ namespace LMCM_BE.AutoMapper.TemplateProfiles
             CreateMap<DocumentTemplateInsertDto, DocumentTemplate>()
                 .ForMember(dest => dest.TemplateId, opt => opt.Ignore())
                 .ForMember(dest => dest.Url, opt => opt.Ignore())
-                .ForMember(dest => dest.Status, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
             CreateMap<DocumentTemplate, DocumentTemplateListDto>()
@@ -22,7 +21,6 @@ namespace LMCM_BE.AutoMapper.TemplateProfiles
                 .ForMember(dest => dest.TemplateId, opt => opt.Ignore())
                 .ForMember(dest => dest.AuthorId, opt => opt.Ignore())
                 .ForMember(dest => dest.Url, opt => opt.Ignore())
-                .ForMember(dest => dest.Status, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
         }

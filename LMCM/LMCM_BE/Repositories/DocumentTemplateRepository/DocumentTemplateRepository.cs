@@ -72,7 +72,6 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
             newTemplate.TemplateId = Guid.NewGuid();
             newTemplate.Url = fileUrl;
             newTemplate.AuthorId = user.Id;
-            newTemplate.Status = "Active";
             newTemplate.CreatedAt = DateTime.UtcNow;
             newTemplate.UpdatedAt = DateTime.UtcNow;
 
@@ -100,8 +99,8 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
             UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
-            if (user.Id != template.AuthorId && user.Roles.Contains("Staff"))
-                throw new UnauthorizedAccessException("User is not authorized to view this template.");
+            //if (user.Id != template.AuthorId && user.Roles.Contains("Staff"))
+            //    throw new UnauthorizedAccessException("User is not authorized to view this template.");
 
             var templateDto = _mapper.Map<DocumentTemplateDetailDto>(template);
             templateDto.DownloadUrl = await _googleDriveService.GetDownloadUrl(template.Url);
@@ -116,9 +115,9 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
             UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
-            if (user.Roles.Contains("Staff")) query = query.Where(s => s.AuthorId == user.Id);
+            //if (user.Roles.Contains("Staff")) query = query.Where(s => s.AuthorId == user.Id);
 
-            query = query.Where(s => s.Status != "Inactive");
+            query = query.Where(s => s.Status != "Deleted");
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
@@ -152,7 +151,7 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
         public async Task<bool> SoftDeleteTemplateAsync(Guid templateId)
         {
             var template = await _dbContext.DocumentTemplates
-               .FirstOrDefaultAsync(ar => ar.TemplateId == templateId && ar.Status == "Active");
+               .FirstOrDefaultAsync(ar => ar.TemplateId == templateId);
 
             if (template == null)
                 throw new KeyNotFoundException("Data not found.");
@@ -166,7 +165,7 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
             try
             {
-                template.Status = "Inactive";
+                template.Status = "Deleted";
                 template.UpdatedAt = DateTime.UtcNow;
                 _dbContext.DocumentTemplates.Update(template);
 

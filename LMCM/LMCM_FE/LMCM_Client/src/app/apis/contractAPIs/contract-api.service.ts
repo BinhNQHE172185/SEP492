@@ -33,6 +33,13 @@ export class ContractApiService {
         );
     }
 
+    getContractList(): Observable<any> {
+        return this.http.post<any>(
+            `${this.apiUrl}/contracts/getContractListNoPaging`,
+            { withCredentials: true }
+        );
+    }
+
     createContract(request: any): Observable<any> {
         return this.http.post<any>(
             `${this.apiUrl}/contracts/createContract`,

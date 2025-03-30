@@ -77,6 +77,12 @@ export class SyllabusDetailComponent implements OnInit {
   syllabusDetail!: any;
   materials!: any;
   materialsDetail!: any;
+  SelectedId: string | null = null;
+
+  displayDetailDialog: boolean = false;
+  displayAddDialog: boolean = false;
+
+  isDetail: boolean = true;
 
   constructor(
     private syllabusService: SyllabusApiService,
@@ -146,14 +152,29 @@ export class SyllabusDetailComponent implements OnInit {
   currentMaterialId: number | null = null;
   authors: string[] = [];
 
-  openMaterialDialog(material?: any) {
-    this.isEdit = !!material;  // Nếu có dữ liệu, chuyển sang edit mode
-    this.selectedMaterial = material || {}; // Nếu không có, tạo mới
-    this.materialDialog = true; // Hiển thị dialog
+  openDetailDialog(id: string) {
+    this.SelectedId = id;
+    this.displayDetailDialog = true;
   }
 
-  closeMaterialDialog() {
-    this.materialDialog = false; // Đóng dialog
+  handleCloseDialog(isDetail: boolean) {
+    if (isDetail) {
+      this.displayDetailDialog = false;
+    } else {
+      this.displayAddDialog = false;
+      this.SelectedId = null;
+      this.getLearningMaterial();
+    }
+  }
+
+  openAddDialog(id?: string) {
+    if (id) {
+      this.SelectedId = id;
+    }
+    else {
+      this.SelectedId = null;
+    }
+    this.displayAddDialog = true;
   }
 
   confirmDeleteMaterial(material: Material): void {

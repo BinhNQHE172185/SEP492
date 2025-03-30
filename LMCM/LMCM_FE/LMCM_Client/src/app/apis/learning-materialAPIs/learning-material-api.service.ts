@@ -37,4 +37,13 @@ export class LearningMaterialApiService {
   getLearningMaterialById(id: any): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/LearningMaterial/${id}`);
   }
+  createLearningMaterial(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/LearningMaterial/create`, data);
+  }
+  createLearningMaterialDetail(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/LearningMaterial/detail/create`, data);
+  }
+  getLearningMaterialDetail(id: any): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/LearningMaterial/${id}`);
+  }
 }

@@ -1,14 +1,18 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DropdownModule } from 'primeng/dropdown';
-import { Calendar, CalendarModule } from 'primeng/calendar';
 import { InputTextModule } from 'primeng/inputtext';
 import { TabsModule } from 'primeng/tabs';
 import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
-import { MaterialTypeConstant } from '../../../../../../shared/Constants/TypeConstants';
+import { MaterialCategory, MaterialTypeConstant, Publisher } from '../../../../../../shared/Constants/TypeConstants';
 import { DatePickerModule } from 'primeng/datepicker';
+import { DialogModule } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button';
+import { LearningMaterialApiService } from '../../../../../apis/learning-materialAPIs/learning-material-api.service';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-learning-material',
@@ -16,22 +20,24 @@ import { DatePickerModule } from 'primeng/datepicker';
   imports: [CommonModule,
     ReactiveFormsModule,
     DropdownModule,
-    Calendar,
     InputTextModule,
     TabsModule,
     TextareaModule,
     SelectModule,
     FormsModule,
     DatePickerModule,
-    CalendarModule
+    DialogModule,
+    ButtonModule
   ],
 
   templateUrl: './learning-material.component.html',
   styleUrls: ['./learning-material.component.scss'],
+  providers: [ConfirmationService, MessageService]
 })
-export class LearningMaterialComponent {
-  @Input() selectedMaterial: any;
-  @Output() closeDialog = new EventEmitter<void>();
+export class LearningMaterialComponent implements OnChanges {
+  @Input() SelectedId: any;
+  @Input() displayAddDialog: boolean = false;
+  @Output() closeDialogEvent = new EventEmitter<void>();
 
   materialForm!: FormGroup;
   materialDetailForm!: FormGroup;
@@ -41,60 +47,107 @@ export class LearningMaterialComponent {
     { name: 'Offline', value: MaterialTypeConstant.Offline }
   ];
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder,
+    private learningMaterialApiService: LearningMaterialApiService,
+    private messageService: MessageService,
+    private route: ActivatedRoute,
+  ) { }
 
-  // Material type options
   materialTypes = [
-    { label: 'Sách', value: 'Book' },
-    { label: 'Bài báo', value: 'Article' },
-    { label: 'Website', value: 'Website' },
-    { label: 'Video', value: 'Video' },
-    { label: 'Phần mềm', value: 'Software' },
-    { label: 'Khác', value: 'Other' }
+    { name: 'Sách xuất bản chính thức', value: MaterialCategory.PublishedBook },
+    { name: 'Sách xuất bản nội bộ', value: MaterialCategory.InternalBook },
+    { name: 'e-book có bản quyền', value: MaterialCategory.LicensedEbook },
+    { name: 'Sách nguồn mở', value: MaterialCategory.OpenSourceBook },
+    { name: 'Tài nguyên trên mạng (website, youtube, ...)', value: MaterialCategory.OnlineResource },
+    { name: 'Khóa học Udemy', value: MaterialCategory.UdemyCourse }
   ];
 
-  // Publisher options (for dropdown)
-  publishers = [
-    { label: 'NXB Giáo dục', value: 'NXB Giáo dục' },
-    { label: 'NXB Đại học Quốc gia', value: 'NXB Đại học Quốc gia' },
-    { label: 'NXB Khoa học Kỹ thuật', value: 'NXB Khoa học Kỹ thuật' },
-    { label: 'NXB Thông tin và Truyền thông', value: 'NXB Thông tin và Truyền thông' }
-  ];
+  publishers = Object.values(Publisher).map(name => ({ name, value: name }));
 
-  ngOnInit() {
+  ngOnChanges() {
+    this.resetForm();
+    if (this.SelectedId) {
+      this.learningMaterialApiService.getLearningMaterialDetail(this.SelectedId).subscribe(
+        (response) => {
+          if (response) {
+            this.materialForm.patchValue(response);
+          }
+        },
+        (error) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Thất bại',
+            detail: error?.error?.message || 'Đã xảy ra lỗi khi tải dữ liệu.'
+          });
+        }
+      );
+    } else {
+    }
+  }
+
+  save() {
+    if (this.SelectedId) {
+      // this.learningMaterialApiService.updateLearningMaterial(this.SelectedId, this.materialForm.value).subscribe(
+      //   (response) => {
+      //     this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
+      //     this.closeDialog();
+      //   },
+      //   (error) => {
+      //     this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+      //   }
+      // );
+    } else {
+      this.materialForm.patchValue({ syllabusId: this.route.snapshot.paramMap.get('id') || '' });
+      if(!this.materialForm.get('materialDetail')?.value) {
+        this.learningMaterialApiService.createLearningMaterial(this.materialForm.value).subscribe(
+          (response) => {
+            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
+            this.closeDialog();
+          },
+          (error) => {
+            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+          }
+        );
+      }else{
+        this.learningMaterialApiService.createLearningMaterial(this.materialDetailForm.value).subscribe(
+          (response) => {
+            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
+            this.closeDialog();
+          },
+          (error) => {
+            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+          }
+        );
+      }
+    }
+  }
+
+  resetForm() {
     this.materialForm = this.fb.group({
-      description: ['', Validators.required],
-      quantity: [''],
-      purpuse: [''],
-      isbn: [''],
-      type: [''],
+      syllabusId: [''],
+      materialType: ['', Validators.required],
+      materialQuantity: [''],
+      purpose: [''],
+      learningType: [''],
       note: [''],
       url: [''],
-      selectedType: [''],
+      materialDetail: null
     });
 
     this.materialDetailForm = this.fb.group({
-      materialName: ['', Validators.required], 
-      type: [null, Validators.required],
+      materialName: ['', Validators.required],
+      materialDescription: [''],
+      type: [null],
       publishedDate: [null],
-      originalBook: [''], 
-      originalPublishedDate: [null], 
       publisher: [null],
-      edition: [''], 
+      edition: [''],
       isbn: ['']
     });
   }
 
-  saveMaterial() {
-    if (this.materialForm.valid) {
-      console.log('Saved:', this.materialForm.value);
-      this.closeDialog.emit();
-    } else {
-      this.materialForm.markAllAsTouched();
-    }
-  }
-
-  closeMaterialDialog() {
-    this.closeDialog.emit();
+  closeDialog() {
+    this.resetForm();
+    this.displayAddDialog = false;
+    this.closeDialogEvent.emit();
   }
 }

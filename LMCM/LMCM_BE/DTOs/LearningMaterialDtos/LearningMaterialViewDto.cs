@@ -10,6 +10,7 @@
         public string? MaterialType { get; set; }
 
         public bool? IsMainMaterial { get; set; }
+        public string? Purpose { get; set; }
 
         public int? MaterialNo { get; set; }
 

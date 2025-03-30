@@ -10,6 +10,7 @@ namespace LMCM_BE.Services.LearningMaterialService
         Task<LearningMaterialDetail> GetMaterialDetailByIdAsync(Guid materialDetailId);
         Task<bool> UpdateMaterialDetailAsync(Guid materialDetailId, LearningMaterialDetailsInsertDto newDetail);
         Task<bool> DeleteMaterialDetailByIdAsync(Guid materialDetailId);
+        Task<List<string>> GetPublishersAsync();
         Task<PagedResult<LearningMaterialDetailDto>> GetMaterialDetailsListAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
     }
 }

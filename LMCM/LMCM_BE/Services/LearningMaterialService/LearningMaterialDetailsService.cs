@@ -36,5 +36,10 @@ namespace LMCM_BE.Services.LearningMaterialService
         {
             return await _materialDetailRepository.GetMaterialDetailsListAsync(searchKey, pageIndex, pageSize);
         }
+
+        public async Task<List<string>> GetPublishersAsync()
+        {
+            return await _materialDetailRepository.GetPublishersAsync();
+        }
     }
 }

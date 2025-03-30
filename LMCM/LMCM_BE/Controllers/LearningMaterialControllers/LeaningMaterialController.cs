@@ -322,5 +322,22 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+        [HttpGet("getPublishersList")]
+        public async Task<IActionResult> GetPublishersAsync()
+        {
+            try
+            {
+                var data = await _materialDetailService.GetPublishersAsync();
+                if (data != null)
+                {
+                    return Ok(data);
+                }
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
     }
 }

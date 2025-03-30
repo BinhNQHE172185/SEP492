@@ -11,10 +11,11 @@ import { ToastModule } from 'primeng/toast';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { AcceptanceRecordApiService } from '../../../../apis/acceptanceRecordAPIs/acceptance-api.service';
+import { ContractApiService } from '../../../../apis/contractAPIs/contract-api.service';
 
 @Component({
   selector: 'app-acceptance-report-create-edit',
-  imports: [  DialogModule,
+  imports: [DialogModule,
     InputTextModule,
     ButtonModule,
     CommonModule,
@@ -23,14 +24,15 @@ import { AcceptanceRecordApiService } from '../../../../apis/acceptanceRecordAPI
     DatePickerModule,
     ToastModule,
     DropdownModule,
-    InputNumberModule],
-    providers: [ConfirmationService, MessageService],
+    InputNumberModule
+  ],
+  providers: [ConfirmationService, MessageService],
   standalone: true,
   templateUrl: './acceptance-report-create-edit.component.html',
   styleUrl: './acceptance-report-create-edit.component.scss'
 })
-export class AcceptanceReportCreateEditComponent implements OnChanges{
- @Input() displayAddDialog: boolean = false;
+export class AcceptanceReportCreateEditComponent implements OnChanges {
+  @Input() displayAddDialog: boolean = false;
   @Input() selectedId: string | null = null;
   @Output() closeDialogEvent = new EventEmitter<void>();
 
@@ -39,29 +41,41 @@ export class AcceptanceReportCreateEditComponent implements OnChanges{
   calendarValue: any = null;
 
   report: any;
-  
+  contract: any;
 
   constructor(
     private messageService: MessageService,
     private acceptanceService: AcceptanceRecordApiService,
-
+    private contractService: ContractApiService,
   ) { }
 
-
+  loadData() {
+    this.contractService.getContractList().subscribe(
+      (response) => {
+        if (response) {
+          this.contract = response;
+        }
+      },
+      (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Thất bại',
+          detail: error?.error?.message || 'Đã xảy ra lỗi khi tải dữ liệu.'
+        });
+      }
+    );
+  }
 
   ngOnChanges() {
-    console.log("Selected ID:", this.selectedId);
-
-  
+    this.loadData();
     if (this.selectedId) {
       console.log("Selected ID:", this.selectedId);
       this.acceptanceService.getAcceptanceRecordDetail(this.selectedId).subscribe(
         (response) => {
           if (response) {
             this.report = response;
-             this.report.acceptanceDate = new Date(this.report.acceptanceDate);
+            this.report.acceptanceDate = new Date(this.report.acceptanceDate);
             this.file = this.report.url;
-             
           }
         },
         (error) => {
@@ -80,6 +94,7 @@ export class AcceptanceReportCreateEditComponent implements OnChanges{
   save() {
     const reportData = new FormData();
     reportData.append("title", this.report.title);
+    reportData.append("contractId", this.report.contractId);
     reportData.append("finalPrice", this.report.finalPrice);
     reportData.append("acceptanceDate", this.report.acceptanceDate.toISOString().split("T")[0]);
     reportData.append("file", this.file);
@@ -130,9 +145,9 @@ export class AcceptanceReportCreateEditComponent implements OnChanges{
       finalPrice: '',
       acceptanceDate: new Date(),
     };
-    this.file = null; 
+    this.file = null;
   }
-  
+
   closeDialog() {
     this.selectedId = '';
     this.displayAddDialog = false;

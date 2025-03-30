@@ -1,50 +1,72 @@
-<p-dialog header="Sửa/Thêm mới biên bản nghiệm thu" [(visible)]="displayAddDialog" [modal]="true" [style]="{ width: '360px', minHeight: '55vh' }" [draggable]="false" [resizable]="false" class="custom-dialog" (onHide)="closeDialog()">
+<p-dialog header="Cập nhật biên bản nghiệm thu" [(visible)]="displayAddDialog" [modal]="true" [draggable]="false"
+    [resizable]="false" class="custom-dialog" (onHide)="closeDialog()">
     <ng-template pTemplate="content">
         <section class="p-8 w-full bg-white rounded-xl">
             <div class="flex flex-wrap gap-4">
-                
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Tên biên bản<span class="text-orange-500">*</span></label>
+                <div class="flex flex-col flex-1 min-w-[250px]">
+                    <label class="block font-semibold text-orange-500">Tên biên bản<span
+                            class="text-orange-500">*</span></label>
                     <input pInputText [(ngModel)]="report.title" class="w-full" />
                 </div>
 
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Giá cả quyết toán<span mode="currency" class="text-orange-500">*</span></label>
+                <div class="flex flex-col flex-1 min-w-[250px]">
+                    <label class="block font-semibold text-orange-500">Giá cả quyết toán<span
+                            class="text-orange-500">*</span></label>
                     <input pInputText [(ngModel)]="report.finalPrice" class="w-full" />
                 </div>
             </div>
 
             <div class="flex flex-wrap gap-4 mt-4">
-                
-                <div class="flex-1 min-w-[250px]">
-                    <label class="block mb-2">Ngày nghiệm thu<span class="text-orange-500">*</span></label>
-                    <p-datepicker [(ngModel)]="report.acceptanceDate" 
-                    dateFormat="dd/mm/yy" 
-                    [showIcon]="true" class="w-full" appendTo="body">
-                </p-datepicker>
-                
+                <div class="flex flex-col flex-1 min-w-[250px]">
+                    <label class="block font-semibold text-orange-500">Chọn hợp đồng<span
+                            class="text-red-500">*</span></label>
+                    <p-dropdown [options]="contract" [(ngModel)]="report.contractId" optionLabel="title"
+                        placeholder="Chọn hợp đồng" [filter]="true" class="w-full border border-gray-300 rounded"
+                        optionValue="contractId">
+                        <ng-template let-contract pTemplate="item">
+                            {{ contract.title.length > 30 ? (contract.title | slice:0:30) + '...'
+                            :
+                            contract.contractorName }}
+                        </ng-template>
+                        <ng-template let-selectedContract pTemplate="selectedItem">
+                            {{ selectedContract?.title.length > 30 ? (selectedContract.title |
+                            slice:0:30) +
+                            '...' :
+                            selectedContract.title }}
+                        </ng-template>
+                    </p-dropdown>
+                </div>
 
+                <div class="flex flex-col flex-1 min-w-[250px]">
+                    <label class="block font-semibold text-orange-500">Ngày nghiệm thu</label>
+                    <p-datepicker [(ngModel)]="report.acceptanceDate" dateFormat="dd/mm/yy" [showIcon]="true"
+                        class="w-full" appendTo="body">
+                    </p-datepicker>
                 </div>
             </div>
-            <!-- File đính kèm -->
-            <div class="flex flex-col gap-2 mt-4">
-                <label class="block font-semibold text-orange-500">File đính kèm</label>
-                <!-- Upload File -->
-                <p-fileupload (onSelect)="onFileSelect($event)" [showUploadButton]="false" [multiple]="false" accept=".pdf" maxFileSize="5000000" mode="advanced">
-                    <ng-template #empty>
-                        <div>Kéo thả file để đăng tải.</div>
-                    </ng-template>
-                    <ng-template #content>
-                        <ul *ngIf="uploadedFiles.length">
-                            <li *ngFor="let file of uploadedFiles">{{ file.name }} - {{ file.size }} bytes</li>
-                        </ul>
-                    </ng-template>
-                </p-fileupload>
 
-                <!-- Nút tải file đính kèm -->
-                <div *ngIf="file && selectedId" class="flex items-center gap-4">
-                    <p-button (click)="downloadFile(file)" outlined> <i class="pi pi-download"></i> Tải file đính kèm </p-button>
-                    <span class="text-gray-500 text-sm">(Chọn file mới nếu muốn thay đổi)</span>
+            <!-- File đính kèm -->
+            <div class="flex flex-wrap gap-4 mt-4">
+                <div class="flex flex-col flex-1 min-w-[250px]">
+                    <label class="block font-semibold text-orange-500">File đính kèm</label>
+                    <p-fileupload (onSelect)="onFileSelect($event)" [showUploadButton]="false" [multiple]="false"
+                        accept=".pdf" maxFileSize="5000000" mode="advanced">
+                        <ng-template #empty>
+                            <div>Kéo thả file để đăng tải.</div>
+                        </ng-template>
+                        <ng-template #content>
+                            <ul *ngIf="uploadedFiles.length">
+                                <li *ngFor="let file of uploadedFiles">{{ file.name }} - {{ file.size }} bytes</li>
+                            </ul>
+                        </ng-template>
+                    </p-fileupload>
+
+                    <div *ngIf="file && selectedId" class="flex items-center gap-4 mt-2">
+                        <p-button (click)="downloadFile(file)" outlined>
+                            <i class="pi pi-download"></i> Tải file đính kèm
+                        </p-button>
+                        <span class="text-gray-500 text-sm">(Chọn file mới nếu muốn thay đổi)</span>
+                    </div>
                 </div>
             </div>
         </section>
@@ -57,3 +79,5 @@
         </div>
     </ng-template>
 </p-dialog>
+
+<p-toast></p-toast>

@@ -116,11 +116,11 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
         }
 
         [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateLearningMaterialAsync(Guid id, [FromBody] LearningMaterialUpdateDto material, bool createChangeHistory)
+        public async Task<IActionResult> UpdateLearningMaterialAsync(Guid id, [FromBody] LearningMaterialUpdateDto material)
         {
             try
             {
-                Guid? materialId = await _learningMaterialService.UpdateLearningMaterialAsync(id, material, createChangeHistory);
+                Guid? materialId = await _learningMaterialService.UpdateLearningMaterialAsync(id, material);
                 if (materialId.HasValue)
                     return Ok(new
                     {

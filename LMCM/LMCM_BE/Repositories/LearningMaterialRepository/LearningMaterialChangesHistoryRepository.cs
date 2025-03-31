@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
@@ -38,8 +38,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 .Take(pageSize)
                 .Include(s => s.User)
                 .Include(s => s.Contract)
-                .Include(s => s.NewMaterial)
-                .Include(s => s.OldMaterial)
+                .Include(s => s.Syllabus)
                 .ToListAsync();
 
             var data = _mapper.Map<List<ChangesHistoryListDto>>(items);
@@ -72,22 +71,26 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 return false;
             }
         }
-        public async Task<PagedResult<ChangesHistoryWithMaterialDto>> GetLearningMaterialChangeHistoriesAsync(
-     Guid? learningMaterialId, string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<PagedResult<ChangesHistoryOfSubjectDto>> GetLearningMaterialChangesHistoriesOfSubjectAsync(
+     Guid? subjectId, string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
-            if (learningMaterialId == null)
-                throw new ArgumentNullException(nameof(learningMaterialId));
+            if (subjectId == Guid.Empty)
+                throw new ArgumentException("ID môn học không được để trống.", nameof(subjectId));
 
-            // Get full history chain using recursive CTE (without manual entity loading)
-            var historyChain = await _dbContext.LearningMaterialChangesHistories
-                .Include(h => h.User)      
-                .Include(h => h.Contract)  
-                .Include(h => h.OldMaterial) 
-                .Where(h => h.NewMaterialId == learningMaterialId ||
-                            _dbContext.LearningMaterialChangesHistories.Any(mh => mh.OldMaterialId == h.NewMaterialId))
+            var siblingSyllabusIds = await _dbContext.Syllabus
+                .Where(s => s.SubjectId == subjectId)
+                .Select(s => s.SyllabusId)
                 .ToListAsync();
 
-            // Apply search filter
+            var historyChain = await _dbContext.LearningMaterialChangesHistories
+                .Include(h => h.User)
+                .Include(h => h.Contract)
+                .Include(h => h.Syllabus)
+                .Where(h => siblingSyllabusIds.Contains(h.SyllabusId))
+                .OrderByDescending(h => h.Syllabus.UpdatedAt ?? h.Syllabus.CreatedAt)  // Newest syllabus first
+                .ThenByDescending(h => h.CompletionDate ?? DateTime.MinValue)  // Then by CompletionDate if not null
+                .ToListAsync();
+
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
                 string search = searchKey.Trim().ToLower();
@@ -99,15 +102,15 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
 
             int totalCount = historyChain.Count;
 
-            // Paginate
+            // Step 5: Paginate results
             var paginatedItems = historyChain
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
 
-            var data = _mapper.Map<List<ChangesHistoryWithMaterialDto>>(paginatedItems);
+            var data = _mapper.Map<List<ChangesHistoryOfSubjectDto>>(paginatedItems);
 
-            return new PagedResult<ChangesHistoryWithMaterialDto>
+            return new PagedResult<ChangesHistoryOfSubjectDto>
             {
                 Items = data,
                 TotalCount = totalCount,
@@ -115,6 +118,5 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 PageSize = pageSize
             };
         }
-
     }
 }

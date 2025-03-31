@@ -112,6 +112,8 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
         {
             var query = _dbContext.DocumentTemplates.AsQueryable();
 
+            query = query.OrderByDescending(s => s.UpdatedAt);
+
             UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
@@ -134,7 +136,6 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .Include(s => s.Author)
-                .OrderByDescending(s => s.UpdatedAt)
                 .ToListAsync();
 
             var data = _mapper.Map<List<DocumentTemplateListDto>>(items);

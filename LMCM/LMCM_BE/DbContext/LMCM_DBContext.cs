@@ -489,25 +489,18 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.LearningMaterialType)
                 .HasMaxLength(255)
                 .HasColumnName("Learning_Material_Type");
-            entity.Property(e => e.NewMaterialId).HasColumnName("New_Material_ID");
-            entity.Property(e => e.OldMaterialId).HasColumnName("Old_Material_ID");
+            entity.Property(e => e.SyllabusId).HasColumnName("Syllabus_ID");
             entity.Property(e => e.StartTerm)
                 .HasMaxLength(255)
                 .HasColumnName("Start_Term");
             entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.UserId).HasColumnName("User_ID");
 
-            entity.HasOne(d => d.NewMaterial)
+            entity.HasOne(d => d.Syllabus)
                 .WithMany()
-                .HasForeignKey(d => d.NewMaterialId)
+                .HasForeignKey(d => d.SyllabusId)
                 .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_LearningMaterialChangesHistory_NewMaterial");
-
-            entity.HasOne(d => d.OldMaterial)
-                .WithMany()
-                .HasForeignKey(d => d.OldMaterialId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_LearningMaterialChangesHistory_OldMaterial");
+                .HasConstraintName("FK_LearningMaterialChangesHistory_Syllabus");
 
             entity.HasOne(d => d.Contract).WithMany(p => p.LearningMaterialChangesHistories)
                 .HasForeignKey(d => d.ContractId)

@@ -85,6 +85,8 @@ namespace LMCM_BE.Repositories.ContractRepository
         {
             var query = _dbContext.Contracts.AsQueryable();
 
+            query = query.OrderByDescending(s => s.UpdatedAt);
+
             UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
             if (user != null && !user.Roles.Contains("Head of Department")) query = query.Where(s => s.AuthorId == user.Id);
 
@@ -102,7 +104,6 @@ namespace LMCM_BE.Repositories.ContractRepository
                 .Include(s => s.Author)
                 .Include(s => s.Proposal)
                 .Include(s => s.Contractor)
-                .OrderByDescending(s => s.UpdatedAt)
                 .ToListAsync();
 
             var data = _mapper.Map<List<ContractListDto>>(items);
@@ -156,6 +157,8 @@ namespace LMCM_BE.Repositories.ContractRepository
         {
             var query = _dbContext.Contracts.AsQueryable();
 
+            query = query.OrderByDescending(s => s.UpdatedAt);
+
             UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
             if (user != null && !user.Roles.Contains("Head of Department")) query = query.Where(s => s.AuthorId == user.Id);
 
@@ -177,7 +180,6 @@ namespace LMCM_BE.Repositories.ContractRepository
                 .Include(s => s.Author)
                 .Include(s => s.Proposal)
                 .Include(s=>s.Contractor)
-                .OrderByDescending(s => s.UpdatedAt)
                 .ToListAsync();
 
             var data = _mapper.Map<List<ContractListDto>>(items);

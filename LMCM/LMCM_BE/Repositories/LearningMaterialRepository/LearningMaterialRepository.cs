@@ -107,6 +107,8 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
         {
             var query = _dbContext.LearningMaterials.AsQueryable();
 
+            query = query.OrderBy(s => s.MaterialNo);
+
             query = query.Where(s => s.SyllabusId == syllabusId && s.Status != "Deleted");
 
             if (!string.IsNullOrWhiteSpace(searchKey))
@@ -121,7 +123,6 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .Include(s => s.MaterialDetail)
-                .OrderBy(s => s.MaterialNo)
                 .ToListAsync();
 
             var data = _mapper.Map<List<LearningMaterialListDto>>(items);
@@ -142,7 +143,9 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             query = query.Where(s => s.SyllabusId == syllabusId && s.Status != "Deleted")
                          .Include(s => s.MaterialDetail);
 
-            var items = await query.ToListAsync();
+            var items = await query
+                .OrderBy(s=>s.MaterialNo)
+                .ToListAsync();
 
             var data = _mapper.Map<List<LearningMaterialListDto>>(items);
 

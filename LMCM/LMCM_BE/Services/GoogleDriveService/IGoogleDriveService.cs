@@ -9,6 +9,7 @@
         Task<string?> UploadAcceptanceRecordFileAsync(IFormFile file);
         Task<string?> UploadDocumentTemplateFileAsync(IFormFile file);
         Task<bool> ShareFoldersWithUser(string email, string role = "reader");
+        Task<bool> ShareFoldersWithHeadOfDepartment(string email, string role = "reader")
         Task<bool> SharePdfFileWithUser(string url, string email, string role = "reader");
         Task<string> GetDownloadUrl(string fileUrl);
     }

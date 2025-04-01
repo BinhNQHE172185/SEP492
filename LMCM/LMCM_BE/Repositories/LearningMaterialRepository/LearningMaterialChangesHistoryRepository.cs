@@ -3,9 +3,12 @@ using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
+using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Repositories.UserRepositoriy;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Contracts;
 
 namespace LMCM_BE.Repositories.LearningMaterialRepository
 {
@@ -13,10 +16,12 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
     {
         private readonly LMCM_DBContext _dbContext;
         private readonly IMapper _mapper;
-        public LearningMaterialChangesHistoryRepository(LMCM_DBContext dbContext, IMapper mapper)
+        private readonly IUserRepository _userRepositoriy;
+        public LearningMaterialChangesHistoryRepository(LMCM_DBContext dbContext, IMapper mapper,IUserRepository userRepository)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _userRepositoriy = userRepository;
         }
         public async Task<PagedResult<ChangesHistoryListDto>> GetChangesHistoriesAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
@@ -59,7 +64,12 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             }
             try
             {
+                UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
+                if (user == null || string.IsNullOrEmpty(user.Email))
+                    throw new Exception("User not found");
+
                 var history = _mapper.Map<LearningMaterialChangesHistory>(historyDto);
+                history.UserId= user.Id;    
                 history.HistoryId = Guid.NewGuid();
                 history.Status = "Active";
                 await _dbContext.LearningMaterialChangesHistories.AddAsync(history);

@@ -202,15 +202,6 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
             {
                 return BadRequest("Invalid data.");
             }
-            // Validate referenced IDs
-            UserProfileResponseDto user = await _userService.GetProfile(historyDto.UserId.ToString());
-            if (user == null)
-                return BadRequest(new { message = "Invalid UserId." });
-
-                var syllabus = await _syllabusService.GetSyllabusDetailAsync(historyDto.SyllabusId);
-                if (syllabus == null)
-                    return BadRequest(new { message = "Invalid SyllabusId." });
-
             if (historyDto.ContractId.HasValue)
             {
                 var contract = await _contractService.GetContractByIdAsync(historyDto.ContractId.Value);

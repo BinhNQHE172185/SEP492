@@ -169,7 +169,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 if (oldSyllabusId != null && material.MaterialType == "Imported Material" && material.MaterialDetailId == null)
                 {
                     var oldMaterial = await _dbContext.LearningMaterials
-                        .Where(s => s.SyllabusId == oldSyllabusId && s.Url == material.Url)
+                        .Where(s => s.SyllabusId == oldSyllabusId && (s.MaterialName == material.MaterialName || s.Url == material.Url))
                         .Include(s => s.MaterialDetail)
                         .FirstOrDefaultAsync();
                     if (oldMaterial != null) material.MaterialDetailId = oldMaterial.MaterialDetailId;

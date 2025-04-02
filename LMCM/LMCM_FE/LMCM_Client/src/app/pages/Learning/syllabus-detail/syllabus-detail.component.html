@@ -92,7 +92,7 @@
         </ng-template>
         <ng-template pTemplate="body" let-material>
           <tr>
-            <td>{{ material.materialType ?? material.url }}</td>
+            <td>{{ material.materialName ?? material.url }}</td>
             <td>{{ material.materialQuantity }}</td>
             <td>{{ material.publishedDate | date:'yyyy' }}</td>
             <td>{{ material.author }}</td>

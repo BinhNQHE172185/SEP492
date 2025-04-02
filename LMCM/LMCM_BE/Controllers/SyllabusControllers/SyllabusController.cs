@@ -443,8 +443,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             {
                 var materialDetail = new LearningMaterialDetailsInsertDto();
                 var materialDescription = worksheet.Cells[row, 2].Text.Trim(); // Read MaterialDescription
-                string materialType = "";
-                string materialName = "";
+                string materialName = null;
                 string materialQuantity = "1";
                 string url = null;
                 Guid? materialDetailId = null;
@@ -490,7 +489,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                             string remainingText = materialDescription.Substring(type.Length).Trim(':', ' ');
 
                             // Try parsing the quantity, default to "1" if missing
-                            materialType = type;
+                            materialName = type;
                             materialQuantity = int.TryParse(remainingText, out int quantity) ? quantity.ToString() : "1";
 
                             foundType = true;
@@ -500,7 +499,6 @@ namespace LMCM_BE.Controllers.SyllabusControllers
 
                     if (!foundType)
                     {
-                        materialType = "Imported Material";
                         if (Uri.TryCreate(materialDescription, UriKind.Absolute, out Uri? uriResult)
                             && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
                         {
@@ -519,7 +517,6 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                     MaterialName=materialName,
                     MaterialDetailId = materialDetailId,
                     MaterialNo = int.TryParse(worksheet.Cells[row, 1].Text, out int materialNo) ? materialNo : 0,
-                    MaterialType = materialType, // Extracted type
                     MaterialQuantity = materialQuantity, // Extracted quantity
                     Purpose = worksheet.Cells[row, 3].Text.Trim(),
                     LearningType = worksheet.Cells[row, 5].Text.Trim(),

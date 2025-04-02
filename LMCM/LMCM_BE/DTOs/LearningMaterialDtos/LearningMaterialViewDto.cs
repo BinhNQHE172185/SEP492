@@ -2,13 +2,7 @@
 {
     public class LearningMaterialViewDto
     {
-        public Guid SyllabusId { get; set; }
-        public Guid MaterialId { get; set; }
-        public Guid? MaterialDetailId { get; set; }
-
         public string? LearningType { get; set; }
-        public string? MaterialType { get; set; }
-
         public bool? IsMainMaterial { get; set; }
         public string? Purpose { get; set; }
 

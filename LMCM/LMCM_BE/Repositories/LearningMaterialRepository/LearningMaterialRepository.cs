@@ -158,6 +158,8 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 throw new ArgumentNullException(nameof(materials));
 
             var newMaterials = _mapper.Map<List<LearningMaterial>>(materials);
+            //Excluded types for finding material detail
+            string[] materialTypes = { "Slide", "Lab", "Assignment", "Quiz", "Assigment" };
             foreach (var material in newMaterials)
             {
                 material.MaterialId = Guid.NewGuid();
@@ -166,7 +168,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 material.Status = "Active";
                 material.CreatedAt = DateTime.UtcNow;
                 material.UpdatedAt = DateTime.UtcNow;
-                if (oldSyllabusId != null && material.MaterialType == "Imported Material" && material.MaterialDetailId == null)
+                if (oldSyllabusId != null && !materialTypes.Contains(material.MaterialName) && material.MaterialDetailId == null)
                 {
                     var oldMaterial = await _dbContext.LearningMaterials
                         .Where(s => s.SyllabusId == oldSyllabusId && (s.MaterialName == material.MaterialName || s.Url == material.Url))

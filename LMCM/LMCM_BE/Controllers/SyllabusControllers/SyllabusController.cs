@@ -443,7 +443,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             {
                 var materialDetail = new LearningMaterialDetailsInsertDto();
                 var materialDescription = worksheet.Cells[row, 2].Text.Trim(); // Read MaterialDescription
-                string materialType = "";
+                string materialName = null;
                 string materialQuantity = "1";
                 string url = null;
                 Guid? materialDetailId = null;
@@ -489,7 +489,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                             string remainingText = materialDescription.Substring(type.Length).Trim(':', ' ');
 
                             // Try parsing the quantity, default to "1" if missing
-                            materialType = type;
+                            materialName = type;
                             materialQuantity = int.TryParse(remainingText, out int quantity) ? quantity.ToString() : "1";
 
                             foundType = true;
@@ -497,20 +497,26 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                         }
                     }
 
-                    // If no known material type is found, treat it as a URL
                     if (!foundType)
                     {
-                        materialType = "Imported Material";
-                        url = materialDescription;
+                        if (Uri.TryCreate(materialDescription, UriKind.Absolute, out Uri? uriResult)
+                            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
+                        {
+                            url = materialDescription;
+                        }
+                        else
+                        {
+                             materialName= materialDescription;
+                        }
                     }
                 }
 
                 var materialData = new LearningMaterialImportDto
                 {
                     SyllabusId = syllabus.SyllabusId,
+                    MaterialName=materialName,
                     MaterialDetailId = materialDetailId,
                     MaterialNo = int.TryParse(worksheet.Cells[row, 1].Text, out int materialNo) ? materialNo : 0,
-                    MaterialType = materialType, // Extracted type
                     MaterialQuantity = materialQuantity, // Extracted quantity
                     Purpose = worksheet.Cells[row, 3].Text.Trim(),
                     LearningType = worksheet.Cells[row, 5].Text.Trim(),

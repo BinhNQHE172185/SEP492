@@ -3,7 +3,6 @@
     public class LearningMaterialUpdateDto
     {
         public string? LearningType { get; set; }
-        public string? MaterialType { get; set; }
 
         public bool? IsMainMaterial { get; set; }
 

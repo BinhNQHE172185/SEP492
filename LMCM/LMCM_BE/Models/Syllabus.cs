@@ -55,8 +55,6 @@ public partial class Syllabus
 
     public virtual ICollection<GradingStructure> GradingStructures { get; set; } = new List<GradingStructure>();
 
-    public virtual ICollection<Syllabus> InversePreviousVersion { get; set; } = new List<Syllabus>();
-
     public virtual ICollection<LearningMaterial> LearningMaterials { get; set; } = new List<LearningMaterial>();
 
     public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();

@@ -228,7 +228,7 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
             // Step 2: Check if there are active related entities
             if (await _curriculumSubjectRepository.HasActiveCurriculumSubjectsBySubjectIdAsync(subjectId) ||
                 await _ploSubjectRepository.HasActivePloSubjectBySubjectIdAsync(subjectId) || 
-                await _syllabusSubjectRepository.HasActiveSyllabusesBySubjectIdAsync(subjectId))
+                (await _syllabusSubjectRepository.GetActiveSyllabusBySubjectIdAsync(subjectId) != null))
             {
                 throw new InvalidOperationException("Không thể xóa môn học khi có thực thể liên quan đang hoạt động.");
             }

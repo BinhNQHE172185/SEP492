@@ -40,8 +40,6 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
 
     public virtual DbSet<LearningMaterialChangesHistory> LearningMaterialChangesHistories { get; set; }
 
-    public virtual DbSet<LearningMaterialDetail> LearningMaterialDetails { get; set; }
-
     public virtual DbSet<Notification> Notifications { get; set; }
 
     public virtual DbSet<Plo> Plos { get; set; }
@@ -430,34 +428,67 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.MaterialId)
                 .HasDefaultValueSql("(newid())")
                 .HasColumnName("Material_ID");
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.IsMainMaterial).HasColumnName("is_Main_Material");
-            entity.Property(e => e.IsImportedMaterial).HasColumnName("is_Imported_Material");
-            entity.Property(e => e.MaterialDetailId)
-                .IsRequired(false) 
-                .HasColumnName("Material_Detail_ID");
+
+            entity.Property(e => e.SyllabusId)
+                .HasColumnName("Syllabus_ID");
+
+            entity.Property(e => e.LearningType)
+                .HasMaxLength(255)
+                .HasColumnName("Learning_Type");
+
+            entity.Property(e => e.IsMainMaterial)
+                .HasColumnName("is_Main_Material");
+
+            entity.Property(e => e.IsImportedMaterial)
+                .HasColumnName("is_Imported_Material");
 
             entity.Property(e => e.MaterialName)
                 .HasMaxLength(255)
                 .HasColumnName("Material_Name");
-            entity.Property(e => e.MaterialNo).HasColumnName("Material_No");
-            entity.Property(e => e.MaterialQuantity)
-                .HasMaxLength(255)
-                .HasColumnName("Material_Quantity");
-            entity.Property(e => e.Note).HasColumnType("nvarchar(max)");
-            entity.Property(e => e.Purpose).HasMaxLength(255);
-            entity.Property(e => e.Status).HasMaxLength(255);
-            entity.Property(e => e.SyllabusId).HasColumnName("Syllabus_ID");
-            entity.Property(e => e.LearningType).HasMaxLength(255);
-            entity.Property(e => e.MaterialType).HasMaxLength(255);
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.Url).HasMaxLength(255);
 
-            entity.HasOne(d => d.MaterialDetail)
-                .WithMany(p => p.LearningMaterials)
-                .HasForeignKey(d => d.MaterialDetailId)
-                .OnDelete(DeleteBehavior.SetNull) 
-                .HasConstraintName("FK__Learning___Mater__66603565");
+            entity.Property(e => e.Isbn)
+                .HasMaxLength(255)
+                .HasColumnName("ISBN");
+
+            entity.Property(e => e.Author)
+                .HasMaxLength(255)
+                .HasColumnName("Author");
+
+            entity.Property(e => e.Publisher)
+                .HasMaxLength(255)
+                .HasColumnName("Publisher");
+
+            entity.Property(e => e.PublishedDate)
+                .HasColumnType("datetime")
+                .HasColumnName("Published_Date");
+
+            entity.Property(e => e.Edition)
+                .HasMaxLength(255)
+                .HasColumnName("Edition");
+
+            entity.Property(e => e.Url)
+                .HasMaxLength(255)
+                .HasColumnName("URL");
+
+            entity.Property(e => e.Purpose)
+                .HasMaxLength(255)
+                .HasColumnName("Purpose");
+
+            entity.Property(e => e.Note)
+                .HasColumnType("nvarchar(max)")
+                .HasColumnName("Note");
+
+            entity.Property(e => e.Status)
+                .HasMaxLength(255)
+                .HasColumnName("Status");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasColumnName("Created_At");
+
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasColumnName("Updated_At");
 
             entity.HasOne(d => d.Syllabus)
                 .WithMany(p => p.LearningMaterials)
@@ -510,36 +541,6 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Learning___User___245D67DE");
-        });
-
-        modelBuilder.Entity<LearningMaterialDetail>(entity =>
-        {
-            entity.HasKey(e => e.MaterialDetailId).HasName("PK__Learning__700CBEE1C557F788");
-
-            entity.ToTable("Learning_Material_Detail");
-
-            entity.Property(e => e.MaterialDetailId)
-                .HasDefaultValueSql("(newid())")
-                .HasColumnName("Material_Detail_ID");
-            entity.Property(e => e.Author).HasMaxLength(255);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.Edition).HasMaxLength(255);
-            entity.Property(e => e.Isbn)
-                .HasMaxLength(255)
-                .HasColumnName("ISBN");
-            entity.Property(e => e.MaterialDescription)
-                .HasColumnType("nvarchar(max)")
-                .HasColumnName("Material_Description");
-            entity.Property(e => e.MaterialName)
-                .HasMaxLength(255)
-                .HasColumnName("Material_Name");
-            entity.Property(e => e.Note).HasColumnType("nvarchar(max)");
-            entity.Property(e => e.PublishedDate).HasColumnName("Published_Date");
-            entity.Property(e => e.Publisher).HasMaxLength(255);
-            entity.Property(e => e.Status).HasMaxLength(255);
-            entity.Property(e => e.Type).HasMaxLength(255);
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.Url).HasMaxLength(255);
         });
 
         modelBuilder.Entity<Notification>(entity =>
@@ -723,7 +724,6 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.PreRequisite)
                 .HasColumnType("nvarchar(max)")
                 .HasColumnName("Pre_requisite");
-            entity.Property(e => e.PreviousVersionId).HasColumnName("Previous_Version_ID");
             entity.Property(e => e.ProgramName)
                 .HasMaxLength(255)
                 .HasColumnName("Program_Name");
@@ -740,10 +740,6 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasColumnName("Time_Allocation");
             entity.Property(e => e.Tools).HasColumnType("nvarchar(max)");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
-
-            entity.HasOne(d => d.PreviousVersion).WithMany(p => p.InversePreviousVersion)
-                .HasForeignKey(d => d.PreviousVersionId)
-                .HasConstraintName("FK__Syllabus__Previo__5AEE82B9");
 
             entity.HasOne(d => d.Subject).WithMany(p => p.Syllabus)
                 .HasForeignKey(d => d.SubjectId)

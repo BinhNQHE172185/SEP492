@@ -6,8 +6,6 @@
 
         public Guid SubjectId { get; set; }
 
-        public Guid? PreviousVersionId { get; set; }
-
         public string ProgramName { get; set; } = null!;
 
         public string? DecisionNo { get; set; }

@@ -7,7 +7,7 @@ using LMCM_BE.Repositories.SyllabusRepository;
 
 namespace LMCM_BE.Services.SyllabusService
 {
-    public class SyllabusService:ISyllabusService
+    public class SyllabusService : ISyllabusService
     {
         private readonly ISyllabusRepository _syllabusRepository;
         public SyllabusService(ISyllabusRepository syllabusRepository)
@@ -25,18 +25,18 @@ namespace LMCM_BE.Services.SyllabusService
             var data = await _syllabusRepository.GetSyllabusesAsync(searchKey, pageIndex, pageSize);
             return data;
         }
-        public async Task<PagedResult<SyllabusChangesHistoryListDto>> GetSyllabusChangeHistoriesAsync(Guid? syllabusId, string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<PagedResult<SyllabusListViewDto>> GetSyllabusChangeHistoriesAsync(Guid? syllabusId, string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
-            var data = await _syllabusRepository.GetSyllabusChangeHistoriesAsync(syllabusId,searchKey, pageIndex, pageSize);
+            var data = await _syllabusRepository.GetSyllabusChangeHistoriesAsync(syllabusId, searchKey, pageIndex, pageSize);
             return data;
         }
         public async Task<Syllabus> ImportSyllabusAsync(SyllabusInsertDto syllabus)
         {
             return await _syllabusRepository.ImportSyllabusAsync(syllabus);
         }
-        public async Task<bool> HasActiveSyllabusesBySubjectIdAsync(Guid subjectId)
+        public async Task<Syllabus?> GetActiveSyllabusBySubjectIdAsync(Guid subjectId)
         {
-            return await _syllabusRepository.HasActiveSyllabusesBySubjectIdAsync(subjectId);
+            return await _syllabusRepository.GetActiveSyllabusBySubjectIdAsync(subjectId);
         }
 
         public async Task<SyllabusDetailDto> GetSyllabusDetailAsync(Guid? syllabusId)

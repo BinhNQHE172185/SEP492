@@ -132,6 +132,7 @@ export class ListSyllabusComponent implements OnInit, OnDestroy {
       () => {
         this.loadSyllabuses();
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Nhập dữ liệu thành công' });
+        this.closeDialog();
       },
       (error) => {
         this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });

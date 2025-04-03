@@ -6,6 +6,7 @@ namespace LMCM_BE.DTOs.LearningMaterialDtos
     {
         public Guid MaterialId { get; set; }
         public string? LearningType { get; set; }
+        public bool? IsImportedMaterial { get; set; }
 
         public bool? IsMainMaterial { get; set; }
 

@@ -1,5 +1,5 @@
 export enum MaterialTypeConstant {
-  Online = "Oneline",
+  Online = "Online",
   Offline = "Offline",
 }
 

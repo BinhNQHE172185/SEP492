@@ -1,117 +1,113 @@
 <p-dialog [(visible)]="displayAddDialog" header="Cập nhật học liệu" [modal]="true" [draggable]="false"
     [resizable]="false" (onHide)="closeDialog()">
-    <p-tabs [value]="0">
+    <p-tabs [value]="SelectedId ? (isImported ? 0 : 1) : 0">
         <p-tablist>
-            <p-tab [value]="0">Tài liệu</p-tab>
-            <p-tab [value]="1">Giáo Trình</p-tab>
+            <p-tab [value]="0" *ngIf="!SelectedId || isImported">Tài liệu</p-tab>
+            <p-tab [value]="1" *ngIf="!SelectedId || !isImported">Giáo Trình</p-tab>
         </p-tablist>
         <p-tabpanels>
             <p-tabpanel [value]="0"> <!-- Tai lieu -->
-                <form [formGroup]="materialForm" class="p-3">
-                    <div class="flex flex-col gap-4">
-                        <div class="flex flex-wrap gap-4">
-                            <div class="flex flex-col grow basis-0 gap-2">
-                                <label for="materialType">Tên tài liệu <span class="text-red-500">*</span></label>
-                                <input id="materialType" type="text" pInputText formControlName="materialType"
-                                    class="w-full" />
-                            </div>
-                            <div class="flex flex-col grow basis-0 gap-2">
-                                <label for="materialQuantity"> Số lượng </label>
-                                <input id="materialQuantity" type="text" pInputText formControlName="materialQuantity"
-                                    class="w-full" />
-                            </div>
-                        </div>
-                        <div class="flex flex-wrap gap-4">
-                            <div class="flex flex-col grow basis-0 gap-2">
-                                <label for="purpose">Mục đích</label>
-                                <input id="purpose" type="text" pInputText formControlName="purpose" class="w-full" />
-                            </div>
-                            <div class="flex flex-col grow basis-0 gap-2">
-                                <label for="type">Loại</label>
-                                <p-select id="type" [options]="type" formControlName="learningType" optionLabel="name"
-                                    optionValue="value" placeholder="Select a type" class="w-full md:w-56">
-                                </p-select>
-                            </div>
-                        </div>
-                        <div class="flex flex-wrap gap-4">
-                            <div class="flex flex-col grow basis-0 gap-2">
-                                <label for="url"> URL </label>
-                                <input id="url" type="text" pInputText formControlName="url" class="w-full" />
-                            </div>
-                        </div>
-                        <div class="flex flex-wrap gap-4">
-                            <div class="flex flex-col grow basis-0 gap-2">
-                                <label for="note"> Ghi chú </label>
-                                <textarea id="note" type="text" pTextarea formControlName="note"
-                                    class="w-full"></textarea>
-                            </div>
+                <div class="flex flex-col gap-4">
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="materialName">Tên tài liệu <span class="text-red-500">*</span></label>
+                            <input id="materialName" type="text" pInputText [(ngModel)]="material.materialName"
+                                class="w-full" />
                         </div>
                     </div>
-                </form>
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="purpose">Mục đích</label>
+                            <input id="purpose" type="text" pInputText [(ngModel)]="material.purpose" class="w-full" />
+                        </div>
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="type">Loại</label>
+                            <p-select id="type" [options]="type" [(ngModel)]="material.learningType" optionLabel="name"
+                                optionValue="value" placeholder="Select a type" class="w-full md:w-56">
+                            </p-select>
+                        </div>
+                    </div>
+                    <div class="flex flex-row items-center gap-2">
+                        <label for="isMainMaterial">Là học liệu chính</label>
+                        <p-checkbox id="isMainMaterial" [(ngModel)]="material.isMainMaterial" value="true"></p-checkbox>
+                    </div>
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="url"> URL </label>
+                            <input id="url" type="text" pInputText [(ngModel)]="material.url" class="w-full" />
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="note"> Ghi chú </label>
+                            <textarea id="note" type="text" pTextarea [(ngModel)]="material.note"
+                                class="w-full"></textarea>
+                        </div>
+                    </div>
+                </div>
             </p-tabpanel>
             <p-tabpanel [value]="1"> <!-- Giao trinh -->
-                <form [formGroup]="materialDetailForm" class="p-3">
-                    <div class="flex flex-col gap-4">
-                        <div class="flex flex-wrap gap-4">
-                            <div class="flex flex-col grow basis-0 gap-2">
+                <div class="flex flex-col gap-4">
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <div class="flex flex-col gap-2">
                                 <label for="materialName">Tên giáo trình <span class="text-red-500">*</span></label>
-                                <input id="materialName" type="text" pInputText formControlName="materialName"
-                                    class="w-full" />
-                                <small class="p-error"
-                                    *ngIf="materialDetailForm.get('materialName')?.invalid && materialDetailForm.get('materialName')?.touched">
-                                    Tên giáo trình là bắt buộc
-                                </small>
-                            </div>
-                            <div class="flex flex-col grow basis-0 gap-2">
-                                <label for="type">Loại giáo trình <span class="text-red-500">*</span></label>
-                                <p-select id="type" [options]="materialTypes" [filter]="true" formControlName="type"
-                                    optionLabel="name" optionValue="value" placeholder="Chọn loại giáo trình"
-                                    class="w-full" appendTo="body">
-                                    <ng-template let-materialType pTemplate="item">
-                                        {{ materialType.name.length > 30 ? (materialType.name | slice:0:30) + '...' :
-                                        materialType.name }}
-                                    </ng-template>
-                                    <ng-template let-selectedMaterialType pTemplate="selectedItem">
-                                        {{ selectedMaterialType?.name.length > 20 ? (selectedMaterialType.name |
-                                        slice:0:20) + '...' : selectedMaterialType.name }}
-                                    </ng-template>
-                                </p-select>
+                                <input id="materialName" type="text" pInputText [(ngModel)]="material.materialName"
+                                    name="materialName" class="w-full" />
                             </div>
                         </div>
-
-                        <div class="flex flex-wrap gap-4">
-                            <div class="flex flex-col grow basis-0 gap-2">
-                                <label for="publishedDate">Năm xuất bản giáo trình</label>
-                                <p-datepicker id="publishedDate" formControlName="publishedDate" class="w-full"
-                                    [showIcon]="true" appendTo="body"></p-datepicker>
-                            </div>
-                            <div class="flex flex-col grow basis-0 gap-2">
-                                <label for="edition">Sách gốc</label>
-                                <input id="edition" type="text" pInputText formControlName="edition" class="w-full" />
-                            </div>
-                        </div>
-
-                        <div class="flex flex-wrap gap-4">
-                            <div class="flex flex-col grow basis-0 gap-2">
-                                <label for="isbn">ISBN</label>
-                                <input id="isbn" type="text" pInputText formControlName="isbn" class="w-full" />
-                            </div>
-                            <div class="flex flex-col grow basis-0 gap-2">
-                                <label for="publisher">Nhà xuất bản sách gốc</label>
-                                <input id="publisher" type="text" pInputText formControlName="publisher"
-                                    class="w-full" />
-                            </div>
-                        </div>
-
-                        <div class="flex flex-wrap gap-4">
-                            <div class="flex flex-col grow basis-0 gap-2">
-                                <label for="materialDescription">Mô tả</label>
-                                <textarea pTextarea id="materialDescription" type="text"
-                                    formControlName="materialDescription" class="w-full"></textarea>
-                            </div>
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="type">Loại giáo trình <span class="text-red-500">*</span></label>
+                            <p-select id="type" [options]="materialTypes" [filter]="true"
+                                [(ngModel)]="material.materialType" optionLabel="name" optionValue="value"
+                                placeholder="Chọn loại giáo trình" class="w-full" appendTo="body">
+                                <ng-template let-materialType pTemplate="item">
+                                    {{ materialType.name.length > 30 ? (materialType.name | slice:0:30) + '...' :
+                                    materialType.name }}
+                                </ng-template>
+                                <ng-template let-selectedMaterialType pTemplate="selectedItem">
+                                    {{ selectedMaterialType?.name.length > 20 ? (selectedMaterialType.name |
+                                    slice:0:20) + '...' : selectedMaterialType.name }}
+                                </ng-template>
+                            </p-select>
                         </div>
                     </div>
-                </form>
+
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="publishedDate">Năm xuất bản giáo trình</label>
+                            <p-datepicker id="publishedDate" [(ngModel)]="material.publishedDate" class="w-full"
+                                [showIcon]="true" appendTo="body"></p-datepicker>
+                        </div>
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="isbn">ISBN</label>
+                            <input id="isbn" type="text" pInputText [(ngModel)]="material.isbn" class="w-full" />
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="edition">Sách gốc</label>
+                            <input id="edition" type="text" pInputText [(ngModel)]="material.edition" class="w-full" />
+                        </div>
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label for="publisher">Nhà xuất bản sách gốc</label>
+                            <p-autoComplete [(ngModel)]="material.publisher" [suggestions]="filteredPublishersList"
+                                (completeMethod)="searchPublisher($event)" fluid placeholder="Nhập tên nhà xuất bản"
+                                fluid appendTo="body">
+                            </p-autoComplete>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col grow basis-0 gap-2">
+                            <label>Tác giả</label>
+                            <p-autoComplete [(ngModel)]="authors" [suggestions]="items"
+                                (completeMethod)="search($event)" multiple placeholder="Nhập tên tác giả"
+                                [typeahead]="false" fluid class="w-full"></p-autoComplete>
+                        </div>
+                    </div>
+                </div>
             </p-tabpanel>
         </p-tabpanels>
     </p-tabs>
@@ -123,3 +119,5 @@
         </div>
     </ng-template>
 </p-dialog>
+
+<p-toast></p-toast>

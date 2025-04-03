@@ -69,35 +69,37 @@ namespace LMCM_BE.Repositories.SyllabusRepository
                 PageSize = pageSize
             };
         }
-        public async Task<PagedResult<SyllabusChangesHistoryListDto>> GetSyllabusChangeHistoriesAsync(
+        public async Task<PagedResult<SyllabusListViewDto>> GetSyllabusChangeHistoriesAsync(
             Guid? syllabusId, string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             if (syllabusId == null)
                 throw new ArgumentNullException(nameof(syllabusId));
 
-            var syllabusIdParam = new SqlParameter("@syllabusId", syllabusId);
+            // Step 1: Get the subject ID from the given syllabus ID
+            var subjectId = await _dbContext.Syllabus
+                .Where(s => s.SyllabusId == syllabusId)
+                .Select(s => s.SubjectId)
+                .FirstOrDefaultAsync();
 
-            var previousSyllabuses = await _dbContext.Syllabus
-                .FromSqlRaw(@"
-                            WITH SyllabusHistory AS (
-                                SELECT * FROM Syllabus WHERE Syllabus_ID = @syllabusId
-                                UNION ALL
-                                SELECT s.* FROM Syllabus s
-                                INNER JOIN SyllabusHistory sh ON s.Syllabus_ID = sh.Previous_Version_ID
-                            )
-                            SELECT * FROM SyllabusHistory;", syllabusIdParam)
-                .ToListAsync(); // Ensure async execution
+            if (subjectId == Guid.Empty)
+                throw new InvalidOperationException("No subject found for the given syllabus ID.");
 
-            int totalCount = previousSyllabuses.Count;
+            // Step 2: Get all syllabuses that belong to the same subject
+            var siblingSyllabuses = await _dbContext.Syllabus
+                .Where(s => s.SubjectId == subjectId)
+                .OrderByDescending(s => s.UpdatedAt ?? s.CreatedAt)
+                .ToListAsync();
 
-            var paginatedItems = previousSyllabuses
+            int totalCount = siblingSyllabuses.Count;
+
+            var paginatedItems = siblingSyllabuses
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
 
-            var data = _mapper.Map<List<SyllabusChangesHistoryListDto>>(paginatedItems);
+            var data = _mapper.Map<List<SyllabusListViewDto>>(paginatedItems);
 
-            return new PagedResult<SyllabusChangesHistoryListDto>
+            return new PagedResult<SyllabusListViewDto>
             {
                 Items = data,
                 TotalCount = totalCount,
@@ -115,17 +117,14 @@ namespace LMCM_BE.Repositories.SyllabusRepository
                 .SingleOrDefaultAsync(s => s.CourseCode == syllabus.CourseCode &&
                                            s.Status != null && s.Status.ToLower() == "active");
 
-            Guid? previousVersionId = null;
-
             if (existingSyllabus != null)
             {
                 await DeleteSyllabusAsync(existingSyllabus.SyllabusId);
-                previousVersionId = existingSyllabus.SyllabusId;
+                //can delete syllabus child here
             }
 
             var newSyllabus = _mapper.Map<Syllabus>(syllabus);
             newSyllabus.SyllabusId = Guid.NewGuid();
-            newSyllabus.PreviousVersionId = previousVersionId;
             newSyllabus.Status = "Active";
             newSyllabus.CreatedAt = DateTime.UtcNow;
             newSyllabus.UpdatedAt = DateTime.UtcNow;
@@ -157,10 +156,13 @@ namespace LMCM_BE.Repositories.SyllabusRepository
             }
         }
 
-        public async Task<bool> HasActiveSyllabusesBySubjectIdAsync(Guid subjectId)
+        public async Task<Syllabus?> GetActiveSyllabusBySubjectIdAsync(Guid subjectId)
         {
-            return await _dbContext.Syllabus
-                .AnyAsync(s => s.SubjectId == subjectId && s.Status == "Active");
+            var syllabus = await _dbContext.Syllabus
+               .Where(s => s.SubjectId == subjectId && s.Status == "Active")
+               .FirstOrDefaultAsync();
+
+            return syllabus;
         }
 
         public async Task<SyllabusDetailDto> GetSyllabusDetailAsync(Guid? syllabusId)

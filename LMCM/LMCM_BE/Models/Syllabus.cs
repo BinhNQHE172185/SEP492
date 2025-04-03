@@ -9,8 +9,6 @@ public partial class Syllabus
 
     public Guid SubjectId { get; set; }
 
-    public Guid? PreviousVersionId { get; set; }
-
     public string ProgramName { get; set; } = null!;
 
     public string? DecisionNo { get; set; }
@@ -60,8 +58,6 @@ public partial class Syllabus
     public virtual ICollection<Syllabus> InversePreviousVersion { get; set; } = new List<Syllabus>();
 
     public virtual ICollection<LearningMaterial> LearningMaterials { get; set; } = new List<LearningMaterial>();
-
-    public virtual Syllabus? PreviousVersion { get; set; }
 
     public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
 

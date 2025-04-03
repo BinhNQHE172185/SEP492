@@ -38,9 +38,9 @@ namespace LMCM_BE.Services.LearningMaterialService
             return await _materialRepository.GetMaterialsBySyllabusIdAsync(syllabusId);
         }
 
-        public async Task<bool> ImportLearningMaterialsAsync(List<LearningMaterialImportDto> materials, Guid? oldSyllabusId, Guid newSyllabusId)
+        public async Task<bool> ImportLearningMaterialsAsync(List<LearningMaterialImportDto> materials, Guid? oldSyllabusId, Guid newSyllabusId, bool keepUserCreated)
         {
-            return await _materialRepository.ImportLearningMaterialsAsync(materials,oldSyllabusId,newSyllabusId);
+            return await _materialRepository.ImportLearningMaterialsAsync(materials,oldSyllabusId,newSyllabusId,keepUserCreated);
         }
 
         public async Task<Guid?> InsertLearningMaterialAsync(LearningMaterialInsertDto material)
@@ -51,6 +51,10 @@ namespace LMCM_BE.Services.LearningMaterialService
         public async Task<Guid?> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial)
         {
             return await _materialRepository.UpdateLearningMaterialAsync(materialId, newMaterial);
+        }
+        public async Task<List<string>> GetPublishersAsync()
+        {
+            return await _materialRepository.GetPublishersAsync();
         }
     }
 }

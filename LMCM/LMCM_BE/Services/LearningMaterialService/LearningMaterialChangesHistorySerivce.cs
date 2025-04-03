@@ -27,5 +27,6 @@ namespace LMCM_BE.Services.LearningMaterialService
         {
             return await _changesRepository.GetLearningMaterialChangesHistoriesOfSubjectAsync(subjectId, searchKey, pageIndex, pageSize);
         }
+
     }
 }

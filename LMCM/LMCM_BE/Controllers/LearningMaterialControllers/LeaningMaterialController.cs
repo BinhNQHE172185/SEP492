@@ -19,7 +19,6 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
         private readonly ILearningMaterialChangesHistorySerivce _changesService;
         private readonly IUserService _userService;
         private readonly IContractService _contractService;
-        private readonly ILearningMaterialDetailsService _materialDetailService;
         private readonly ISyllabusService _syllabusService;
 
         public LearningMaterialController(
@@ -27,7 +26,6 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
             ILearningMaterialChangesHistorySerivce changesService,
             IUserService userService,
             IContractService contractService,
-            ILearningMaterialDetailsService materialDetailService,
             ISyllabusService syllabusService
             )
         {
@@ -35,7 +33,6 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
             _changesService = changesService;
             _userService = userService;
             _contractService = contractService;
-            _materialDetailService = materialDetailService;
             _syllabusService = syllabusService;
         }
 
@@ -215,103 +212,13 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
 
             return StatusCode(500, "Failed to create history.");
         }
-        [HttpPost("getMaterialDetailList")]
-        public async Task<IActionResult> GetMaterialDetailsListAsync([FromBody] PagingRequest request)
-        {
-            try
-            {
-                var data = await _materialDetailService.GetMaterialDetailsListAsync(request.SearchKey, request.pageIndex, request.PageSize);
 
-                if (data != null)
-                {
-                    return Ok(data);
-                }
-
-                return NotFound(new { message = "Không tìm thấy dữ liệu." });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Lỗi máy chủ nội bộ.", error = ex.Message });
-            }
-        }
-
-        [HttpGet("detail/{id}")]
-        public async Task<IActionResult> GetMaterialDetailByIdAsync(Guid id)
-        {
-            try
-            {
-                var detail = await _materialDetailService.GetMaterialDetailByIdAsync(id);
-                if (detail == null)
-                {
-                    return NotFound(new { message = "Dữ liệu không được tìm thấy." });
-                }
-                return Ok(detail);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = ex.Message });
-            }
-        }
-
-        [HttpPost("detail/create")]
-        public async Task<IActionResult> CreateMaterialDetailAsync([FromBody] LearningMaterialDetailsInsertDto detailDto)
-        {
-            try
-            {
-                var detail = await _materialDetailService.InsertMaterialDetailsAsync(detailDto);
-                if (detail != null)
-                {
-                    return Ok(new { message = "Thêm thành công.", Data = detail });
-                }
-                return BadRequest(new { message = "Thêm thất bại. Vui lòng kiểm tra dữ liệu đầu vào." });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = ex.Message });
-            }
-        }
-
-        [HttpPut("detail/update/{id}")]
-        public async Task<IActionResult> UpdateMaterialDetailAsync(Guid id, [FromBody] LearningMaterialDetailsInsertDto newDetailDto)
-        {
-            try
-            {
-                bool isUpdated = await _materialDetailService.UpdateMaterialDetailAsync(id, newDetailDto);
-                if (isUpdated)
-                {
-                    return Ok(new { message = "Cập nhật thành công." });
-                }
-                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = ex.Message });
-            }
-        }
-
-        [HttpDelete("detail/delete/{id}")]
-        public async Task<IActionResult> DeleteMaterialDetailAsync(Guid id)
-        {
-            try
-            {
-                bool isDeleted = await _materialDetailService.DeleteMaterialDetailByIdAsync(id);
-                if (isDeleted)
-                {
-                    return Ok(new { message = "Xóa thành công." });
-                }
-                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = ex.Message });
-            }
-        }
         [HttpGet("getPublishersList")]
         public async Task<IActionResult> GetPublishersAsync()
         {
             try
             {
-                var data = await _materialDetailService.GetPublishersAsync();
+                var data = await _learningMaterialService.GetPublishersAsync();
                 if (data != null)
                 {
                     return Ok(data);

@@ -146,7 +146,6 @@ builder.Services.AddAutoMapper(typeof(GradingStructureProfile));
 builder.Services.AddAutoMapper(typeof(ConstructivistQuestionProfile));
 builder.Services.AddAutoMapper(typeof(LearningMaterialChangesHistoryProfile));
 builder.Services.AddAutoMapper(typeof(LearningMaterialProfile));
-builder.Services.AddAutoMapper(typeof(LearningMaterialDetailsProfile));
 builder.Services.AddAutoMapper(typeof(ContractProfile));
 builder.Services.AddAutoMapper(typeof(BudgetPropasalProfile));
 builder.Services.AddAutoMapper(typeof(PloProfile));
@@ -182,8 +181,6 @@ builder.Services.AddScoped<ILearningMaterialChangesHistoryRepository, LearningMa
 builder.Services.AddScoped<ILearningMaterialChangesHistorySerivce, LearningMaterialChangesHistorySerivce>();
 builder.Services.AddScoped<ILearningMaterialRepository, LearningMaterialRepository>();
 builder.Services.AddScoped<ILearningMaterialService, LearningMaterialService>();
-builder.Services.AddScoped<ILearningMaterialDetailsRepository, LearningMaterialDetailsRepository>();
-builder.Services.AddScoped<ILearningMaterialDetailsService, LearningMaterialDetailsService>();
 builder.Services.AddScoped<GoogleDriveService>();
 builder.Services.AddScoped<IContractRepository, ContractRepository>();
 builder.Services.AddScoped<IContractService, ContractService>();

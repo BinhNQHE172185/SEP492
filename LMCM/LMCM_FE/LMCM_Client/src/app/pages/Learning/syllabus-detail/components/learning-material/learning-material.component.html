@@ -98,18 +98,8 @@
                             </div>
                             <div class="flex flex-col grow basis-0 gap-2">
                                 <label for="publisher">Nhà xuất bản sách gốc</label>
-                                <p-select id="publisher" [options]="publishers" formControlName="publisher"
-                                    optionLabel="name" optionValue="value" placeholder="Chọn nhà xuất bản"
-                                    class="w-full" [filter]="true" appendTo="body">
-                                    <ng-template let-publisher pTemplate="item">
-                                        {{ publisher.name.length > 30 ? (publisher.name | slice:0:30) + '...' :
-                                        publisher.name }}
-                                    </ng-template>
-                                    <ng-template let-selectedPublisher pTemplate="selectedItem">
-                                        {{ selectedPublisher?.name.length > 20 ? (selectedPublisher.name | slice:0:20) +
-                                        '...' : selectedPublisher.name }}
-                                    </ng-template>
-                                </p-select>
+                                <input id="publisher" type="text" pInputText formControlName="publisher"
+                                    class="w-full" />
                             </div>
                         </div>
 

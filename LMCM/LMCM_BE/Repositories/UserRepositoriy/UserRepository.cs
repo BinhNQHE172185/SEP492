@@ -111,7 +111,7 @@ namespace LMCM_BE.Repositories.UserRepositoriy
         {
             var payload = await GoogleJsonWebSignature.ValidateAsync(request.Token, new GoogleJsonWebSignature.ValidationSettings
             {
-                Audience = new[] { "1095920474772-fa8ijvdj17nggcb9q1f9p6fal5psft6l.apps.googleusercontent.com" }
+                Audience = new[] { "433474498165-m4uv6c6h9hc3ss9vk74d9v7u8t57irr5.apps.googleusercontent.com" }
             });
 
             var user = await _userManager.FindByEmailAsync(payload.Email);
@@ -130,8 +130,6 @@ namespace LMCM_BE.Repositories.UserRepositoriy
             }
             var token = GenerateJwtToken(user);
 
-            SetAuthCookie(token);
-
             return new UserLoginResponseDto
             {
                 Id = user.Id,
@@ -142,7 +140,7 @@ namespace LMCM_BE.Repositories.UserRepositoriy
         {
             var claims = new[]
             {
-        new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString(), ClaimValueTypes.String, "utf-8"), 
+        new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString(), ClaimValueTypes.String, "utf-8"),
         new Claim(JwtRegisteredClaimNames.Email, user.Email, ClaimValueTypes.String, "utf-8"),
         new Claim(JwtRegisteredClaimNames.Name, user.Name ?? "", ClaimValueTypes.String, "utf-8"),
     };
@@ -158,30 +156,6 @@ namespace LMCM_BE.Repositories.UserRepositoriy
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private void SetAuthCookie(string token)
-        {
-            try
-            {
-                var cookieOptions = new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Lax, // Allows cookies in API calls
-                    Expires = DateTime.UtcNow.AddHours(3),
-                    Domain = "localhost",
-                    Path = "/" // Ensures cookie is available across requests
-                };
-
-                var response = _httpContextAccessor.HttpContext.Response;
-                response.Cookies.Append("AuthToken", token, cookieOptions);
-
-                Console.WriteLine("Auth cookie set successfully.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error setting auth cookie: {ex.Message}");
-            }
-        }
         public async Task<UserProfileResponseDto> GetProfileFromCookie()
         {
             try

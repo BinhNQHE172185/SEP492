@@ -135,14 +135,17 @@ export class LearningMaterialComponent implements OnChanges {
     });
 
     this.materialDetailForm = this.fb.group({
+      syllabusId: [''],
       materialName: ['', Validators.required],
-      materialDescription: [''],
+      materialDescription: [''], 
       type: [null],
-      publishedDate: [null],
-      publisher: [null],
-      edition: [''],
-      isbn: ['']
+      publishedDate: [null], 
+      publisher: [null], 
+      edition: [''], 
+      isbn: [''],
+      note: ['']
     });
+    
   }
 
   closeDialog() {

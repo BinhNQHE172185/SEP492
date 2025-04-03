@@ -6,6 +6,7 @@ import { StyleClassModule } from 'primeng/styleclass';
 import { AppConfigurator } from './app.configurator';
 import { LayoutService } from '../service/layout.service';
 import { MenuModule } from 'primeng/menu';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
     selector: 'app-topbar',
@@ -84,7 +85,11 @@ import { MenuModule } from 'primeng/menu';
 export class AppTopbar {
     items!: MenuItem[];
 
-    constructor(public layoutService: LayoutService,private router: Router) { }
+    constructor(
+        public layoutService: LayoutService,
+        private router: Router,
+        private cookieService: CookieService
+    ) { }
 
     toggleDarkMode() {
         this.layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));
@@ -92,24 +97,23 @@ export class AppTopbar {
 
     UserItems = [
         {
-          label: 'Profile',
-          icon: 'pi pi-user',
-          command: () => this.goToProfile() // Gọi hàm mở trang profile
+            label: 'Profile',
+            icon: 'pi pi-user',
+            command: () => this.goToProfile() // Gọi hàm mở trang profile
         },
         {
-          label: 'Logout',
-          icon: 'pi pi-sign-out',
-          command: () => this.logout() // Gọi hàm logout
+            label: 'Logout',
+            icon: 'pi pi-sign-out',
+            command: () => this.logout() // Gọi hàm logout
         }
-      ];
-    
-      goToProfile() {
+    ];
+
+    goToProfile() {
         this.router.navigate(['/user/profile']);
-      }
-    
-      logout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userId');
+    }
+
+    logout() {
+        this.cookieService.delete('AuthToken', '/', '');
         this.router.navigate(['/auth/login']);
-      }
+    }
 }

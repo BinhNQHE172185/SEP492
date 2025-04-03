@@ -68,7 +68,7 @@
                         },
                         "development": {
                             "buildTarget": "sakai-ng:build:development",
-                            "ssl": true,
+                            "ssl": false,
                             "sslCert": "localhost.pem",
                             "sslKey": "localhost-key.pem"
                         }

@@ -13,6 +13,7 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { MessageModule } from 'primeng/message';
 import { environment } from '../../../../environments/environment';
+import { CookieService } from 'ngx-cookie-service';
 
 declare const google: any;
 @Component({
@@ -58,7 +59,11 @@ declare const google: any;
 })
 export class Login implements OnInit, AfterViewInit {
 
-    constructor(private apiService: UserApiService, private service: MessageService) { }
+    constructor(
+        private apiService: UserApiService,
+        private service: MessageService,
+        private cookieService: CookieService,
+    ) { }
 
     email: string = '';
 
@@ -103,9 +108,16 @@ export class Login implements OnInit, AfterViewInit {
         this.apiService.login(token.credential).subscribe(
             (response) => {
                 this.service.add({ severity: 'success', summary: 'Đăng nhập thành công', detail: 'Đang chuyển hướng...' });
-                console.log(response)
-                localStorage.setItem('userId', response.data.id);
-                localStorage.setItem('token', response.data.token);
+                console.log(response);
+
+                // Lưu AuthToken vào cookie
+                this.cookieService.set('AuthToken', response.data.token, {
+                    path: '/',
+                    secure: true,
+                    sameSite: 'Strict'
+                });
+
+                // Chuyển hướng sau khi đăng nhập thành công
                 setTimeout(() => {
                     window.location.href = '';
                 }, 1000);

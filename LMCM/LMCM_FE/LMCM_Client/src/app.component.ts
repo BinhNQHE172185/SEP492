@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
     selector: 'app-root',
@@ -9,10 +10,13 @@ import { Router, RouterModule } from '@angular/router';
 })
 export class AppComponent implements OnInit {
 
-    constructor(private router: Router) { }
+    constructor(
+        private router: Router,
+        private cookieService: CookieService
+    ) { }
 
     ngOnInit(): void {
-        const token = localStorage.getItem('token');
+        const token = this.cookieService.get('AuthToken');
 
         if (!token && this.router.url !== '/auth/login') {
             this.router.navigate(['/auth/login']);

@@ -21,7 +21,7 @@
           <div class="field mb-5">
             <label class="block text-700 font-medium mb-2">{{ field.label }}</label>
             <p-inputGroup class="w-full">
-              <input pInputText type="text" [value]="field.value ?? 'N/A'" [disabled]="true"
+              <input pInputText type="text" [value]="field.value || 'N/A'" [disabled]="true"
                 class="w-full readable-text" />
             </p-inputGroup>
           </div>
@@ -41,7 +41,7 @@
           <div class="field mb-5">
             <label class="block text-700 font-medium mb-2">{{ field.label }}</label>
             <p-inputGroup class="w-full">
-              <input pInputText type="text" [value]="field.value ?? 'N/A'" [disabled]="true"
+              <input pInputText type="text" [value]="field.value || 'N/A'" [disabled]="true"
                 class="w-full readable-text" />
             </p-inputGroup>
           </div>
@@ -80,20 +80,26 @@
         <ng-template pTemplate="header">
           <tr>
             <th>Tên giáo trình</th>
-            <th>Só lượng</th>
             <th>Năm Xuất Bản</th>
             <th>Tác Giả</th>
             <th>Nhà Xuất Bản</th>
             <th>ISBN</th>
-            <th>Loại</th>
+            <th>Hình thức</th>
             <th>Ghi Chú</th>
             <th>Thao tác</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-material>
           <tr>
-            <td>{{ material.materialName ?? material.url }}</td>
-            <td>{{ material.materialQuantity }}</td>
+            <td>
+              <ng-container *ngIf="material.url; else noUrl">
+                <a [href]="material.url" target="_blank" rel="noopener noreferrer">{{ material.materialName ||
+                  material.url }}</a>
+              </ng-container>
+              <ng-template #noUrl>
+                {{ material.materialName }}
+              </ng-template>
+            </td>
             <td>{{ material.publishedDate | date:'yyyy' }}</td>
             <td>{{ material.author }}</td>
             <td>{{ material.publisher }}</td>

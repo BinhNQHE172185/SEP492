@@ -7,6 +7,7 @@ namespace LMCM_BE.DTOs.LearningMaterialDtos
         public Guid SyllabusId { get; set; }
 
         public string? LearningType { get; set; }
+        public string? MaterialType { get; set; }
         public bool? IsMainMaterial { get; set; }
 
         public string? MaterialName { get; set; }

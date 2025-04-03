@@ -3,6 +3,8 @@
     public class LearningMaterialViewDto
     {
         public string? LearningType { get; set; }
+        public bool? IsImportedMaterial { get; set; }
+        public string? MaterialType { get; set; }
 
         public bool? IsMainMaterial { get; set; }
 

@@ -177,111 +177,31 @@ export class SyllabusDetailComponent implements OnInit {
     this.displayAddDialog = true;
   }
 
-  confirmDeleteMaterial(material: Material): void {
-    this.currentMaterialId = material.id;
+  confirmDeleteMaterial(id: Material): void {
     this.confirmationService.confirm({
-      message: `Bạn có chắc chắn muốn xóa học liệu "${material.description}"?`,
+      message: `Bạn có chắc chắn muốn xóa học liệu này không?`,
       header: 'Xác nhận xóa',
       accept: () => {
-        this.deleteMaterial();
+        this.deleteMaterial(id);
       }
     });
   }
 
-  deleteMaterial(): void {
-    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa học liệu', life: 3000 });
-    this.currentMaterialId = null;
-  }
-
-  addAuthor(): void {
-    const authorValue = this.materialForm.get('author')?.value;
-    if (authorValue && authorValue.trim()) {
-      // Check for duplicates
-      if (!this.authors.includes(authorValue.trim())) {
-        this.authors.push(authorValue.trim());
-        this.materialForm.get('author')?.setValue('');
-      } else {
-        this.messageService.add({
-          severity: 'warn',
-          summary: 'Cảnh báo',
-          detail: 'Tác giả này đã được thêm vào danh sách',
-          life: 3000
-        });
+  deleteMaterial(id: any): void {
+    this.materialService.deleteLearningMaterial(id).subscribe(
+      (response) => {
+        this.getLearningMaterial();
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
+        this.cancelDialog();
+      },
+      (error) => {
+        this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
       }
-    }
-  }
-
-  removeAuthor(index: number): void {
-    this.authors.splice(index, 1);
-  }
-
-  saveMaterial(): void {
-    if (this.materialForm.invalid) {
-      Object.keys(this.materialForm.controls).forEach(key => {
-        const control = this.materialForm.get(key);
-        if (control) {
-          control.markAsDirty();
-          control.markAsTouched();
-        }
-      });
-      return;
-    }
-
-    // Check if at least one author exists
-    if (this.authors.length === 0) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Lỗi',
-        detail: 'Vui lòng thêm ít nhất một tác giả',
-        life: 3000
-      });
-      return;
-    }
-
-    const formValues = this.materialForm.value;
-    const authorString = this.authors.join(', ');
-
-    // if (this.isEdit && this.currentMaterialId) {
-    //   // Update existing material
-    //   const index = this.materials.findIndex(m => m.id === this.currentMaterialId);
-    //   if (index !== -1) {
-    //     this.materials[index] = {
-    //       ...this.materials[index],
-    //       description: formValues.description,
-    //       publishedDate: formValues.publishedDate,
-    //       author: authorString,
-    //       publisher: formValues.publisher || '',
-    //       isbn: formValues.isbn || '',
-    //       type: formValues.type
-    //     };
-    //     this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã cập nhật học liệu', life: 3000 });
-    //   }
-    // } else {
-    //   // Add new material
-    //   const newId = this.materials.length > 0 ? Math.max(...this.materials.map(m => m.id)) + 1 : 1;
-    //   const newNo = this.materials.length + 1;
-
-    //   this.materials.push({
-    //     id: newId,
-    //     no: newNo,
-    //     description: formValues.description,
-    //     publishedDate: formValues.publishedDate,
-    //     author: authorString,
-    //     publisher: formValues.publisher || '',
-    //     isbn: formValues.isbn || '',
-    //     type: formValues.type
-    //   });
-    //   this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm học liệu mới', life: 3000 });
-    // }
-
-    this.materialDialog = false;
-    this.materialForm.reset({ type: 'Book' });
-    this.authors = [];
+    );
+    this.currentMaterialId = null;
   }
 
   cancelDialog(): void {
     this.materialDialog = false;
-    this.materialForm.reset({ type: 'Book' });
-    this.authors = [];
   }
 }

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
@@ -13,6 +13,10 @@ import { ButtonModule } from 'primeng/button';
 import { LearningMaterialApiService } from '../../../../../apis/learning-materialAPIs/learning-material-api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ActivatedRoute } from '@angular/router';
+import { CheckboxModule } from 'primeng/checkbox';
+import { ToastModule } from 'primeng/toast';
+import { ChipModule } from 'primeng/chip';
+import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 
 @Component({
   selector: 'app-learning-material',
@@ -27,7 +31,10 @@ import { ActivatedRoute } from '@angular/router';
     FormsModule,
     DatePickerModule,
     DialogModule,
-    ButtonModule
+    ButtonModule,
+    CheckboxModule,
+    ToastModule,
+    AutoCompleteModule
   ],
 
   templateUrl: './learning-material.component.html',
@@ -39,19 +46,25 @@ export class LearningMaterialComponent implements OnChanges {
   @Input() displayAddDialog: boolean = false;
   @Output() closeDialogEvent = new EventEmitter<void>();
 
-  materialForm!: FormGroup;
-  materialDetailForm!: FormGroup;
+  isImported: boolean = false;
+  items: any[] = [];
+  authors: string[] = [];
+  publishersList: string[] = [];
+  filteredPublishersList: string[] = [];
+  material: any;
 
   type = [
     { name: 'Online', value: MaterialTypeConstant.Online },
     { name: 'Offline', value: MaterialTypeConstant.Offline }
   ];
 
-  constructor(private fb: FormBuilder,
+  constructor(
     private learningMaterialApiService: LearningMaterialApiService,
     private messageService: MessageService,
     private route: ActivatedRoute,
-  ) { }
+  ) {
+
+  }
 
   materialTypes = [
     { name: 'Sách xuất bản chính thức', value: MaterialCategory.PublishedBook },
@@ -62,15 +75,16 @@ export class LearningMaterialComponent implements OnChanges {
     { name: 'Khóa học Udemy', value: MaterialCategory.UdemyCourse }
   ];
 
-  publishers = Object.values(Publisher).map(name => ({ name, value: name }));
-
   ngOnChanges() {
     this.resetForm();
     if (this.SelectedId) {
       this.learningMaterialApiService.getLearningMaterialDetail(this.SelectedId).subscribe(
         (response) => {
           if (response) {
-            this.materialForm.patchValue(response);
+            this.material = response;
+            this.material.publishedDate = new Date(response.publishedDate);
+            this.authors = response.author ? response.author.split(',').map((author: string) => author.trim()) : [];
+            this.isImported = response.isImportedMaterial;
           }
         },
         (error) => {
@@ -81,71 +95,85 @@ export class LearningMaterialComponent implements OnChanges {
           });
         }
       );
-    } else {
     }
+    this.learningMaterialApiService.getPublishers().subscribe(
+      (response) => {
+        if (response) {
+          this.publishersList = response;
+          this.filteredPublishersList = [...this.publishersList];
+        }
+      },
+      (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Thất bại',
+          detail: error?.error?.message || 'Đã xảy ra lỗi khi tải dữ liệu.'
+        });
+      }
+    );
   }
 
   save() {
+    this.material.author = this.authors.join(', ');
     if (this.SelectedId) {
-      // this.learningMaterialApiService.updateLearningMaterial(this.SelectedId, this.materialForm.value).subscribe(
-      //   (response) => {
-      //     this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
-      //     this.closeDialog();
-      //   },
-      //   (error) => {
-      //     this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
-      //   }
-      // );
+      this.learningMaterialApiService.updateLearningMaterial(this.SelectedId, this.material).subscribe(
+        (response) => {
+          this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
+          this.closeDialog();
+        },
+        (error) => {
+          this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+        }
+      );
     } else {
-      this.materialForm.patchValue({ syllabusId: this.route.snapshot.paramMap.get('id') || '' });
-      if(!this.materialForm.get('materialDetail')?.value) {
-        this.learningMaterialApiService.createLearningMaterial(this.materialForm.value).subscribe(
-          (response) => {
-            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
-            this.closeDialog();
-          },
-          (error) => {
-            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
-          }
-        );
-      }else{
-        this.learningMaterialApiService.createLearningMaterial(this.materialDetailForm.value).subscribe(
-          (response) => {
-            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
-            this.closeDialog();
-          },
-          (error) => {
-            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
-          }
-        );
-      }
+      this.material.syllabusId = this.route.snapshot.paramMap.get('id') || '';
+      this.learningMaterialApiService.createLearningMaterial(this.material).subscribe(
+        (response) => {
+          this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
+          this.closeDialog();
+        },
+        (error) => {
+          this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+        }
+      );
     }
   }
 
-  resetForm() {
-    this.materialForm = this.fb.group({
-      syllabusId: [''],
-      materialType: ['', Validators.required],
-      materialQuantity: [''],
-      purpose: [''],
-      learningType: [''],
-      note: [''],
-      url: [''],
-      materialDetail: null
-    });
+  search(event: AutoCompleteCompleteEvent) {
+    this.items = [...Array(1).keys()].map(() => event.query);
+  }
 
-    this.materialDetailForm = this.fb.group({
-      syllabusId: [''],
-      materialName: ['', Validators.required],
-      materialDescription: [''], 
-      type: [null],
-      publishedDate: [null], 
-      publisher: [null], 
-      edition: [''], 
-      isbn: [''],
-      note: ['']
-    });
-    
+  searchPublisher(event: AutoCompleteCompleteEvent) {
+    const query = event.query.toLowerCase();
+    if (query === '') {
+      this.filteredPublishersList = [...this.publishersList];
+    } else {
+      this.filteredPublishersList = this.publishersList.filter(publisher =>
+        publisher.toLowerCase().includes(query)
+      );
+    }
+
+    console.log(this.filteredPublishersList);
+    console.log(query);
+  }
+
+  resetForm(): void {
+    this.isImported = false;
+    this.material = {
+      syllabusId: '',
+      learningType: '',
+      materialType: '',
+      isMainMaterial: false,
+      materialName: '',
+      isbn: '',
+      publisher: '',
+      publishedDate: null,
+      edition: '',
+      url: '',
+      purpose: '',
+      note: '',
+      author: ''
+    };
   }
 
   closeDialog() {

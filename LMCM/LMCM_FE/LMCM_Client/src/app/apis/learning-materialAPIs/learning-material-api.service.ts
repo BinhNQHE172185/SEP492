@@ -46,4 +46,13 @@ export class LearningMaterialApiService {
   getLearningMaterialDetail(id: any): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/LearningMaterial/${id}`);
   }
+  updateLearningMaterial(id: any, data: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/LearningMaterial/update/${id}`, data);
+  }
+  deleteLearningMaterial(id: any): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/LearningMaterial/delete/${id}`);
+  }
+  getPublishers(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/LearningMaterial/getPublishersList`);
+  }
 }

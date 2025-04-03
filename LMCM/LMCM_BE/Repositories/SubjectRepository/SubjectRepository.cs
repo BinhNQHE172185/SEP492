@@ -33,6 +33,8 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
         {
             var query = _dbContext.Subjects.AsQueryable();
 
+            query = query.OrderBy(s => s.SubjectCode);
+
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
                 string search = searchKey.Trim().ToLower();
@@ -97,9 +99,9 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
             try
             {
                 // Get existing subjects from DB (as a dictionary for fast lookup)
-                var existingSubjects = await _dbContext.Subjects
-                    .ToDictionaryAsync(s => s.SubjectCode);
+                var existingSubjects = await _dbContext.Subjects.ToDictionaryAsync(s => s.SubjectCode);
 
+                var subjectCodesToKeep = subjects.Select(s => s.SubjectCode).ToHashSet();
                 var newSubjects = new List<Subject>();
                 var updatedSubjects = new List<Subject>();
 
@@ -115,7 +117,6 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
                     }
                     else
                     {
-                        // Use AutoMapper to map DTO to Entity
                         var newSubject = _mapper.Map<Subject>(subjectDto);
                         newSubject.SubjectId = Guid.NewGuid();
                         newSubject.Status = "Active";
@@ -123,6 +124,15 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
                         newSubject.UpdatedAt = DateTime.UtcNow;
                         newSubjects.Add(newSubject);
                     }
+                }
+
+                // Identify subjects to mark as inactive
+                var subjectsToDeactivate = existingSubjects.Values.Where(s => !subjectCodesToKeep.Contains(s.SubjectCode)).ToList();
+                foreach (var subject in subjectsToDeactivate)
+                {
+                    subject.Status = "Inactive";
+                    subject.UpdatedAt = DateTime.UtcNow;
+                    updatedSubjects.Add(subject);
                 }
 
                 // Apply updates and inserts
@@ -178,6 +188,11 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
             if (existingSubject.Reality != subjectDto.Reality)
             {
                 existingSubject.Reality = subjectDto.Reality;
+                isUpdated = true;
+            }
+            if (existingSubject.Status != "Active")
+            {
+                existingSubject.Status="Active";
                 isUpdated = true;
             }
 

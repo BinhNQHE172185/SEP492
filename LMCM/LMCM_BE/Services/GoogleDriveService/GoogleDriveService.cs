@@ -1,6 +1,7 @@
 ﻿using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
 using Google.Apis.Upload;
+using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Services.UserService;
 using LMCM_BE.Utilities;
 using System.Text.RegularExpressions;
@@ -150,12 +151,34 @@ namespace LMCM_BE.Services.GoogleDriveService
                     EmailAddress = email,
                 };
 
-                //var contractPermissionTask = _driveService.Permissions.Create(permission, _contractFolderId).ExecuteAsync();
-                //var budgetProposalPermissionTask = _driveService.Permissions.Create(permission, _budgetProposalFolderId).ExecuteAsync();
-                //var acceptanceRecordPermissionTask = _driveService.Permissions.Create(permission, _acceptanceRecordFolderId).ExecuteAsync();
                 var DocumentTemplatePermissionTask = _driveService.Permissions.Create(permission, _documentTemplateFolderId).ExecuteAsync();
 
-                await Task.WhenAll(DocumentTemplatePermissionTask);
+                await DocumentTemplatePermissionTask;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sharing folder: {ex.Message}");
+                return false;
+            }
+        }
+        public async Task<bool> ShareFoldersWithHeadOfDepartment(string email, string role = "reader")
+        {
+            try
+            {
+                var permission = new Permission
+                {
+                    Type = "user",
+                    Role = role,  // "reader" (view-only) or "writer" (edit)
+                    EmailAddress = email,
+                };
+
+                var DocumentTemplatePermissionTask = _driveService.Permissions.Create(permission, _documentTemplateFolderId).ExecuteAsync();
+                var contractPermissionTask = _driveService.Permissions.Create(permission, _contractFolderId).ExecuteAsync();
+                var budgetProposalPermissionTask = _driveService.Permissions.Create(permission, _budgetProposalFolderId).ExecuteAsync();
+                var acceptanceRecordPermissionTask = _driveService.Permissions.Create(permission, _acceptanceRecordFolderId).ExecuteAsync();
+
+                await Task.WhenAll(DocumentTemplatePermissionTask, contractPermissionTask, budgetProposalPermissionTask, acceptanceRecordPermissionTask);
 
                 return true;
             }

@@ -107,6 +107,8 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
         {
             var query = _dbContext.LearningMaterials.AsQueryable();
 
+            query = query.OrderBy(s => s.MaterialNo);
+
             query = query.Where(s => s.SyllabusId == syllabusId && s.Status != "Deleted");
 
             if (!string.IsNullOrWhiteSpace(searchKey))
@@ -121,7 +123,6 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .Include(s => s.MaterialDetail)
-                .OrderBy(s => s.MaterialNo)
                 .ToListAsync();
 
             var data = _mapper.Map<List<LearningMaterialListDto>>(items);
@@ -142,7 +143,9 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             query = query.Where(s => s.SyllabusId == syllabusId && s.Status != "Deleted")
                          .Include(s => s.MaterialDetail);
 
-            var items = await query.ToListAsync();
+            var items = await query
+                .OrderBy(s=>s.MaterialNo)
+                .ToListAsync();
 
             var data = _mapper.Map<List<LearningMaterialListDto>>(items);
 
@@ -155,6 +158,8 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 throw new ArgumentNullException(nameof(materials));
 
             var newMaterials = _mapper.Map<List<LearningMaterial>>(materials);
+            //Excluded types for finding material detail
+            string[] materialTypes = { "Slide", "Lab", "Assignment", "Quiz", "Assigment" };
             foreach (var material in newMaterials)
             {
                 material.MaterialId = Guid.NewGuid();
@@ -163,10 +168,10 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 material.Status = "Active";
                 material.CreatedAt = DateTime.UtcNow;
                 material.UpdatedAt = DateTime.UtcNow;
-                if (oldSyllabusId != null && material.MaterialType == "Imported Material" && material.MaterialDetailId == null)
+                if (oldSyllabusId != null && !materialTypes.Contains(material.MaterialName) && material.MaterialDetailId == null)
                 {
                     var oldMaterial = await _dbContext.LearningMaterials
-                        .Where(s => s.SyllabusId == oldSyllabusId && s.Url == material.Url)
+                        .Where(s => s.SyllabusId == oldSyllabusId && (s.MaterialName == material.MaterialName || s.Url == material.Url))
                         .Include(s => s.MaterialDetail)
                         .FirstOrDefaultAsync();
                     if (oldMaterial != null) material.MaterialDetailId = oldMaterial.MaterialDetailId;

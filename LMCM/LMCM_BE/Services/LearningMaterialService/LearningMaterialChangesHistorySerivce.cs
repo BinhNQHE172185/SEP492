@@ -22,10 +22,10 @@ namespace LMCM_BE.Services.LearningMaterialService
         {
             return await _changesRepository.CreateLearningMaterialChangesHistoryAsync(historyDto);
         }
-        public async Task<PagedResult<ChangesHistoryWithMaterialDto>> GetLearningMaterialChangeHistoriesAsync(
-     Guid? learningMaterialId, string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<PagedResult<ChangesHistoryOfSubjectDto>> GetLearningMaterialChangesHistoriesOfSubjectAsync(
+     Guid? subjectId, string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
-            return await _changesRepository.GetLearningMaterialChangeHistoriesAsync(learningMaterialId, searchKey, pageIndex, pageSize);
+            return await _changesRepository.GetLearningMaterialChangesHistoriesOfSubjectAsync(subjectId, searchKey, pageIndex, pageSize);
         }
     }
 }

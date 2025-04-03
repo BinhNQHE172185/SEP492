@@ -11,9 +11,7 @@ public partial class LearningMaterialChangesHistory
 
     public Guid? ContractId { get; set; }
 
-    public Guid NewMaterialId { get; set; }
-
-    public Guid? OldMaterialId { get; set; }
+    public Guid SyllabusId { get; set; }
 
     public string LearningMaterialType { get; set; } = null!;
 
@@ -32,6 +30,5 @@ public partial class LearningMaterialChangesHistory
     public virtual Contract? Contract { get; set; }
 
     public virtual User User { get; set; } = null!;
-    public virtual LearningMaterial NewMaterial { get; set; } = null!;
-    public virtual LearningMaterial? OldMaterial { get; set; }
+    public virtual Syllabus Syllabus { get; set; } = null!;
 }

@@ -77,19 +77,19 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = false; // Set to true in production
+    options.RequireHttpsMetadata = false;
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-            builder.Configuration["Jwt:Secret"])), // Use configuration, NOT hardcoded keys!
+            builder.Configuration["Jwt:Secret"])),
 
         ValidateIssuer = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"], // Validate issuer
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
 
         ValidateAudience = true,
-        ValidAudience = builder.Configuration["Jwt:Audience"], // Validate audience
+        ValidAudience = builder.Configuration["Jwt:Audience"],
 
         RequireExpirationTime = true,
         ValidateLifetime = true,
@@ -115,7 +115,7 @@ builder.Services.AddIdentity<User, IdentityRole<Guid>>()
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp",
-        policy => policy.WithOrigins("https://localhost:4200")
+        policy => policy.WithOrigins("http://localhost:4200")
                         .AllowCredentials()
                         .AllowAnyHeader()
                         .AllowAnyMethod());

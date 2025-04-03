@@ -174,12 +174,12 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
-        [HttpPost("getLearningMaterialChangesHistoryList")]
-        public async Task<IActionResult> GetLearningMaterialChangesHistoriesAsync([FromBody] PagingRequest request)
+        [HttpPost("getLearningMaterialChangesHistoriesOfSubjectList")]
+        public async Task<IActionResult> GetLearningMaterialChangesHistoriesOfSubjectAsync([FromBody] PagingRequest request)
         {
             try
             {
-                var data = await _changesService.GetLearningMaterialChangeHistoriesAsync(
+                var data = await _changesService.GetLearningMaterialChangesHistoriesOfSubjectAsync(
                     request.Id, request.SearchKey, request.pageIndex, request.PageSize);
 
                 if (data != null && data.Items.Any())
@@ -202,22 +202,6 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
             {
                 return BadRequest("Invalid data.");
             }
-            // Validate referenced IDs
-            UserProfileResponseDto user = await _userService.GetProfile(historyDto.UserId.ToString());
-            if (user == null)
-                return BadRequest(new { message = "Invalid UserId." });
-
-            var newMaterial = await _learningMaterialService.GetLearningMaterialByIdAsync(historyDto.NewMaterialId);
-            if (newMaterial == null)
-                return BadRequest(new { message = "Invalid NewMaterialId." });
-
-            if (historyDto.OldMaterialId.HasValue)
-            {
-                var oldMaterial = await _learningMaterialService.GetLearningMaterialByIdAsync(historyDto.OldMaterialId.Value);
-                if (oldMaterial == null)
-                    return BadRequest(new { message = "Invalid OldMaterialId." });
-            }
-
             if (historyDto.ContractId.HasValue)
             {
                 var contract = await _contractService.GetContractByIdAsync(historyDto.ContractId.Value);

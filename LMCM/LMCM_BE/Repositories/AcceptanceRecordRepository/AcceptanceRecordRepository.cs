@@ -43,6 +43,8 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
             UserProfileResponseDto user = await _userRepository.GetProfileFromCookie();
             var query = _dbContext.AcceptanceRecords.AsQueryable();
 
+            query = query.OrderByDescending(s => s.UpdatedAt);
+
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
 

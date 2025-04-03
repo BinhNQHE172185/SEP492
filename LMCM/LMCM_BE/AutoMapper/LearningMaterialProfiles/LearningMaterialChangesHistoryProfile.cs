@@ -10,8 +10,9 @@ namespace LMCM_BE.AutoMapper.LearningMaterialProfiles
         {
             CreateMap<LearningMaterialChangesHistory, ChangesHistoryListDto>();
             CreateMap<CreateLearningMaterialChangesHistoryDto, LearningMaterialChangesHistory>();
-            CreateMap<LearningMaterialChangesHistory, ChangesHistoryWithMaterialDto>()
-               .ForMember(dest => dest.OldMaterial, opt => opt.MapFrom(src => src.OldMaterial))
+            CreateMap<LearningMaterialChangesHistory, ChangesHistoryOfSubjectDto>()
+               .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.Contract))
+               .ForMember(dest => dest.Syllabus, opt => opt.MapFrom(src => src.Syllabus))
                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
             CreateMap<LearningMaterial, LearningMaterialViewDto>();
         }

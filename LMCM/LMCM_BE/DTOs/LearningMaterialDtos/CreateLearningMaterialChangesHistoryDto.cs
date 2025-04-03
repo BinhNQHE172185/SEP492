@@ -2,13 +2,9 @@
 {
     public class CreateLearningMaterialChangesHistoryDto
     {
-        public Guid UserId { get; set; }
-
         public Guid? ContractId { get; set; }
 
-        public Guid NewMaterialId { get; set; }
-
-        public Guid? OldMaterialId { get; set; }
+        public Guid SyllabusId { get; set; }
 
         public string LearningMaterialType { get; set; } = null!;
 

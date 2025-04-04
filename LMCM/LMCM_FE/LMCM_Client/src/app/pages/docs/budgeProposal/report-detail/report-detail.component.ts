@@ -5,6 +5,7 @@ import { CalendarModule } from 'primeng/calendar';
 import { DialogModule } from 'primeng/dialog';
 import { BudgetApiService } from '../../../../apis/budgetProposalAPIs/budget-api.service';
 import { ButtonModule } from 'primeng/button';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-report-detail',
@@ -14,7 +15,8 @@ import { ButtonModule } from 'primeng/button';
     FormsModule,
     DialogModule,
     CommonModule,
-    ButtonModule
+    ButtonModule,
+    RouterLink
   ],
   templateUrl: './report-detail.component.html',
   styleUrl: './report-detail.component.scss'

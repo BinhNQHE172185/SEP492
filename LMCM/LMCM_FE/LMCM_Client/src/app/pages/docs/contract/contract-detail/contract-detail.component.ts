@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { CalendarModule } from 'primeng/calendar';
 import { ContractApiService } from '../../../../apis/contractAPIs/contract-api.service';
 import { ToastModule } from 'primeng/toast';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-contract-detail',
@@ -16,7 +17,8 @@ import { ToastModule } from 'primeng/toast';
     DialogModule,
     CommonModule,
     ButtonModule,
-    ToastModule
+    ToastModule,
+    RouterLink
   ],
   templateUrl: './contract-detail.component.html',
   styleUrl: './contract-detail.component.scss',

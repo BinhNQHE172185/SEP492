@@ -7,11 +7,12 @@ import { BudgetApiService } from '../../../../apis/budgetProposalAPIs/budget-api
 import { ButtonModule } from 'primeng/button';
 import { ContractorApiService } from '../../../../apis/contractorAPIs/contractor-api.service';
 import { DocumentTemplateApiService } from '../../../../apis/templateAPIs/template-api.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
     selector: 'app-template-detail',
     standalone: true,
-    imports: [CalendarModule, FormsModule, DialogModule, CommonModule, ButtonModule],
+    imports: [CalendarModule,RouterLink, FormsModule, DialogModule, CommonModule, ButtonModule],
     templateUrl: './template-detail.component.html',
     styleUrl: './template-detail.component.scss'
 })

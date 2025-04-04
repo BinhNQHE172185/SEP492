@@ -8,10 +8,11 @@ import { CalendarModule } from 'primeng/calendar';
 import { ContractApiService } from '../../../../apis/contractAPIs/contract-api.service';
 import { ToastModule } from 'primeng/toast';
 import { AcceptanceRecordApiService } from '../../../../apis/acceptanceRecordAPIs/acceptance-api.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
     selector: 'app-acceptance-report-detail',
-    imports: [CalendarModule, FormsModule, DialogModule, CommonModule, ButtonModule, ToastModule],
+    imports: [CalendarModule, FormsModule, DialogModule, CommonModule, ButtonModule, ToastModule,RouterLink],
     templateUrl: './acceptance-report-detail.component.html',
     styleUrl: './acceptance-report-detail.component.scss',
     providers: [ConfirmationService, MessageService]

@@ -31,8 +31,8 @@ export class SyllabusApiService {
   getSyllabusDetail(id: any): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/Syllabus/getSyllabusDetail?syllabusId=${id}`);
   }
-  importSyllabuses(request: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/Syllabus/importSyllabus`, request);
+  importSyllabuses(request: any, keepData: boolean): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/Syllabus/importSyllabus?keepUserCreated=${keepData}`, request);
   }
   deleteSyllabuses(id: any): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/Syllabus/${id}`);

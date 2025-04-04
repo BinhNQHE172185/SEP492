@@ -1,9 +1,9 @@
 ﻿using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
-using LMCM_BE.Repositories.LearningMaterialRepository;
+using LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository;
 
-namespace LMCM_BE.Services.LearningMaterialService
+namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
 {
     public class LearningMaterialChangesHistorySerivce : ILearningMaterialChangesHistorySerivce
     {
@@ -27,6 +27,13 @@ namespace LMCM_BE.Services.LearningMaterialService
         {
             return await _changesRepository.GetLearningMaterialChangesHistoriesOfSubjectAsync(subjectId, searchKey, pageIndex, pageSize);
         }
-
+        public async Task<bool> SoftDeleteLearningMaterialChangesHistoryAsync(Guid historyId)
+        {
+            return await _changesRepository.SoftDeleteLearningMaterialChangesHistoryAsync(historyId);
+        }
+        public async Task<Guid?> UpdateLearningMaterialChangesHistoryAsync(Guid historyId, UpdateLearningMaterialChangesHistoryDto dto)
+        {
+            return await _changesRepository.UpdateLearningMaterialChangesHistoryAsync(historyId, dto);
+        }
     }
 }

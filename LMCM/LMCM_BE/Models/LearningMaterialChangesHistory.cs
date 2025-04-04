@@ -13,8 +13,6 @@ public partial class LearningMaterialChangesHistory
 
     public Guid SyllabusId { get; set; }
 
-    public string LearningMaterialType { get; set; } = null!;
-
     public string ChangeType { get; set; } = null!;
 
     public string? ChangeDescription { get; set; }

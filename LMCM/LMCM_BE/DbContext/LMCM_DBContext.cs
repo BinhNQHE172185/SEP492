@@ -436,6 +436,10 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasMaxLength(255)
                 .HasColumnName("Learning_Type");
 
+            entity.Property(e => e.MaterialType)
+                .HasMaxLength(255)
+                .HasColumnName("Material_Type");
+
             entity.Property(e => e.IsMainMaterial)
                 .HasColumnName("is_Main_Material");
 
@@ -517,9 +521,6 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.CourseCode)
                 .HasMaxLength(255)
                 .HasColumnName("Course_Code");
-            entity.Property(e => e.LearningMaterialType)
-                .HasMaxLength(255)
-                .HasColumnName("Learning_Material_Type");
             entity.Property(e => e.SyllabusId).HasColumnName("Syllabus_ID");
             entity.Property(e => e.StartTerm)
                 .HasMaxLength(255)

@@ -59,6 +59,9 @@ using LMCM_BE.Repositories.DocumentTemplateRepository;
 using LMCM_BE.Services.DocumentTemplateService;
 using LMCM_BE.Repositories.ContractValueItemRepository;
 using LMCM_BE.Services.ContractValueItemService;
+using LMCM_BE.AutoMapper.LearningMaterialChangesHistoryProfile;
+using LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository;
+using LMCM_BE.Services.LearningMaterialChangesHistoryService;
 
 
 var builder = WebApplication.CreateBuilder(args);

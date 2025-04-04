@@ -16,6 +16,7 @@ import { DialogModule } from 'primeng/dialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Router } from '@angular/router';
+import { CheckboxModule } from 'primeng/checkbox';
 
 interface Syllabus {
   courseCode: string;
@@ -35,7 +36,7 @@ interface PagingRequest {
 @Component({
   standalone: true,
   imports: [
-    ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, TagModule, CardModule, InputTextModule
+    CheckboxModule, ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, TagModule, CardModule, InputTextModule
   ],
   selector: 'app-list-syllabus',
   templateUrl: './list-syllabus.component.html',
@@ -54,6 +55,8 @@ export class ListSyllabusComponent implements OnInit, OnDestroy {
 
   displayImportDialog: boolean = false;
   uploadedFiles: any[] = [];
+
+  keepData: boolean = false;
 
   private searchSubscription!: Subscription;
 
@@ -128,7 +131,7 @@ export class ListSyllabusComponent implements OnInit, OnDestroy {
     const formData = new FormData();
     formData.append('file', file);
 
-    this.syllabusService.importSyllabuses(formData).subscribe(
+    this.syllabusService.importSyllabuses(formData, this.keepData).subscribe(
       () => {
         this.loadSyllabuses();
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Nhập dữ liệu thành công' });

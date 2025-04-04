@@ -198,7 +198,7 @@ namespace LMCM_BE.Services.GoogleDriveService
             string fileId = await ExtractFileId(fileUrl);
 
             // Generate a direct download link
-            string downloadUrl = $"https://drive.google.com/uc?export=download&id={fileId}";
+            string downloadUrl = $"https://drive.usercontent.google.com/download?id={fileId}&export=download";
 
             return downloadUrl;
         }

@@ -41,11 +41,14 @@
 
                 <div class="flex flex-col gap-2">
                     <label class="block font-semibold text-orange-500">File đính kèm</label>
-                    <div *ngIf="contract.url; else noFile" class="flex items-center gap-2">
-                        <p-button (click)="downloadFile(contract.url)" outlined>
-                            <i class="pi pi-download"></i> Tải file đính kèm
+
+                    <div *ngIf="contract.url; else noFile" class="flex items-center gap-3">
+                        <p-button icon="pi pi-file" label="Xem file đính kèm" (click)="viewFile(contract.url)" outlined>
+                        </p-button>
+                        <p-button icon="pi pi-download" text (click)="downloadFile(contract.downloadUrl)">
                         </p-button>
                     </div>
+
                     <ng-template #noFile>
                         <p class="text-gray-500 italic">Không có file đính kèm</p>
                     </ng-template>

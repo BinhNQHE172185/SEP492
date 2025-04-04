@@ -13,6 +13,5 @@
         public string? Position { get; set; }
         public string? BankAccountNumber { get; set; }
         public string? BankName { get; set; }
-        public string? Status { get; set; }
     }
 }

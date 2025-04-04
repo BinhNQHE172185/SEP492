@@ -12,6 +12,5 @@
 
         public IFormFile? File { get; set; }
 
-        public string? Status { get; set; }
     }
 }

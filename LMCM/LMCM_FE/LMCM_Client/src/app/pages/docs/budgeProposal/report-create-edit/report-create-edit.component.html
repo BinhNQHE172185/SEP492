@@ -1,26 +1,27 @@
-<p-dialog header="Thêm tờ trình" [(visible)]="displayAddDialog" [modal]="true" [resizable]="true" class="custom-dialog" (onHide)="closeDialog()">
+<p-dialog header="Thêm tờ trình" [(visible)]="displayAddDialog" [modal]="true" [draggable]="false" [resizable]="false"
+    class="custom-dialog" (onHide)="closeDialog()">
     <ng-template pTemplate="content">
         <section class="p-8 w-full bg-white rounded-xl">
-            <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-6">
                 <div class="flex flex-col gap-2">
-                    <label class="block font-semibold ">Tiêu đề</label>
+                    <label class="block font-semibold text-orange-500">Tiêu đề <span class="text-red-500">*</span></label>
                     <input pInputText [(ngModel)]="addTitle" class="w-full p-2 border border-gray-300 rounded"
                         placeholder="Nhập tiêu đề" />
                 </div>
 
-                <div class="flex gap-4">
-                    <div *ngIf="selectedReportId" class="flex flex-col grow gap-2">
-                        <label class="block font-semibold"> Người tạo <span class="text-red-500">*</span></label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div *ngIf="selectedReportId" class="flex flex-col gap-2">
+                        <label class="block font-semibold text-orange-500">Người tạo <span class="text-red-500">*</span></label>
                         <input disabled pInputText [(ngModel)]="addAuthor"
                             class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập tên người viết" />
                     </div>
-
-                    <div class="flex flex-col grow gap-2">
-                        <label class="block font-semibold ">Ngày <span class="text-red-500">*</span></label>
-                        <p-datepicker [(ngModel)]="addDate" [showIcon]="true" class="w-full"
+                    <div class="flex flex-col gap-2">
+                        <label class="block font-semibold text-orange-500">Ngày <span class="text-red-500">*</span></label>
+                        <p-datepicker [(ngModel)]="addDate"  [showIcon]="true" 
                             appendTo="body"></p-datepicker>
                     </div>
                 </div>
+
                 <div class="flex flex-col gap-2">
                     <label class="block font-semibold ">File đính kèm</label>
                     <div class="flex flex-col gap-2">
@@ -46,14 +47,12 @@
             </div>
         </section>
     </ng-template>
-    <!-- Dialog Footer -->
+
     <ng-template pTemplate="footer">
         <div class="flex justify-end gap-4 p-2">
             <button pButton type="button" label="Hủy" class="p-button-text text-gray-500 hover:text-gray-700"
                 (click)="closeDialog()"></button>
-            <button pButton type="button" label="Lưu" (click)="saveReport()"></button>
+            <button pButton type="button" label="Lưu" class="p-button-warning" (click)="saveReport()"></button>
         </div>
     </ng-template>
 </p-dialog>
-
-<p-toast></p-toast>

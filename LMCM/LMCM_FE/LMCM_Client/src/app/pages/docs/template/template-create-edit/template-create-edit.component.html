@@ -1,4 +1,5 @@
-<p-dialog header="Chỉnh sửa tài liệu" [(visible)]="displayAddDialog" [modal]="true" [style]="{ width: '1000px', minHeight: '55vh' }" [draggable]="false" [resizable]="false" class="custom-dialog" (onHide)="closeDialog()">
+<p-dialog header="Chỉnh sửa tài liệu" [(visible)]="displayAddDialog" [modal]="true" [draggable]="false" [resizable]="false"
+    class="custom-dialog" (onHide)="closeDialog()">
     <ng-template pTemplate="content">
         <section class="p-8 w-full bg-white rounded-xl" *ngIf="template">
             <div style="width: 50%" class="flex flex-wrap gap-4">

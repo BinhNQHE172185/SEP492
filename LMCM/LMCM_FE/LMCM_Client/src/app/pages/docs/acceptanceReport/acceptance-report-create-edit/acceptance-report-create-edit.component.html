@@ -62,10 +62,10 @@
                     </p-fileupload>
 
                     <div *ngIf="file && selectedId" class="flex items-center gap-4 mt-2">
-                        <p-button (click)="downloadFile(file)" outlined>
-                            <i class="pi pi-download"></i> Tải file đính kèm
+                        <p-button icon="pi pi-file" label="Xem file đính kèm" (click)="viewFile(file)" outlined>
                         </p-button>
-                        <span class="text-gray-500 text-sm">(Chọn file mới nếu muốn thay đổi)</span>
+                        <p-button icon="pi pi-download" text (click)="downloadFile(file)">
+                        </p-button>
                     </div>
                 </div>
             </div>

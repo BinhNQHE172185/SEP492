@@ -178,4 +178,7 @@ export class ContractCreateEditComponent implements OnChanges {
     this.displayAddDialog = false;
     this.closeDialogEvent.emit();
   }
+    viewFile(url: string) {
+      window.open(url, '_blank');
+    }
 }

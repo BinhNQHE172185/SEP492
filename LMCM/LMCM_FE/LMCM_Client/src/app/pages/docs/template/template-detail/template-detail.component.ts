@@ -6,13 +6,12 @@ import { DialogModule } from 'primeng/dialog';
 import { BudgetApiService } from '../../../../apis/budgetProposalAPIs/budget-api.service';
 import { ButtonModule } from 'primeng/button';
 import { ContractorApiService } from '../../../../apis/contractorAPIs/contractor-api.service';
-import { DocumentTemplateApiService } from '../../../../apis/templateAPIs/template-api.service';
-import { RouterLink } from '@angular/router';
+import { DocumentTemplateApiService } from '../../../../apis/templateAPIs/template-api.service'
 
 @Component({
     selector: 'app-template-detail',
     standalone: true,
-    imports: [CalendarModule,RouterLink, FormsModule, DialogModule, CommonModule, ButtonModule],
+    imports: [CalendarModule, FormsModule, DialogModule, CommonModule, ButtonModule],
     templateUrl: './template-detail.component.html',
     styleUrl: './template-detail.component.scss'
 })
@@ -59,4 +58,7 @@ export class TemplateDetailComponent implements OnChanges {
         this.displayDetailDialog = false;
         this.closeDialogEvent.emit();
     }
+    viewFile(url: string) {
+        window.open(url, '_blank');
+      }
 }

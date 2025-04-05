@@ -5,7 +5,7 @@ import { CalendarModule } from 'primeng/calendar';
 import { DialogModule } from 'primeng/dialog';
 import { BudgetApiService } from '../../../../apis/budgetProposalAPIs/budget-api.service';
 import { ButtonModule } from 'primeng/button';
-import { RouterLink } from '@angular/router';
+
 
 @Component({
   selector: 'app-report-detail',
@@ -15,8 +15,8 @@ import { RouterLink } from '@angular/router';
     FormsModule,
     DialogModule,
     CommonModule,
-    ButtonModule,
-    RouterLink
+    ButtonModule
+    
   ],
   templateUrl: './report-detail.component.html',
   styleUrl: './report-detail.component.scss'
@@ -64,6 +64,8 @@ export class ReportDetailComponent implements OnChanges {
     link.click();
     document.body.removeChild(link);
   }
-
+  viewFile(url: string) {
+    window.open(url, '_blank');
+  }
 }
 

@@ -5,14 +5,14 @@ import { LayoutService } from '../../../layout/service/layout.service';
 
 @Component({
     standalone: true,
-    selector: 'app-revenue-stream-widget',
+    selector: 'app-report-of-builing',
     imports: [ChartModule],
     template: `<div class="card !mb-8">
-        <div class="font-semibold text-xl mb-4">Revenue Stream</div>
+        <div class="font-semibold text-xl mb-4">Báo cáo xây dựng học liệu theo năm</div>
         <p-chart type="bar" [data]="chartData" [options]="chartOptions" class="h-80" />
     </div>`
 })
-export class RevenueStreamWidget {
+export class ReportOfBuilding {
     chartData: any;
 
     chartOptions: any;
@@ -36,35 +36,18 @@ export class RevenueStreamWidget {
         const textMutedColor = documentStyle.getPropertyValue('--text-color-secondary');
 
         this.chartData = {
-            labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+            labels: ['2021', '2022', '2023', '2024'],
             datasets: [
                 {
-                    type: 'bar',
-                    label: 'Subscriptions',
+                    label: 'Số học liệu xây dựng',
                     backgroundColor: documentStyle.getPropertyValue('--p-primary-400'),
-                    data: [4000, 10000, 15000, 4000],
-                    barThickness: 32
-                },
-                {
-                    type: 'bar',
-                    label: 'Advertising',
-                    backgroundColor: documentStyle.getPropertyValue('--p-primary-300'),
-                    data: [2100, 8400, 2400, 7500],
-                    barThickness: 32
-                },
-                {
-                    type: 'bar',
-                    label: 'Affiliate',
-                    backgroundColor: documentStyle.getPropertyValue('--p-primary-200'),
-                    data: [4100, 5200, 3400, 7400],
+                    data: [15, 25, 40, 32], // Dữ liệu mẫu
+                    barThickness: 40,
                     borderRadius: {
-                        topLeft: 8,
-                        topRight: 8,
-                        bottomLeft: 0,
-                        bottomRight: 0
+                        topLeft: 6,
+                        topRight: 6
                     },
-                    borderSkipped: false,
-                    barThickness: 32
+                    borderSkipped: false
                 }
             ]
         };
@@ -81,7 +64,7 @@ export class RevenueStreamWidget {
             },
             scales: {
                 x: {
-                    stacked: true,
+                    stacked: false,
                     ticks: {
                         color: textMutedColor
                     },
@@ -91,9 +74,11 @@ export class RevenueStreamWidget {
                     }
                 },
                 y: {
-                    stacked: true,
+                    beginAtZero: true,
+                    stacked: false,
                     ticks: {
-                        color: textMutedColor
+                        color: textMutedColor,
+                        stepSize: 10 // nếu bạn muốn chia theo bậc cụ thể
                     },
                     grid: {
                         color: borderColor,

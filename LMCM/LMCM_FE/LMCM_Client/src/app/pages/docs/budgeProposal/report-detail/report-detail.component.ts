@@ -6,6 +6,7 @@ import { DialogModule } from 'primeng/dialog';
 import { BudgetApiService } from '../../../../apis/budgetProposalAPIs/budget-api.service';
 import { ButtonModule } from 'primeng/button';
 
+
 @Component({
   selector: 'app-report-detail',
   standalone: true,
@@ -15,6 +16,7 @@ import { ButtonModule } from 'primeng/button';
     DialogModule,
     CommonModule,
     ButtonModule
+    
   ],
   templateUrl: './report-detail.component.html',
   styleUrl: './report-detail.component.scss'
@@ -62,6 +64,8 @@ export class ReportDetailComponent implements OnChanges {
     link.click();
     document.body.removeChild(link);
   }
-
+  viewFile(url: string) {
+    window.open(url, '_blank');
+  }
 }
 

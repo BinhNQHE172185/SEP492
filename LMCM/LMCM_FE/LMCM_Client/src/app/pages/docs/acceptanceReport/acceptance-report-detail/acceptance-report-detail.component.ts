@@ -65,4 +65,7 @@ export class AcceptanceReportDetailComponent
     link.click();
     document.body.removeChild(link);
   }
+  viewFile(url: string) {
+    window.open(url, '_blank');
+  }
 }

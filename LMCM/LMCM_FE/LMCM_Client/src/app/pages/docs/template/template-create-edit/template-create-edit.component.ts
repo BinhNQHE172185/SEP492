@@ -151,4 +151,7 @@ statusList = Object.keys(TemplateStatus)
     this.displayAddDialog = false;
     this.closeDialogEvent.emit();
   }
+  viewFile(url: string) {
+    window.open(url, '_blank');
+  }
 }

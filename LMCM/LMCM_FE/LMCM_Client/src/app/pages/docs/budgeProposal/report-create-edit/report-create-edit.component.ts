@@ -10,6 +10,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { BudgetApiService } from '../../../../apis/budgetProposalAPIs/budget-api.service';
 import { DatePickerModule } from 'primeng/datepicker';
 import { ToastModule } from 'primeng/toast';
+import { DropdownModule } from 'primeng/dropdown';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-report-create-edit',
@@ -22,7 +24,9 @@ import { ToastModule } from 'primeng/toast';
     FormsModule,
     FileUploadModule,
     DatePickerModule,
-    ToastModule
+    ToastModule,
+    DropdownModule,
+    InputNumberModule
   ],
   templateUrl: './report-create-edit.component.html',
   styleUrl: './report-create-edit.component.scss',
@@ -131,5 +135,8 @@ export class ReportCreateEditComponent {
     this.selectedReportId = '';
     this.displayAddDialog = false;
     this.closeDialogEvent.emit();
+  }
+  viewFile(url: string) {
+    window.open(url, '_blank');
   }
 }

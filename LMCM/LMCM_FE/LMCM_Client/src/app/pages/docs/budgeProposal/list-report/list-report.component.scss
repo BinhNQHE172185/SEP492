@@ -1,64 +1,63 @@
 :host {
-    display: block;
+  display: block;
+  
+  .section {
+    margin-bottom: 2rem;
     
-    .section {
-      margin-bottom: 2rem;
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
       
-      .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-        
-        h2 {
-          margin: 0;
-        }
-      }
-    }
-    
-    ::ng-deep .custom-dialog .p-dialog-title {
-      color: rgb(233 114 0);
-    }
-    
-    // Table styling enhancements
-    ::ng-deep {
-
-
-      
-      .p-button-text {
-        &.p-button-warning {
-          color: #e97d23;
-        }
-        
-        &.p-button-danger {
-          color: #dc3545;
-        }
-      }
-      
-      // Form styling
-      .p-float-label {
-        margin-bottom: 0.5rem;
-        
-        label {
-          font-weight: 500;
-        }
-      }
-      
-      .p-error {
-        display: block;
-        margin-top: 0.25rem;
-      }
-      
-      // Dialog styling
-      .p-dialog .p-dialog-header {
-        border-bottom: 1px solid #dee2e6;
-        padding-bottom: 1rem;
-      }
-      
-      .p-dialog .p-dialog-footer {
-        border-top: 1px solid #dee2e6;
-        padding-top: 1rem;
+      h2 {
+        margin: 0;
       }
     }
   }
   
+  ::ng-deep .custom-dialog .p-dialog-title {
+    color: rgb(233 114 0);
+  }
+  
+  // Table styling enhancements
+  ::ng-deep {
+
+
+    
+    .p-button-text {
+      &.p-button-warning {
+        color: #e97d23;
+      }
+      
+      &.p-button-danger {
+        color: #dc3545;
+      }
+    }
+    
+    // Form styling
+    .p-float-label {
+      margin-bottom: 0.5rem;
+      
+      label {
+        font-weight: 500;
+      }
+    }
+    
+    .p-error {
+      display: block;
+      margin-top: 0.25rem;
+    }
+    
+    // Dialog styling
+    .p-dialog .p-dialog-header {
+      border-bottom: 1px solid #dee2e6;
+      padding-bottom: 1rem;
+    }
+    
+    .p-dialog .p-dialog-footer {
+      border-top: 1px solid #dee2e6;
+      padding-top: 1rem;
+    }
+  }
+}

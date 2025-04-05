@@ -6,7 +6,7 @@ import { DialogModule } from 'primeng/dialog';
 import { BudgetApiService } from '../../../../apis/budgetProposalAPIs/budget-api.service';
 import { ButtonModule } from 'primeng/button';
 import { ContractorApiService } from '../../../../apis/contractorAPIs/contractor-api.service';
-import { DocumentTemplateApiService } from '../../../../apis/templateAPIs/template-api.service';
+import { DocumentTemplateApiService } from '../../../../apis/templateAPIs/template-api.service'
 
 @Component({
     selector: 'app-template-detail',
@@ -58,4 +58,7 @@ export class TemplateDetailComponent implements OnChanges {
         this.displayDetailDialog = false;
         this.closeDialogEvent.emit();
     }
+    viewFile(url: string) {
+        window.open(url, '_blank');
+      }
 }

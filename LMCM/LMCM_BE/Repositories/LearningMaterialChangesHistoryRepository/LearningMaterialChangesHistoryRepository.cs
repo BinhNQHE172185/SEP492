@@ -10,14 +10,14 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Contracts;
 
-namespace LMCM_BE.Repositories.LearningMaterialRepository
+namespace LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository
 {
     public class LearningMaterialChangesHistoryRepository : ILearningMaterialChangesHistoryRepository
     {
         private readonly LMCM_DBContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepositoriy;
-        public LearningMaterialChangesHistoryRepository(LMCM_DBContext dbContext, IMapper mapper,IUserRepository userRepository)
+        public LearningMaterialChangesHistoryRepository(LMCM_DBContext dbContext, IMapper mapper, IUserRepository userRepository)
         {
             _dbContext = dbContext;
             _mapper = mapper;
@@ -69,7 +69,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                     throw new Exception("User not found");
 
                 var history = _mapper.Map<LearningMaterialChangesHistory>(historyDto);
-                history.UserId= user.Id;    
+                history.UserId = user.Id;
                 history.HistoryId = Guid.NewGuid();
                 history.Status = "Active";
                 await _dbContext.LearningMaterialChangesHistories.AddAsync(history);
@@ -105,8 +105,8 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             {
                 string search = searchKey.Trim().ToLower();
                 historyChain = historyChain.Where(h =>
-                    (h.CourseCode != null && h.CourseCode.ToLower().Contains(search)) ||
-                    (h.User.UserName.ToLower().Contains(search))
+                    h.CourseCode != null && h.CourseCode.ToLower().Contains(search) ||
+                    h.User.UserName.ToLower().Contains(search)
                 ).ToList();
             }
 
@@ -128,5 +128,66 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 PageSize = pageSize
             };
         }
+        public async Task<Guid?> UpdateLearningMaterialChangesHistoryAsync(Guid historyId, UpdateLearningMaterialChangesHistoryDto dto)
+        {
+            if (historyId == Guid.Empty)
+                throw new ArgumentException("ID lịch sử thay đổi không được để trống.", nameof(historyId));
+
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto), "Dữ liệu cập nhật không được để trống.");
+
+            var existingHistory = await _dbContext.LearningMaterialChangesHistories
+                .FirstOrDefaultAsync(h => h.HistoryId == historyId && h.Status == "Active");
+
+            if (existingHistory == null)
+                throw new Exception("Không tìm thấy lịch sử thay đổi.");
+
+            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("Không tìm thấy người dùng");
+
+            if (user.Id != existingHistory.UserId && !user.Roles.Contains("Head of Department"))
+                throw new UnauthorizedAccessException("Người dùng không có quyền cập nhật lịch sử này.");
+
+            _mapper.Map(dto, existingHistory);
+
+            _dbContext.LearningMaterialChangesHistories.Update(existingHistory);
+            await _dbContext.SaveChangesAsync();
+
+            return existingHistory.HistoryId;
+        }
+        public async Task<bool> SoftDeleteLearningMaterialChangesHistoryAsync(Guid historyId)
+        {
+            var historyRecord = await _dbContext.LearningMaterialChangesHistories
+                .FirstOrDefaultAsync(h => h.HistoryId == historyId && h.Status == "Active");
+
+            if (historyRecord == null)
+                throw new KeyNotFoundException("Không tìm thấy lịch sử thay đổi hoặc đã bị xóa.");
+
+            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new Exception("Không tìm thấy người dùng");
+
+            if (user.Id != historyRecord.UserId && !user.Roles.Contains("Head of Department"))
+                throw new UnauthorizedAccessException("Người dùng không có quyền xóa lịch sử này.");
+
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            try
+            {
+                historyRecord.Status = "Inactive";
+                _dbContext.LearningMaterialChangesHistories.Update(historyRecord);
+
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
     }
 }

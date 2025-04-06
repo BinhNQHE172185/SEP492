@@ -11,11 +11,9 @@ namespace LMCM_BE.Repositories.ScheduleRepository
     public class ScheduleRepository : IScheduleRepository
     {
         private readonly LMCM_DBContext _dbContext;
-        private readonly IMapper _mapper;
-        public ScheduleRepository(LMCM_DBContext dbContext, IMapper mapper)
+        public ScheduleRepository(LMCM_DBContext dbContext)
         {
             _dbContext = dbContext;
-            _mapper = mapper;
         }
         public async Task<bool> DeleteSchedulesBySyllabusAsync(Guid syllabusId)
         {
@@ -53,14 +51,12 @@ namespace LMCM_BE.Repositories.ScheduleRepository
             }
         }
 
-        public async Task<bool> ImportSchedulesAsync(List<ScheduleInsertDto> schedules, Guid syllabusId)
+        public async Task<bool> ImportSchedulesAsync(List<Schedule> schedules, Guid syllabusId)
         {
             if (schedules == null || !schedules.Any())
                 throw new ArgumentNullException(nameof(schedules));
 
-            var newSchedules = _mapper.Map<List<Schedule>>(schedules);
-
-            foreach (var schedule in newSchedules)
+            foreach (var schedule in schedules)
             {
                 schedule.SyllabusId= syllabusId;    
                 schedule.ScheduleId = Guid.NewGuid();
@@ -69,7 +65,7 @@ namespace LMCM_BE.Repositories.ScheduleRepository
                 schedule.UpdatedAt = DateTime.UtcNow;
             }
 
-            await _dbContext.Schedules.AddRangeAsync(newSchedules);
+            await _dbContext.Schedules.AddRangeAsync(schedules);
 
             return true;
         }

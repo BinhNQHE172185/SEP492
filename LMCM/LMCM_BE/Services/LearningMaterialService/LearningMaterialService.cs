@@ -18,11 +18,6 @@ namespace LMCM_BE.Services.LearningMaterialService
             return await _materialRepository.DeleteLearningMaterialByIdAsync(materialId);
         }
 
-        public async Task<bool> DeleteLearningMaterialsBySyllabusAsync(Guid syllabusId)
-        {
-            return await _materialRepository.DeleteLearningMaterialsBySyllabusAsync(syllabusId);
-        }
-
         public async Task<LearningMaterialViewDto> GetLearningMaterialByIdAsync(Guid materialId)
         {
             return await _materialRepository.GetLearningMaterialByIdAsync(materialId);
@@ -36,11 +31,6 @@ namespace LMCM_BE.Services.LearningMaterialService
         public async Task<List<LearningMaterialListDto>> GetMaterialsBySyllabusIdAsync(Guid syllabusId)
         {
             return await _materialRepository.GetMaterialsBySyllabusIdAsync(syllabusId);
-        }
-
-        public async Task<bool> ImportLearningMaterialsAsync(List<LearningMaterialImportDto> materials, Guid? oldSyllabusId, Guid newSyllabusId, bool keepUserCreated)
-        {
-            return await _materialRepository.ImportLearningMaterialsAsync(materials,oldSyllabusId,newSyllabusId,keepUserCreated);
         }
 
         public async Task<Guid?> InsertLearningMaterialAsync(LearningMaterialInsertDto material)

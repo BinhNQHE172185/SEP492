@@ -41,7 +41,7 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
   calendarValue: any = null;
 
   report: any;
-  contract: any;
+  contract: { contractId: string; contractValue: string }[] = [];
 
   constructor(
     private messageService: MessageService,
@@ -91,6 +91,21 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
   }
 
   save() {
+    const selectedContract = this.contract.find((c: { contractId: string; contractValue: string }) => c.contractId === this.report.contractId);
+
+    if (selectedContract) {
+      const contractPrice = parseFloat(selectedContract.contractValue);
+      const finalPrice = parseFloat(this.report.finalPrice);
+
+      if (finalPrice > contractPrice) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Cảnh báo',
+          detail: 'Giá trị nghiệm thu đang lớn hơn giá trị hợp đồng đã chọn.'
+        });
+      }
+    }
+
     const reportData = new FormData();
     reportData.append("title", this.report.title);
     reportData.append("contractId", this.report.contractId);

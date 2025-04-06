@@ -5,7 +5,7 @@ namespace LMCM_BE.Repositories.ScheduleRepository
 {
     public interface IScheduleRepository
     {
-        Task<bool> ImportSchedulesAsync(List<ScheduleInsertDto> schedules);
+        Task<bool> ImportSchedulesAsync(List<ScheduleInsertDto> schedules, Guid syllabusId);
         Task<bool> DeleteSchedulesBySyllabusAsync(Guid syllabusId);
     }
 }

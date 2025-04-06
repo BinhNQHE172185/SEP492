@@ -17,9 +17,9 @@ namespace LMCM_BE.Services.ConstructivistQuestionService
             return await _questionRepository.DeleteConstructivistQuestionsBySyllabusAsync(syllabusId);
         }
 
-        public async Task<bool> ImportConstructivistQuestionsAsync(List<ConstructivistQuestionInsertDto> questions)
+        public async Task<bool> ImportConstructivistQuestionsAsync(List<ConstructivistQuestionInsertDto> questions, Guid syllabusId)
         {
-            return await _questionRepository.ImportConstructivistQuestionsAsync(questions);
+            return await _questionRepository.ImportConstructivistQuestionsAsync(questions, syllabusId);
         }
     }
 }

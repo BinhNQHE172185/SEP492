@@ -15,9 +15,9 @@ namespace LMCM_BE.Services.GradingStructureService
             return await _gradingStructureRepository.DeleteGradingStructuresBySyllabusAsync(syllabusId);
         }
 
-        public async Task<bool> ImportGradingStructuresAsync(List<GradingStructureInsertDto> gradingStructures)
+        public async Task<bool> ImportGradingStructuresAsync(List<GradingStructureInsertDto> gradingStructures, Guid syllabusId)
         {
-            return await _gradingStructureRepository.ImportGradingStructuresAsync(gradingStructures);
+            return await _gradingStructureRepository.ImportGradingStructuresAsync(gradingStructures,syllabusId);
         }
     }
 }

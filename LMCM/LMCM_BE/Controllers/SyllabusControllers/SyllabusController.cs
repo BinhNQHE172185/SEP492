@@ -9,15 +9,10 @@ using LMCM_BE.DTOs.SyllabusDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Services.CLOService;
 using LMCM_BE.Services.ConstructivistQuestionService;
-using LMCM_BE.Services.GradingStructureService;
-using LMCM_BE.Services.LearningMaterialService;
-using LMCM_BE.Services.ScheduleService;
 using LMCM_BE.Services.SubjectService;
 using LMCM_BE.Services.SyllabusService;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
-using System.Runtime.InteropServices;
 
 namespace LMCM_BE.Controllers.SyllabusControllers
 {
@@ -25,26 +20,12 @@ namespace LMCM_BE.Controllers.SyllabusControllers
     [ApiController]
     public class SyllabusController : ControllerBase
     {
-        private readonly LMCM_DBContext _dbContext;
         private readonly ISyllabusService _syllabusService;
         private readonly ISubjectService _subjectService;
-        private readonly ICLOService _cloService;
-        private readonly IScheduleService _scheduleService;
-        private readonly IGradingStructureService _gradingStructureService;
-        private readonly IConstructivistQuestionService _questionService;
-        private readonly ILearningMaterialService _learningMaterialService;
-        public SyllabusController(LMCM_DBContext dBContext, ISyllabusService syllabusService, ISubjectService subjectService, ICLOService cloService,
-            IScheduleService scheduleService, IGradingStructureService gradingStructureService, IConstructivistQuestionService questionService,
-            ILearningMaterialService learningMaterialService)
+        public SyllabusController(ISyllabusService syllabusService, ISubjectService subjectService)
         {
-            _dbContext = dBContext;
             _syllabusService = syllabusService;
             _subjectService = subjectService;
-            _cloService = cloService;
-            _scheduleService = scheduleService;
-            _gradingStructureService = gradingStructureService;
-            _questionService = questionService;
-            _learningMaterialService = learningMaterialService;
         }
 
         [HttpPost("getSyllabusesList")]

@@ -1,4 +1,9 @@
-﻿using LMCM_BE.DTOs.ShareDtos;
+﻿using LMCM_BE.DTOs.CLODtos;
+using LMCM_BE.DTOs.ConstructivistQuestionDtos;
+using LMCM_BE.DTOs.GradingStructureDtos;
+using LMCM_BE.DTOs.LearningMaterialDtos;
+using LMCM_BE.DTOs.ScheduleDtos;
+using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SubjectDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
 using LMCM_BE.Models;
@@ -30,9 +35,12 @@ namespace LMCM_BE.Services.SyllabusService
             var data = await _syllabusRepository.GetSyllabusChangeHistoriesAsync(syllabusId, searchKey, pageIndex, pageSize);
             return data;
         }
-        public async Task<Syllabus> ImportSyllabusAsync(SyllabusInsertDto syllabus)
+        public async Task<Syllabus> ImportSyllabusAsync(SyllabusInsertDto syllabus, List<ScheduleInsertDto> schedules,
+            List<CLOInsertDto> cLOs, List<GradingStructureInsertDto> gradingStructures,
+            List<ConstructivistQuestionInsertDto>? constructivistQuestions,
+            List<LearningMaterialImportDto>? learningMaterials, bool keepUserCreated)
         {
-            return await _syllabusRepository.ImportSyllabusAsync(syllabus);
+            return await _syllabusRepository.ImportSyllabusAsync(syllabus,schedules,cLOs,gradingStructures,constructivistQuestions,learningMaterials,keepUserCreated);
         }
         public async Task<Syllabus?> GetActiveSyllabusBySubjectIdAsync(Guid subjectId)
         {

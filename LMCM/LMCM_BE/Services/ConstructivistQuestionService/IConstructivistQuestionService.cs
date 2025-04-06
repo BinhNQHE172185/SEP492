@@ -4,7 +4,7 @@ namespace LMCM_BE.Services.ConstructivistQuestionService
 {
     public interface IConstructivistQuestionService
     {
-        Task<bool> ImportConstructivistQuestionsAsync(List<ConstructivistQuestionInsertDto> questions);
+        Task<bool> ImportConstructivistQuestionsAsync(List<ConstructivistQuestionInsertDto> questions, Guid syllabusId);
         Task<bool> DeleteConstructivistQuestionsBySyllabusAsync(Guid syllabusId);
     }
 }

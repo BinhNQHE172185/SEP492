@@ -4,7 +4,7 @@ namespace LMCM_BE.Services.GradingStructureService
 {
     public interface IGradingStructureService
     {
-        Task<bool> ImportGradingStructuresAsync(List<GradingStructureInsertDto> gradingStructures);
+        Task<bool> ImportGradingStructuresAsync(List<GradingStructureInsertDto> gradingStructures, Guid syllabusId);
         Task<bool> DeleteGradingStructuresBySyllabusAsync(Guid syllabusId);
     }
 }

@@ -16,14 +16,9 @@ namespace LMCM_BE.Services.CLOService
         {
             return await _cLORepository.DeleteCLOBySyllabusAsync(syllabusId);
         }
-        public async Task<bool> ImportCLOsAsync(List<CLOInsertDto> cLOs)
+        public async Task<bool> ImportCLOsAsync(List<CLOInsertDto> cLOs, Guid syllabusId)
         {
-            return await _cLORepository.ImportCLOsAsync(cLOs);
-        }
-
-        public Task<bool> UpdateCLOAsync(Clo existingCLO, CLOInsertDto CLODto)
-        {
-            throw new NotImplementedException();
+            return await _cLORepository.ImportCLOsAsync(cLOs,syllabusId);
         }
     }
 }

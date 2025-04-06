@@ -71,7 +71,6 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
                 }
 
                 _dbContext.LearningMaterials.UpdateRange(materials);
-                await _dbContext.SaveChangesAsync();
 
                 return true;
             }
@@ -135,7 +134,9 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
         {
             var query = _dbContext.LearningMaterials.AsQueryable();
 
-            var items = await query.Where(s => s.SyllabusId == syllabusId && s.Status != "Deleted").ToListAsync();
+            var items = await query.Where(s => s.SyllabusId == syllabusId && s.Status != "Deleted")
+                .OrderByDescending(s=>s.UpdatedAt)
+                .ToListAsync();
 
             var data =  _mapper.Map<List<LearningMaterialListDto>>(items);
 
@@ -151,6 +152,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
 
             foreach (var material in newMaterials)
             {
+                material.SyllabusId=newSyllabusId;
                 material.MaterialId = Guid.NewGuid();
                 material.IsMainMaterial = false;
                 material.IsImportedMaterial = true;
@@ -196,7 +198,6 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
 
 
             await _dbContext.LearningMaterials.AddRangeAsync(newMaterials);
-
             return true;
         }
 

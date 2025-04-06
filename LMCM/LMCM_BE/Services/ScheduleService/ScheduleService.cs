@@ -15,9 +15,9 @@ namespace LMCM_BE.Services.ScheduleService
             return await _scheduleRepository.DeleteSchedulesBySyllabusAsync(syllabusId);
         }
 
-        public async Task<bool> ImportSchedulesAsync(List<ScheduleInsertDto> schedules)
+        public async Task<bool> ImportSchedulesAsync(List<ScheduleInsertDto> schedules, Guid syllabusId)
         {
-            return await _scheduleRepository.ImportSchedulesAsync(schedules);
+            return await _scheduleRepository.ImportSchedulesAsync(schedules,syllabusId);
         }
     }
 }

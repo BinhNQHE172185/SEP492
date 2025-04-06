@@ -38,7 +38,6 @@ namespace LMCM_BE.Repositories.ScheduleRepository
                 }
 
                 _dbContext.Schedules.UpdateRange(schedules);
-                await _dbContext.SaveChangesAsync();
 
                 return true;
             }
@@ -54,7 +53,7 @@ namespace LMCM_BE.Repositories.ScheduleRepository
             }
         }
 
-        public async Task<bool> ImportSchedulesAsync(List<ScheduleInsertDto> schedules)
+        public async Task<bool> ImportSchedulesAsync(List<ScheduleInsertDto> schedules, Guid syllabusId)
         {
             if (schedules == null || !schedules.Any())
                 throw new ArgumentNullException(nameof(schedules));
@@ -63,6 +62,7 @@ namespace LMCM_BE.Repositories.ScheduleRepository
 
             foreach (var schedule in newSchedules)
             {
+                schedule.SyllabusId= syllabusId;    
                 schedule.ScheduleId = Guid.NewGuid();
                 schedule.Status = "Active";
                 schedule.CreatedAt = DateTime.UtcNow;

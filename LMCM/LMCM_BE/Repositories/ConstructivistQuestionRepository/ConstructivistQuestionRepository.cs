@@ -36,7 +36,6 @@ namespace LMCM_BE.Repositories.ConstructivistQuestionRepository
                 }
 
                 _dbContext.ConstructivistQuestions.UpdateRange(questions);
-                await _dbContext.SaveChangesAsync();
 
                 return true;
             }
@@ -52,7 +51,7 @@ namespace LMCM_BE.Repositories.ConstructivistQuestionRepository
             }
         }
 
-        public async Task<bool> ImportConstructivistQuestionsAsync(List<ConstructivistQuestionInsertDto> questions)
+        public async Task<bool> ImportConstructivistQuestionsAsync(List<ConstructivistQuestionInsertDto> questions, Guid syllabusId)
         {
             if (questions == null || !questions.Any())
                 throw new ArgumentNullException(nameof(questions));
@@ -61,6 +60,7 @@ namespace LMCM_BE.Repositories.ConstructivistQuestionRepository
 
             foreach (var question in newQuestions)
             {
+                question.SyllabusId = syllabusId;
                 question.QuestionId = Guid.NewGuid();
                 question.Status = "Active";
                 question.CreatedAt = DateTime.UtcNow;
@@ -68,6 +68,7 @@ namespace LMCM_BE.Repositories.ConstructivistQuestionRepository
             }
 
             await _dbContext.ConstructivistQuestions.AddRangeAsync(newQuestions);
+
             return true;
         }
     }

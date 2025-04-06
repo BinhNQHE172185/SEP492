@@ -9,11 +9,9 @@ namespace LMCM_BE.Repositories.ConstructivistQuestionRepository
     public class ConstructivistQuestionRepository : IConstructivistQuestionRepository
     {
         private readonly LMCM_DBContext _dbContext;
-        private readonly IMapper _mapper;
-        public ConstructivistQuestionRepository(LMCM_DBContext dbContext, IMapper mapper)
+        public ConstructivistQuestionRepository(LMCM_DBContext dbContext)
         {
             _dbContext = dbContext;
-            _mapper = mapper;
         }
         public async Task<bool> DeleteConstructivistQuestionsBySyllabusAsync(Guid syllabusId)
         {
@@ -51,14 +49,12 @@ namespace LMCM_BE.Repositories.ConstructivistQuestionRepository
             }
         }
 
-        public async Task<bool> ImportConstructivistQuestionsAsync(List<ConstructivistQuestionInsertDto> questions, Guid syllabusId)
+        public async Task<bool> ImportConstructivistQuestionsAsync(List<ConstructivistQuestion> questions, Guid syllabusId)
         {
             if (questions == null || !questions.Any())
-                throw new ArgumentNullException(nameof(questions));
+                return false;
 
-            var newQuestions = _mapper.Map<List<ConstructivistQuestion>>(questions);
-
-            foreach (var question in newQuestions)
+            foreach (var question in questions)
             {
                 question.SyllabusId = syllabusId;
                 question.QuestionId = Guid.NewGuid();
@@ -67,7 +63,7 @@ namespace LMCM_BE.Repositories.ConstructivistQuestionRepository
                 question.UpdatedAt = DateTime.UtcNow;
             }
 
-            await _dbContext.ConstructivistQuestions.AddRangeAsync(newQuestions);
+            await _dbContext.ConstructivistQuestions.AddRangeAsync(questions);
 
             return true;
         }

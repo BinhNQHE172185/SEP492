@@ -51,14 +51,12 @@ namespace LMCM_BE.Repositories.GradingStructureRepository
             }
         }
 
-        public async Task<bool> ImportGradingStructuresAsync(List<GradingStructureInsertDto> gradingStructures, Guid syllabusId)
+        public async Task<bool> ImportGradingStructuresAsync(List<GradingStructure> gradingStructures, Guid syllabusId)
         {
             if (gradingStructures == null || !gradingStructures.Any())
                 throw new ArgumentNullException(nameof(gradingStructures));
 
-            var newGradingStructures = _mapper.Map<List<GradingStructure>>(gradingStructures);
-
-            foreach (var structure in newGradingStructures)
+            foreach (var structure in gradingStructures)
             {
                 structure.SyllabusId = syllabusId;
                 structure.StructureId = Guid.NewGuid();
@@ -67,7 +65,7 @@ namespace LMCM_BE.Repositories.GradingStructureRepository
                 structure.UpdatedAt = DateTime.UtcNow;
             }
 
-            await _dbContext.GradingStructures.AddRangeAsync(newGradingStructures);
+            await _dbContext.GradingStructures.AddRangeAsync(gradingStructures);
 
             return true;
         }

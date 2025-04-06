@@ -216,6 +216,24 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
                 throw;
             }
         }
+        public async Task<Subject> GetSubjectByIdAsync(Guid subjectId)
+        {
+            if (subjectId == null)
+                throw new ArgumentException("Subject code cannot be empty.", nameof(subjectId));
+
+            try
+            {
+                var subject = await _dbContext.Subjects
+                                              .FirstOrDefaultAsync(s => s.SubjectId == subjectId &&
+                                                                   (s.Status != null && s.Status.ToLower() == "active"));
+
+                return subject;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
         public async Task<bool> SoftDeleteSubjectAsync(Guid subjectId)
         {
             // Step 1: Check if subject exists and is active

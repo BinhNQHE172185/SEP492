@@ -37,5 +37,9 @@ namespace LMCM_BE.Services.UserService
         {
             return await _userRepository.GetProfileFromCookie();
         }
+        public async Task<bool> AssignRoleAsync(string userId, string role)
+        {
+            return await  _userRepository.AssignRoleAsync(userId, role);
+        }
     }
 }

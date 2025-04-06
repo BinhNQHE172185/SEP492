@@ -88,6 +88,5 @@ namespace LMCM_BE.Repositories.CurriculumsSubjectRepository
             return await _dbContext.CurriculumsSubjects
                 .AnyAsync(cs => cs.SubjectId == subjectId && cs.Status == "Active");
         }
-
     }
 }

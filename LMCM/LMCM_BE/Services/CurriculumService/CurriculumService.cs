@@ -8,7 +8,6 @@ using LMCM_BE.Repositories.CurriculumsSubjectRepository;
 using LMCM_BE.Repositories.PloRepository;
 using LMCM_BE.Repositories.PloSubjectRepository;
 using LMCM_BE.Services.SubjectService;
-using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 
 namespace LMCM_BE.Services.CurriculumService

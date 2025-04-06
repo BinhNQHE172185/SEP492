@@ -1,11 +1,6 @@
-﻿using LMCM_BE.DTOs.CurriculumDtos;
-using LMCM_BE.DTOs.CurriculumsSubjectDtos;
-using LMCM_BE.DTOs.ShareDtos;
-using LMCM_BE.Models;
+﻿using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Services.CurriculumService;
 using LMCM_BE.Services.PloService;
-using LMCM_BE.Services.SubjectService;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 

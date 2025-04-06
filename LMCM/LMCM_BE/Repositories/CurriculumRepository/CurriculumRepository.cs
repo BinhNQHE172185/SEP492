@@ -1,11 +1,5 @@
-﻿using AutoMapper;
-using LMCM_BE.DbContext;
-using LMCM_BE.DTOs.CurriculumDtos;
-using LMCM_BE.DTOs.ShareDtos;
+﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
-using LMCM_BE.Repositories.CurriculumsSubjectRepository;
-using LMCM_BE.Repositories.PloRepository;
-using LMCM_BE.Repositories.PloSubjectRepository;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.CurriculumRepository

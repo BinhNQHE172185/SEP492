@@ -138,5 +138,32 @@ namespace LMCM_BE.Controllers.UserControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+        [HttpPost("assign-role")]
+        public async Task<IActionResult> AssignRole(string userId, string newRole)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(newRole))
+                {
+                    return BadRequest(new { success = false, message = "Thiếu userId hoặc newRole." });
+                }
+
+                var result = await _userService.AssignRoleAsync(userId, newRole);
+                return Ok(new { success = result, message = "Vai trò đã được cập nhật." });
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(new { success = false, message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = "Đã xảy ra lỗi.", error = ex.Message });
+            }
+        }
+
     }
 }

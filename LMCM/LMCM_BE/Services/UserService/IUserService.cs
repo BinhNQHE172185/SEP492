@@ -10,5 +10,6 @@ namespace LMCM_BE.Services.UserService
         Task<UserProfileResponseDto> GetProfile(string userId);
         Task<PagedResult<ListUserResponseDto>> GetListUser(string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<UserProfileResponseDto> GetProfileFromCookie();
+        Task<bool> AssignRoleAsync(string userId, string role);
     }
 }

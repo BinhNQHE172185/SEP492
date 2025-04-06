@@ -89,7 +89,7 @@ namespace LMCM_BE.Controllers.LearningMaterialChangesHistoryControllers
             return StatusCode(500, "Failed to create history.");
         }
         [HttpPut("update/{historyId}")]
-        public async Task<IActionResult> UpdateAcceptanceRecord(Guid historyId, [FromForm] UpdateLearningMaterialChangesHistoryDto request)
+        public async Task<IActionResult> UpdateAcceptanceRecord(Guid historyId, [FromBody] UpdateLearningMaterialChangesHistoryDto request)
         {
             try
             {
@@ -182,6 +182,23 @@ namespace LMCM_BE.Controllers.LearningMaterialChangesHistoryControllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
+            }
+        }
+        [HttpGet("getHistoryOfChangeDetail/{id}")]
+        public async Task<IActionResult> GetHistoryOfChangeDetail(Guid id)
+        {
+            try
+            {
+                var data = await _changesService.getHistoryOfChangeDetail(id);
+                if (data != null)
+                {
+                    return Ok(data);
+                }
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using LMCM_BE.DTOs.LearningMaterialDtos;
+﻿using LMCM_BE.DTOs.LearningMaterialChangesHistoryDtos;
+using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
 
@@ -12,5 +13,6 @@ namespace LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository
      Guid? subjectId, string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<bool> SoftDeleteLearningMaterialChangesHistoryAsync(Guid historyId);
         Task<Guid?> UpdateLearningMaterialChangesHistoryAsync(Guid historyId, UpdateLearningMaterialChangesHistoryDto dto);
+        Task<ChangesHistoryDetailDto> getHistoryOfChangeDetail(Guid id);
     }
 }

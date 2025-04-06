@@ -64,7 +64,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
-        [HttpPost("getSyllabusesListNoPaging")]
+        [HttpGet("getSyllabusesListNoPaging")]
         public async Task<IActionResult> GetSyllabusesNoPagingAsync(string? searchKey)
         {
             try

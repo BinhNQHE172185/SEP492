@@ -13,26 +13,14 @@ namespace LMCM_BE.Repositories.CurriculumRepository
     public class CurriculumRepository : ICurriculumRepository
     {
         private readonly LMCM_DBContext _dbContext;
-        private readonly IMapper _mapper;
-        private readonly ICurriculumsSubjectRepository _curriculumSubjectRepository;
-        private readonly IPloRepository _ploRepository;
-        private readonly IPloSubjectRepository _ploSubjectRepository;
 
         public CurriculumRepository(
-            LMCM_DBContext dbContext,
-            IMapper mapper,
-            ICurriculumsSubjectRepository curriculumSubjectRepository,
-            IPloRepository ploRepository,
-            IPloSubjectRepository ploSubjectRepository)
+            LMCM_DBContext dbContext
+            )
         {
             _dbContext = dbContext;
-            _mapper = mapper;
-            _curriculumSubjectRepository = curriculumSubjectRepository;
-            _ploRepository = ploRepository;
-            _ploSubjectRepository = ploSubjectRepository;
         }
-
-        public async Task<PagedResult<CurriculumDto>> GetCurriculumsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<(List<Curriculum>, int totalCount)> GetCurriculumsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.Curriculums.Include(c => c.CurriculumsSubjects).Where(c => c.Status == "Active").AsQueryable();
 
@@ -45,96 +33,44 @@ namespace LMCM_BE.Repositories.CurriculumRepository
 
             int totalCount = await query.CountAsync();
 
-            var items = await query.Skip((pageIndex - 1) * pageSize)
+            var curriculums = await query.Skip((pageIndex - 1) * pageSize)
                                    .Take(pageSize)
                                    .ToListAsync();
-
-            var data = _mapper.Map<List<CurriculumDto>>(items);
-
-            return new PagedResult<CurriculumDto>
-            {
-                Items = data,
-                TotalCount = totalCount,
-                CurrentPage = pageIndex,
-                PageSize = pageSize
-            };
+            return (curriculums, totalCount);
         }
-
-        public async Task<bool> ImportCurriculumAsync(Curriculum curriculum)
+        public async Task<bool> SoftDeleteCurriculumAsync(Curriculum curriculum)
         {
-            if (curriculum == null)
-                throw new ArgumentNullException(nameof(curriculum));
-
-            using var transaction = await _dbContext.Database.BeginTransactionAsync();
-
-            // Step 1: Get existing active curriculum using curriculum code
-            var existingCurriculum = await _dbContext.Curriculums
-                .Include(c => c.Plos)
-                .Include(c => c.CurriculumsSubjects)
-                .Where(c => c.CurriculumCode == curriculum.CurriculumCode && c.Status == "Active")
-                .FirstOrDefaultAsync();
-
-
-            if (existingCurriculum != null)
-            {
-                // Step 2: Delete related data
-                // Soft delete existing curriculum by updating its status
-                existingCurriculum.Status = "Inactive";
-                existingCurriculum.UpdatedAt = DateTime.UtcNow;
-                _dbContext.Curriculums.Update(existingCurriculum);
-
-                await _curriculumSubjectRepository.DeleteCurriculumsSubjectAsync(existingCurriculum.CurriculumId);
-                await _ploRepository.DeletePlosAsync(existingCurriculum.Plos.Select(p => p.PloId).ToList());
-                await _ploSubjectRepository.DeletePloSubjectsAsync(existingCurriculum.Plos.Select(p => p.PloId).ToList());
-            }
-
-            // Step 3: Insert the new curriculum
-            _dbContext.Curriculums.Add(curriculum);
-            await _dbContext.SaveChangesAsync();
-
-            await transaction.CommitAsync();
-            return true;
-        }
-        public async Task<bool> SoftDeleteCurriculumAsync(Guid curriculumId)
-        {
-            // Step 1: Check if curriculum exists and is active
-            var curriculum = await _dbContext.Curriculums
-                .FirstOrDefaultAsync(c => c.CurriculumId == curriculumId && c.Status == "Active");
-
-            if (curriculum == null)
-                throw new KeyNotFoundException("Không tìm thấy chương trình giảng dạy.");
-
-            // Step 2: Check if there are active related entities
-            if (await _curriculumSubjectRepository.HasActiveCurriculumsSubjectsAsync(curriculumId) ||
-                await _ploRepository.HasActivePloAsync(curriculumId) ||
-                await _ploSubjectRepository.HasActivePloSubjectByCurriculumIdAsync(curriculumId))
-            {
-                throw new InvalidOperationException("Không thể xóa chương trình giảng dạy khi có thực thể liên quan đang hoạt động.");
-            }
-            using var transaction = await _dbContext.Database.BeginTransactionAsync();
-
-            // Step 3: Soft delete the curriculum
             curriculum.Status = "Inactive";
             curriculum.UpdatedAt = DateTime.UtcNow;
             _dbContext.Curriculums.Update(curriculum);
 
             await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
 
             return true;
         }
-        public async Task<CurriculumDetailDto?> GetCurriculumDetailAsync(Guid curriculumId)
+         public async Task<Curriculum?> GetCurriculumDetailAsync(Guid curriculumId)
         {
-            var curriculum = await _dbContext.Curriculums
+            return await _dbContext.Curriculums
                 .Include(c => c.CurriculumsSubjects)
                     .ThenInclude(cs => cs.Subject)
                 .Where(c => c.CurriculumId == curriculumId && c.Status == "Active")
                 .FirstOrDefaultAsync();
-
-            if (curriculum == null)
-                throw new KeyNotFoundException("Không tìm thấy chương trình giảng dạy.");
-
-            return curriculum == null ? null : _mapper.Map<CurriculumDetailDto>(curriculum);
+        }
+        public async Task<Curriculum?> GetActiveCurriculumByCodeAsync(string curriculumCode)
+        {
+            return await _dbContext.Curriculums
+                .FirstOrDefaultAsync(c => c.CurriculumCode == curriculumCode && c.Status == "Active");
+        }
+        public async Task<Curriculum?> GetActiveCurriculumByIdAsync(Guid curriculumId)
+        {
+            return await _dbContext.Curriculums
+                .FirstOrDefaultAsync(c => c.CurriculumId == curriculumId && c.Status == "Active");
+        }
+        public async Task<bool> ImportCurriculumAsync(Curriculum curriculum)
+        {
+            _dbContext.Curriculums.Add(curriculum);
+            await _dbContext.SaveChangesAsync();
+            return true;
         }
     }
 }

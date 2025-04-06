@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LMCM_BE.DbContext;
+using LMCM_BE.DTOs.LearningMaterialChangesHistoryDtos;
 using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
@@ -188,6 +189,20 @@ namespace LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository
                 throw;
             }
         }
+        public async Task<ChangesHistoryDetailDto> getHistoryOfChangeDetail(Guid id)
+        {
+            var history = await _dbContext.LearningMaterialChangesHistories
+                            .Where(h => h.HistoryId == id && h.Status == "Active")
+                            .Include(h => h.Syllabus)
+                            .Include(h => h.Contract)
+                            .FirstOrDefaultAsync();
 
+            if (history == null)
+            {
+                throw new KeyNotFoundException("Không tìm thấy lịch sử thay đổi.");
+            }
+
+            return _mapper.Map<ChangesHistoryDetailDto>(history);
+        }
     }
 }

@@ -69,4 +69,11 @@ export class ContractApiService {
             { withCredentials: true }
         );
     }
+
+    getContractValue(): Observable<any> {
+        return this.http.get<any>(
+            `${this.apiUrl}/contract-value-items/list`,
+            { withCredentials: true }
+        );
+    }
 }

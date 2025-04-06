@@ -7,49 +7,38 @@
     <div class="mt-3">
         <p-inputGroup class="w-full">
             <p-button label="Tìm kiếm" (click)="loadHistory()" />
-            <input [(ngModel)]="searchKey" pInputText placeholder="Từ khóa" />
+            <input [(ngModel)]="searchKey" (ngModelChange)="onSearchChange($event)" pInputText placeholder="Từ khóa" />
         </p-inputGroup>
     </div>
 
     <div class="mt-4">
-        <p-table
-            [value]="historyList"
-            [rows]="pageSize"
-            [paginator]="true"
-            [totalRecords]="totalCount"
-            [lazy]="true"
+        <p-table [value]="historyList" [rows]="pageSize" [paginator]="true" [totalRecords]="totalCount" [lazy]="true"
             (onPage)="loadHistory($event)"
             currentPageReportTemplate="Hiển thị {first} - {last} của {totalRecords} bản ghi"
-            [showCurrentPageReport]="true"
-            [rowsPerPageOptions]="[10, 20, 30]"
-            [first]="(pageIndex - 1) * pageSize"
-            class="w-full"
-            *ngIf="historyList && historyList.length > 0; else noDataTemplate"
-        >
+            [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 20, 30]" [first]="(pageIndex - 1) * pageSize"
+            class="w-full" *ngIf="historyList && historyList.length > 0; else noDataTemplate">
             <ng-template pTemplate="header">
                 <tr>
                     <th>Mã môn</th>
-                    <th>Loại tài liệu</th>
                     <th>Loại thay đổi</th>
                     <th>Ngày hoàn thành</th>
-                    <th>Kỳ bắt đầu áp dụng</th>
-                    <th>Hành động</th>
+                    <th class="text-center">Kỳ bắt đầu áp dụng</th>
+                    <th style="display: flex; justify-content: center;">Hành động</th>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-item>
                 <tr>
                     <td>{{ item.courseCode }}</td>
-                    <td>{{ item.learningMaterialType }}</td>
                     <td>{{ item.changeType }}</td>
                     <td>{{ item.completionDate | date: 'dd/MM/yyyy' }}</td>
                     <td>{{ item.startTerm }}</td>
-                    <td>
-                        <div style="display: flex; gap: 10px">
-                            <p-button label="Chi tiết" outlined (click)="showDetail(item)"></p-button>
-                            <p-button label="Sửa" outlined (click)="editDetail(item)"></p-button>
-                            <p-button label="Xóa" outlined (click)="confirmDelete(item)"></p-button>
-                        </div>
+                    <td class="p-2 flex justify-center gap-2">
+                        <p-button label="Chi tiết" outlined severity="info"
+                            (click)="showDetail(item.historyId)"></p-button>
+                        <p-button label="Sửa" outlined (click)="openAddDialog(item.historyId)"></p-button>
+                        <p-button label="Xóa" outlined severity="danger"
+                            (click)="confirmDelete(item.historyId)"></p-button>
                     </td>
                 </tr>
             </ng-template>
@@ -61,165 +50,96 @@
     </ng-template>
 
     <p-confirmDialog></p-confirmDialog>
-    <p-dialog [(visible)]="displayDetailDialog" [modal]="true" [closable]="true" header="Chi tiết lịch sử thay đổi" [style]="{ width: '580px', height: '630px', 'border-radius': '8px' }">
-        <div class="p-4">
-            <div class="flex flex-col md:flex-row gap-8">
-                <div class="md:w-1/2 flex flex-col gap-4 w-full">
+    <p-dialog [(visible)]="displayDetailDialog" [modal]="true" [closable]="true" header="Chi tiết lịch sử thay đổi"
+        [style]="{ width: '580px', height: '630px', 'border-radius': '8px' }">
+        <ng-template pTemplate="content">
+            <section class="p-8 w-full bg-white rounded-xl" *ngIf="newHistory">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6"> <!-- Adjust grid layout -->
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm">Mã môn <span class="text-orange-500">*</span></label>
-                        <input pInputText [(ngModel)]="selectedItem.courseCode" class="w-full" />
+                        <label class="block font-semibold text-orange-500">Mã môn</label>
+                        <p class="truncate">{{ newHistory.courseCode }}</p>
                     </div>
-
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm">Ngày hoàn thành <span class="text-orange-500">*</span></label>
-                        <p-datepicker [(ngModel)]="selectedItem.completionDate" dateFormat="dd-mm-yy" showIcon="true"></p-datepicker>
+                        <label class="block font-semibold text-orange-500">Ngày hoàn thành</label>
+                        <p>{{ newHistory.completionDate | date: 'dd/MM/yyyy' }}</p>
                     </div>
-
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm">Kỳ bắt đầu áp dụng <span class="text-orange-500">*</span></label>
-                        <p-datepicker [(ngModel)]="selectedItem.startTerm" dateFormat="yy-mm" showIcon="true"></p-datepicker>
+                        <label class="block font-semibold text-orange-500">Kỳ bắt đầu áp dụng</label>
+                        <p>{{ newHistory.startTerm }}</p>
                     </div>
-                </div>
-
-                <div class="md:w-1/2 flex flex-col gap-4">
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm">Số hợp đồng</label>
-                        <input pInputText [(ngModel)]="selectedItem.contractNumber" class="w-full" />
+                        <label class="block font-semibold text-orange-500">Hợp đồng</label>
+                        <p>{{ newHistory.contractTitle }}</p>
                     </div>
-
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm">Loại thay đổi <span class="text-orange-500">*</span></label>
-                        <!-- <input pInputText [(ngModel)]="selectedItem.changeType" class="w-full" /> -->
-                        <p-dropdown [options]="changeTypeOptions" [(ngModel)]="selectedItem.changeType" optionLabel="label" placeholder="Chọn loại thay đổi" class="w-full"> </p-dropdown>
+                        <label class="block font-semibold text-orange-500">Loại thay đổi</label>
+                        <p>{{ newHistory.changeType }}</p>
                     </div>
-
-                    <div class="flex flex-col gap-2">
-                        <label class="text-sm">Loại học liệu <span class="text-orange-500">*</span></label>
-                        <!-- <input pInputText [(ngModel)]="selectedItem.learningMaterialType" class="w-full" /> -->
-                        <p-dropdown [options]="learningMaterialTypeOptions" [(ngModel)]="selectedItem.learningMaterialType" optionLabel="label" placeholder="Chọn loại học liệu" class="w-full"> </p-dropdown>
+                    <div class="flex flex-col gap-2 md:col-span-2"> <!-- Make this span across full width -->
+                        <label class="block font-semibold text-orange-500">Nội dung thay đổi</label>
+                        <p class="whitespace-pre-line">{{ newHistory.changeDescription }}</p>
                     </div>
                 </div>
-            </div>
-
-            <div class="mt-4 flex flex-col gap-2">
-                <label class="text-sm">Nội dung thay đổi <span class="text-orange-500">*</span></label>
-                <textarea pInputTextarea [(ngModel)]="selectedItem.changeDescription" rows="8" autoResize="true" class="w-full p-2 rounded-md border"></textarea>
-            </div>
-        </div>
-
-        <ng-template pTemplate="footer">
-            <div class="flex justify-end gap-2">
-                <p-button label="Đóng" (click)="displayDetailDialog = false" severity="secondary"></p-button>
-            </div>
+            </section>
         </ng-template>
     </p-dialog>
 
-    <p-dialog [(visible)]="displayEditDialog" [modal]="true" [closable]="true" header="Chỉnh sửa thông tin thay đổi" [style]="{ width: '580px', height: '630px', 'border-radius': '8px' }">
+    <p-dialog [(visible)]="displayAddDialog" [modal]="true" [closable]="true" header="Thêm mới thông tin thay đổi"
+        [style]="{ width: '580px', height: '630px', 'border-radius': '8px' }">
         <div class="p-4">
             <div class="flex flex-col md:flex-row gap-8">
                 <div class="md:w-1/2 flex flex-col gap-4">
                     <div class="flex flex-col gap-2">
                         <label class="text-sm">Mã môn <span class="text-orange-500">*</span></label>
-                        <input pInputText [(ngModel)]="editHistory.courseCode" class="w-full" />
+                        <p-dropdown [options]="syllabus" optionLabel="courseCode" [(ngModel)]="newHistory.syllabus"
+                            placeholder="Chọn mã môn" [filter]="true" class="w-full">
+                        </p-dropdown>
                     </div>
 
                     <div class="flex flex-col gap-2">
                         <label class="text-sm">Ngày hoàn thành <span class="text-orange-500">*</span></label>
-                        <p-datepicker [(ngModel)]="editHistory.completionDate" dateFormat="dd-mm-yy" showIcon="true" class="w-full"></p-datepicker>
+                        <p-datepicker [(ngModel)]="newHistory.completionDate" dateFormat="dd-mm-yy" showIcon="true"
+                            placeholder="Ngày hoàn thành"></p-datepicker>
                     </div>
 
                     <div class="flex flex-col gap-2">
                         <label class="text-sm">Kỳ bắt đầu áp dụng <span class="text-orange-500">*</span></label>
-                        <p-datepicker [(ngModel)]="editHistory.startTerm" dateFormat="yy-mm" showIcon="true" class="w-full"></p-datepicker>
+                        <input pInputText [(ngModel)]="newHistory.startTerm" class="w-full"
+                            placeholder="kỳ bắt đầu áp dụng" />
                     </div>
                 </div>
 
                 <div class="md:w-1/2 flex flex-col gap-4">
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm">Số hợp đồng</label>
-                        <input pInputText [(ngModel)]="editHistory.contractNumber" class="w-full" />
+                        <label class="text-sm">Hợp đồng <span class="text-orange-500">*</span></label>
+                        <p-dropdown [options]="contract" optionLabel="title" optionValue="contractId"
+                            [(ngModel)]="newHistory.contractId" placeholder="Hợp đồng" [filter]="true" class="w-full">
+                        </p-dropdown>
                     </div>
 
                     <div class="flex flex-col gap-2">
                         <label class="text-sm">Loại thay đổi <span class="text-orange-500">*</span></label>
-                        <!-- <input pInputText [(ngModel)]="editHistory.changeType" class="w-full" /> -->
-                        <p-dropdown [options]="changeTypeOptions" [(ngModel)]="editHistory.changeType" optionLabel="label" placeholder="Chọn loại thay đổi" class="w-full"> </p-dropdown>
-                    </div>
-
-                    <div class="flex flex-col gap-2">
-                        <label class="text-sm">Loại học liệu <span class="text-orange-500">*</span></label>
-                        <!-- <input pInputText [(ngModel)]="editHistory.learningMaterialType" class="w-full" /> -->
-                        <p-dropdown [options]="learningMaterialTypeOptions" [(ngModel)]="editHistory.learningMaterialType" optionLabel="label" placeholder="Chọn loại học liệu" class="w-full"> </p-dropdown>
+                        <p-dropdown [options]="changeTypeOptions" [(ngModel)]="newHistory.changeType"
+                            optionLabel="label" optionValue="value" placeholder="Chọn loại thay đổi" class="w-full">
+                        </p-dropdown>
                     </div>
                 </div>
             </div>
 
             <div class="mt-4 flex flex-col gap-2">
-                <label class="text-sm">Nội dung thay đổi <span class="text-orange-500">*</span></label>
-                <textarea pInputTextarea [(ngModel)]="editHistory.changeDescription" rows="8" autoResize="true" class="w-full p-2 rounded-md border"></textarea>
-            </div>
-        </div>
-
-        <ng-template pTemplate="footer">
-            <div class="flex justify-end gap-2">
-                <p-button label="Hủy" (click)="displayEditDialog = false" severity="secondary"></p-button>
-                <p-button label="Lưu" (click)="updateHistory()" severity="warn"></p-button>
-            </div>
-        </ng-template>
-    </p-dialog>
-
-    <p-dialog [(visible)]="displayAddDialog" [modal]="true" [closable]="true" header="Thêm mới thông tin thay đổi" [style]="{ width: '580px', height: '630px', 'border-radius': '8px' }">
-        <div class="p-4">
-            <div class="flex flex-col md:flex-row gap-8">
-                <div class="md:w-1/2 flex flex-col gap-4">
-                    <div class="flex flex-col gap-2">
-                        <label class="text-sm">Mã môn <span class="text-orange-500">*</span></label>
-                        <input pInputText [(ngModel)]="newHistory.courseCode" class="w-full" placeholder="Nhập mã môn" />
-                    </div>
-
-                    <div class="flex flex-col gap-2">
-                        <label class="text-sm">Ngày hoàn thành <span class="text-orange-500">*</span></label>
-                        <p-datepicker [(ngModel)]="newHistory.completionDate" dateFormat="dd-mm-yy" showIcon="true"></p-datepicker>
-                    </div>
-
-                    <div class="flex flex-col gap-2">
-                        <label class="text-sm">Kỳ bắt đầu áp dụng <span class="text-orange-500">*</span></label>
-                        <p-datepicker [(ngModel)]="newHistory.startTerm" dateFormat="yy-mm" showIcon="true"></p-datepicker>
-                    </div>
-                </div>
-
-                <div class="md:w-1/2 flex flex-col gap-4">
-                    <div class="flex flex-col gap-2">
-                        <label class="text-sm">Số hợp đồng</label>
-                        <input pInputText [(ngModel)]="newHistory.contractNumber" class="w-full" placeholder="Nhập số hợp đồng" />
-                    </div>
-
-                    <div class="flex flex-col gap-2">
-                        <label class="text-sm">Loại thay đổi <span class="text-orange-500">*</span></label>
-                        <!-- <input pInputText [(ngModel)]="newHistory.changeType" class="w-full" /> -->
-
-                        <p-dropdown [options]="changeTypeOptions" [(ngModel)]="newHistory.changeType" optionLabel="label" placeholder="Chọn loại thay đổi" class="w-full"> </p-dropdown>
-                    </div>
-
-                    <div class="flex flex-col gap-2">
-                        <label class="text-sm">Loại học liệu <span class="text-orange-500">*</span></label>
-                        <!-- <input pInputText [(ngModel)]="newHistory.learningMaterialType" class="w-full" /> -->
-                        <p-dropdown [options]="learningMaterialTypeOptions" [(ngModel)]="newHistory.learningMaterialType" optionLabel="label" placeholder="Chọn loại học liệu" class="w-full"> </p-dropdown>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-4 flex flex-col gap-2">
-                <label class="text-sm">Nội dung thay đổi <span class="text-orange-500">*</span></label>
-                <textarea pInputTextarea [(ngModel)]="newHistory.changeDescription" rows="8" autoResize="true" class="w-full p-2 rounded-md border"></textarea>
+                <label class="text-sm">Nội dung thay đổi</label>
+                <textarea pTextarea [(ngModel)]="newHistory.changeDescription" class="w-full" rows="8" cols="30"
+                    placeholder="Nội dung thay đổi"></textarea>
             </div>
         </div>
 
         <ng-template pTemplate="footer">
             <div class="flex justify-end gap-2">
                 <p-button label="Hủy" (click)="displayAddDialog = false" severity="secondary"></p-button>
-                <p-button label="Lưu" (click)="addHistory()" severity="warn"></p-button>
+                <p-button label="Lưu" (click)="addHistory(newHistory.historyId)" severity="warn"></p-button>
             </div>
         </ng-template>
     </p-dialog>
 </p-card>
+
+<p-toast></p-toast>

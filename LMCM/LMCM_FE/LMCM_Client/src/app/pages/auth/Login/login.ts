@@ -110,14 +110,16 @@ export class Login implements OnInit, AfterViewInit {
                 this.service.add({ severity: 'success', summary: 'Đăng nhập thành công', detail: 'Đang chuyển hướng...' });
                 console.log(response);
 
-                // Lưu AuthToken vào cookie
+                const expires = new Date();
+                expires.setHours(expires.getHours() + 1);
+
                 this.cookieService.set('AuthToken', response.data.token, {
+                    expires,
                     path: '/',
                     secure: true,
                     sameSite: 'Strict'
                 });
 
-                // Chuyển hướng sau khi đăng nhập thành công
                 setTimeout(() => {
                     window.location.href = '';
                 }, 1000);

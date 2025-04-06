@@ -16,10 +16,15 @@ import { DialogModule } from 'primeng/dialog';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { DatePickerModule } from 'primeng/datepicker';
+import { TextareaModule } from 'primeng/textarea';
+import { ContractApiService } from '../../../apis/contractAPIs/contract-api.service';
+import { SyllabusApiService } from '../../../apis/syllabusAPIs/syllabus-api.service';
+import { HistoryOfChangeApiService } from '../../../apis/historyAPIs/history-api';
+import { searchService } from '../../service/search/search-service.service';
 
 @Component({
     standalone: true,
-    imports: [ConfirmDialogModule, DatePickerModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, CalendarModule, DropdownModule, InputTextModule],
+    imports: [TextareaModule, ConfirmDialogModule, DatePickerModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, CalendarModule, DropdownModule, InputTextModule],
     selector: 'app-history-of-change',
     templateUrl: './history-of-change.component.html',
     styleUrls: ['./history-of-change.component.scss'],
@@ -39,27 +44,46 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
     displayEditDialog: boolean = false;
 
     editHistory: any = {};
+
+    contract: any[] = [];
+    syllabus: any[] = [];
+
     constructor(
-        private learningMaterialService: LearningMaterialApiService,
+        private searchService: searchService,
+        private historyService: HistoryOfChangeApiService,
         private confirmationService: ConfirmationService,
-        private messageService: MessageService
-    ) {}
+        private messageService: MessageService,
+        private contractService: ContractApiService,
+        private syllabusService: SyllabusApiService
+    ) { }
     //dữ liệu fix cứng
     changeTypeOptions = [
-        { label: 'Cập nhật', value: 'update' },
-        { label: 'Bổ sung', value: 'add' },
-        { label: 'Xóa', value: 'delete' }
+        { label: 'Xây mới', value: 'Xây mới' },
+        { label: 'Điều chỉnh', value: 'Điều chỉnh' },
     ];
-    //dữ liệu fix cứng
-    learningMaterialTypeOptions = [
-        { label: 'Bài giảng', value: 'lecture' },
-        { label: 'Giáo trình', value: 'textbook' },
-        { label: 'Slide bài giảng', value: 'slides' },
-        { label: 'Tài liệu tham khảo', value: 'reference' }
-    ];
-    
+
+    loadData() {
+        this.contractService.getContractList().subscribe((response) => {
+            this.contract = response;
+        });
+
+        this.syllabusService.getSyllabusList().subscribe((response) => {
+            this.syllabus = response;
+        });
+    }
+
     ngOnInit(): void {
-        this.loadHistory();
+        this.searchSubscription = this.searchService.searchQuery$.subscribe(
+            (query) => {
+                this.searchKey = query;
+                this.loadHistory();
+            }
+        );
+        this.loadData();
+    }
+
+    onSearchChange(query: string) {
+        this.searchService.updateSearchQuery(query);
     }
 
     getUserIdFromLocalStorage(): string | null {
@@ -78,9 +102,8 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
             pageSize: this.pageSize
         };
 
-        this.learningMaterialService.getLearningMaterial(request).subscribe({
+        this.historyService.getLearningMaterialHistory(request).subscribe({
             next: (response) => {
-            
                 this.historyList = response.items;
                 this.totalCount = response.totalCount;
             },
@@ -92,19 +115,23 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
     }
 
     paginate(event: any) {
-    
+
         this.loadHistory(event);
     }
-    showDetail(item: any) {
-        if (!item) {
-            return;
-        }
-
-        this.selectedItem = {
-            ...item,
-            completionDate: item.completionDate ? new Date(item.completionDate) : null,
-            startTerm: item.startTerm ? new Date(item.startTerm) : null
-        };
+    showDetail(id: any) {
+        this.historyService.getHistoryById(id).subscribe(
+            (response) => {
+                this.newHistory = response;
+                const selectedSyllabus = this.syllabus.find(s => s.syllabusId === this.newHistory.syllabusId);
+                this.newHistory.syllabus = selectedSyllabus;
+                if (this.newHistory.completionDate) {
+                    this.newHistory.completionDate = new Date(this.newHistory.completionDate);
+                }
+            },
+            (error) => {
+                this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: error.message });
+            }
+        );
 
         this.displayDetailDialog = true;
     }
@@ -113,77 +140,97 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
     }
 
     editDetail(item: any) {
-       
         this.editHistory = {
             ...item,
             completionDate: item.completionDate ? new Date(item.completionDate) : null,
-            startTerm: item.startTerm ? new Date(item.startTerm + "-01") : null, 
         };
         this.displayEditDialog = true;
     }
-    
+
     updateHistory() {
-       
+
         this.displayEditDialog = false;
     }
 
-    confirmDelete(item: any) {
+    confirmDelete(id: any) {
         this.confirmationService.confirm({
             message: 'Bạn có chắc chắn muốn xóa bản ghi này?',
             header: 'Xác nhận',
             accept: () => {
-                this.deleteItem(item);
+                this.deleteItem(id);
             }
         });
     }
 
-    deleteItem(item: any) {
-        console.log('Xóa:', item);
-        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa bản ghi' });
-    }
-
-    openAddDialog() {
-        this.newHistory = {};
-        this.displayAddDialog = true;
-    }
-
-    addHistory() {
-        const userId = this.getUserIdFromLocalStorage();
-        if (!userId) {
-            this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không tìm thấy thông tin người dùng' });
-            return;
-        }
-        if (!this.newHistory.changeType || !this.newHistory.learningMaterialType) {
-            this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng nhập đầy đủ thông tin' });
-            return;
-        }
-
-        const request = {
-            userId: userId,
-            contractId: this.newHistory.contractNumber || null,
-            newMaterialId: this.newHistory.newMaterialId || null,
-            oldMaterialId: this.newHistory.oldMaterialId || null,
-            learningMaterialType: this.newHistory.learningMaterialType,
-            changeType: this.newHistory.changeType,
-            changeDescription: this.newHistory.changeDescription || '',
-            completionDate: this.newHistory.completionDate || new Date().toISOString(),
-            startTerm: this.newHistory.startTerm || '',
-            courseCode: this.newHistory.courseCode || ''
-        };
-
-        console.log('Gửi request thêm lịch sử:', request);
-
-        this.learningMaterialService.createLearningMaterialHistory(request).subscribe({
+    deleteItem(id: any) {
+        this.historyService.deleteLearningMaterialHistory(id).subscribe({
             next: () => {
-                this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm lịch sử thay đổi' });
-                this.displayAddDialog = false;
+                this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa lịch sử thay đổi' });
                 this.loadHistory();
             },
             error: (error) => {
-                console.error('Lỗi khi thêm lịch sử thay đổi:', error);
-                this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể thêm lịch sử thay đổi' });
+                this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể xóa lịch sử thay đổi' });
             }
         });
+    }
+
+    openAddDialog(id?: string) {
+        this.loadData();
+        if (id) {
+            this.historyService.getHistoryById(id).subscribe(
+                (response) => {
+                    this.newHistory = response;
+                    const selectedSyllabus = this.syllabus.find(s => s.syllabusId === this.newHistory.syllabusId);
+                    this.newHistory.syllabus = selectedSyllabus;
+                    this.newHistory.changeType = response.changeType;
+                    if (this.newHistory.completionDate) {
+                        this.newHistory.completionDate = new Date(this.newHistory.completionDate);
+                    }
+                },
+                (error) => {
+                    this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: error.message });
+                }
+            );
+        } else {
+            this.newHistory = {};
+        }
+        this.displayAddDialog = true;
+    }
+
+    addHistory(id?: string) {
+        const request = {
+            contractId: this.newHistory.contractId || null,
+            changeType: this.newHistory.changeType.toString(),
+            changeDescription: this.newHistory.changeDescription || '',
+            completionDate: this.newHistory.completionDate || new Date().toISOString(),
+            startTerm: this.newHistory.startTerm || '',
+            syllabusId: this.newHistory.syllabus?.syllabusId || '',
+            courseCode: this.newHistory.syllabus?.courseCode || '',
+        };
+        if (id) {
+            this.historyService.updateLearningMaterialHistory(id, request).subscribe({
+                next: () => {
+                    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã cập nhật lịch sử thay đổi' });
+                    this.displayAddDialog = false;
+                    this.loadHistory();
+                },
+                error: (error) => {
+                    this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể cập nhật lịch sử thay đổi' });
+                }
+            });
+        } else {
+            this.historyService.createLearningMaterialHistory(request).subscribe({
+                next: () => {
+                    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm lịch sử thay đổi' });
+                    this.displayAddDialog = false;
+                    this.loadHistory();
+                },
+                error: (error) => {
+                    console.error('Lỗi khi thêm lịch sử thay đổi:', error);
+                    this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể thêm lịch sử thay đổi' });
+                }
+            });
+        }
     }
 
     ngOnDestroy(): void {

@@ -140,124 +140,59 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             if (file == null || file.Length == 0)
                 return BadRequest(new { message = "Vui lòng tải lên tệp Excel hợp lệ." });
 
-            using (var transaction = await _dbContext.Database.BeginTransactionAsync())  // Start a database transaction
+            try
             {
-                try
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+                using (var stream = new MemoryStream())
                 {
-                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-                    using (var stream = new MemoryStream())
+                    await file.CopyToAsync(stream);
+                    using (var package = new ExcelPackage(stream))
                     {
-                        await file.CopyToAsync(stream);
-                        using (var package = new ExcelPackage(stream))
+                        var requiredSheets = new List<string> { "Syllabus", "Schedule", "CLO", "Grading structure", "Constructivist Question", "Materials" };
+                        var availableSheets = package.Workbook.Worksheets.Select(sheet => sheet.Name).ToList();
+                        var missingSheets = requiredSheets.Except(availableSheets).ToList();
+
+                        if (missingSheets.Any())
                         {
-                            var requiredSheets = new List<string> { "Syllabus", "Schedule", "CLO", "Grading structure", "Constructivist Question", "Materials" };
-                            var availableSheets = package.Workbook.Worksheets.Select(sheet => sheet.Name).ToList();
-                            var missingSheets = requiredSheets.Except(availableSheets).ToList();
-
-                            if (missingSheets.Any())
-                            {
-                                return BadRequest(new { message = $"Tệp Excel bị thiếu các trang sau: {string.Join(", ", missingSheets)}." });
-                            }
-
-                            // Import Syllabus
-                            var (oldSyllabus, newSyllabus) = await ImportSyllabusSheet(package.Workbook.Worksheets["Syllabus"]);
-                            var oldSyllabusId = oldSyllabus?.SyllabusId ?? null;
-                            var newSyllabusId = newSyllabus.SyllabusId;
-                            if (newSyllabus == null)
-                                throw new Exception("Nhập giáo trình thất bại.");
-
-                            // Import CLOs
-                            var isCLOSuccess = await ImportCLOSheet(package.Workbook.Worksheets["CLO"], oldSyllabusId, newSyllabusId);
-                            if (!isCLOSuccess)
-                                throw new Exception("Nhập CLO thất bại.");
-
-                            // Import Schedule
-                            var isScheduleSuccess = await ImportScheduleSheet(package.Workbook.Worksheets["Schedule"], oldSyllabusId, newSyllabusId);
-                            if (!isScheduleSuccess)
-                                throw new Exception("Nhập lịch học thất bại.");
-
-                            // Import Grading Structures
-                            var isGradingSuccess = await ImportGradingStructureSheet(package.Workbook.Worksheets["Grading structure"], oldSyllabusId, newSyllabusId);
-                            if (!isGradingSuccess)
-                                throw new Exception("Nhập cấu trúc đánh giá thất bại.");
-
-                            // Import Constructivist Questions
-                            var isQuestionSuccess = await ImportConstructivistQuestionSheet(package.Workbook.Worksheets["Constructivist Question"], oldSyllabusId, newSyllabusId);
-                            if (!isQuestionSuccess)
-                                throw new Exception("Nhập câu hỏi thất bại.");
-
-                            // Import Materials 
-                            var isMaterialsSuccess = await ImportMaterialsSheet(package.Workbook.Worksheets["Materials"], oldSyllabusId, newSyllabusId, keepUserCreated);
-                            if (!isQuestionSuccess)
-                                throw new Exception("Nhập học liệu thất bại.");
-
-                            await _dbContext.SaveChangesAsync();
-                            await transaction.CommitAsync();
-                            return Ok(new { message = "Nhập vào hệ thống thành công." });
+                            return BadRequest(new { message = $"Tệp Excel bị thiếu các trang sau: {string.Join(", ", missingSheets)}." });
                         }
+
+                        // Import CLOs
+                        var Clos = await ImportCLOSheet(package.Workbook.Worksheets["CLO"]);
+
+                        // Import Schedule
+                        var schedules = await ImportScheduleSheet(package.Workbook.Worksheets["Schedule"]);
+
+                        // Import Grading Structures
+                        var gradingStructures = await ImportGradingStructureSheet(package.Workbook.Worksheets["Grading structure"]);
+
+                        // Import Constructivist Questions
+                        var constructivistQuestions = await ImportConstructivistQuestionSheet(package.Workbook.Worksheets["Constructivist Question"]);
+
+                        // Import Materials 
+                        var learningMaterials = await ImportMaterialsSheet(package.Workbook.Worksheets["Materials"]);
+
+                        // Import Syllabus
+                        var newSyllabus = await ImportSyllabusSheet(package.Workbook.Worksheets["Syllabus"], schedules, Clos, gradingStructures, constructivistQuestions, learningMaterials, keepUserCreated);
+                        var newSyllabusId = newSyllabus.SyllabusId;
+                        if (newSyllabus == null)
+                            throw new Exception("Nhập giáo trình thất bại.");
+
+                        return Ok(new { message = "Nhập vào hệ thống thành công." });
+                        //return Ok(new { message = "Nhập vào hệ thống thành công."});
                     }
                 }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync(); // Rollback if any step fails
-                    return StatusCode(500, new { message = "Lỗi xảy ra: " + ex.Message });
-                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi xảy ra: " + ex.Message });
             }
         }
-
-        private async Task<bool> ImportScheduleSheet(ExcelWorksheet worksheet, Guid? oldSyllabusId, Guid newSyllabusId )
-        {
-            // Validate expected headers
-            string[] expectedHeaders = { "Sess.", "Leaning-Teaching Method", "Content", "CLO", "ITU", "Student's materials", "Student's task", "Lecturer's Materials", "Lecturer's task", "Student's materials link", "Lecturer's Materials link" };
-
-            for (int col = 1; col <= expectedHeaders.Length; col++)
-            {
-                if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
-                {
-                    throw new Exception($"Định dạng Excel trang Schedule không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
-                }
-            }
-
-            var scheduleList = new List<ScheduleInsertDto>();
-            int rowCount = worksheet.Dimension.Rows;
-
-            for (int row = 2; row <= rowCount; row++)
-            {
-                var scheduleData = new ScheduleInsertDto
-                {
-                    SyllabusId = newSyllabusId,
-                    ScheduleNo = int.TryParse(worksheet.Cells[row, 1].Text, out int session) ? session : 0,
-                    Method = worksheet.Cells[row, 2].Text.Trim(),
-                    Content = worksheet.Cells[row, 3].Text.Trim(),
-                    Clos = worksheet.Cells[row, 4].Text.Trim(),
-                    Itu = worksheet.Cells[row, 5].Text.Trim(),
-                    StudentMaterial = worksheet.Cells[row, 6].Text.Trim(),
-                    StudentTask = worksheet.Cells[row, 7].Text.Trim(),
-                    LecturerMaterial = worksheet.Cells[row, 8].Text.Trim(),
-                    LecturerTask = worksheet.Cells[row, 9].Text.Trim(),
-                    StudentMaterialUrl = worksheet.Cells[row, 10].Text.Trim(),
-                    LecturerMaterialUrl = worksheet.Cells[row, 11].Text.Trim()
-                };
-
-                scheduleList.Add(scheduleData);
-            }
-
-            if (!scheduleList.Any())
-            {
-                throw new Exception("Không tìm thấy dữ liệu lịch trình trong trang.");
-            }
-
-            // Remove old schedule if syllabus has a previous version
-            if (oldSyllabusId != null)
-            {
-                await _scheduleService.DeleteSchedulesBySyllabusAsync((Guid)oldSyllabusId);
-            }
-
-            return await _scheduleService.ImportSchedulesAsync(scheduleList);
-        }
-
-        private async Task<(Syllabus oldSyllabus, Syllabus newSyllabus)> ImportSyllabusSheet(ExcelWorksheet worksheet)
+        private async Task<Syllabus> ImportSyllabusSheet(ExcelWorksheet worksheet, List<ScheduleInsertDto> schedules,
+            List<CLOInsertDto> cLOs, List<GradingStructureInsertDto> gradingStructures,
+            List<ConstructivistQuestionInsertDto> constructivistQuestions,
+            List<LearningMaterialImportDto> learningMaterials,bool keepUserCreated)
         {
             // Validate expected headers
             string[] expectedHeaders = { "No", "Title", "Details" };
@@ -293,19 +228,60 @@ namespace LMCM_BE.Controllers.SyllabusControllers
 
             // Find subject for syllabus
             Subject subject = await _subjectService.GetSubjectByCodeAsync(syllabusData.CourseCode);
-            Syllabus oldSyllabus = await _syllabusService.GetActiveSyllabusBySubjectIdAsync(subject.SubjectId);
             if (subject != null)
             {
-                syllabusData.SubjectId = subject.SubjectId;
-                Syllabus newSyllabus = await _syllabusService.ImportSyllabusAsync(syllabusData);
-                return (oldSyllabus, newSyllabus);
+                syllabusData.SubjectId=subject.SubjectId;
+                return await _syllabusService.ImportSyllabusAsync(syllabusData, schedules, cLOs, gradingStructures, constructivistQuestions, learningMaterials, keepUserCreated);
             }
             else
             {
                 throw new Exception("Không tìm thấy môn học cho giáo trình.");
             }
         }
-        private async Task<bool> ImportCLOSheet(ExcelWorksheet worksheet, Guid? oldSyllabusId, Guid newSyllabusId)
+        private async Task<List<ScheduleInsertDto>> ImportScheduleSheet(ExcelWorksheet worksheet)
+        {
+            // Validate expected headers
+            string[] expectedHeaders = { "Sess.", "Leaning-Teaching Method", "Content", "CLO", "ITU", "Student's materials", "Student's task", "Lecturer's Materials", "Lecturer's task", "Student's materials link", "Lecturer's Materials link" };
+
+            for (int col = 1; col <= expectedHeaders.Length; col++)
+            {
+                if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
+                {
+                    throw new Exception($"Định dạng Excel trang Schedule không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
+                }
+            }
+
+            var scheduleList = new List<ScheduleInsertDto>();
+            int rowCount = worksheet.Dimension.Rows;
+
+            for (int row = 2; row <= rowCount; row++)
+            {
+                var scheduleData = new ScheduleInsertDto
+                {
+                    ScheduleNo = int.TryParse(worksheet.Cells[row, 1].Text, out int session) ? session : 0,
+                    Method = worksheet.Cells[row, 2].Text.Trim(),
+                    Content = worksheet.Cells[row, 3].Text.Trim(),
+                    Clos = worksheet.Cells[row, 4].Text.Trim(),
+                    Itu = worksheet.Cells[row, 5].Text.Trim(),
+                    StudentMaterial = worksheet.Cells[row, 6].Text.Trim(),
+                    StudentTask = worksheet.Cells[row, 7].Text.Trim(),
+                    LecturerMaterial = worksheet.Cells[row, 8].Text.Trim(),
+                    LecturerTask = worksheet.Cells[row, 9].Text.Trim(),
+                    StudentMaterialUrl = worksheet.Cells[row, 10].Text.Trim(),
+                    LecturerMaterialUrl = worksheet.Cells[row, 11].Text.Trim()
+                };
+
+                scheduleList.Add(scheduleData);
+            }
+
+            if (!scheduleList.Any())
+            {
+                throw new Exception("Không tìm thấy dữ liệu lịch trình trong trang.");
+            }
+
+            return scheduleList;
+        }
+        private async Task<List<CLOInsertDto>> ImportCLOSheet(ExcelWorksheet worksheet)
         {
             // Validate expected headers
             string[] expectedHeaders = { "No", "CLO Name", "CLO Description" };
@@ -326,7 +302,6 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             {
                 var cloData = new CLOInsertDto
                 {
-                    SyllabusId = newSyllabusId,
                     CloName = worksheet.Cells[row, 2].Text.Trim(),
                     CloDescription = worksheet.Cells[row, 3].Text.Trim()
                 };
@@ -338,13 +313,10 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             {
                 throw new Exception("Không tìm thấy CLOs trong trang.");
             }
-            if (oldSyllabusId != null)
-            {
-                await _cloService.DeleteCLOBySyllabusAsync((Guid)oldSyllabusId);
-            }
-            return await _cloService.ImportCLOsAsync(cloList);
+
+            return cloList;
         }
-        private async Task<bool> ImportGradingStructureSheet(ExcelWorksheet worksheet, Guid? oldSyllabusId, Guid newSyllabusId)
+        private async Task<List<GradingStructureInsertDto>> ImportGradingStructureSheet(ExcelWorksheet worksheet)
         {
             // Validate expected headers
             string[] expectedHeaders = { "#", "Assessment Component\nHạng mục đánh giá", "Assessment Type", "Weight\nTrọng số %", "Part\nPhần", "Minimun value to meet Completion Criteria", "Duration", "CLO", "Type of questions", "Number of questions", "Scope of knowledge and skill of questions", "How?", "Note", "SessionNo", "Reference" };
@@ -364,7 +336,6 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             {
                 var gradingData = new GradingStructureInsertDto
                 {
-                    SyllabusId = newSyllabusId,
                     StructureNo = int.TryParse(worksheet.Cells[row, 1].Text, out int structureNo) ? structureNo : 0,
                     AssessmentComponent = worksheet.Cells[row, 2].Text.Trim(),
                     AssessmentType = worksheet.Cells[row, 3].Text.Trim(),
@@ -390,15 +361,9 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 throw new Exception("Không tìm thấy dữ liệu cấu trúc điểm trong trang.");
             }
 
-            // Remove old grading structures if syllabus has a previous version
-            if (oldSyllabusId != null)
-            {
-                await _gradingStructureService.DeleteGradingStructuresBySyllabusAsync((Guid)oldSyllabusId);
-            }
-
-            return await _gradingStructureService.ImportGradingStructuresAsync(gradingList);
+            return gradingList;
         }
-        private async Task<bool> ImportConstructivistQuestionSheet(ExcelWorksheet worksheet, Guid? oldSyllabusId, Guid newSyllabusId)
+        private async Task<List<ConstructivistQuestionInsertDto>?> ImportConstructivistQuestionSheet(ExcelWorksheet worksheet)
         {
             // Validate expected headers
             string[] expectedHeaders = { "No", "SessionNo", "Name", "Detail" };
@@ -418,7 +383,6 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             {
                 var questionData = new ConstructivistQuestionInsertDto
                 {
-                    SyllabusId = newSyllabusId,
                     SessionNo = int.TryParse(worksheet.Cells[row, 2].Text, out int sessionNo) ? sessionNo : 0,
                     QuestionName = worksheet.Cells[row, 3].Text.Trim(),
                     QuestionDetail = worksheet.Cells[row, 4].Text.Trim(),
@@ -429,19 +393,13 @@ namespace LMCM_BE.Controllers.SyllabusControllers
 
             if (!questionList.Any())
             {
-                return true;
+                return null;
                 //throw new Exception("Không tìm thấy dữ liệu câu hỏi trong trang.");
             }
 
-            // Remove old questions if syllabus has a previous version
-            if (oldSyllabusId != null)
-            {
-                await _questionService.DeleteConstructivistQuestionsBySyllabusAsync((Guid)oldSyllabusId);
-            }
-
-            return await _questionService.ImportConstructivistQuestionsAsync(questionList);
+            return questionList;
         }
-        private async Task<bool> ImportMaterialsSheet(ExcelWorksheet worksheet, Guid? oldSyllabusId, Guid newSyllabusId, bool keepUserCreated)
+        private async Task<List<LearningMaterialImportDto>?> ImportMaterialsSheet(ExcelWorksheet worksheet)
         {
             // Validate expected headers
             string[] expectedHeaders = { "No", "MaterialDescription", "Purpose", "ISBN", "Type", "Note", "Author", "Publisher", "Published Date", "Edition" };
@@ -470,13 +428,12 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                     {
                         url = materialDescription;
                     }
-                    materialName= materialDescription;
+                    materialName = materialDescription;
                 }
 
                 var materialData = new LearningMaterialImportDto
                 {
-                    SyllabusId = newSyllabusId,
-                    MaterialName=materialName,
+                    MaterialName = materialName,
                     Purpose = worksheet.Cells[row, 3].Text.Trim(),
                     LearningType = worksheet.Cells[row, 5].Text.Trim(),
                     Note = worksheet.Cells[row, 6].Text.Trim(),
@@ -493,19 +450,11 @@ namespace LMCM_BE.Controllers.SyllabusControllers
 
             if (!materialList.Any())
             {
-                return true;
+                return null;
                 //throw new Exception("Không tìm thấy dữ liệu câu hỏi trong trang.");
             }
 
-            var result = await _learningMaterialService.ImportLearningMaterialsAsync(materialList, oldSyllabusId, newSyllabusId, keepUserCreated);
-
-            // Remove old materials if syllabus has a previous version
-            if (oldSyllabusId != null)
-            {
-                await _learningMaterialService.DeleteLearningMaterialsBySyllabusAsync((Guid)oldSyllabusId);
-            }
-
-            return result;
+            return materialList;
         }
     }
 }

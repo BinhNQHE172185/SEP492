@@ -37,7 +37,6 @@ namespace LMCM_BE.Repositories.CLORepository
                 }
 
                 _dbContext.Clos.UpdateRange(clos);
-                await _dbContext.SaveChangesAsync();
 
                 return true;
             }
@@ -53,7 +52,7 @@ namespace LMCM_BE.Repositories.CLORepository
             }
         }
 
-        public async Task<bool> ImportCLOsAsync(List<CLOInsertDto> cLOs)
+        public async Task<bool> ImportCLOsAsync(List<CLOInsertDto> cLOs, Guid syllabusId)
         {
             if (cLOs == null || !cLOs.Any())
                 throw new ArgumentNullException(nameof(cLOs));
@@ -62,6 +61,7 @@ namespace LMCM_BE.Repositories.CLORepository
 
             foreach (var clo in newCLOs)
             {
+                clo.SyllabusId = syllabusId;
                 clo.CloId = Guid.NewGuid();
                 clo.Status = "Active";
                 clo.CreatedAt = DateTime.UtcNow;

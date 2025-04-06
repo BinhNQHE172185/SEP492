@@ -37,4 +37,7 @@ export class SyllabusApiService {
   deleteSyllabuses(id: any): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/Syllabus/${id}`);
   }
+  getSyllabusList(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/Syllabus/getSyllabusesListNoPaging`);
+  }
 }

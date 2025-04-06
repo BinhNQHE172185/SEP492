@@ -3,6 +3,12 @@ export enum MaterialTypeConstant {
   Offline = "Offline",
 }
 
+export enum ChangeType {
+  Create = 1,
+  Update = 2
+}
+
+
 export enum MaterialCategory {
   PublishedBook = 'Sách xuất bản chính thức',
   InternalBook = 'Sách xuất bản nội bộ',

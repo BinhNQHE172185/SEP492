@@ -1,4 +1,5 @@
-﻿using LMCM_BE.DTOs.LearningMaterialDtos;
+﻿using LMCM_BE.DTOs.LearningMaterialChangesHistoryDtos;
+using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository;
@@ -34,6 +35,11 @@ namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
         public async Task<Guid?> UpdateLearningMaterialChangesHistoryAsync(Guid historyId, UpdateLearningMaterialChangesHistoryDto dto)
         {
             return await _changesRepository.UpdateLearningMaterialChangesHistoryAsync(historyId, dto);
+        }
+
+        public async Task<ChangesHistoryDetailDto> getHistoryOfChangeDetail(Guid id)
+        {
+            return await _changesRepository.getHistoryOfChangeDetail(id);
         }
     }
 }

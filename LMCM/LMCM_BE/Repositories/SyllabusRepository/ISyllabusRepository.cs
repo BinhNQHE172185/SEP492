@@ -13,6 +13,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
     public interface ISyllabusRepository
     {
         Task<PagedResult<SyllabusListViewDto>> GetSyllabusesAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
+        Task<List<SyllabusListViewDto>> GetSyllabusesAsync(string? searchKey);
         Task<PagedResult<SyllabusListViewDto>> GetSyllabusChangeHistoriesAsync(Guid? syllabusId,string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<Syllabus> ImportSyllabusAsync(SyllabusInsertDto syllabus,List<ScheduleInsertDto> schedules,
             List<CLOInsertDto> cLOs, List<GradingStructureInsertDto> gradingStructures,

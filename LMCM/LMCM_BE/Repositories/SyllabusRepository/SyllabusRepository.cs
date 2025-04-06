@@ -6,8 +6,10 @@ using LMCM_BE.DTOs.ConstructivistQuestionDtos;
 using LMCM_BE.DTOs.GradingStructureDtos;
 using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ScheduleDtos;
+using LMCM_BE.DTOs.ContractDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
+using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.CLORepository;
 using LMCM_BE.Repositories.ConstructivistQuestionRepository;
@@ -90,6 +92,28 @@ namespace LMCM_BE.Repositories.SyllabusRepository
                 CurrentPage = pageIndex,
                 PageSize = pageSize
             };
+        }
+        public async Task<List<SyllabusListViewDto>> GetSyllabusesAsync(string? searchKey)
+        {
+            var query = _dbContext.Syllabus.AsQueryable();
+
+            query = query.OrderBy(s => s.CourseCode);
+
+            query = query.Where(s => s.Status != "Inactive");
+
+            if (!string.IsNullOrWhiteSpace(searchKey))
+            {
+                string search = searchKey.Trim().ToLower();
+                query = query.Where(s => s.CourseCode.ToLower().Contains(search) ||
+                                         s.CourseNameEnglish.ToLower().Contains(search) ||
+                                         s.CourseName.ToLower().Contains(search));
+            }
+
+            var items = await query.ToListAsync();
+
+            var data = _mapper.Map<List<SyllabusListViewDto>>(items);
+
+            return data;
         }
         public async Task<PagedResult<SyllabusListViewDto>> GetSyllabusChangeHistoriesAsync(
             Guid? syllabusId, string? searchKey, int pageIndex = 1, int pageSize = 10)

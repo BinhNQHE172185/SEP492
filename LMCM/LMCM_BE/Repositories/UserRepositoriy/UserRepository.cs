@@ -210,6 +210,40 @@ namespace LMCM_BE.Repositories.UserRepositoriy
                 return null;
             }
         }
+        public async Task<bool> AssignRoleAsync(string userId, string role)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new ArgumentException("Người dùng không tồn tại.");
+            }
+
+            var existingRoles = await _userManager.GetRolesAsync(user);
+            if (existingRoles.Contains(role))
+            {
+                // Already has the correct role
+                return true;
+            }
+
+            if (existingRoles.Any())
+            {
+                var removeResult = await _userManager.RemoveFromRolesAsync(user, existingRoles);
+                if (!removeResult.Succeeded)
+                {
+                    var errors = string.Join(", ", removeResult.Errors.Select(e => e.Description));
+                    throw new InvalidOperationException($"Không thể xóa vai trò cũ: {errors}");
+                }
+            }
+
+            var result = await _userManager.AddToRoleAsync(user, role);
+            if (!result.Succeeded)
+            {
+                var errorMessages = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new InvalidOperationException($"Không thể gán vai trò: {errorMessages}");
+            }
+
+            return true;
+        }
 
     }
 }

@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LMCM_BE.Repositories.UserRepositoriy
 {
@@ -42,46 +43,41 @@ namespace LMCM_BE.Repositories.UserRepositoriy
             _googleDriveService = googleDriveService;
         }
 
-        public async Task<bool> CreateStaff(StaffRequest request)
+        public async Task<bool> CreateStaff(string request)
         {
-            var email = request.StaffId + "@fpt.edu.vn";
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(request);
 
             if (user == null)
             {
-                var newStaff = new User { UserName = email, Email = email, Status = "1" };
+                var newStaff = new User { UserName = request, Email = request, Status = "1" };
                 var result = await _userManager.CreateAsync(newStaff);
 
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(newStaff, "Staff");
-
-                    // Share Google Drive folders with the new staff
-                    bool isShared = await _googleDriveService.ShareFoldersWithUser(email, "reader");
-
-                    if (!isShared)
-                    {
-                        Console.WriteLine("Failed to share Google Drive folder with user.");
-                    }
                     return true;
                 }
             }
             return false;
         }
-        public async Task<UserProfileResponseDto> GetProfile(string userId)
+        public async Task<User> GetProfile(string userId)
         {
             var data = await _userManager.FindByIdAsync(userId);
             if (data != null)
             {
-                var profile = _mapper.Map<UserProfileResponseDto>(data);
-                var roles = await _userManager.GetRolesAsync(data);
-                profile.Roles = roles.ToList();
-                return profile;
+                return data;
             }
             return null;
         }
 
-        public async Task<PagedResult<ListUserResponseDto>> GetListUser(string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<List<string>> getRoleAsync(string userId)
+        {
+            var data = await _userManager.FindByIdAsync(userId);
+            var roles = await _userManager.GetRolesAsync(data);
+            return roles.ToList();
+        }
+
+        public async Task<List<User>> GetListUser(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.Users.AsQueryable();
 
@@ -92,28 +88,14 @@ namespace LMCM_BE.Repositories.UserRepositoriy
                                          s.Email.ToLower().Contains(search));
             }
 
-            int totalCount = await query.CountAsync();
             var items = await query.Skip((pageIndex - 1) * pageSize)
                                    .Take(pageSize)
                                    .ToListAsync();
-            var data = _mapper.Map<List<ListUserResponseDto>>(items);
-
-            return new PagedResult<ListUserResponseDto>
-            {
-                Items = data,
-                TotalCount = totalCount,
-                CurrentPage = pageIndex,
-                PageSize = pageSize
-            };
+            return items;
         }
 
-        public async Task<UserLoginResponseDto> Login(GoogleLoginRequest request)
+        public async Task<User> Login(GoogleJsonWebSignature.Payload payload)
         {
-            var payload = await GoogleJsonWebSignature.ValidateAsync(request.Token, new GoogleJsonWebSignature.ValidationSettings
-            {
-                Audience = new[] { "433474498165-m4uv6c6h9hc3ss9vk74d9v7u8t57irr5.apps.googleusercontent.com" }
-            });
-
             var user = await _userManager.FindByEmailAsync(payload.Email);
 
             if (user == null || user.Status.Equals("3"))
@@ -128,34 +110,43 @@ namespace LMCM_BE.Repositories.UserRepositoriy
                 user.Status = "2";
                 await _userManager.UpdateAsync(user);
             }
-            var token = GenerateJwtToken(user);
-
-            return new UserLoginResponseDto
-            {
-                Id = user.Id,
-                Token = token,
-            };
+            return user;
         }
-        private string GenerateJwtToken(User user)
+
+        public async Task<bool> AssignRoleAsync(string userId, string role)
         {
-            var claims = new[]
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
             {
-        new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString(), ClaimValueTypes.String, "utf-8"),
-        new Claim(JwtRegisteredClaimNames.Email, user.Email, ClaimValueTypes.String, "utf-8"),
-        new Claim(JwtRegisteredClaimNames.Name, user.Name ?? "", ClaimValueTypes.String, "utf-8"),
-    };
+                throw new ArgumentException("Người dùng không tồn tại.");
+            }
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(3),
-                signingCredentials: creds
-            );
+            var existingRoles = await _userManager.GetRolesAsync(user);
+            if (existingRoles.Contains(role))
+            {
+                // Already has the correct role
+                return true;
+            }
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            if (existingRoles.Any())
+            {
+                var removeResult = await _userManager.RemoveFromRolesAsync(user, existingRoles);
+                if (!removeResult.Succeeded)
+                {
+                    var errors = string.Join(", ", removeResult.Errors.Select(e => e.Description));
+                    throw new InvalidOperationException($"Không thể xóa vai trò cũ: {errors}");
+                }
+            }
+
+            var result = await _userManager.AddToRoleAsync(user, role);
+            if (!result.Succeeded)
+            {
+                var errorMessages = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new InvalidOperationException($"Không thể gán vai trò: {errorMessages}");
+            }
+
+            return true;
         }
-
         public async Task<UserProfileResponseDto> GetProfileFromCookie()
         {
             try
@@ -196,7 +187,7 @@ namespace LMCM_BE.Repositories.UserRepositoriy
                         return null;
                     }
 
-                    return await GetProfile(userId);
+                    return null;
                 }
                 catch (Exception ex)
                 {
@@ -210,40 +201,5 @@ namespace LMCM_BE.Repositories.UserRepositoriy
                 return null;
             }
         }
-        public async Task<bool> AssignRoleAsync(string userId, string role)
-        {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                throw new ArgumentException("Người dùng không tồn tại.");
-            }
-
-            var existingRoles = await _userManager.GetRolesAsync(user);
-            if (existingRoles.Contains(role))
-            {
-                // Already has the correct role
-                return true;
-            }
-
-            if (existingRoles.Any())
-            {
-                var removeResult = await _userManager.RemoveFromRolesAsync(user, existingRoles);
-                if (!removeResult.Succeeded)
-                {
-                    var errors = string.Join(", ", removeResult.Errors.Select(e => e.Description));
-                    throw new InvalidOperationException($"Không thể xóa vai trò cũ: {errors}");
-                }
-            }
-
-            var result = await _userManager.AddToRoleAsync(user, role);
-            if (!result.Succeeded)
-            {
-                var errorMessages = string.Join(", ", result.Errors.Select(e => e.Description));
-                throw new InvalidOperationException($"Không thể gán vai trò: {errorMessages}");
-            }
-
-            return true;
-        }
-
     }
 }

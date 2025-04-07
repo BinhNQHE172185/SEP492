@@ -62,9 +62,25 @@ namespace LMCM_BE.Controllers.ContractControllers
                 }
                 return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
+            catch (UnauthorizedAccessException ex) // Handle permission errors
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpPost("createContract")]
@@ -96,30 +112,23 @@ namespace LMCM_BE.Controllers.ContractControllers
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors
             {
-                return StatusCode(StatusCodes.Status403Forbidden, new
-                {
-                    Success = false,
-                    Message = "Bạn không có quyền tạo hợp đồng.",
-                    Error = ex.Message
-                });
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
             }
-            catch (ArgumentException ex) // Handle validation errors
+            catch (KeyNotFoundException ex)
             {
-                return BadRequest(new
-                {
-                    Success = false,
-                    Message = "Dữ liệu đầu vào không hợp lệ.",
-                    Error = ex.Message
-                });
+                return NotFound(new { message = ex.Message });
             }
-            catch (Exception ex) // General error handling
+            catch (ArgumentNullException ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new
-                {
-                    Success = false,
-                    Message = "Đã xảy ra lỗi khi tạo hợp đồng. Vui lòng thử lại sau.",
-                    Error = ex.Message
-                });
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpGet("getContractDetail")]
@@ -136,16 +145,23 @@ namespace LMCM_BE.Controllers.ContractControllers
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors
             {
-                return StatusCode(StatusCodes.Status403Forbidden, new
-                {
-                    Success = false,
-                    Message = "Bạn không có quyền xem hợp đồng.",
-                    Error = ex.Message
-                });
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpPut("updateContract/{id}")]
@@ -177,12 +193,28 @@ namespace LMCM_BE.Controllers.ContractControllers
                     });
                 else
                 {
-                    return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+                    return NotFound(new { message = "Update thất bại." });
                 }
+            }
+            catch (UnauthorizedAccessException ex) // Handle permission errors
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpDelete("deleteContract/{contractId}")]
@@ -195,16 +227,15 @@ namespace LMCM_BE.Controllers.ContractControllers
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors
             {
-                return StatusCode(StatusCodes.Status403Forbidden, new
-                {
-                    Success = false,
-                    Message = "Bạn không có quyền xóa hợp đồng.",
-                    Error = ex.Message
-                });
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
             }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (InvalidOperationException ex)
             {

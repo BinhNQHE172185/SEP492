@@ -1,8 +1,5 @@
-﻿using LMCM_BE.DTOs.BudgetProposalDtos;
-using LMCM_BE.DTOs.DocumentTemplateDtos;
+﻿using LMCM_BE.DTOs.DocumentTemplateDtos;
 using LMCM_BE.DTOs.ShareDtos;
-using LMCM_BE.Services.BudgetPropasalService;
-using LMCM_BE.Services.ContractService;
 using LMCM_BE.Services.DocumentTemplateService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,9 +28,25 @@ namespace LMCM_BE.Controllers.DocumentTemplateControllers
                 }
                 return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
+            catch (UnauthorizedAccessException ex) // Handle permission errors
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpGet("getTemplateDetail")]
@@ -50,16 +63,23 @@ namespace LMCM_BE.Controllers.DocumentTemplateControllers
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors
             {
-                return StatusCode(StatusCodes.Status403Forbidden, new
-                {
-                    Success = false,
-                    Message = "Bạn không có quyền xem mẫu tài liệu.",
-                    Error = ex.Message
-                });
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpPost("createTemplate")]
@@ -91,30 +111,23 @@ namespace LMCM_BE.Controllers.DocumentTemplateControllers
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors
             {
-                return StatusCode(StatusCodes.Status403Forbidden, new
-                {
-                    Success = false,
-                    Message = "Bạn không có quyền tạo mẫu tài liệu.",
-                    Error = ex.Message
-                });
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
             }
-            catch (ArgumentException ex) // Handle validation errors
+            catch (KeyNotFoundException ex)
             {
-                return BadRequest(new
-                {
-                    Success = false,
-                    Message = "Dữ liệu đầu vào không hợp lệ.",
-                    Error = ex.Message
-                });
+                return NotFound(new { message = ex.Message });
             }
-            catch (Exception ex) // General error handling
+            catch (ArgumentNullException ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new
-                {
-                    Success = false,
-                    Message = "Đã xảy ra lỗi khi tạo mẫu tài liệu. Vui lòng thử lại sau.",
-                    Error = ex.Message
-                });
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpPut("updateTemplate/{id}")]
@@ -136,31 +149,37 @@ namespace LMCM_BE.Controllers.DocumentTemplateControllers
                         Errors = errors
                     });
                 }
-                Guid? templateId = await _documentTemplateService.UpdateTempalteAsync(id, newTemplate);
-                if (templateId.HasValue)
+                bool isSuccess = await _documentTemplateService.UpdateTempalteAsync(id, newTemplate);
+                if (isSuccess)
                     return Ok(new
                     {
-                        message = "Update mẫu tài liệu thành công.",
-                        Data = templateId,
+                        message = "Update mẫu tài liệu thành công."
 
                     });
                 else
                 {
-                    return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+                    return NotFound(new { message = "Update mẫu tài liệu thất bại." });
                 }
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors
             {
-                return StatusCode(StatusCodes.Status403Forbidden, new
-                {
-                    Success = false,
-                    Message = "Bạn không có quyền update mẫu tài liệu.",
-                    Error = ex.Message
-                });
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpDelete("deleteTemplate/{templateId}")]
@@ -173,16 +192,15 @@ namespace LMCM_BE.Controllers.DocumentTemplateControllers
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors
             {
-                return StatusCode(StatusCodes.Status403Forbidden, new
-                {
-                    Success = false,
-                    Message = "Bạn không có quyền xóa mẫu tài liệu.",
-                    Error = ex.Message
-                });
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
             }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (InvalidOperationException ex)
             {

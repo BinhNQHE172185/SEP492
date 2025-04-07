@@ -14,5 +14,6 @@ namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
         Task<bool> SoftDeleteLearningMaterialChangesHistoryAsync(Guid historyId);
         Task<Guid?> UpdateLearningMaterialChangesHistoryAsync(Guid historyId, UpdateLearningMaterialChangesHistoryDto dto);
         Task<ChangesHistoryDetailDto> getHistoryOfChangeDetail(Guid id);
+        Task<List<LearningMaterialChangesHistory>> GetAllWithCompletionDateAsync();
     }
 }

@@ -109,15 +109,23 @@ export class ContractCreateEditComponent implements OnChanges {
   }
 
   save() {
+    if (this.contract.startDate > this.contract.endDate) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Cảnh báo',
+        detail: 'Ngày bắt đầu không được lớn hơn ngày kết thúc.'
+      });
+      return;
+    }
+
     const reportData = new FormData();
     reportData.append("proposalId", this.contract.proposalId!);
     reportData.append("contractorId", this.contract.contractorId!);
     reportData.append("title", this.contract.title);
     reportData.append("contractValue", this.contract.contractValue);
-    reportData.append("startDate", this.contract.startDate.toISOString().split("T")[0]);
-    reportData.append("endDate", this.contract.endDate.toISOString().split("T")[0]);
+    reportData.append("startDate", this.contract.startDate.toLocaleDateString('en-CA'));
+    reportData.append("endDate", this.contract.endDate.toLocaleDateString('en-CA'));
     reportData.append("file", this.file);
-
     if (this.selectedContractId) {
       this.contractService.updateContract(this.selectedContractId, reportData).subscribe(
         (response) => {
@@ -178,7 +186,7 @@ export class ContractCreateEditComponent implements OnChanges {
     this.displayAddDialog = false;
     this.closeDialogEvent.emit();
   }
-    viewFile(url: string) {
-      window.open(url, '_blank');
-    }
+  viewFile(url: string) {
+    window.open(url, '_blank');
+  }
 }

@@ -202,7 +202,7 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
             contractId: this.newHistory.contractId || null,
             changeType: this.newHistory.changeType.toString(),
             changeDescription: this.newHistory.changeDescription || '',
-            completionDate: this.newHistory.completionDate || new Date().toISOString(),
+            completionDate: this.newHistory.completionDate.toLocaleDateString('en-CA'),
             startTerm: this.newHistory.startTerm || '',
             syllabusId: this.newHistory.syllabus?.syllabusId || '',
             courseCode: this.newHistory.syllabus?.courseCode || '',

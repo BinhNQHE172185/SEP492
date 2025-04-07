@@ -17,38 +17,22 @@ namespace LMCM_BE.Repositories.ScheduleRepository
         }
         public async Task<bool> DeleteSchedulesBySyllabusAsync(Guid syllabusId)
         {
-            if (syllabusId == Guid.Empty)
-                throw new ArgumentException("Syllabus ID cannot be empty.", nameof(syllabusId));
+            var schedules = await _dbContext.Schedules
+                .Where(s => s.SyllabusId == syllabusId)
+                .ToListAsync();
 
-            try
+            if (!schedules.Any())
+                return false; // No schedules found for the given syllabus
+
+            foreach (var schedule in schedules)
             {
-                var schedules = await _dbContext.Schedules
-                    .Where(s => s.SyllabusId == syllabusId)
-                    .ToListAsync();
-
-                if (!schedules.Any())
-                    return false; // No schedules found for the given syllabus
-
-                foreach (var schedule in schedules)
-                {
-                    schedule.Status = "Inactive";
-                    schedule.UpdatedAt = DateTime.UtcNow;
-                }
-
-                _dbContext.Schedules.UpdateRange(schedules);
-
-                return true;
+                schedule.Status = "Inactive";
+                schedule.UpdatedAt = DateTime.UtcNow;
             }
-            catch (DbUpdateException dbEx)
-            {
-                Console.WriteLine(dbEx.Message);
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
+
+            _dbContext.Schedules.UpdateRange(schedules);
+
+            return true;
         }
 
         public async Task<bool> ImportSchedulesAsync(List<Schedule> schedules, Guid syllabusId)
@@ -58,7 +42,7 @@ namespace LMCM_BE.Repositories.ScheduleRepository
 
             foreach (var schedule in schedules)
             {
-                schedule.SyllabusId= syllabusId;    
+                schedule.SyllabusId = syllabusId;
                 schedule.ScheduleId = Guid.NewGuid();
                 schedule.Status = "Active";
                 schedule.CreatedAt = DateTime.UtcNow;

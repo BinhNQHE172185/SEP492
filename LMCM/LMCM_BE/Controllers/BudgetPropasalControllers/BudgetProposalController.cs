@@ -33,11 +33,19 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 }
                 return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
+            catch (UnauthorizedAccessException ex) // Handle permission errors
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
+            }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });
             }
             catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
@@ -59,11 +67,19 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 }
                 return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
+            catch (UnauthorizedAccessException ex) // Handle permission errors
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
+            }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });
             }
             catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
@@ -94,6 +110,10 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 return NotFound(new { message = ex.Message });
             }
             catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
@@ -138,6 +158,10 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 return NotFound(new { message = ex.Message });
             }
             catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
@@ -186,6 +210,10 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 return NotFound(new { message = ex.Message });
             }
             catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
             {
                 return BadRequest(new { message = ex.Message });
             }

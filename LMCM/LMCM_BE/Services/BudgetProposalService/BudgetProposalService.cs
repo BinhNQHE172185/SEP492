@@ -102,7 +102,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
             bool isHod=false;
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("Không tìm thấy người dùng");
-            if (!user.Roles.Contains("Head of Department")) isHod=true;
+            if (user.Roles.Contains("Head of Department")) isHod=true;
 
             var (items, totalCount) = await _budgetProposalRepository.GetBudgetProposalsAsync(isHod, user.Id, searchKey, pageIndex, pageSize);
             var data = _mapper.Map<List<BudgetProposalListDto>>(items);
@@ -121,7 +121,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
             bool isHod = false;
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("Không tìm thấy người dùng");
-            if (!user.Roles.Contains("Head of Department")) isHod = true;
+            if (user.Roles.Contains("Head of Department")) isHod = true;
 
             var items= await _budgetProposalRepository.GetBudgetProposalsAsync(isHod,user.Id,searchKey);
 

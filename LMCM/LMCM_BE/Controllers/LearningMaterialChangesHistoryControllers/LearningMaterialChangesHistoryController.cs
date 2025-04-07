@@ -20,14 +20,16 @@ namespace LMCM_BE.Controllers.LearningMaterialChangesHistoryControllers
     {
         private readonly ILearningMaterialChangesHistorySerivce _changesService;
         private readonly IContractService _contractService;
+        private readonly IUserService _userService;
 
         public LearningMaterialChangesHistoryController(
             ILearningMaterialChangesHistorySerivce changesService,
-            IContractService contractService
+            IContractService contractService,IUserService userService
             )
         {
             _changesService = changesService;
             _contractService = contractService;
+            _userService = userService;
         }
 
         [HttpPost("getChangesHistoryList")]
@@ -77,7 +79,8 @@ namespace LMCM_BE.Controllers.LearningMaterialChangesHistoryControllers
             }
             if (historyDto.ContractId.HasValue)
             {
-                var contract = await _contractService.GetContractByIdAsync(historyDto.ContractId.Value);
+                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
+                var contract = await _contractService.GetContractByIdAsync(user,historyDto.ContractId.Value);
                 if (contract == null)
                     return BadRequest(new { message = "Invalid ContractId." });
             }

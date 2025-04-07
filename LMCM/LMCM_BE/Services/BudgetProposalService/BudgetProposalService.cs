@@ -139,7 +139,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
 
         public async Task<bool> SoftDeleteBudgetProposalAsync( Guid proposalId)
         {
-            var budgetProposal = await _budgetProposalRepository.GetBudgetProposalByIdAsync(proposalId);
+            var budgetProposal = await _budgetProposalRepository.GetActiveBudgetProposalByIdAsync(proposalId);
 
             if (budgetProposal == null)
                 throw new KeyNotFoundException("Không tìm thấy dữ liệu.");
@@ -176,7 +176,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
             if (newProposal == null)
                 throw new ArgumentNullException(nameof(newProposal), "Dữ liệu mới không được null.");
 
-            var proposal = await _budgetProposalRepository.GetBudgetProposalByIdAsync(proposalId);
+            var proposal = await _budgetProposalRepository.GetActiveBudgetProposalByIdAsync(proposalId);
 
             if (proposal == null)
                 throw new KeyNotFoundException($"Không tìm thấy tờ trình với ID: {proposalId}");

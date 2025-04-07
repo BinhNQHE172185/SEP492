@@ -6,10 +6,10 @@ namespace LMCM_BE.Services.ContractorService
     public interface IContractorService
     {
         Task<PagedResult<ContractorListDto>> GetContractorsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
-        Task<List<ContractorListDto>> GetContractorsListAsync();
+        Task<List<ContractorListDto>> GetContractorsListAsync(string? searchKey);
         Task<bool> SoftDeleteContractorAsync(Guid contractorId);
         Task<ContractorDetailDto?> GetContractorDetailAsync(Guid contractorId);
-        Task<ContractorDetailDto> CreateContractorAsync(ContractorCreateDto dto);
+        Task<bool> CreateContractorAsync(ContractorCreateDto dto);
         Task<Guid?> UpdateContractorAsync(Guid contractorId, ContractorUpdateDto dto);
     }
 }

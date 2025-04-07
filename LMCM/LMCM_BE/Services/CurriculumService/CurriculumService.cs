@@ -7,6 +7,9 @@ using LMCM_BE.Repositories.CurriculumRepository;
 using LMCM_BE.Repositories.CurriculumsSubjectRepository;
 using LMCM_BE.Repositories.PloRepository;
 using LMCM_BE.Repositories.PloSubjectRepository;
+using LMCM_BE.Services.CurriculumsSubjectService;
+using LMCM_BE.Services.PloService;
+using LMCM_BE.Services.PloSubjectService;
 using LMCM_BE.Services.SubjectService;
 using LMCM_BE.UnitOfWork;
 using LMCM_BE.Utilities;
@@ -20,8 +23,11 @@ namespace LMCM_BE.Services.CurriculumService
         private readonly IMapper _mapper;
         private readonly ICurriculumRepository _curriculumRepository;
         private readonly ICurriculumsSubjectRepository _curriculumSubjectRepository;
+        private readonly ICurriculumsSubjectService _curriculumsSubjectService;
         private readonly IPloRepository _ploRepository;
+        private readonly IPloService _ploService;
         private readonly IPloSubjectRepository _ploSubjectRepository;
+        private readonly IPloSubjectService _ploSubjectService;
         private readonly ISubjectService _subjectService;
 
         public CurriculumService(
@@ -29,8 +35,11 @@ namespace LMCM_BE.Services.CurriculumService
             IMapper mapper,
             ICurriculumRepository curriculumRepository,
             ICurriculumsSubjectRepository curriculumSubjectRepository,
+            ICurriculumsSubjectService curriculumsSubjectService,
             IPloRepository ploRepository,
+            IPloService ploService,
             IPloSubjectRepository ploSubjectRepository,
+            IPloSubjectService ploSubjectService,
             ISubjectService subjectService
             )
         {
@@ -38,8 +47,11 @@ namespace LMCM_BE.Services.CurriculumService
             _mapper = mapper;
             _curriculumRepository = curriculumRepository;
             _curriculumSubjectRepository = curriculumSubjectRepository;
+            _curriculumsSubjectService = curriculumsSubjectService;
             _ploRepository = ploRepository;
+            _ploService = ploService;
             _ploSubjectRepository = ploSubjectRepository;
+            _ploSubjectService = ploSubjectService;
             _subjectService = subjectService;
         }
 
@@ -79,8 +91,15 @@ namespace LMCM_BE.Services.CurriculumService
             var curriculum = await _curriculumRepository.GetActiveCurriculumByIdAsync(curriculumId);
             if (curriculum == null)
                 throw new KeyNotFoundException("Không tìm thấy chương trình giảng dạy.");
+            if (await _curriculumSubjectRepository.HasActiveCurriculumsSubjectsAsync(curriculumId) ||
+                await _ploRepository.HasActivePloAsync(curriculumId) ||
+                await _ploSubjectRepository.HasActivePloSubjectByCurriculumIdAsync(curriculumId))
+                throw new InvalidOperationException("Không thể xóa môn học khi có thực thể liên quan đang hoạt động.");
+ 
+            curriculum.Status = "Inactive";
+            curriculum.UpdatedAt = DateTime.UtcNow;
 
-            return await _curriculumRepository.SoftDeleteCurriculumAsync(curriculum);
+            return await _curriculumRepository.UpdateCurriculumAsync(curriculum);
         }
         public async Task<bool> SoftCascadeDeleteCurriculumByCodeAsync(string curriculumCode)
         {
@@ -88,13 +107,28 @@ namespace LMCM_BE.Services.CurriculumService
             if (curriculum == null)
                 return true;
 
-            await _curriculumSubjectRepository.DeleteCurriculumsSubjectAsync(curriculum.CurriculumId);
-            await _ploRepository.DeletePlosAsync(curriculum.Plos.Select(p => p.PloId).ToList());
-            await _ploSubjectRepository.DeletePloSubjectsAsync(curriculum.Plos.Select(p => p.PloId).ToList());
+            curriculum.Status = "Inactive";
+            curriculum.UpdatedAt = DateTime.UtcNow;
 
-            await _curriculumRepository.SoftDeleteCurriculumAsync(curriculum);
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
 
-            return true;
+                await _curriculumsSubjectService.DeleteCurriculumsSubjectAsync(curriculum.CurriculumId);
+                await _ploService.DeletePlosAsync(curriculum.CurriculumId);
+                await _ploSubjectService.DeletePloSubjectsAsync(curriculum.CurriculumId);
+
+                await _curriculumRepository.UpdateCurriculumAsync(curriculum);
+
+                await _unitOfWork.CommitAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                throw new Exception(ex.Message);
+            }
         }
         public async Task<CurriculumDetailDto?> GetCurriculumDetailAsync(Guid curriculumId)
         {

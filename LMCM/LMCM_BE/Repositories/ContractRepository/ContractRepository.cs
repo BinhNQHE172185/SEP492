@@ -15,13 +15,7 @@ namespace LMCM_BE.Repositories.ContractRepository
 
         public async Task<bool> CreateContract(Contract contract)
         {
-            var newContract = contract;
-            newContract.ContractId = Guid.NewGuid();
-            newContract.Status = "Active";
-            newContract.CreatedAt = DateTime.UtcNow;
-            newContract.UpdatedAt = DateTime.UtcNow;
-
-            await _dbContext.Contracts.AddAsync(newContract);
+            await _dbContext.Contracts.AddAsync(contract);
 
             return true;
         }
@@ -118,15 +112,6 @@ namespace LMCM_BE.Repositories.ContractRepository
         {
             return await _dbContext.Contracts
                 .AnyAsync(p => p.ContractorId == contractorId && p.Status == "Active");
-        }
-
-        public async Task<bool> SoftDeleteContractAsync(Contract contract)
-        {
-            contract.Status = "Inactive";
-            contract.UpdatedAt = DateTime.UtcNow;
-            _dbContext.Contracts.Update(contract);
-
-            return true;
         }
 
         public async Task<bool> UpdateContractAsync(Contract newContract)

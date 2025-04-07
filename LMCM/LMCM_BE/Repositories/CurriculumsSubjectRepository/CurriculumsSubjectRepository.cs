@@ -1,5 +1,4 @@
 ﻿using LMCM_BE.DbContext;
-using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,69 +12,15 @@ namespace LMCM_BE.Repositories.CurriculumsSubjectRepository
         {
             _dbContext = dbContext;
         }
-
-        public async Task<PagedResult<CurriculumsSubject>> GetCurriculumsSubjectsAsync(Guid curriculumId, int pageIndex = 1, int pageSize = 10)
-        {
-            var query = _dbContext.CurriculumsSubjects
-                .Where(cs => cs.CurriculumId == curriculumId && cs.Status != "Inactive")
-                .Include(cs => cs.Subject)
-                .AsQueryable();
-
-            int totalCount = await query.CountAsync();
-            var items = await query.Skip((pageIndex - 1) * pageSize)
-                                   .Take(pageSize)
-                                   .ToListAsync();
-
-            return new PagedResult<CurriculumsSubject>
-            {
-                Items = items,
-                TotalCount = totalCount,
-                CurrentPage = pageIndex,
-                PageSize = pageSize
-            };
-        }
-
-        public async Task<List<CurriculumsSubject>> GetAllCurriculumsSubjectsAsync(Guid curriculumId)
+        public async Task<List<CurriculumsSubject>> GetCurriculumsSubjectByCurriculumIdAsync(Guid curriculumId)
         {
             return await _dbContext.CurriculumsSubjects
-                .Where(cs => cs.CurriculumId == curriculumId && cs.Status != "Inactive")
-                .Include(cs => cs.Subject)
+                .Where(cs => cs.CurriculumId == curriculumId && cs.Status == "Active")
                 .ToListAsync();
         }
-
-        public async Task<bool> AddCurriculumsSubjectsAsync(List<CurriculumsSubject> curriculumsSubjects)
+        public async Task<bool> UpdateRangeAsync(List<CurriculumsSubject> entities)
         {
-            if (curriculumsSubjects == null || curriculumsSubjects.Count == 0)
-                throw new ArgumentNullException(nameof(curriculumsSubjects));
-
-            try
-            {
-                await _dbContext.CurriculumsSubjects.AddRangeAsync(curriculumsSubjects);
-                await _dbContext.SaveChangesAsync();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public async Task<bool> DeleteCurriculumsSubjectAsync(Guid curriculumId)
-        {
-            var csList = await _dbContext.CurriculumsSubjects
-                .Where(c => c.CurriculumId == curriculumId && c.Status != "Inactive")
-                .ToListAsync();
-
-            if (!csList.Any()) return false;
-
-            foreach (var cs in csList)
-            {
-                cs.Status = "Inactive";
-                cs.UpdatedAt = DateTime.UtcNow;
-            }
-
-            _dbContext.CurriculumsSubjects.UpdateRange(csList);
-            await _dbContext.SaveChangesAsync();
+            _dbContext.CurriculumsSubjects.UpdateRange(entities);
             return true;
         }
         public async Task<bool> HasActiveCurriculumsSubjectsAsync(Guid curriculumId)

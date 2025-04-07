@@ -33,11 +33,11 @@ namespace LMCM_BE.Controllers.ContractorControllers
         }
 
         [HttpGet("getAllContractorList")]
-        public async Task<IActionResult> GetContractorsListAsync()
+        public async Task<IActionResult> GetContractorsListAsync(string? searchKey)
         {
             try
             {
-                var data = await _contractorService.GetContractorsListAsync();
+                var data = await _contractorService.GetContractorsListAsync(searchKey);
                 return data != null ? Ok(data) : NotFound(new { message = "Không tìm thấy dữ liệu nhà thầu." });
             }
             catch (Exception ex)
@@ -51,6 +51,20 @@ namespace LMCM_BE.Controllers.ContractorControllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                  .Select(e => e.ErrorMessage)
+                                                  .ToList();
+
+                    return BadRequest(new
+                    {
+                        Success = false,
+                        Message = "Dữ liệu đầu vào không hợp lệ.",
+                        Errors = errors
+                    });
+                }
+
                 var result = await _contractorService.CreateContractorAsync(request);
                 return result != null ? Ok(result) : BadRequest(new { message = "Không thể tạo nhà thầu." });
             }
@@ -69,6 +83,19 @@ namespace LMCM_BE.Controllers.ContractorControllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                  .Select(e => e.ErrorMessage)
+                                                  .ToList();
+
+                    return BadRequest(new
+                    {
+                        Success = false,
+                        Message = "Dữ liệu đầu vào không hợp lệ.",
+                        Errors = errors
+                    });
+                }
                 var result = await _contractorService.UpdateContractorAsync(contractorId, request);
                 return result != null ? Ok(new { message = "Cập nhật nhà thầu thành công.", contractorId = result }) : NotFound(new { message = "Không tìm thấy nhà thầu hoặc cập nhật thất bại." });
             }

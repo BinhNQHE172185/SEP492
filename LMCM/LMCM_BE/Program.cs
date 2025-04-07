@@ -59,6 +59,8 @@ using LMCM_BE.AutoMapper.LearningMaterialChangesHistoryProfile;
 using LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository;
 using LMCM_BE.Services.LearningMaterialChangesHistoryService;
 using LMCM_BE.UnitOfWork;
+using LMCM_BE.Services.CurriculumsSubjectService;
+using LMCM_BE.Services.PloSubjectService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -162,7 +164,9 @@ builder.Services.AddScoped<ICurriculumService, CurriculumService>();
 builder.Services.AddScoped<IPloRepository, PloRepository>();
 builder.Services.AddScoped<IPloService, PloService>();
 builder.Services.AddScoped<IPloSubjectRepository, PloSubjectRepository>();
+builder.Services.AddScoped<IPloSubjectService, PloSubjectService>();
 builder.Services.AddScoped<ICurriculumsSubjectRepository, CurriculumsSubjectRepository>();
+builder.Services.AddScoped<ICurriculumsSubjectService, CurriculumsSubjectService>();
 builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<ISyllabusRepository, SyllabusRepository>();

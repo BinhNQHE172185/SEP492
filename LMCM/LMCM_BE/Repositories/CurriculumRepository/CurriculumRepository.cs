@@ -32,10 +32,8 @@ namespace LMCM_BE.Repositories.CurriculumRepository
                                    .ToListAsync();
             return (curriculums, totalCount);
         }
-        public async Task<bool> SoftDeleteCurriculumAsync(Curriculum curriculum)
+        public async Task<bool> UpdateCurriculumAsync(Curriculum curriculum)
         {
-            curriculum.Status = "Inactive";
-            curriculum.UpdatedAt = DateTime.UtcNow;
             _dbContext.Curriculums.Update(curriculum);
 
             return true;

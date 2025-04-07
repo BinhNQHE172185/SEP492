@@ -19,11 +19,8 @@ namespace LMCM_BE.Repositories.SyllabusRepository
             _dbContext = dbContext;
         }
 
-        public async Task<bool> DeleteSyllabusAsync(Syllabus syllabus)
+        public async Task<bool> UpdateSyllabusAsync(Syllabus syllabus)
         {
-            syllabus.Status = "Inactive";
-            syllabus.UpdatedAt = DateTime.UtcNow;
-
             _dbContext.Syllabus.Update(syllabus);
             
             return true;

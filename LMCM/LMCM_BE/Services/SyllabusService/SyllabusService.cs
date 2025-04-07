@@ -47,15 +47,17 @@ namespace LMCM_BE.Services.SyllabusService
 
         public async Task<bool> DeleteSyllabusAsync(Guid id)
         {
+
+            Syllabus syllabus = await _syllabusRepository.GetSyllabusByIdAsync(id);
+            if (syllabus == null) throw new KeyNotFoundException("Không tìm thấy đề cương.");
+
+            syllabus.Status = "Inactive";
+            syllabus.UpdatedAt = DateTime.UtcNow;
+
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-
-                Syllabus syllabus = await _syllabusRepository.GetSyllabusByIdAsync(id);
-                if (syllabus == null) throw new KeyNotFoundException("Không tìm thấy đề cương.");
-
-                await _syllabusRepository.DeleteSyllabusAsync(syllabus);
-
+                await _syllabusRepository.UpdateSyllabusAsync(syllabus);
                 await _unitOfWork.CommitAsync();
 
                 return true;

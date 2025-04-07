@@ -110,7 +110,7 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
     reportData.append("title", this.report.title);
     reportData.append("contractId", this.report.contractId);
     reportData.append("finalPrice", this.report.finalPrice);
-    reportData.append("acceptanceDate", this.report.acceptanceDate.toISOString().split("T")[0]);
+    reportData.append("acceptanceDate", this.report.acceptanceDate.toLocaleDateString('en-CA'));
     reportData.append("file", this.file);
 
     if (this.selectedId) {

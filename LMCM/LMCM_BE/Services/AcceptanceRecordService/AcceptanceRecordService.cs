@@ -118,7 +118,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
             if (dto == null)
                 throw new ArgumentNullException(nameof(dto), "Dữ liệu cập nhật không được để trống.");
 
-            var acceptanceRecord = await _acceptanceRecordRepository.GetAcceptanceRecordByIdAsync(acceptanceId);
+            var acceptanceRecord = await _acceptanceRecordRepository.GetActiveAcceptanceRecordByIdAsync(acceptanceId);
 
             if (acceptanceRecord == null)
                 throw new KeyNotFoundException("Không tìm thấy biên bản nghiệm thu.");
@@ -172,7 +172,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
         }
         public async Task<bool> SoftDeleteAcceptanceRecordAsync(Guid acceptanceId)
         {
-            var acceptanceRecord = await _acceptanceRecordRepository.GetAcceptanceRecordByIdAsync(acceptanceId);
+            var acceptanceRecord = await _acceptanceRecordRepository.GetActiveAcceptanceRecordByIdAsync(acceptanceId);
 
             if (acceptanceRecord == null)
                 throw new KeyNotFoundException("Không tìm thấy biên bản nghiệm thu hoặc đã bị xóa.");

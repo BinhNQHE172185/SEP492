@@ -4,6 +4,7 @@ using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.AcceptanceRecordRepository;
+using LMCM_BE.Repositories.BudgetPropasalRepository;
 using LMCM_BE.Repositories.ContractRepository;
 using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Services.UserService;
@@ -19,18 +20,25 @@ namespace LMCM_BE.Services.ContractService
         private readonly IMapper _mapper;
         private readonly IFileHelper _fileHelper;
         private readonly IAcceptanceRecordRepository _acceptanceRecordRepository;
+        private readonly IBudgetProposalRepository _budgetProposalRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
 
-        public ContractService(IContractRepository contractRepository, IGoogleDriveService googleDriveService,
-            IMapper mapper, IFileHelper fileHelper, IAcceptanceRecordRepository acceptanceRecordRepository,
-            IUnitOfWork unitOfWork,IUserService userService)
+        public ContractService(IContractRepository contractRepository, 
+            IGoogleDriveService googleDriveService,
+            IMapper mapper, 
+            IFileHelper fileHelper, 
+            IAcceptanceRecordRepository acceptanceRecordRepository,
+            IBudgetProposalRepository budgetProposalRepository,
+            IUnitOfWork unitOfWork,
+            IUserService userService)
         {
             _contractRepository = contractRepository;
             _googleDriveService = googleDriveService;
             _mapper = mapper;
             _fileHelper = fileHelper;
             _acceptanceRecordRepository = acceptanceRecordRepository;
+            _budgetProposalRepository = budgetProposalRepository;
             _unitOfWork = unitOfWork;
             _userService = userService;
         }
@@ -39,6 +47,12 @@ namespace LMCM_BE.Services.ContractService
             UserProfileResponseDto user =await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
+
+            if (await _budgetProposalRepository.GetActiveBudgetProposalByIdAsync(contractDto.ProposalId) == null)
+            {
+                throw new KeyNotFoundException("Tờ trình được chọn không tồn tại");
+            } 
+
             // Step 1: Upload contract file to Google Drive (if provided)
             string? fileUrl = null;
             if (contractDto.File != null)
@@ -168,10 +182,15 @@ namespace LMCM_BE.Services.ContractService
             if (newContract == null)
                 throw new ArgumentNullException(nameof(newContract), "Dữ liệu mới không được null.");
 
-            var contract = await _contractRepository.GetContractByIdAsync(contractId);
+            var contract = await _contractRepository.GetActiveContractByIdAsync(contractId);
 
             if (contract == null)
                 throw new KeyNotFoundException($"Không tìm thấy hợp đồng với ID: {contractId}");
+
+            if (await _budgetProposalRepository.GetActiveBudgetProposalByIdAsync(newContract.ProposalId) == null)
+            {
+                throw new KeyNotFoundException("Tờ trình được chọn không tồn tại");
+            }
 
             UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))

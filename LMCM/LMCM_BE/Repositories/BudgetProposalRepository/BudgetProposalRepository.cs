@@ -34,6 +34,15 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             return budgetProposal;
         }
 
+        public async Task<BudgetProposal> GetActiveBudgetProposalByIdAsync(Guid proposalId)
+        {
+            var budgetProposal = await _dbContext.BudgetProposals
+                .Include(s => s.Author)
+                .Where(s => s.ProposalId == proposalId && s.Status == "Active")
+                .SingleOrDefaultAsync();
+
+            return budgetProposal;
+        }
         public async Task<(List<BudgetProposal>, int totalCount)> GetBudgetProposalsAsync(bool isHod, Guid userId, string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.BudgetProposals.AsQueryable();

@@ -223,5 +223,10 @@ namespace LMCM_BE.Services.BudgetPropasalService
                 throw new Exception(ex.Message);
             }
         }
+        public async Task<int> BudgetCountAsync()
+        {
+            var count = await _budgetProposalRepository.BudgetCountAsync();
+            return count;
+        }
     }
 }

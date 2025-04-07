@@ -204,5 +204,11 @@ namespace LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository
 
             return _mapper.Map<ChangesHistoryDetailDto>(history);
         }
+        public async Task<List<LearningMaterialChangesHistory>> GetAllWithCompletionDateAsync()
+        {
+            return await _dbContext.LearningMaterialChangesHistories
+                .Where(h => h.CompletionDate.HasValue)
+                .ToListAsync();
+        }
     }
 }

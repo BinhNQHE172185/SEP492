@@ -10,10 +10,10 @@ using LMCM_BE.Models;
 using LMCM_BE.Repositories.CLORepository;
 using LMCM_BE.Repositories.ConstructivistQuestionRepository;
 using LMCM_BE.Repositories.GradingStructureRepository;
-using LMCM_BE.Repositories.LearningMaterialRepository;
 using LMCM_BE.Repositories.ScheduleRepository;
 using LMCM_BE.Repositories.SubjectRepository.SubjectRepository;
 using LMCM_BE.Repositories.SyllabusRepository;
+using LMCM_BE.Services.LearningMaterialService;
 using LMCM_BE.UnitOfWork;
 using OfficeOpenXml;
 
@@ -27,12 +27,12 @@ namespace LMCM_BE.Services.SyllabusService
         private readonly ICLORepository _CLORepository;
         private readonly IConstructivistQuestionRepository _ConstructivistQuestionRepository;
         private readonly IScheduleRepository _ScheduleRepository;
-        private readonly ILearningMaterialRepository _LearningMaterialRepository;
+        private readonly ILearningMaterialService _LearningMaterialService;
         private readonly IGradingStructureRepository _GradingStructureRepository;
         private readonly IMapper _mapper;
         public SyllabusService(IUnitOfWork unitOfWork, ISyllabusRepository syllabusRepository, ISubjectRepository subjectRepository, IMapper mapper, ICLORepository cLORepository,
             IConstructivistQuestionRepository constructivistQuestionRepository, IScheduleRepository scheduleRepository,
-            ILearningMaterialRepository learningMaterialRepository, IGradingStructureRepository gradingStructureRepository)
+            ILearningMaterialService learningMaterialService, IGradingStructureRepository gradingStructureRepository)
         {
             _unitOfWork = unitOfWork;
             _syllabusRepository = syllabusRepository;
@@ -41,7 +41,7 @@ namespace LMCM_BE.Services.SyllabusService
             _CLORepository = cLORepository;
             _ConstructivistQuestionRepository = constructivistQuestionRepository;
             _ScheduleRepository = scheduleRepository;
-            _LearningMaterialRepository = learningMaterialRepository;
+            _LearningMaterialService = learningMaterialService;
             _GradingStructureRepository = gradingStructureRepository;
         }
 
@@ -59,7 +59,8 @@ namespace LMCM_BE.Services.SyllabusService
                 await _unitOfWork.CommitAsync();
 
                 return true;
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync();
                 throw new Exception(ex.Message);
@@ -227,17 +228,6 @@ namespace LMCM_BE.Services.SyllabusService
 
                 var existingSyllabus = await _syllabusRepository.GetSyllabusByCourseCodeAsync(syllabus.CourseCode);
 
-                // Delete old entities if syllabus already exists
-                if (existingSyllabus != null)
-                {
-                    await DeleteSyllabusAsync(existingSyllabus.SyllabusId);
-                    await _CLORepository.DeleteCLOBySyllabusAsync(existingSyllabus.SyllabusId);
-                    await _ConstructivistQuestionRepository.DeleteConstructivistQuestionsBySyllabusAsync(existingSyllabus.SyllabusId);
-                    await _ScheduleRepository.DeleteSchedulesBySyllabusAsync(existingSyllabus.SyllabusId);
-                    await _GradingStructureRepository.DeleteGradingStructuresBySyllabusAsync(existingSyllabus.SyllabusId);
-                    await _LearningMaterialRepository.DeleteLearningMaterialsBySyllabusAsync(existingSyllabus.SyllabusId);
-                }
-
                 syllabus.SyllabusId = Guid.NewGuid();
                 syllabus.Status = "Active";
                 syllabus.CreatedAt = DateTime.UtcNow;
@@ -248,8 +238,19 @@ namespace LMCM_BE.Services.SyllabusService
                 if (constructivistQuestions != null) await _ConstructivistQuestionRepository.ImportConstructivistQuestionsAsync(constructivistQuestions, syllabus.SyllabusId);
                 await _ScheduleRepository.ImportSchedulesAsync(schedules, syllabus.SyllabusId);
                 await _GradingStructureRepository.ImportGradingStructuresAsync(gradingStructures, syllabus.SyllabusId);
-                if (learningMaterials != null) await _LearningMaterialRepository.ImportLearningMaterialsAsync(learningMaterials, existingSyllabus?.SyllabusId, syllabus.SyllabusId, keepUserCreated);
+                if (learningMaterials != null) await _LearningMaterialService.ImportLearningMaterialsAsync(learningMaterials, existingSyllabus?.SyllabusId, syllabus.SyllabusId, keepUserCreated);
                 await _syllabusRepository.ImportSyllabusAsync(syllabus);
+
+                // Delete old entities if syllabus already exists
+                if (existingSyllabus != null)
+                {
+                    await DeleteSyllabusAsync(existingSyllabus.SyllabusId);
+                    await _CLORepository.DeleteCLOBySyllabusAsync(existingSyllabus.SyllabusId);
+                    await _ConstructivistQuestionRepository.DeleteConstructivistQuestionsBySyllabusAsync(existingSyllabus.SyllabusId);
+                    await _ScheduleRepository.DeleteSchedulesBySyllabusAsync(existingSyllabus.SyllabusId);
+                    await _GradingStructureRepository.DeleteGradingStructuresBySyllabusAsync(existingSyllabus.SyllabusId);
+                    await _LearningMaterialService.DeleteLearningMaterialsBySyllabusAsync(existingSyllabus.SyllabusId);
+                }
 
                 // Commit the transaction after successful imports
                 await _unitOfWork.CommitAsync();

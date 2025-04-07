@@ -59,7 +59,6 @@ namespace LMCM_BE.Repositories.CurriculumRepository
         public async Task<bool> ImportCurriculumAsync(Curriculum curriculum)
         {
             _dbContext.Curriculums.Add(curriculum);
-            await _dbContext.SaveChangesAsync();
             return true;
         }
     }

@@ -88,6 +88,11 @@ namespace LMCM_BE.Services.LearningMaterialService
             if (syllabus == null)
                 throw new KeyNotFoundException($"Không tìm thấy đề cương với ID: {material.SyllabusId}");
             var newMaterial = _mapper.Map<LearningMaterial>(material);
+            newMaterial.MaterialId = Guid.NewGuid();
+            newMaterial.IsImportedMaterial = false;
+            newMaterial.Status = "Active";
+            newMaterial.CreatedAt = DateTime.UtcNow;
+            newMaterial.UpdatedAt = DateTime.UtcNow;
 
             try
             {
@@ -101,6 +106,58 @@ namespace LMCM_BE.Services.LearningMaterialService
                 await _unitOfWork.RollbackAsync();
                 throw new Exception(ex.Message);
             }
+        }
+        public async Task<bool> ImportLearningMaterialsAsync(List<LearningMaterial> materials, Guid? oldSyllabusId, Guid newSyllabusId, bool keepUserCreated)
+        {
+            if (materials == null || !materials.Any())
+                return false;
+
+            foreach (var material in materials)
+            {
+                material.SyllabusId = newSyllabusId;
+                material.MaterialId = Guid.NewGuid();
+                material.IsMainMaterial = false;
+                material.IsImportedMaterial = true;
+                material.MaterialType = "Học Liệu";
+                material.Status = "Active";
+                material.CreatedAt = DateTime.UtcNow;
+                material.UpdatedAt = DateTime.UtcNow;
+            }
+
+            if (oldSyllabusId != null && keepUserCreated)
+            {
+                var existingMaterials = await _materialRepository.GetUserCreatedMaterialsFromSyllabusIdAsync(oldSyllabusId.Value);
+                foreach (var material in existingMaterials)
+                {
+                    var newMaterial = new LearningMaterial
+                    {
+                        MaterialId = Guid.NewGuid(),  // Create a new MaterialId
+                        SyllabusId = newSyllabusId,   // Assign the new syllabus
+                        LearningType = material.LearningType,
+                        MaterialType = material.MaterialType,
+                        IsMainMaterial = material.IsMainMaterial,
+                        IsImportedMaterial = false,    // Mark as imported material
+                        MaterialName = material.MaterialName,
+                        Isbn = material.Isbn,
+                        Author = material.Author,
+                        Publisher = material.Publisher,
+                        PublishedDate = material.PublishedDate,
+                        Edition = material.Edition,
+                        Url = material.Url,
+                        Purpose = material.Purpose,
+                        Note = material.Note,
+                        Status = "Active",
+                        CreatedAt = DateTime.UtcNow,  // Set created date to current time
+                        UpdatedAt = DateTime.UtcNow  // Set updated date to current time
+                    };
+
+                    // Add the new material copy to the new materials list
+                    materials.Add(newMaterial);
+                }
+            }
+
+            await _materialRepository.AddMaterialsAsync(materials);
+            return true;
         }
 
         public async Task<bool> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial)
@@ -131,6 +188,22 @@ namespace LMCM_BE.Services.LearningMaterialService
                 await _unitOfWork.RollbackAsync();
                 throw new Exception(ex.Message);
             }
+        }
+        public async Task<bool> DeleteLearningMaterialsBySyllabusAsync(Guid syllabusId)
+        {
+            var materials = await _materialRepository.GetMaterialsBySyllabusIdAsync(syllabusId);
+
+            if (!materials.Any()) return true;
+
+            foreach (var material in materials)
+            {
+                material.Status = "Inactive";
+                material.UpdatedAt = DateTime.UtcNow;
+            }
+
+            await _materialRepository.UpdateLearningMaterialsAsync(materials);
+
+            return true;
         }
         public async Task<List<string>> GetPublishersAsync()
         {

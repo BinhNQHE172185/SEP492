@@ -27,9 +27,10 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
 
         public async Task<BudgetProposal> GetBudgetProposalByIdAsync(Guid proposalId)
         {
-
             var budgetProposal = await _dbContext.BudgetProposals
                 .AsNoTracking()
+                .Include(s => s.Author)  
+                    .AsNoTracking()      
                 .Where(s => s.ProposalId == proposalId)
                 .SingleOrDefaultAsync();
 

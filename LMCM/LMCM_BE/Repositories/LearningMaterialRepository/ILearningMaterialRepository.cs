@@ -11,7 +11,6 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
         Task<bool> InsertLearningMaterialAsync(LearningMaterial material);
         Task<LearningMaterial> GetLearningMaterialByIdAsync(Guid materialId);
         Task<bool> UpdateLearningMaterialAsync(LearningMaterial newMaterial);
-        Task<bool> DeleteLearningMaterialAsync(LearningMaterial material);
         Task<List<string>> GetPublishersAsync();
     }
 }

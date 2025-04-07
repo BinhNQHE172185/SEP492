@@ -10,5 +10,6 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
         Task<BudgetProposal> GetBudgetProposalByIdAsync(Guid proposalId);
         Task<BudgetProposal> GetActiveBudgetProposalByIdAsync(Guid proposalId);
         Task<bool> UpdateBudgetProposalAsync(BudgetProposal newProposal);
+        Task<int> BudgetCountAsync();
     }
 }

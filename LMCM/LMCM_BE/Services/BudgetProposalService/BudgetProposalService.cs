@@ -159,12 +159,13 @@ namespace LMCM_BE.Services.BudgetPropasalService
                 throw new InvalidOperationException("Không thể xóa do có hợp đồng lệ thuộc");
             }
 
-            budgetProposal.Status = "Inactive";
-            budgetProposal.UpdatedAt = DateTime.UtcNow;
-
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
+
+                budgetProposal.Status = "Inactive";
+                budgetProposal.UpdatedAt = DateTime.UtcNow; 
+
                 await _budgetProposalRepository.UpdateBudgetProposalAsync(budgetProposal);
                 await _unitOfWork.CommitAsync();
                 return true;
@@ -229,6 +230,11 @@ namespace LMCM_BE.Services.BudgetPropasalService
                 await _unitOfWork.RollbackAsync();
                 throw new Exception(ex.Message);
             }
+        }
+        public async Task<int> BudgetCountAsync()
+        {
+            var count = await _budgetProposalRepository.BudgetCountAsync();
+            return count;
         }
     }
 }

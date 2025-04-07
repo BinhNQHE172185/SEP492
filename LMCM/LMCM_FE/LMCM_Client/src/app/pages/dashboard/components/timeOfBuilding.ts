@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
 import { debounceTime, Subscription } from 'rxjs';
 import { LayoutService } from '../../../layout/service/layout.service';
+import { DashboardApiService } from '../../../apis/dashboardAPIs/dashboard-api';
 
 @Component({
     standalone: true,
@@ -19,7 +20,10 @@ export class timeOfBuilding {
 
     subscription!: Subscription;
 
-    constructor(public layoutService: LayoutService) {
+    constructor(
+            public layoutService: LayoutService,
+            public dashboardApiService: DashboardApiService
+        ) {
         this.subscription = this.layoutService.configUpdate$.pipe(debounceTime(25)).subscribe(() => {
             this.initChart();
         });
@@ -35,16 +39,26 @@ export class timeOfBuilding {
         const borderColor = documentStyle.getPropertyValue('--surface-border');
         const textMutedColor = documentStyle.getPropertyValue('--text-color-secondary');
 
-        this.pieData = {
-            labels: ['Trên 5 năm', 'Từ 3 đến 5 năm', 'Dưới 3 năm'],
-            datasets: [
-                {
-                    data: [540, 325, 702],
-                    backgroundColor: [documentStyle.getPropertyValue('--p-indigo-500'), documentStyle.getPropertyValue('--p-purple-500'), documentStyle.getPropertyValue('--p-teal-500')],
-                    hoverBackgroundColor: [documentStyle.getPropertyValue('--p-indigo-400'), documentStyle.getPropertyValue('--p-purple-400'), documentStyle.getPropertyValue('--p-teal-400')]
-                }
-            ]
-        };
+        this.dashboardApiService.getPiechartData().subscribe((response) => {
+            this.pieData = {
+                labels: response.labels,
+                datasets: [
+                    {
+                        data: response.data,
+                        backgroundColor: [
+                            documentStyle.getPropertyValue('--p-indigo-500'),
+                            documentStyle.getPropertyValue('--p-purple-500'),
+                            documentStyle.getPropertyValue('--p-teal-500')
+                        ],
+                        hoverBackgroundColor: [
+                            documentStyle.getPropertyValue('--p-indigo-400'),
+                            documentStyle.getPropertyValue('--p-purple-400'),
+                            documentStyle.getPropertyValue('--p-teal-400')
+                        ]
+                    }
+                ]
+            };
+        });
 
         this.pieOptions = {
             plugins: {

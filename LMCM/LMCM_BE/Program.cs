@@ -61,6 +61,7 @@ using LMCM_BE.Services.LearningMaterialChangesHistoryService;
 using LMCM_BE.UnitOfWork;
 using LMCM_BE.Services.CurriculumsSubjectService;
 using LMCM_BE.Services.PloSubjectService;
+using LMCM_BE.Services.DashboardService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -196,6 +197,7 @@ builder.Services.AddScoped<IFileHelper, FileHelper>();
 builder.Services.AddScoped<IDocumentTemplateRepository, DocumentTemplateRepository>();
 builder.Services.AddScoped<IDocumentTemplateService, DocumentTemplateService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 builder.Services.AddScoped<IGoogleDriveService, GoogleDriveService>();
 

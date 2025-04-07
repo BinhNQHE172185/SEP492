@@ -62,15 +62,6 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
             return (items, totalCount);
         }
 
-        public async Task<bool> SoftDeleteTemplateAsync(DocumentTemplate template)
-        {
-            template.Status = "Deleted";
-            template.UpdatedAt = DateTime.UtcNow;
-            _dbContext.DocumentTemplates.Update(template);
-
-            return true;
-        }
-
         public async Task<bool> UpdateTempalteAsync(DocumentTemplate newTemplate)
         {
             _dbContext.DocumentTemplates.Update(newTemplate);

@@ -96,5 +96,12 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             _dbContext.Update(newProposal);
             return true;
         }
+        public async Task<int> BudgetCountAsync()
+        {
+            var budgetCount = await _dbContext.BudgetProposals
+                .Where(s => s.Status == "Active")
+                .CountAsync();
+            return budgetCount;
+        }
     }
 }

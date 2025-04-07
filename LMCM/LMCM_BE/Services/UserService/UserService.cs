@@ -178,5 +178,9 @@ namespace LMCM_BE.Services.UserService
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+        public async Task<int> UserCountAsync()
+        {
+            return await _userRepository.UserCountAsync();
+        }
     }
 }

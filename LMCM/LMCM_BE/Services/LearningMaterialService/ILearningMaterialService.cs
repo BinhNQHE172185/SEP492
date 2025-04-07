@@ -8,9 +8,9 @@ namespace LMCM_BE.Services.LearningMaterialService
     {
         Task<PagedResult<LearningMaterialListDto>> GetMaterialsBySyllabusIdAsync(Guid syllabusId, string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<List<LearningMaterialListDto>> GetMaterialsBySyllabusIdAsync(Guid syllabusId);
-        Task<Guid?> InsertLearningMaterialAsync(LearningMaterialInsertDto material);
+        Task<bool> InsertLearningMaterialAsync(LearningMaterialInsertDto material);
         Task<LearningMaterialViewDto> GetLearningMaterialByIdAsync(Guid materialId);
-        Task<Guid?> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial);
+        Task<bool> UpdateLearningMaterialAsync(Guid materialId, LearningMaterialUpdateDto newMaterial);
         Task<bool> DeleteLearningMaterialByIdAsync(Guid materialId);
         Task<List<string>> GetPublishersAsync();
     }

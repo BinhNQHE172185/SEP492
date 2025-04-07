@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using LMCM_BE.DTOs.ContractDtos;
 using LMCM_BE.DTOs.DocumentTemplateDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.UserDtos;
@@ -9,7 +8,6 @@ using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Services.UserService;
 using LMCM_BE.UnitOfWork;
 using LMCM_BE.Utilities;
-using System.Diagnostics.Contracts;
 
 namespace LMCM_BE.Services.DocumentTemplateService
 {
@@ -65,6 +63,8 @@ namespace LMCM_BE.Services.DocumentTemplateService
             newTemplate.TemplateId = Guid.NewGuid();
             newTemplate.Url = fileUrl;
             newTemplate.AuthorId = user.Id;
+            newTemplate.CreatedAt = DateTime.UtcNow;
+            newTemplate.UpdatedAt = DateTime.UtcNow;
 
             try
             {
@@ -128,7 +128,7 @@ namespace LMCM_BE.Services.DocumentTemplateService
                 await _unitOfWork.BeginTransactionAsync();
                 template.Status = "Deleted";
                 template.UpdatedAt = DateTime.UtcNow;  
-                await _documentTemplateRepository.UpdateTempalteAsync(template);
+                await _documentTemplateRepository.UpdateTemplateAsync(template);
                 await _unitOfWork.CommitAsync();
                 return true;
             }
@@ -184,7 +184,7 @@ namespace LMCM_BE.Services.DocumentTemplateService
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                await _documentTemplateRepository.UpdateTempalteAsync(template);
+                await _documentTemplateRepository.UpdateTemplateAsync(template);
                 await _unitOfWork.CommitAsync();
                 return true;
             }

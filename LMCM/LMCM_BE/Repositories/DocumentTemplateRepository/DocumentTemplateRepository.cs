@@ -14,11 +14,7 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
         }
         public async Task<bool> CreateTemplatelAsync(DocumentTemplate template)
         {
-            var newTemplate = template;
-            newTemplate.CreatedAt = DateTime.UtcNow;
-            newTemplate.UpdatedAt = DateTime.UtcNow;
-
-            await _dbContext.DocumentTemplates.AddAsync(newTemplate);
+            await _dbContext.DocumentTemplates.AddAsync(template);
 
             return true;
         }
@@ -39,7 +35,7 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
 
             query = query.OrderByDescending(s => s.UpdatedAt);
 
-            query = query.Where(s => s.Status != "Deleted");
+            query = query.Where(s => s.Status == "Active");
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
@@ -62,7 +58,7 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
             return (items, totalCount);
         }
 
-        public async Task<bool> UpdateTempalteAsync(DocumentTemplate newTemplate)
+        public async Task<bool> UpdateTemplateAsync(DocumentTemplate newTemplate)
         {
             _dbContext.DocumentTemplates.Update(newTemplate);
             return true;

@@ -8,6 +8,7 @@ using LMCM_BE.Repositories.UserRepositoriy;
 using LMCM_BE.Services.GoogleDriveService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -41,7 +42,7 @@ namespace LMCM_BE.Services.UserService
             });
             var user = await _userRepository.Login(payload);
 
-            var token = GenerateJwtToken(user);
+            var token = await GenerateJwtToken(user);
 
             return new UserLoginResponseDto
             {
@@ -150,17 +151,25 @@ namespace LMCM_BE.Services.UserService
         {
             return await _userRepository.AssignRoleAsync(userId, role);
         }
-        private string GenerateJwtToken(User user)
+        private async Task<string> GenerateJwtToken(User user)
         {
-            var claims = new[]
+            var roles = await _userRepository.getRoleAsync(user.Id.ToString());
+
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString(), ClaimValueTypes.String, "utf-8"),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email, ClaimValueTypes.String, "utf-8"),
                 new Claim(JwtRegisteredClaimNames.Name, user.Name ?? "", ClaimValueTypes.String, "utf-8"),
             };
 
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim("role", role));
+            }
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
             var token = new JwtSecurityToken(
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(3),

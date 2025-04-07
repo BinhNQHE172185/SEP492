@@ -1,35 +1,19 @@
-﻿using AutoMapper;
-using LMCM_BE.DbContext;
-using LMCM_BE.DTOs.ShareDtos;
-using LMCM_BE.DTOs.SubjectDtos;
+﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
-using LMCM_BE.Repositories.CurriculumsSubjectRepository;
-using LMCM_BE.Repositories.PloSubjectRepository;
-using LMCM_BE.Repositories.SyllabusRepository;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
 {
     public class SubjectRepository : ISubjectRepository
     {
         private readonly LMCM_DBContext _dbContext;
-        private readonly IMapper _mapper;
-        private readonly IPloSubjectRepository _ploSubjectRepository;
-        private readonly ICurriculumsSubjectRepository _curriculumSubjectRepository;
-        private readonly ISyllabusRepository _syllabusSubjectRepository;
 
-
-        public SubjectRepository(LMCM_DBContext dbContext, IMapper mapper, IPloSubjectRepository ploSubjectRepository, ICurriculumsSubjectRepository curriculumSubjectRepository, ISyllabusRepository syllabusRepository)
+        public SubjectRepository(LMCM_DBContext dbContext)
         {
             _dbContext = dbContext;
-            _mapper = mapper;
-            _curriculumSubjectRepository = curriculumSubjectRepository;
-            _ploSubjectRepository = ploSubjectRepository;
-            _syllabusSubjectRepository = syllabusRepository;
         }
 
-        public async Task<PagedResult<SubjectViewDto>> GetSubjectsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<(List<Subject>, int totalCount)> GetSubjectsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.Subjects.AsQueryable();
 
@@ -49,16 +33,8 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
             var items = await query.Skip((pageIndex - 1) * pageSize)
                                    .Take(pageSize)
                                    .ToListAsync();
+            return (items, totalCount);
 
-            var data = _mapper.Map<List<SubjectViewDto>>(items);
-
-            return new PagedResult<SubjectViewDto>
-            {
-                Items = data,
-                TotalCount = totalCount,
-                CurrentPage = pageIndex,
-                PageSize = pageSize
-            };
         }
         public async Task<List<Subject>> GetActiveSubjectsByCodesAsync(List<string> subjectCodes)
         {
@@ -66,133 +42,93 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
                 .Where(s => subjectCodes.Contains(s.SubjectCode) && s.Status == "Active")
                 .ToListAsync();
         }
-        public async Task<bool> InsertSubjectAsync(SubjectInsertDto subjectDto)
-        {
-            if (subjectDto == null) throw new ArgumentNullException(nameof(subjectDto));
 
-            try
+        public async Task<bool> ImportSubjectsAsync(List<Subject> subjects)
+        {
+
+            // Get existing subjects from DB (as a dictionary for fast lookup)
+            var existingSubjects = await _dbContext.Subjects.ToDictionaryAsync(s => s.SubjectCode);
+
+            var subjectCodesToKeep = subjects.Select(s => s.SubjectCode).ToHashSet();
+            var newSubjects = new List<Subject>();
+            var updatedSubjects = new List<Subject>();
+
+            foreach (var subject in subjects)
             {
-                var subject = _mapper.Map<Subject>(subjectDto);
-                subject.SubjectId = Guid.NewGuid();
-                subject.CreatedAt = DateTime.UtcNow;
+                if (existingSubjects.TryGetValue(subject.SubjectCode, out var existingSubject))
+                {
+                    if (await UpdateSubjectIfChangedAsync(existingSubject, subject))
+                    {
+                        existingSubject.UpdatedAt = DateTime.UtcNow;
+                        updatedSubjects.Add(existingSubject);
+                    }
+                }
+                else
+                {
+                    var newSubject = subject;
+                    newSubject.SubjectId = Guid.NewGuid();
+                    newSubject.Status = "Active";
+                    newSubject.CreatedAt = DateTime.UtcNow;
+                    newSubject.UpdatedAt = DateTime.UtcNow;
+                    newSubjects.Add(newSubject);
+                }
+            }
+
+            // Identify subjects to mark as inactive
+            var subjectsToDeactivate = existingSubjects.Values.Where(s => !subjectCodesToKeep.Contains(s.SubjectCode)).ToList();
+            foreach (var subject in subjectsToDeactivate)
+            {
+                subject.Status = "Inactive";
                 subject.UpdatedAt = DateTime.UtcNow;
+                updatedSubjects.Add(subject);
+            }
 
-                await _dbContext.Subjects.AddAsync(subject);
-                await _dbContext.SaveChangesAsync();
-                return true;
-            }
-            catch (DbUpdateException)
-            {
-                return false;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            // Apply updates and inserts
+            if (updatedSubjects.Any())
+                _dbContext.Subjects.UpdateRange(updatedSubjects);
+
+            if (newSubjects.Any())
+                await _dbContext.Subjects.AddRangeAsync(newSubjects);
+
+            return true;
         }
-
-        public async Task<bool> ImportSubjectsAsync(List<SubjectInsertDto> subjects)
-        {
-            if (subjects == null || subjects.Count == 0)
-                throw new ArgumentNullException(nameof(subjects));
-
-            try
-            {
-                // Get existing subjects from DB (as a dictionary for fast lookup)
-                var existingSubjects = await _dbContext.Subjects.ToDictionaryAsync(s => s.SubjectCode);
-
-                var subjectCodesToKeep = subjects.Select(s => s.SubjectCode).ToHashSet();
-                var newSubjects = new List<Subject>();
-                var updatedSubjects = new List<Subject>();
-
-                foreach (var subjectDto in subjects)
-                {
-                    if (existingSubjects.TryGetValue(subjectDto.SubjectCode, out var existingSubject))
-                    {
-                        if (await UpdateSubjectIfChangedAsync(existingSubject, subjectDto))
-                        {
-                            existingSubject.UpdatedAt = DateTime.UtcNow;
-                            updatedSubjects.Add(existingSubject);
-                        }
-                    }
-                    else
-                    {
-                        var newSubject = _mapper.Map<Subject>(subjectDto);
-                        newSubject.SubjectId = Guid.NewGuid();
-                        newSubject.Status = "Active";
-                        newSubject.CreatedAt = DateTime.UtcNow;
-                        newSubject.UpdatedAt = DateTime.UtcNow;
-                        newSubjects.Add(newSubject);
-                    }
-                }
-
-                // Identify subjects to mark as inactive
-                var subjectsToDeactivate = existingSubjects.Values.Where(s => !subjectCodesToKeep.Contains(s.SubjectCode)).ToList();
-                foreach (var subject in subjectsToDeactivate)
-                {
-                    subject.Status = "Inactive";
-                    subject.UpdatedAt = DateTime.UtcNow;
-                    updatedSubjects.Add(subject);
-                }
-
-                // Apply updates and inserts
-                if (updatedSubjects.Any())
-                    _dbContext.Subjects.UpdateRange(updatedSubjects);
-
-                if (newSubjects.Any())
-                    await _dbContext.Subjects.AddRangeAsync(newSubjects);
-
-                if (updatedSubjects.Any() || newSubjects.Any())
-                    await _dbContext.SaveChangesAsync();
-
-                return true;
-            }
-            catch (DbUpdateException)
-            {
-                return false;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-        public async Task<bool> UpdateSubjectIfChangedAsync(Subject existingSubject, SubjectInsertDto subjectDto)
+        public async Task<bool> UpdateSubjectIfChangedAsync(Subject existingSubject, Subject newSubject)
         {
             bool isUpdated = false;
 
-            if (existingSubject.SubjectName != subjectDto.SubjectName)
+            if (existingSubject.SubjectName != newSubject.SubjectName)
             {
-                existingSubject.SubjectName = subjectDto.SubjectName;
+                existingSubject.SubjectName = newSubject.SubjectName;
                 isUpdated = true;
             }
-            if (existingSubject.SubjectNameEnglish != subjectDto.SubjectNameEnglish)
+            if (existingSubject.SubjectNameEnglish != newSubject.SubjectNameEnglish)
             {
-                existingSubject.SubjectNameEnglish = subjectDto.SubjectNameEnglish;
+                existingSubject.SubjectNameEnglish = newSubject.SubjectNameEnglish;
                 isUpdated = true;
             }
-            if (existingSubject.IsConstructivist != subjectDto.IsConstructivist)
+            if (existingSubject.IsConstructivist != newSubject.IsConstructivist)
             {
-                existingSubject.IsConstructivist = subjectDto.IsConstructivist;
+                existingSubject.IsConstructivist = newSubject.IsConstructivist;
                 isUpdated = true;
             }
-            if (existingSubject.Method != subjectDto.Method)
+            if (existingSubject.Method != newSubject.Method)
             {
-                existingSubject.Method = subjectDto.Method;
+                existingSubject.Method = newSubject.Method;
                 isUpdated = true;
             }
-            if (existingSubject.Duration != subjectDto.Duration)
+            if (existingSubject.Duration != newSubject.Duration)
             {
-                existingSubject.Duration = subjectDto.Duration;
+                existingSubject.Duration = newSubject.Duration;
                 isUpdated = true;
             }
-            if (existingSubject.Reality != subjectDto.Reality)
+            if (existingSubject.Reality != newSubject.Reality)
             {
-                existingSubject.Reality = subjectDto.Reality;
+                existingSubject.Reality = newSubject.Reality;
                 isUpdated = true;
             }
             if (existingSubject.Status != "Active")
             {
-                existingSubject.Status="Active";
+                existingSubject.Status = "Active";
                 isUpdated = true;
             }
 
@@ -200,57 +136,29 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
         }
         public async Task<Subject> GetSubjectByCodeAsync(string code)
         {
-            if (string.IsNullOrEmpty(code))
-                throw new ArgumentException("Subject code cannot be empty.", nameof(code));
 
-            try
-            {
-                var subject = await _dbContext.Subjects
-                                              .FirstOrDefaultAsync(s => s.SubjectCode == code &&
-                                                                   (s.Status != null && s.Status.ToLower() == "active"));
-
-                return subject;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-        public async Task<bool> SoftDeleteSubjectAsync(Guid subjectId)
-        {
-            // Step 1: Check if subject exists and is active
             var subject = await _dbContext.Subjects
-                .FirstOrDefaultAsync(s => s.SubjectId == subjectId && s.Status == "Active");
+                                          .FirstOrDefaultAsync(s => s.SubjectCode == code &&
+                                                               (s.Status != null && s.Status.ToLower() == "active"));
 
-            if (subject == null)
-                return false; // Subject not found or already inactive
+            return subject;
+        }
+        public async Task<Subject> GetSubjectByIdAsync(Guid subjectId)
+        {
 
-            // Step 2: Check if there are active related entities
-            if (await _curriculumSubjectRepository.HasActiveCurriculumSubjectsBySubjectIdAsync(subjectId) ||
-                await _ploSubjectRepository.HasActivePloSubjectBySubjectIdAsync(subjectId) || 
-                (await _syllabusSubjectRepository.GetActiveSyllabusBySubjectIdAsync(subjectId) != null))
-            {
-                throw new InvalidOperationException("Không thể xóa môn học khi có thực thể liên quan đang hoạt động.");
-            }
+            var subject = await _dbContext.Subjects
+                                          .FirstOrDefaultAsync(s => s.SubjectId == subjectId &&
+                                                               (s.Status != null && s.Status.ToLower() == "active"));
 
-            try
-            {
-                using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            return subject;
+        }
+        public async Task<bool> SoftDeleteSubjectAsync(Subject subject)
+        {
+            subject.Status = "Inactive";
+            subject.UpdatedAt = DateTime.UtcNow;
+            _dbContext.Subjects.Update(subject);
 
-                // Step 3: Soft delete the subject
-                subject.Status = "Inactive";
-                subject.UpdatedAt = DateTime.UtcNow;
-                _dbContext.Subjects.Update(subject);
-
-                await _dbContext.SaveChangesAsync();
-                await transaction.CommitAsync();
-
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            return true;
         }
 
     }

@@ -9,11 +9,9 @@ namespace LMCM_BE.Repositories.CLORepository
     public class CLOReposiroty : ICLORepository
     {
         private readonly LMCM_DBContext _dbContext;
-        private readonly IMapper _mapper;
-        public CLOReposiroty(LMCM_DBContext dbContext, IMapper mapper)
+        public CLOReposiroty(LMCM_DBContext dbContext)
         {
             _dbContext = dbContext;
-            _mapper = mapper;
         }
 
         public async Task<bool> DeleteCLOBySyllabusAsync(Guid syllabusId)
@@ -52,14 +50,13 @@ namespace LMCM_BE.Repositories.CLORepository
             }
         }
 
-        public async Task<bool> ImportCLOsAsync(List<CLOInsertDto> cLOs, Guid syllabusId)
+        public async Task<bool> ImportCLOsAsync(List<Clo> cLOs, Guid syllabusId)
         {
             if (cLOs == null || !cLOs.Any())
                 throw new ArgumentNullException(nameof(cLOs));
 
-            var newCLOs = _mapper.Map<List<Clo>>(cLOs);
 
-            foreach (var clo in newCLOs)
+            foreach (var clo in cLOs)
             {
                 clo.SyllabusId = syllabusId;
                 clo.CloId = Guid.NewGuid();
@@ -68,7 +65,7 @@ namespace LMCM_BE.Repositories.CLORepository
                 clo.UpdatedAt = DateTime.UtcNow;
             }
 
-            await _dbContext.Clos.AddRangeAsync(newCLOs);
+            await _dbContext.Clos.AddRangeAsync(cLOs);
 
             return true;
         }

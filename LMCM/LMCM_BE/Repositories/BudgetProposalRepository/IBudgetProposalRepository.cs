@@ -1,17 +1,14 @@
-﻿using LMCM_BE.DTOs.BudgetProposalDtos;
-using LMCM_BE.DTOs.LearningMaterialDtos;
-using LMCM_BE.DTOs.ShareDtos;
-using LMCM_BE.Models;
+﻿using LMCM_BE.Models;
 
 namespace LMCM_BE.Repositories.BudgetPropasalRepository
 {
     public interface IBudgetProposalRepository
     {
-        Task<bool> CreateBudgetProposalAsync(BudgetProposalInsertDto proposal);
-        Task<PagedResult<BudgetProposalListDto>> GetBudgetProposalsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
-        Task<List<BudgetProposalListDto>> GetBudgetProposalsAsync(string? searchKey);
-        Task<BudgetProposalDetailDto> GetBudgetProposalByIdAsync(Guid proposalId);
-        Task<bool> SoftDeleteBudgetProposalAsync(Guid proposalId);
-        Task<Guid?> UpdateBudgetProposalAsync(Guid proposalId, BudgetProposalUpdateDto newProposal);
+        Task<bool> CreateBudgetProposalAsync(BudgetProposal proposal);
+        Task<(List<BudgetProposal>,int totalCount)> GetBudgetProposalsAsync(bool isHod,Guid userId, string? searchKey, int pageIndex = 1, int pageSize = 10);
+        Task<List<BudgetProposal>> GetBudgetProposalsAsync(bool isHod, Guid userId,string? searchKey);
+        Task<BudgetProposal> GetBudgetProposalByIdAsync(Guid proposalId);
+        Task<bool> SoftDeleteBudgetProposalAsync(BudgetProposal budgetProposal);
+        Task<bool> UpdateBudgetProposalAsync(BudgetProposal newProposal);
     }
 }

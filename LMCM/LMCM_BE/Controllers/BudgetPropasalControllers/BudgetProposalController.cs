@@ -1,10 +1,7 @@
 ﻿using LMCM_BE.DTOs.BudgetProposalDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Services.BudgetPropasalService;
-using LMCM_BE.Services.ContractorService;
-using LMCM_BE.Services.ContractService;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace LMCM_BE.Controllers.BudgetPropasalControllers
 {
@@ -13,12 +10,10 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
     public class BudgetProposalController : Controller
     {
         private readonly IBudgetProposalService _budgetProposalService;
-        private readonly IContractService _contractService;
 
-        public BudgetProposalController(IBudgetProposalService budgetProposalService, IContractService contractService)
+        public BudgetProposalController(IBudgetProposalService budgetProposalService)
         {
             _budgetProposalService = budgetProposalService; 
-            _contractService = contractService;
         }
 
         [HttpPost("getBudgetProposalList")]
@@ -33,9 +28,17 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 }
                 return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpPost("getBudgetProposalNoPagingList")]
@@ -50,9 +53,17 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 }
                 return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpGet("getBudgetProposalDetail")]
@@ -69,16 +80,19 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors
             {
-                return StatusCode(StatusCodes.Status403Forbidden, new
-                {
-                    Success = false,
-                    Message = "Bạn không có quyền xem tờ trình.",
-                    Error = ex.Message
-                });
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpPost("createBudgetProposal")]
@@ -110,30 +124,19 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors
             {
-                return StatusCode(StatusCodes.Status403Forbidden, new
-                {
-                    Success = false,
-                    Message = "Bạn không có quyền tạo tờ trình.",
-                    Error = ex.Message
-                });
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
             }
-            catch (ArgumentException ex) // Handle validation errors
+            catch (KeyNotFoundException ex)
             {
-                return BadRequest(new
-                {
-                    Success = false,
-                    Message = "Dữ liệu đầu vào không hợp lệ.",
-                    Error = ex.Message
-                });
+                return NotFound(new { message = ex.Message });
             }
-            catch (Exception ex) // General error handling
+            catch (ArgumentNullException ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new
-                {
-                    Success = false,
-                    Message = "Đã xảy ra lỗi khi tạo tờ trình. Vui lòng thử lại sau.",
-                    Error = ex.Message
-                });
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpPut("updateBudgetProposal/{id}")]
@@ -155,31 +158,32 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                         Errors = errors
                     });
                 }
-                Guid? propasalId = await _budgetProposalService.UpdateBudgetProposalAsync(id, newPropasal);
-                if (propasalId.HasValue)
+                bool isSuccess= await _budgetProposalService.UpdateBudgetProposalAsync(id, newPropasal);
+                if (isSuccess)
                     return Ok(new
                     {
                         message = "Update tờ trình thành công.",
-                        Data = propasalId,
-
                     });
                 else
                 {
-                    return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+                    return NotFound(new { message = "Update tờ trình thất bại." });
                 }
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors
             {
-                return StatusCode(StatusCodes.Status403Forbidden, new
-                {
-                    Success = false,
-                    Message = "Bạn không có quyền update tờ trình.",
-                    Error = ex.Message
-                });
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpDelete("deleteBudgetProposal/{proposalId}")]
@@ -187,29 +191,20 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
         {
             try
             {
-                if (await _contractService.HasActiveConntractsAsync(proposalId))
-                {
-                    return BadRequest(new
-                    {
-                        Success = false,
-                        Message = "Không thể xóa do có hợp đồng lệ thuộc."
-                    });
-                }
                 var result = await _budgetProposalService.SoftDeleteBudgetProposalAsync(proposalId);
                 return result ? Ok(new { message = "Xóa thành công." }) : NotFound(new { message = "Không tìm thấy ." });
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors
             {
-                return StatusCode(StatusCodes.Status403Forbidden, new
-                {
-                    Success = false,
-                    Message = "Bạn không có quyền xóa tờ trình.",
-                    Error = ex.Message
-                });
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
             }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (InvalidOperationException ex)
             {

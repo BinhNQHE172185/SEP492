@@ -99,23 +99,6 @@ namespace LMCM_BE.Controllers.UserControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
-        [HttpPost("profileCookie")]
-        public async Task<IActionResult> GetProfileAsync()
-        {
-            try
-            {
-                var data = await _userService.GetProfileFromCookie();
-                if (data != null)
-                {
-                    return Ok(data);
-                }
-                return NotFound(new { message = "User not found" });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = ex.Message });
-            }
-        }
         /// <summary>
         /// Lấy danh sách User
         /// </summary>
@@ -138,6 +121,12 @@ namespace LMCM_BE.Controllers.UserControllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+        /// <summary>
+        /// Gắn role cho staff
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="newRole"></param>
+        /// <returns></returns>
         [HttpPost("assign-role")]
         public async Task<IActionResult> AssignRole(string userId, string newRole)
         {
@@ -145,7 +134,7 @@ namespace LMCM_BE.Controllers.UserControllers
             {
                 if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(newRole))
                 {
-                    return BadRequest(new { success = false, message = "Thiếu userId hoặc newRole." });
+                    return BadRequest(new { success = false, message = "Thiếu userId hoặc role mới." });
                 }
 
                 var result = await _userService.AssignRoleAsync(userId, newRole);

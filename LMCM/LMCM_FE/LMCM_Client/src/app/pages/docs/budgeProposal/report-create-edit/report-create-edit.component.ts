@@ -84,11 +84,9 @@ export class ReportCreateEditComponent {
       console.error("Vui lòng điền đầy đủ thông tin");
       return;
     }
-    const authorId = localStorage.getItem("userId");
     const reportData = new FormData();
-    reportData.append("authorId", authorId!);
     reportData.append("title", this.addTitle);
-    reportData.append("proposalDate", this.addDate.toISOString().split("T")[0]);
+    reportData.append("proposalDate", this.addDate.toLocaleDateString('en-CA'));
     reportData.append("file", this.file);
 
     if (this.selectedReportId) {

@@ -31,12 +31,6 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
                 .Where(s => s.ProposalId == proposalId)
                 .SingleOrDefaultAsync();
 
-            // Detach the Author (User) entity to avoid tracking it
-            if (budgetProposal?.Author != null)
-            {
-                _dbContext.Entry(budgetProposal.Author).State = EntityState.Detached;
-            }
-
             return budgetProposal;
         }
 

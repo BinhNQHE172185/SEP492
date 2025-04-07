@@ -1,14 +1,12 @@
-﻿using LMCM_BE.DTOs.DocumentTemplateDtos;
-using LMCM_BE.DTOs.ShareDtos;
-
+﻿using LMCM_BE.Models;
 namespace LMCM_BE.Repositories.DocumentTemplateRepository
 {
     public interface IDocumentTemplateRepository
     {
-        Task<bool> CreateTemplatelAsync(DocumentTemplateInsertDto template);
-        Task<PagedResult<DocumentTemplateListDto>> GetTemplatesAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
-        Task<DocumentTemplateDetailDto> GetTemplateByIdAsync(Guid templateId);
-        Task<bool> SoftDeleteTemplateAsync(Guid templateId);
-        Task<Guid?> UpdateTempalteAsync(Guid templateId, DocumentTemplateUpdateDto newTemplate);
+        Task<bool> CreateTemplatelAsync(DocumentTemplate template);
+        Task<(List<DocumentTemplate>,int totalCount)> GetTemplatesAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
+        Task<DocumentTemplate> GetTemplateByIdAsync(Guid templateId);
+        Task<bool> SoftDeleteTemplateAsync(DocumentTemplate template);
+        Task<bool> UpdateTempalteAsync(DocumentTemplate newTemplate);
     }
 }

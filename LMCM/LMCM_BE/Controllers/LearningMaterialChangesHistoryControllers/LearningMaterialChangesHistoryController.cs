@@ -1,14 +1,7 @@
-﻿using LMCM_BE.DTOs.AcceptanceRecordDtos;
-using LMCM_BE.DTOs.LearningMaterialDtos;
+﻿using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
-using LMCM_BE.DTOs.UserDtos;
-using LMCM_BE.Models;
 using LMCM_BE.Services.ContractService;
 using LMCM_BE.Services.LearningMaterialChangesHistoryService;
-using LMCM_BE.Services.LearningMaterialService;
-using LMCM_BE.Services.SyllabusService;
-using LMCM_BE.Services.UserService;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 

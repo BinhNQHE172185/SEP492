@@ -1,5 +1,6 @@
 ﻿using LMCM_BE.DTOs.ContractDtos;
 using LMCM_BE.DTOs.ShareDtos;
+using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
 
 namespace LMCM_BE.Services.ContractService
@@ -11,7 +12,6 @@ namespace LMCM_BE.Services.ContractService
         Task<PagedResult<ContractListDto>> GetContractsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<List<ContractListDto>> GetContractsAsync(string? searchKey);
         Task<bool> SoftDeleteContractAsync(Guid contractId);
-        Task<bool> HasActiveConntractsAsync(Guid proposalId);
-        Task<Guid?> UpdateContractAsync(Guid contractId, ContractUpdateDto newContract);
+        Task<bool> UpdateContractAsync(Guid contractId, ContractUpdateDto newContract);
     }
 }

@@ -13,6 +13,6 @@ namespace LMCM_BE.Services.CurriculumService
         Task<bool> SoftCascadeDeleteCurriculumByCodeAsync(string curriculumCode);
         Task<CurriculumDetailDto?> GetCurriculumDetailAsync(Guid curriculumId);
         Task<bool> ValidateSheets(ExcelWorkbook workbook, Dictionary<string, List<(string Header, string Cell)>> expectedHeaders);
-        Task<bool> ImportCurriculumFromWorkbookAsync(ExcelWorkbook workbook, Dictionary<string, List<(string Header, string Cell)>> expectedHeaders);
+        Task<bool> ImportCurriculumFromWorkbookAsync(ExcelWorkbook workbook);
     }
 }

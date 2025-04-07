@@ -3,6 +3,7 @@ using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Services.AcceptanceRecordService;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LMCM_BE.Controllers.AcceptanceRecordControllers
 {
@@ -36,32 +37,18 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
         {
             try
             {
-                if (acceptanceRecordDto.File == null)
+                // Check if ModelState is valid (DTO validation will catch issues)
+                if (!ModelState.IsValid)
                 {
-                    return BadRequest(new
-                    {
-                        Success = false,
-                        Message = "Không tìm thấy file.",
-                    });
-                }
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                  .Select(e => e.ErrorMessage)
+                                                  .ToList();
 
-                // Check file type
-                if (acceptanceRecordDto.File.ContentType != "application/pdf")
-                {
                     return BadRequest(new
                     {
                         Success = false,
-                        Message = "Chỉ file pdf mới được tải lên.",
-                    });
-                }
-
-                // Check file size (5MB = 5 * 1024 * 1024 bytes)
-                if (acceptanceRecordDto.File.Length > 5 * 1024 * 1024)
-                {
-                    return BadRequest(new
-                    {
-                        Success = false,
-                        Message = "Dung lượng file không được vượt quá 5MB.",
+                        Message = "Dữ liệu đầu vào không hợp lệ.",
+                        Errors = errors
                     });
                 }
 
@@ -76,6 +63,15 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
             catch (UnauthorizedAccessException ex)
             {
                 return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new
                 {
                     Success = false,
                     Message = ex.Message,
@@ -116,6 +112,21 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
         {
             try
             {
+                // Check if ModelState is valid (DTO validation will catch issues)
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                  .Select(e => e.ErrorMessage)
+                                                  .ToList();
+
+                    return BadRequest(new
+                    {
+                        Success = false,
+                        Message = "Dữ liệu đầu vào không hợp lệ.",
+                        Errors = errors
+                    });
+                }
+
                 var updatedRecord = await _acceptanceRecordService.UpdateAcceptanceRecordAsync(acceptanceId, request);
 
                 if (updatedRecord.HasValue)

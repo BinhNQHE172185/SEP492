@@ -38,8 +38,6 @@ namespace LMCM_BE.Repositories.CurriculumRepository
             curriculum.UpdatedAt = DateTime.UtcNow;
             _dbContext.Curriculums.Update(curriculum);
 
-            await _dbContext.SaveChangesAsync();
-
             return true;
         }
          public async Task<Curriculum?> GetCurriculumDetailAsync(Guid curriculumId)

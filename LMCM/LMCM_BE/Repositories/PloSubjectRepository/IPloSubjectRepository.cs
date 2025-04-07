@@ -5,13 +5,9 @@ namespace LMCM_BE.Repositories.PloSubjectRepository
 {
     public interface IPloSubjectRepository
     {
-        Task<PagedResult<PloSubject>> GetPloSubjectsAsync(Guid ploId, int pageIndex = 1, int pageSize = 10);
-        Task<List<PloSubject>> GetAllPloSubjectsAsync(Guid ploId);
-        Task<bool> AddPloSubjectsAsync(List<PloSubject> ploSubjects);
-
-        Task<bool> DeletePloSubjectsAsync(List<Guid> ploIds);
+        Task<List<PloSubject>> GetPloSubjectByCurriculumIdAsync(Guid curriculumId);
+        Task<bool> UpdateRangeAsync(List<PloSubject> entities);
         Task<bool> HasActivePloSubjectByCurriculumIdAsync(Guid curriculumId);
-        Task<bool> HasActivePloSubjectByPloIdAsync(Guid ploId);
         Task<bool> HasActivePloSubjectBySubjectIdAsync(Guid subjectId);
     }
 }

@@ -14,13 +14,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
         }
         public async Task<bool> CreateBudgetProposalAsync(BudgetProposal proposal)
         {
-
-            var newProposal = proposal;
-            newProposal.Status = "Active";
-            newProposal.CreatedAt = DateTime.UtcNow;
-            newProposal.UpdatedAt = DateTime.UtcNow;
-
-            await _dbContext.BudgetProposals.AddAsync(newProposal);
+            await _dbContext.BudgetProposals.AddAsync(proposal);
 
             return true;
         }

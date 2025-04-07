@@ -97,6 +97,10 @@ namespace LMCM_BE.Services.AcceptanceRecordService
             var acceptanceRecord = _mapper.Map<AcceptanceRecord>(dto);
             acceptanceRecord.AuthorId = user.Id;
             acceptanceRecord.Url = fileUrl;
+            acceptanceRecord.AcceptanceId = Guid.NewGuid();
+            acceptanceRecord.Status = "Active";
+            acceptanceRecord.CreatedAt = DateTime.UtcNow;
+            acceptanceRecord.UpdatedAt = DateTime.UtcNow;
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
@@ -183,10 +187,13 @@ namespace LMCM_BE.Services.AcceptanceRecordService
             if (user.Id != acceptanceRecord.AuthorId && user.Roles.Contains("Staff"))
                 throw new UnauthorizedAccessException("Người dùng không có quyền xóa biên bản nghiệm thu này.");
 
+            acceptanceRecord.Status = "Inactive";
+            acceptanceRecord.UpdatedAt = DateTime.UtcNow;
+
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                await _acceptanceRecordRepository.SoftDeleteAcceptanceRecordAsync(acceptanceRecord);
+                await _acceptanceRecordRepository.UpdateAcceptanceRecordAsync(acceptanceRecord);
                 await _unitOfWork.CommitAsync();
                 return true;
             }

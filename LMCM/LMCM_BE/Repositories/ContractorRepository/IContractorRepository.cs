@@ -1,15 +1,15 @@
-﻿using LMCM_BE.DTOs.ContractorDtos;
-using LMCM_BE.DTOs.ShareDtos;
+﻿using LMCM_BE.Models;
 
 namespace LMCM_BE.Repositories.ContractorRepository
 {
     public interface IContractorRepository
     {
-        Task<PagedResult<ContractorListDto>> GetContractorsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
-        Task<List<ContractorListDto>> GetContractorsListAsync();
-        Task<bool> SoftDeleteContractorAsync(Guid contractorId);
-        Task<ContractorDetailDto?> GetContractorDetailAsync(Guid contractorId);
-        Task<ContractorDetailDto> CreateContractorAsync(ContractorCreateDto dto);
-        Task<Guid?> UpdateContractorAsync(Guid contractorId, ContractorUpdateDto dto);
+        Task<(List<Contractor>, int totalCount)> GetContractorsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
+        Task<List<Contractor>> GetContractorsListAsync(string? searchKey);
+        Task<Contractor> GetContractorDetailByIdAsync(Guid contractorId);
+        Task<Contractor?> GetActiveContractorByIdAsync(Guid contractorId);
+        Task<Contractor?> GetContractorByIdAsync(Guid contractorId);
+        Task<bool> CreateContractorAsync(Contractor contractor);
+        Task<bool> UpdateContractorAsync(Contractor contractor);
     }
 }

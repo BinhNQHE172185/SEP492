@@ -1,6 +1,7 @@
 ﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Contracts;
 
 namespace LMCM_BE.Repositories.AcceptanceRecordRepository
 {
@@ -39,11 +40,6 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
 
         public async Task<bool> CreateAcceptanceRecordAsync(AcceptanceRecord acceptanceRecord)
         {
-            acceptanceRecord.AcceptanceId = Guid.NewGuid();
-            acceptanceRecord.Status = "Active";
-            acceptanceRecord.CreatedAt = DateTime.UtcNow;
-            acceptanceRecord.UpdatedAt = DateTime.UtcNow;
-
             await _dbContext.AcceptanceRecords.AddAsync(acceptanceRecord);
 
             return true;
@@ -55,14 +51,6 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
             return true;
         }
 
-        public async Task<bool> SoftDeleteAcceptanceRecordAsync(AcceptanceRecord acceptanceRecord)
-        {
-            acceptanceRecord.Status = "Inactive";
-            acceptanceRecord.UpdatedAt = DateTime.UtcNow;
-            _dbContext.AcceptanceRecords.Update(acceptanceRecord);
-
-            return true;
-        }
         public async Task<AcceptanceRecord?> GetAcceptanceRecordByIdAsync(Guid acceptanceId)
         {
             return await _dbContext.AcceptanceRecords

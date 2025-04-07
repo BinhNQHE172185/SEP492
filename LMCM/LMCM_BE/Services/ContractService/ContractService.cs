@@ -5,6 +5,7 @@ using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.AcceptanceRecordRepository;
 using LMCM_BE.Repositories.BudgetPropasalRepository;
+using LMCM_BE.Repositories.ContractorRepository;
 using LMCM_BE.Repositories.ContractRepository;
 using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Services.UserService;
@@ -21,6 +22,7 @@ namespace LMCM_BE.Services.ContractService
         private readonly IFileHelper _fileHelper;
         private readonly IAcceptanceRecordRepository _acceptanceRecordRepository;
         private readonly IBudgetProposalRepository _budgetProposalRepository;
+        private readonly IContractorRepository _contractorRepository
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
 
@@ -30,6 +32,7 @@ namespace LMCM_BE.Services.ContractService
             IFileHelper fileHelper, 
             IAcceptanceRecordRepository acceptanceRecordRepository,
             IBudgetProposalRepository budgetProposalRepository,
+            IContractorRepository contractorRepository,
             IUnitOfWork unitOfWork,
             IUserService userService)
         {
@@ -39,6 +42,7 @@ namespace LMCM_BE.Services.ContractService
             _fileHelper = fileHelper;
             _acceptanceRecordRepository = acceptanceRecordRepository;
             _budgetProposalRepository = budgetProposalRepository;
+            _contractorRepository = contractorRepository;
             _unitOfWork = unitOfWork;
             _userService = userService;
         }
@@ -51,7 +55,12 @@ namespace LMCM_BE.Services.ContractService
             if (await _budgetProposalRepository.GetActiveBudgetProposalByIdAsync(contractDto.ProposalId) == null)
             {
                 throw new KeyNotFoundException("Tờ trình được chọn không tồn tại");
-            } 
+            }
+
+            if (await _contractorRepository.GetActiveContractorByIdAsync(contractDto.ContractorId) == null)
+            {
+                throw new KeyNotFoundException("Nhà thầu được chọn không tồn tại");
+            }
 
             // Step 1: Upload contract file to Google Drive (if provided)
             string? fileUrl = null;
@@ -73,6 +82,10 @@ namespace LMCM_BE.Services.ContractService
             var newContract = _mapper.Map<Contract>(contractDto);
             newContract.Url = fileUrl;
             newContract.AuthorId = user.Id;
+            newContract.ContractId = Guid.NewGuid();
+            newContract.Status = "Active";
+            newContract.CreatedAt = DateTime.UtcNow;
+            newContract.UpdatedAt = DateTime.UtcNow;
 
             try
             {
@@ -163,8 +176,10 @@ namespace LMCM_BE.Services.ContractService
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
+                
                 contract.Status = "Inactive";
                 contract.UpdatedAt = DateTime.UtcNow;
+                
                 await _contractRepository.UpdateContractAsync(contract);
                 await _unitOfWork.CommitAsync();
                 return true;
@@ -192,6 +207,11 @@ namespace LMCM_BE.Services.ContractService
             if (await _budgetProposalRepository.GetActiveBudgetProposalByIdAsync(newContract.ProposalId) == null)
             {
                 throw new KeyNotFoundException("Tờ trình được chọn không tồn tại");
+            }
+
+            if (await _contractorRepository.GetActiveContractorByIdAsync(newContract.ContractorId) == null)
+            {
+                throw new KeyNotFoundException("Nhà thầu được chọn không tồn tại");
             }
 
             UserProfileResponseDto user = await _userService.GetProfileFromCookie();

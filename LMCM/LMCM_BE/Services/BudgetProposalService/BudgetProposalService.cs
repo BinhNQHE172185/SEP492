@@ -67,6 +67,10 @@ namespace LMCM_BE.Services.BudgetPropasalService
             newProposal.ProposalId = Guid.NewGuid();
             newProposal.Url = fileUrl;
             newProposal.AuthorId = user.Id;
+            newProposal.Status = "Active";
+            newProposal.CreatedAt = DateTime.UtcNow;
+            newProposal.UpdatedAt = DateTime.UtcNow;
+
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
@@ -158,8 +162,10 @@ namespace LMCM_BE.Services.BudgetPropasalService
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
+
                 budgetProposal.Status = "Inactive";
                 budgetProposal.UpdatedAt = DateTime.UtcNow; 
+
                 await _budgetProposalRepository.UpdateBudgetProposalAsync(budgetProposal);
                 await _unitOfWork.CommitAsync();
                 return true;

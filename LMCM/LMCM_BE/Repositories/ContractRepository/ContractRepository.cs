@@ -15,13 +15,7 @@ namespace LMCM_BE.Repositories.ContractRepository
 
         public async Task<bool> CreateContract(Contract contract)
         {
-            var newContract = contract;
-            newContract.ContractId = Guid.NewGuid();
-            newContract.Status = "Active";
-            newContract.CreatedAt = DateTime.UtcNow;
-            newContract.UpdatedAt = DateTime.UtcNow;
-
-            await _dbContext.Contracts.AddAsync(newContract);
+            await _dbContext.Contracts.AddAsync(contract);
 
             return true;
         }

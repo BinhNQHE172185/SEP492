@@ -1,15 +1,12 @@
 ﻿using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
-using OfficeOpenXml;
 
 namespace LMCM_BE.Repositories.CurriculumsSubjectRepository
 {
     public interface ICurriculumsSubjectRepository
     {
-        Task<PagedResult<CurriculumsSubject>> GetCurriculumsSubjectsAsync(Guid curriculumId, int pageIndex = 1, int pageSize = 10);
-        Task<List<CurriculumsSubject>> GetAllCurriculumsSubjectsAsync(Guid curriculumId);
-        Task<bool> AddCurriculumsSubjectsAsync(List<CurriculumsSubject> curriculumsSubjects);
-        Task<bool> DeleteCurriculumsSubjectAsync(Guid curriculumId);
+        Task<List<CurriculumsSubject>> GetCurriculumsSubjectByCurriculumIdAsync(Guid curriculumId);
+        Task<bool> UpdateRangeAsync(List<CurriculumsSubject> entities);
         Task<bool> HasActiveCurriculumsSubjectsAsync(Guid curriculumId);
         Task<bool> HasActiveCurriculumSubjectsBySubjectIdAsync(Guid subjectId);
     }

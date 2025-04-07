@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
-using Google.Apis.Drive.v3.Data;
 using LMCM_BE.DbContext;
-using LMCM_BE.DTOs.PloDtos;
-using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
-using LMCM_BE.Repositories.PloRepository;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.PloRepository
@@ -12,85 +8,31 @@ namespace LMCM_BE.Repositories.PloRepository
     public class PloRepository : IPloRepository
     {
         private readonly LMCM_DBContext _dbContext;
-        private readonly IMapper _mapper;
 
 
         public PloRepository(LMCM_DBContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
-            _mapper = mapper;
         }
 
-        public async Task<PagedResult<Plo>> GetPlosAsync(Guid curriculumId, string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<List<Plo>> GetPloDetailsByCurriculumIdAsync(Guid curriculumId)
         {
-            var query = _dbContext.Plos
-                .Where(p => p.CurriculumId == curriculumId && p.Status == "Active")
-                .Include(p => p.PloSubjects)
-                .AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(searchKey))
-            {
-                string search = searchKey.Trim().ToLower();
-                query = query.Where(p => p.PloName.ToLower().Contains(search));
-            }
-
-            int totalCount = await query.CountAsync();
-            var items = await query.Skip((pageIndex - 1) * pageSize)
-                                   .Take(pageSize)
-                                   .ToListAsync();
-
-            return new PagedResult<Plo>
-            {
-                Items = items,
-                TotalCount = totalCount,
-                CurrentPage = pageIndex,
-                PageSize = pageSize
-            };
-        }
-        public async Task<List<PloDetailDto>> GetPloDetailsByCurriculumIdAsync(Guid curriculumId)
-        {
-            var plos = await _dbContext.Plos
+            return await _dbContext.Plos
                 .Include(p => p.PloSubjects)
                     .ThenInclude(ps => ps.Subject)
                 .Where(p => p.CurriculumId == curriculumId && p.Status == "Active")
                 .OrderBy(p=>p.PloName)
                 .ToListAsync();
-
-            return _mapper.Map<List<PloDetailDto>>(plos);
         }
-
-
-        public async Task<bool> AddPlosAsync(List<Plo> plos)
+        public async Task<List<Plo>> GetPloByCurriculumIdAsync(Guid curriculumId)
         {
-            if (plos == null || plos.Count == 0)
-                throw new ArgumentNullException(nameof(plos));
-
-            try
-            {
-                await _dbContext.Plos.AddRangeAsync(plos);
-                await _dbContext.SaveChangesAsync();
-
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            return await _dbContext.Plos
+                .Where(p => p.CurriculumId == curriculumId && p.Status == "Active")
+                .ToListAsync();
         }
-
-        public async Task<bool> DeletePlosAsync(List<Guid> ploIds)
+        public async Task<bool> UpdateRangeAsync(List<Plo> entities)
         {
-            var plos = await _dbContext.Plos.Where(p => ploIds.Contains(p.PloId) && p.Status != "Inactive").ToListAsync();
-            if (!plos.Any()) return false;
-
-            foreach (var plo in plos)
-            {
-                plo.Status = "Inactive";
-                plo.UpdatedAt = DateTime.UtcNow;
-            }
-
-            _dbContext.Plos.UpdateRange(plos);
-            await _dbContext.SaveChangesAsync();
+            _dbContext.Plos.UpdateRange(entities);
             return true;
         }
         public async Task<bool> HasActivePloAsync(Guid curriculumId)

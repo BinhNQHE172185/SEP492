@@ -14,5 +14,6 @@ namespace LMCM_BE.Repositories.UserRepositoriy
         Task<bool> AssignRoleAsync(string userId, string role);
         Task<List<string>> getRoleAsync(string userId);
         Task<UserProfileResponseDto> GetProfileFromCookie();
+        Task<int> UserCountAsync();
     }
 }

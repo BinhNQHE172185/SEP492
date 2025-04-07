@@ -1,6 +1,4 @@
-﻿using LMCM_BE.Models;
-
-namespace LMCM_BE.DTOs.LearningMaterialDtos
+﻿namespace LMCM_BE.DTOs.LearningMaterialDtos
 {
     public class LearningMaterialInsertDto
     {

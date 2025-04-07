@@ -173,12 +173,13 @@ namespace LMCM_BE.Services.ContractService
                 throw new InvalidOperationException("Không thể xóa do có tờ trình lệ thuộc");
             }
 
-            contract.Status = "Inactive";
-            contract.UpdatedAt = DateTime.UtcNow;
-
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
+                
+                contract.Status = "Inactive";
+                contract.UpdatedAt = DateTime.UtcNow;
+                
                 await _contractRepository.UpdateContractAsync(contract);
                 await _unitOfWork.CommitAsync();
                 return true;

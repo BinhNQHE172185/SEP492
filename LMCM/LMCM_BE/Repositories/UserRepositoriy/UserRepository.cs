@@ -201,5 +201,10 @@ namespace LMCM_BE.Repositories.UserRepositoriy
                 return null;
             }
         }
+        public async Task<int> UserCountAsync()
+        {
+            var data = await _dbContext.Users.CountAsync();
+            return data;
+        }
     }
 }

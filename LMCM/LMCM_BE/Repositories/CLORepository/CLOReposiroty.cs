@@ -16,38 +16,22 @@ namespace LMCM_BE.Repositories.CLORepository
 
         public async Task<bool> DeleteCLOBySyllabusAsync(Guid syllabusId)
         {
-            if (syllabusId == Guid.Empty)
-                throw new ArgumentException("Syllabus ID cannot be empty.", nameof(syllabusId));
+            var clos = await _dbContext.Clos
+                .Where(c => c.SyllabusId == syllabusId)
+                .ToListAsync();
 
-            try
+            if (!clos.Any())
+                return false; // No CLOs found for the given syllabus
+
+            foreach (var clo in clos)
             {
-                var clos = await _dbContext.Clos
-                    .Where(c => c.SyllabusId == syllabusId)
-                    .ToListAsync();
-
-                if (!clos.Any())
-                    return false; // No CLOs found for the given syllabus
-
-                foreach (var clo in clos)
-                {
-                    clo.Status = "Inactive";
-                    clo.UpdatedAt = DateTime.UtcNow;
-                }
-
-                _dbContext.Clos.UpdateRange(clos);
-
-                return true;
+                clo.Status = "Inactive";
+                clo.UpdatedAt = DateTime.UtcNow;
             }
-            catch (DbUpdateException dbEx)
-            {
-                Console.WriteLine(dbEx.Message);
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
+
+            _dbContext.Clos.UpdateRange(clos);
+
+            return true;
         }
 
         public async Task<bool> ImportCLOsAsync(List<Clo> cLOs, Guid syllabusId)

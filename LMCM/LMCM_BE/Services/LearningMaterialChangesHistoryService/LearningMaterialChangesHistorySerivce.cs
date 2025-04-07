@@ -3,6 +3,7 @@ using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
 {
@@ -40,6 +41,10 @@ namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
         public async Task<ChangesHistoryDetailDto> getHistoryOfChangeDetail(Guid id)
         {
             return await _changesRepository.getHistoryOfChangeDetail(id);
+        }
+        public async Task<List<LearningMaterialChangesHistory>> GetAllWithCompletionDateAsync()
+        {
+            return await _changesRepository.GetAllWithCompletionDateAsync();
         }
     }
 }

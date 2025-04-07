@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
 import { debounceTime, Subscription } from 'rxjs';
 import { LayoutService } from '../../../layout/service/layout.service';
+import { DashboardApiService } from '../../../apis/dashboardAPIs/dashboard-api';
 
 @Component({
     standalone: true,
@@ -19,7 +20,10 @@ export class ReportOfBuilding {
 
     subscription!: Subscription;
 
-    constructor(public layoutService: LayoutService) {
+    constructor(
+        public layoutService: LayoutService,
+        public dashboardApiService: DashboardApiService
+    ) {
         this.subscription = this.layoutService.configUpdate$.pipe(debounceTime(25)).subscribe(() => {
             this.initChart();
         });
@@ -35,22 +39,24 @@ export class ReportOfBuilding {
         const borderColor = documentStyle.getPropertyValue('--surface-border');
         const textMutedColor = documentStyle.getPropertyValue('--text-color-secondary');
 
-        this.chartData = {
-            labels: ['2021', '2022', '2023', '2024'],
-            datasets: [
-                {
-                    label: 'Số học liệu xây dựng',
-                    backgroundColor: documentStyle.getPropertyValue('--p-primary-400'),
-                    data: [15, 25, 40, 32], // Dữ liệu mẫu
-                    barThickness: 40,
-                    borderRadius: {
-                        topLeft: 6,
-                        topRight: 6
-                    },
-                    borderSkipped: false
-                }
-            ]
-        };
+        this.dashboardApiService.getbarChartData().subscribe((response) => {
+            this.chartData = {
+                labels: response.labels,
+                datasets: [
+                    {
+                        label: 'Số học liệu xây dựng',
+                        backgroundColor: documentStyle.getPropertyValue('--p-primary-400'),
+                        data: response.data,
+                        barThickness: 40,
+                        borderRadius: {
+                            topLeft: 6,
+                            topRight: 6
+                        },
+                        borderSkipped: false
+                    }
+                ]
+            };
+        });
 
         this.chartOptions = {
             maintainAspectRatio: false,

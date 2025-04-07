@@ -126,7 +126,9 @@ namespace LMCM_BE.Services.DocumentTemplateService
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                await _documentTemplateRepository.SoftDeleteTemplateAsync(template);
+                template.Status = "Deleted";
+                template.UpdatedAt = DateTime.UtcNow;  
+                await _documentTemplateRepository.UpdateTempalteAsync(template);
                 await _unitOfWork.CommitAsync();
                 return true;
             }

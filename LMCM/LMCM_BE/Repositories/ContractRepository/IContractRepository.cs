@@ -12,7 +12,6 @@ namespace LMCM_BE.Repositories.ContractRepository
         Task<List<Contract>> GetContractsAsync(bool isHod, Guid userId, string? searchKey);
         Task<bool> HasActiveContractsAsync(Guid contractorId);
         Task<bool> HasActiveConntractsAsync(Guid proposalId);
-        Task<bool> SoftDeleteContractAsync(Contract contract);
         Task<bool> UpdateContractAsync(Contract newContract);
     }
 }

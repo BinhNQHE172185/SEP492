@@ -34,7 +34,9 @@ namespace LMCM_BE.Services.LearningMaterialService
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                await _materialRepository.DeleteLearningMaterialAsync(learningMaterial);
+                learningMaterial.Status = "Deleted";
+                learningMaterial.UpdatedAt = DateTime.UtcNow;
+                await _materialRepository.UpdateLearningMaterialAsync(learningMaterial);
                 await _unitOfWork.CommitAsync();
                 return true;
             }

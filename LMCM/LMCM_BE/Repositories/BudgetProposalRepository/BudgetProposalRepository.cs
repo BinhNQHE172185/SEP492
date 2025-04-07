@@ -97,15 +97,6 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
             return items;
         }
 
-        public async Task<bool> SoftDeleteBudgetProposalAsync(BudgetProposal budgetProposal)
-        {
-            budgetProposal.Status = "Inactive";
-            budgetProposal.UpdatedAt = DateTime.UtcNow;
-            _dbContext.BudgetProposals.Update(budgetProposal);
-
-            return true;
-        }
-
         public async Task<bool> UpdateBudgetProposalAsync(BudgetProposal newProposal)
         {
             _dbContext.Update(newProposal);

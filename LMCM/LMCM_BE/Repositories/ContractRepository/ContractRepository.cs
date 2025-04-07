@@ -120,15 +120,6 @@ namespace LMCM_BE.Repositories.ContractRepository
                 .AnyAsync(p => p.ContractorId == contractorId && p.Status == "Active");
         }
 
-        public async Task<bool> SoftDeleteContractAsync(Contract contract)
-        {
-            contract.Status = "Inactive";
-            contract.UpdatedAt = DateTime.UtcNow;
-            _dbContext.Contracts.Update(contract);
-
-            return true;
-        }
-
         public async Task<bool> UpdateContractAsync(Contract newContract)
         {
             _dbContext.Contracts.Update(newContract);

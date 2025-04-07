@@ -158,7 +158,9 @@ namespace LMCM_BE.Services.BudgetPropasalService
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                await _budgetProposalRepository.SoftDeleteBudgetProposalAsync(budgetProposal);
+                budgetProposal.Status = "Inactive";
+                budgetProposal.UpdatedAt = DateTime.UtcNow; 
+                await _budgetProposalRepository.UpdateBudgetProposalAsync(budgetProposal);
                 await _unitOfWork.CommitAsync();
                 return true;
             }

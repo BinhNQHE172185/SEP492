@@ -14,16 +14,6 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
             _dbContext = dbContext;
         }
 
-        public async Task<bool> DeleteLearningMaterialAsync(LearningMaterial learningMaterial)
-        {
-                learningMaterial.Status = "Deleted";
-                learningMaterial.UpdatedAt = DateTime.UtcNow;
-
-                _dbContext.LearningMaterials.Update(learningMaterial);
-
-                return true;
-        }
-
         public async Task<bool> DeleteLearningMaterialsBySyllabusAsync(Guid syllabusId)
         {
             var materials = await _dbContext.LearningMaterials

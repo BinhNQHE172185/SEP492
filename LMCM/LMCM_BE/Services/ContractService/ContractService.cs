@@ -163,7 +163,9 @@ namespace LMCM_BE.Services.ContractService
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                await _contractRepository.SoftDeleteContractAsync(contract);
+                contract.Status = "Inactive";
+                contract.UpdatedAt = DateTime.UtcNow;
+                await _contractRepository.UpdateContractAsync(contract);
                 await _unitOfWork.CommitAsync();
                 return true;
             }

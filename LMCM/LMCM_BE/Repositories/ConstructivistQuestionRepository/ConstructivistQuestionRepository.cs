@@ -15,38 +15,22 @@ namespace LMCM_BE.Repositories.ConstructivistQuestionRepository
         }
         public async Task<bool> DeleteConstructivistQuestionsBySyllabusAsync(Guid syllabusId)
         {
-            if (syllabusId == Guid.Empty)
-                throw new ArgumentException("Syllabus ID cannot be empty.", nameof(syllabusId));
+            var questions = await _dbContext.ConstructivistQuestions
+                .Where(s => s.SyllabusId == syllabusId)
+                .ToListAsync();
 
-            try
+            if (!questions.Any())
+                return false; // No grading structures found for the given syllabus
+
+            foreach (var question in questions)
             {
-                var questions = await _dbContext.ConstructivistQuestions
-                    .Where(s => s.SyllabusId == syllabusId)
-                    .ToListAsync();
-
-                if (!questions.Any())
-                    return false; // No grading structures found for the given syllabus
-
-                foreach (var question in questions)
-                {
-                    question.Status = "Inactive";
-                    question.UpdatedAt = DateTime.UtcNow;
-                }
-
-                _dbContext.ConstructivistQuestions.UpdateRange(questions);
-
-                return true;
+                question.Status = "Inactive";
+                question.UpdatedAt = DateTime.UtcNow;
             }
-            catch (DbUpdateException dbEx)
-            {
-                Console.WriteLine(dbEx.Message);
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
+
+            _dbContext.ConstructivistQuestions.UpdateRange(questions);
+
+            return true;
         }
 
         public async Task<bool> ImportConstructivistQuestionsAsync(List<ConstructivistQuestion> questions, Guid syllabusId)

@@ -17,38 +17,22 @@ namespace LMCM_BE.Repositories.GradingStructureRepository
         }
         public async Task<bool> DeleteGradingStructuresBySyllabusAsync(Guid syllabusId)
         {
-            if (syllabusId == Guid.Empty)
-                throw new ArgumentException("Syllabus ID cannot be empty.", nameof(syllabusId));
+            var gradingStructures = await _dbContext.GradingStructures
+                .Where(s => s.SyllabusId == syllabusId)
+                .ToListAsync();
 
-            try
+            if (!gradingStructures.Any())
+                return false; // No grading structures found for the given syllabus
+
+            foreach (var gradingStructure in gradingStructures)
             {
-                var gradingStructures = await _dbContext.GradingStructures
-                    .Where(s => s.SyllabusId == syllabusId)
-                    .ToListAsync();
-
-                if (!gradingStructures.Any())
-                    return false; // No grading structures found for the given syllabus
-
-                foreach (var gradingStructure in gradingStructures)
-                {
-                    gradingStructure.Status = "Inactive";
-                    gradingStructure.UpdatedAt = DateTime.UtcNow;
-                }
-
-                _dbContext.GradingStructures.UpdateRange(gradingStructures);
-
-                return true;
+                gradingStructure.Status = "Inactive";
+                gradingStructure.UpdatedAt = DateTime.UtcNow;
             }
-            catch (DbUpdateException dbEx)
-            {
-                Console.WriteLine(dbEx.Message);
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
+
+            _dbContext.GradingStructures.UpdateRange(gradingStructures);
+
+            return true;
         }
 
         public async Task<bool> ImportGradingStructuresAsync(List<GradingStructure> gradingStructures, Guid syllabusId)

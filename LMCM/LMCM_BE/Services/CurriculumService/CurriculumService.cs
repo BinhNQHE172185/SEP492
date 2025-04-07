@@ -8,12 +8,15 @@ using LMCM_BE.Repositories.CurriculumsSubjectRepository;
 using LMCM_BE.Repositories.PloRepository;
 using LMCM_BE.Repositories.PloSubjectRepository;
 using LMCM_BE.Services.SubjectService;
+using LMCM_BE.UnitOfWork;
+using LMCM_BE.Utilities;
 using OfficeOpenXml;
 
 namespace LMCM_BE.Services.CurriculumService
 {
     public class CurriculumService : ICurriculumService
     {
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ICurriculumRepository _curriculumRepository;
         private readonly ICurriculumsSubjectRepository _curriculumSubjectRepository;
@@ -22,6 +25,7 @@ namespace LMCM_BE.Services.CurriculumService
         private readonly ISubjectService _subjectService;
 
         public CurriculumService(
+            IUnitOfWork unitOfWork,
             IMapper mapper,
             ICurriculumRepository curriculumRepository,
             ICurriculumsSubjectRepository curriculumSubjectRepository,
@@ -30,6 +34,7 @@ namespace LMCM_BE.Services.CurriculumService
             ISubjectService subjectService
             )
         {
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _curriculumRepository = curriculumRepository;
             _curriculumSubjectRepository = curriculumSubjectRepository;
@@ -56,10 +61,18 @@ namespace LMCM_BE.Services.CurriculumService
         {
             if (curriculum == null)
                 throw new ArgumentNullException(nameof(curriculum));
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+                await SoftCascadeDeleteCurriculumByCodeAsync(curriculum.CurriculumCode);
 
-            await SoftCascadeDeleteCurriculumByCodeAsync(curriculum.CurriculumCode);
-
-            return await _curriculumRepository.ImportCurriculumAsync(curriculum);
+                return await _curriculumRepository.ImportCurriculumAsync(curriculum);
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                throw new Exception(ex.Message);
+            }
         }
         public async Task<bool> SoftDeleteCurriculumAsync(Guid curriculumId)
         {
@@ -128,9 +141,9 @@ namespace LMCM_BE.Services.CurriculumService
 
             return true;
         }
-        public async Task<bool> ImportCurriculumFromWorkbookAsync(ExcelWorkbook workbook, Dictionary<string, List<(string Header, string Cell)>> expectedHeaders)
+        public async Task<bool> ImportCurriculumFromWorkbookAsync(ExcelWorkbook workbook)
         {
-            if (await ValidateSheets(workbook, expectedHeaders))
+            if (await ValidateSheets(workbook, ExpectedHeaders.CurriculumImportHeaders))
             {
                 ExcelWorksheet curriculumSubjectSheet = workbook.Worksheets["Curriculum Subject"];
                 ExcelWorksheet curriculumSheet = workbook.Worksheets["Curriculum"];

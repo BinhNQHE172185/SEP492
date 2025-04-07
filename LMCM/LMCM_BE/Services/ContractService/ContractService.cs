@@ -77,7 +77,7 @@ namespace LMCM_BE.Services.ContractService
         {
             if (contractId == Guid.Empty)
                 throw new ArgumentNullException("ID bị trống.", nameof(contractId));
-            var contract = await _contractRepository.GetContractByIdAsync(contractId);
+            var contract = await _contractRepository.GetContractDetailByIdAsync(contractId);
             if (contract == null)
                 throw new KeyNotFoundException($"Không tìm thấy hợp đồn với ID: {contractId}");
 
@@ -130,7 +130,7 @@ namespace LMCM_BE.Services.ContractService
 
         public async Task<bool> SoftDeleteContractAsync(Guid contractId)
         {
-            var contract = await _contractRepository.GetContractByIdAsync(contractId);
+            var contract = await _contractRepository.GetActiveContractByIdAsync(contractId);
 
             if (contract == null)
                 throw new KeyNotFoundException("Không tìm thấy dữ liệu.");

@@ -1,6 +1,8 @@
 ﻿using LMCM_BE.DTOs.BudgetProposalDtos;
 using LMCM_BE.DTOs.ShareDtos;
+using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Services.BudgetPropasalService;
+using LMCM_BE.Services.UserService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMCM_BE.Controllers.BudgetPropasalControllers
@@ -10,10 +12,12 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
     public class BudgetProposalController : Controller
     {
         private readonly IBudgetProposalService _budgetProposalService;
+        private readonly IUserService _userService;
 
-        public BudgetProposalController(IBudgetProposalService budgetProposalService)
+        public BudgetProposalController(IBudgetProposalService budgetProposalService,IUserService userService)
         {
             _budgetProposalService = budgetProposalService; 
+            _userService = userService;
         }
 
         [HttpPost("getBudgetProposalList")]
@@ -21,57 +25,8 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
         {
             try
             {
-                var data = await _budgetProposalService.GetBudgetProposalsAsync(request.SearchKey, request.pageIndex, request.PageSize);
-                if (data != null)
-                {
-                    return Ok(data);
-                }
-                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-            catch (ArgumentNullException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
-            }
-        }
-        [HttpPost("getBudgetProposalNoPagingList")]
-        public async Task<IActionResult> GetBudgetProposalsNoPagingAsync(string? searchKey)
-        {
-            try
-            {
-                var data = await _budgetProposalService.GetBudgetProposalsAsync(searchKey);
-                if (data != null)
-                {
-                    return Ok(data);
-                }
-                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-            catch (ArgumentNullException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
-            }
-        }
-        [HttpGet("getBudgetProposalDetail")]
-        public async Task<IActionResult> GetBudgetProposalDetailAsync(Guid proposalId)
-        {
-            try
-            {
-                var data = await _budgetProposalService.GetBudgetProposalByIdAsync(proposalId);
+                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
+                var data = await _budgetProposalService.GetBudgetProposalsAsync(user,request.SearchKey, request.pageIndex, request.PageSize);
                 if (data != null)
                 {
                     return Ok(data);
@@ -87,6 +42,78 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 return NotFound(new { message = ex.Message });
             }
             catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
+            }
+        }
+        [HttpPost("getBudgetProposalNoPagingList")]
+        public async Task<IActionResult> GetBudgetProposalsNoPagingAsync(string? searchKey)
+        {
+            try
+            {
+                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
+                var data = await _budgetProposalService.GetBudgetProposalsAsync(user,searchKey);
+                if (data != null)
+                {
+                    return Ok(data);
+                }
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+            }
+            catch (UnauthorizedAccessException ex) // Handle permission errors
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
+            }
+        }
+        [HttpGet("getBudgetProposalDetail")]
+        public async Task<IActionResult> GetBudgetProposalDetailAsync(Guid proposalId)
+        {
+            try
+            {
+                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
+                var data = await _budgetProposalService.GetBudgetProposalByIdAsync(user, proposalId);
+                if (data != null)
+                {
+                    return Ok(data);
+                }
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+            }
+            catch (UnauthorizedAccessException ex) // Handle permission errors
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
@@ -114,8 +141,8 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                         Errors = errors
                     });
                 }
-
-                var propasal = await _budgetProposalService.CreateBudgetProposalAsync(proposalDto);
+                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
+                var propasal = await _budgetProposalService.CreateBudgetProposalAsync(user, proposalDto);
                 return Ok(new
                 {
                     Success = true,
@@ -131,6 +158,10 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                 return NotFound(new { message = ex.Message });
             }
             catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
@@ -158,7 +189,8 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                         Errors = errors
                     });
                 }
-                bool isSuccess= await _budgetProposalService.UpdateBudgetProposalAsync(id, newPropasal);
+                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
+                bool isSuccess= await _budgetProposalService.UpdateBudgetProposalAsync(user,id, newPropasal);
                 if (isSuccess)
                     return Ok(new
                     {
@@ -181,6 +213,10 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
@@ -191,7 +227,8 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
         {
             try
             {
-                var result = await _budgetProposalService.SoftDeleteBudgetProposalAsync(proposalId);
+                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
+                var result = await _budgetProposalService.SoftDeleteBudgetProposalAsync(user, proposalId);
                 return result ? Ok(new { message = "Xóa thành công." }) : NotFound(new { message = "Không tìm thấy ." });
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors

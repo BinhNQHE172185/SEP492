@@ -20,28 +20,25 @@ namespace LMCM_BE.Services.BudgetPropasalService
         private readonly IGoogleDriveService _googleDriveService;
         private readonly IMapper _mapper;
         private readonly IFileHelper _fileHelper;
-        private readonly IUserRepository _userRepositoriy;
         private readonly IUnitOfWork _unitOfWork;
 
         public BudgetProposalService(IBudgetProposalRepository budgetPropasalRepository, IContractRepository contractRepository,
             IGoogleDriveService googleDriveService, IMapper mapper, IFileHelper fileHelper,
-            IUserRepository userRepository, IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork)
         {
             _budgetProposalRepository = budgetPropasalRepository;
             _contractRepository = contractRepository;
             _googleDriveService = googleDriveService;
             _mapper = mapper;
             _fileHelper = fileHelper;
-            _userRepositoriy = userRepository;
             _unitOfWork = unitOfWork;
         }
-        public async Task<bool> CreateBudgetProposalAsync(BudgetProposalInsertDto proposal)
+        public async Task<bool> CreateBudgetProposalAsync(UserProfileResponseDto user, BudgetProposalInsertDto proposal)
         {
             if (proposal == null)
             {
                 throw new ArgumentNullException(nameof(proposal), "Dữ liệu tờ trình là bắt buộc.");
             }
-            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new UnauthorizedAccessException("Không tìm thấy người dùng");
             // Step 1: Upload contract file to Google Drive (if provided)
@@ -80,7 +77,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
             }
         }
 
-        public async Task<BudgetProposalDetailDto> GetBudgetProposalByIdAsync(Guid proposalId)
+        public async Task<BudgetProposalDetailDto> GetBudgetProposalByIdAsync(UserProfileResponseDto user, Guid proposalId)
         {
             if (proposalId == Guid.Empty)
                 throw new ArgumentNullException("Proposal ID bị trống.", nameof(proposalId));
@@ -90,7 +87,6 @@ namespace LMCM_BE.Services.BudgetPropasalService
             if (budgetProposal == null)
                 throw new KeyNotFoundException($"Không tìm thấy tờ trình với ID: {proposalId}");
 
-            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new UnauthorizedAccessException("Không tìm thấy người dùng");
             if (user.Id != budgetProposal.AuthorId && user.Roles.Contains("Staff"))
@@ -101,13 +97,12 @@ namespace LMCM_BE.Services.BudgetPropasalService
             return budgetProposalDto;
         }
 
-        public async Task<PagedResult<BudgetProposalListDto>> GetBudgetProposalsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<PagedResult<BudgetProposalListDto>> GetBudgetProposalsAsync(UserProfileResponseDto user, string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
-            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
             bool isHod=false;
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("Không tìm thấy người dùng");
-            if (!user.Roles.Contains("Head of Department")) isHod=true;
+            if (user.Roles.Contains("Head of Department")) isHod=true;
 
             var (items, totalCount) = await _budgetProposalRepository.GetBudgetProposalsAsync(isHod, user.Id, searchKey, pageIndex, pageSize);
             var data = _mapper.Map<List<BudgetProposalListDto>>(items);
@@ -121,13 +116,12 @@ namespace LMCM_BE.Services.BudgetPropasalService
             };
         }
 
-        public async Task<List<BudgetProposalListDto>> GetBudgetProposalsAsync(string? searchKey)
+        public async Task<List<BudgetProposalListDto>> GetBudgetProposalsAsync(UserProfileResponseDto user, string? searchKey)
         {
-            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
             bool isHod = false;
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("Không tìm thấy người dùng");
-            if (!user.Roles.Contains("Head of Department")) isHod = true;
+            if (user.Roles.Contains("Head of Department")) isHod = true;
 
             var items= await _budgetProposalRepository.GetBudgetProposalsAsync(isHod,user.Id,searchKey);
 
@@ -136,14 +130,13 @@ namespace LMCM_BE.Services.BudgetPropasalService
             return data;
         }
 
-        public async Task<bool> SoftDeleteBudgetProposalAsync(Guid proposalId)
+        public async Task<bool> SoftDeleteBudgetProposalAsync(UserProfileResponseDto user, Guid proposalId)
         {
             var budgetProposal = await _budgetProposalRepository.GetBudgetProposalByIdAsync(proposalId);
 
             if (budgetProposal == null)
                 throw new KeyNotFoundException("Không tìm thấy dữ liệu.");
 
-            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new UnauthorizedAccessException("Không tìm thấy người dùng");
             if (user.Id != budgetProposal.AuthorId && user.Roles.Contains("Staff"))
@@ -167,7 +160,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
             }
         }
 
-        public async Task<bool> UpdateBudgetProposalAsync(Guid proposalId, BudgetProposalUpdateDto newProposal)
+        public async Task<bool> UpdateBudgetProposalAsync(UserProfileResponseDto user, Guid proposalId, BudgetProposalUpdateDto newProposal)
         {
             if (proposalId == Guid.Empty)
                 throw new ArgumentNullException("Id không được trống.", nameof(proposalId));
@@ -180,7 +173,6 @@ namespace LMCM_BE.Services.BudgetPropasalService
             if (proposal == null)
                 throw new KeyNotFoundException($"Không tìm thấy tờ trình với ID: {proposalId}");
 
-            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("Không tìm thấy người dùng");
             if (user.Id != proposal.AuthorId && user.Roles.Contains("Staff"))

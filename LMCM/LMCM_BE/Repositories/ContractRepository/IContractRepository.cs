@@ -1,20 +1,16 @@
-﻿using LMCM_BE.DTOs.BudgetProposalDtos;
-using LMCM_BE.DTOs.ContractDtos;
-using LMCM_BE.DTOs.ContractorDtos;
-using LMCM_BE.DTOs.ShareDtos;
-using LMCM_BE.Models;
+﻿using LMCM_BE.Models;
 
 namespace LMCM_BE.Repositories.ContractRepository
 {
     public interface IContractRepository
     {
-        Task<bool> CreateContract(ContractInsertDto contract);
-        Task<ContractDetailDto> GetContractByIdAsync(Guid contractId);
-        Task<PagedResult<ContractListDto>> GetContractsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
-        Task<List<ContractListDto>> GetContractsAsync(string? searchKey);
+        Task<bool> CreateContract(Contract contract);
+        Task<Contract> GetContractByIdAsync(Guid contractId);
+        Task<(List<Contract>,int totalCount)> GetContractsAsync(bool isHod, Guid userId,string? searchKey, int pageIndex = 1, int pageSize = 10);
+        Task<List<Contract>> GetContractsAsync(bool isHod, Guid userId, string? searchKey);
         Task<bool> HasActiveContractsAsync(Guid contractorId);
         Task<bool> HasActiveConntractsAsync(Guid proposalId);
-        Task<bool> SoftDeleteContractAsync(Guid contractId);
-        Task<Guid?> UpdateContractAsync(Guid contractId, ContractUpdateDto newContract);
+        Task<bool> SoftDeleteContractAsync(Contract contract);
+        Task<bool> UpdateContractAsync(Contract newContract);
     }
 }

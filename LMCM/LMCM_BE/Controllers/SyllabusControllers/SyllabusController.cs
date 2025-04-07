@@ -28,9 +28,17 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 }
                 return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpGet("getSyllabusesListNoPaging")]
@@ -45,9 +53,17 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 }
                 return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpPost("getSyllabusChangeHistoryList")]
@@ -62,9 +78,25 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 }
                 return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidDataException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpGet("getSyllabusDetail")]
@@ -79,9 +111,25 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 }
                 return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidDataException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpDelete("{syllabusId}")]
@@ -97,11 +145,19 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 }
                 return NotFound(new { message = "Không tìm thấy giáo trình." });
             }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidDataException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });
             }
-            catch (InvalidOperationException ex)
+            catch (ArgumentNullException ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
@@ -142,6 +198,10 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 }
             }
             catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidDataException ex)
             {
                 return BadRequest(new { message = ex.Message });
             }

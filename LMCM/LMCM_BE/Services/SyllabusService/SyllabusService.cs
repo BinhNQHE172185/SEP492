@@ -96,7 +96,7 @@ namespace LMCM_BE.Services.SyllabusService
             var subject = await _subjectRepository.GetSubjectByIdAsync((Guid)subjectId);
 
             if (subject == null)
-                throw new InvalidOperationException("Không tìm thấy môn học.");
+                throw new KeyNotFoundException("Không tìm thấy môn học.");
             var (data, totalCount) = await _syllabusRepository.GetSyllabusChangeHistoriesAsync(subject.SubjectCode, searchKey, pageIndex, pageSize);
 
             var dataDtos = _mapper.Map<List<SyllabusListViewDto>>(data);
@@ -188,7 +188,7 @@ namespace LMCM_BE.Services.SyllabusService
             {
                 if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
                 {
-                    throw new Exception($"Định dạng Excel trang Syllabus không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
+                    throw new InvalidDataException($"Định dạng Excel trang Syllabus không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
                 }
             }
 
@@ -257,7 +257,7 @@ namespace LMCM_BE.Services.SyllabusService
             }
             else
             {
-                throw new Exception("Subject not found for syllabus.");
+                throw new KeyNotFoundException("Subject not found for syllabus.");
             }
         }
         private async Task<List<ScheduleInsertDto>> ImportScheduleSheet(ExcelWorksheet worksheet)
@@ -269,7 +269,7 @@ namespace LMCM_BE.Services.SyllabusService
             {
                 if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
                 {
-                    throw new Exception($"Định dạng Excel trang Schedule không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
+                    throw new InvalidDataException($"Định dạng Excel trang Schedule không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
                 }
             }
 
@@ -298,7 +298,7 @@ namespace LMCM_BE.Services.SyllabusService
 
             if (!scheduleList.Any())
             {
-                throw new Exception("Không tìm thấy dữ liệu lịch trình trong trang.");
+                throw new InvalidDataException("Không tìm thấy dữ liệu lịch trình trong trang.");
             }
 
             return scheduleList;
@@ -312,7 +312,7 @@ namespace LMCM_BE.Services.SyllabusService
             {
                 if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
                 {
-                    throw new Exception($"Định dạng Excel trang CLO không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
+                    throw new InvalidDataException($"Định dạng Excel trang CLO không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
                 }
             }
 
@@ -333,7 +333,7 @@ namespace LMCM_BE.Services.SyllabusService
 
             if (!cloList.Any())
             {
-                throw new Exception("Không tìm thấy CLOs trong trang.");
+                throw new InvalidDataException("Không tìm thấy CLOs trong trang.");
             }
 
             return cloList;
@@ -347,7 +347,7 @@ namespace LMCM_BE.Services.SyllabusService
             {
                 if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
                 {
-                    throw new Exception($"Định dạng Excel trang Grading Structure không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
+                    throw new InvalidDataException($"Định dạng Excel trang Grading Structure không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
                 }
             }
 
@@ -380,7 +380,7 @@ namespace LMCM_BE.Services.SyllabusService
 
             if (!gradingList.Any())
             {
-                throw new Exception("Không tìm thấy dữ liệu cấu trúc điểm trong trang.");
+                throw new InvalidDataException("Không tìm thấy dữ liệu cấu trúc điểm trong trang.");
             }
 
             return gradingList;
@@ -394,7 +394,7 @@ namespace LMCM_BE.Services.SyllabusService
             {
                 if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
                 {
-                    throw new Exception($"Định dạng Excel trang Constructivist Question không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
+                    throw new InvalidDataException($"Định dạng Excel trang Constructivist Question không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
                 }
             }
 
@@ -416,7 +416,7 @@ namespace LMCM_BE.Services.SyllabusService
             if (!questionList.Any())
             {
                 return null;
-                //throw new Exception("Không tìm thấy dữ liệu câu hỏi trong trang.");
+                //throw new InvalidDataException("Không tìm thấy dữ liệu câu hỏi trong trang.");
             }
 
             return questionList;
@@ -430,7 +430,7 @@ namespace LMCM_BE.Services.SyllabusService
             {
                 if (worksheet.Cells[1, col].Text.Trim() != expectedHeaders[col - 1])
                 {
-                    throw new Exception($"Định dạng Excel trang Materials không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
+                    throw new InvalidDataException($"Định dạng Excel trang Materials không hợp lệ tại cột {worksheet.Cells[1, col].Text.Trim()} phải là {expectedHeaders[col - 1]}. Vui lòng sử dụng mẫu đúng.");
                 }
             }
 
@@ -473,7 +473,7 @@ namespace LMCM_BE.Services.SyllabusService
             if (!materialList.Any())
             {
                 return null;
-                //throw new Exception("Không tìm thấy dữ liệu câu hỏi trong trang.");
+                //throw new InvalidDataException("Không tìm thấy dữ liệu câu hỏi trong trang.");
             }
 
             return materialList;

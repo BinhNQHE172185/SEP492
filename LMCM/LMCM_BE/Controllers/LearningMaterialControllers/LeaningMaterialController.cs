@@ -19,15 +19,10 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
     public class LearningMaterialController : ControllerBase
     {
         private readonly ILearningMaterialService _learningMaterialService;
-        private readonly ISyllabusService _syllabusService;
 
-        public LearningMaterialController(
-            ILearningMaterialService learningMaterialService,
-            ISyllabusService syllabusService
-            )
+        public LearningMaterialController(ILearningMaterialService learningMaterialService)
         {
             _learningMaterialService = learningMaterialService;
-            _syllabusService = syllabusService;
         }
 
         [HttpPost("getPagedMaterialsList")]
@@ -42,9 +37,17 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
                 }
                 return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
 
@@ -60,9 +63,17 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
                 }
                 return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
         [HttpGet("{id}")]
@@ -77,9 +88,17 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
                 }
                 return Ok(material);
             }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
 
@@ -88,21 +107,30 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
         {
             try
             {
-                var syllabus=await _syllabusService.GetSyllabusByIdAsync(material.SyllabusId);
-                if (syllabus == null) BadRequest(new { message = "Không tìm thấy syllabus." });
-                Guid? materialId = await _learningMaterialService.InsertLearningMaterialAsync(material);
-                if (materialId.HasValue)
+                bool isSuccess = await _learningMaterialService.InsertLearningMaterialAsync(material);
+                if (isSuccess)
                     return Ok(new
                     {
-                        message = "Thêm thành công.",
-                        Data = materialId,
+                        message = "Thêm thành công."
 
                     });
                 else return BadRequest(new { message = "Thêm thất bại. Vui lòng kiểm tra dữ liệu đầu vào." });
             }
+            catch (InvalidDataException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
 
@@ -111,12 +139,11 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
         {
             try
             {
-                Guid? materialId = await _learningMaterialService.UpdateLearningMaterialAsync(id, material);
-                if (materialId.HasValue)
+                bool isSuccess = await _learningMaterialService.UpdateLearningMaterialAsync(id, material);
+                if (isSuccess)
                     return Ok(new
                     {
-                        message = "Update thành công.",
-                        Data = materialId,
+                        message = "Update thành công."
 
                     });
                 else
@@ -124,9 +151,25 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
                     return NotFound(new { message = "Dữ liệu không được tìm thấy." });
                 }
             }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidDataException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
 
@@ -142,9 +185,21 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
                 }
                 return Ok(new { message = "Xóa tài liệu thành công." });
             }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
 
@@ -162,7 +217,7 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
     }

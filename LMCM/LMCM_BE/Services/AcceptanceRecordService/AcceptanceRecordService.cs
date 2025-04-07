@@ -72,7 +72,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new UnauthorizedAccessException("Không tìm thấy người dùng");
 
-            if (await _contractRepository.GetContractByIdAsync(dto.ContractId) == null)
+            if (await _contractRepository.GetActiveContractByIdAsync(dto.ContractId) == null)
             {
                 throw new KeyNotFoundException("Hợp đồng được chọn không tồn tại");
             }
@@ -123,7 +123,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
             if (acceptanceRecord == null)
                 throw new KeyNotFoundException("Không tìm thấy biên bản nghiệm thu.");
 
-            if (await _contractRepository.GetContractByIdAsync(dto.ContractId) == null)
+            if (await _contractRepository.GetActiveContractByIdAsync(dto.ContractId) == null)
             {
                 throw new KeyNotFoundException("Hợp đồng được chọn không tồn tại");
             }

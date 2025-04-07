@@ -67,6 +67,13 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
         {
             return await _dbContext.AcceptanceRecords
                .Include(ar => ar.Author)
+               .FirstOrDefaultAsync(ar => ar.AcceptanceId == acceptanceId);
+        }
+
+        public async Task<AcceptanceRecord?> GetActiveAcceptanceRecordByIdAsync(Guid acceptanceId)
+        {
+            return await _dbContext.AcceptanceRecords
+               .Include(ar => ar.Author)
                .FirstOrDefaultAsync(ar => ar.AcceptanceId == acceptanceId && ar.Status == "Active");
         }
 

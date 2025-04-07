@@ -53,7 +53,7 @@ namespace LMCM_BE.Repositories.ContractRepository
             return items;
         }
 
-        public async Task<Contract> GetContractByIdAsync(Guid contractId)
+        public async Task<Contract> GetContractDetailByIdAsync(Guid contractId)
         {
             var contract = await _dbContext.Contracts
                 .Where(s => s.ContractId == contractId)
@@ -63,6 +63,18 @@ namespace LMCM_BE.Repositories.ContractRepository
                 .SingleOrDefaultAsync();
 
             return contract;
+        }
+        public async Task<Contract?> GetActiveContractByIdAsync(Guid contractId)
+        {
+            return await _dbContext.Contracts
+                .Include(s => s.Author)
+                .FirstOrDefaultAsync(s => s.ContractId == contractId && s.Status == "Active");
+        }
+        public async Task<Contract?> GetContractByIdAsync(Guid contractId)
+        {
+            return await _dbContext.Contracts
+                .Include(s => s.Author)
+                .FirstOrDefaultAsync(s => s.ContractId == contractId);
         }
 
         public async Task<(List<Contract>, int totalCount)> GetContractsAsync(bool isHod, Guid userId, string? searchKey, int pageIndex = 1, int pageSize = 10)

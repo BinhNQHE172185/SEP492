@@ -11,6 +11,6 @@ namespace LMCM_BE.Services.BudgetPropasalService
         Task<List<BudgetProposalListDto>> GetBudgetProposalsAsync(string? searchKey);
         Task<BudgetProposalDetailDto> GetBudgetProposalByIdAsync(Guid proposalId);
         Task<bool> SoftDeleteBudgetProposalAsync(Guid proposalId);
-        Task<Guid?> UpdateBudgetProposalAsync(Guid propasalId, BudgetProposalUpdateDto newProposal);
+        Task<bool> UpdateBudgetProposalAsync(Guid propasalId, BudgetProposalUpdateDto newProposal);
     }
 }

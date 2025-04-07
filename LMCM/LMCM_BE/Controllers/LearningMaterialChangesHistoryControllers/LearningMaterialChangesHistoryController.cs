@@ -1,14 +1,7 @@
-﻿using LMCM_BE.DTOs.AcceptanceRecordDtos;
-using LMCM_BE.DTOs.LearningMaterialDtos;
+﻿using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
-using LMCM_BE.DTOs.UserDtos;
-using LMCM_BE.Models;
 using LMCM_BE.Services.ContractService;
 using LMCM_BE.Services.LearningMaterialChangesHistoryService;
-using LMCM_BE.Services.LearningMaterialService;
-using LMCM_BE.Services.SyllabusService;
-using LMCM_BE.Services.UserService;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -20,16 +13,14 @@ namespace LMCM_BE.Controllers.LearningMaterialChangesHistoryControllers
     {
         private readonly ILearningMaterialChangesHistorySerivce _changesService;
         private readonly IContractService _contractService;
-        private readonly IUserService _userService;
 
         public LearningMaterialChangesHistoryController(
             ILearningMaterialChangesHistorySerivce changesService,
-            IContractService contractService,IUserService userService
+            IContractService contractService
             )
         {
             _changesService = changesService;
             _contractService = contractService;
-            _userService = userService;
         }
 
         [HttpPost("getChangesHistoryList")]
@@ -79,8 +70,7 @@ namespace LMCM_BE.Controllers.LearningMaterialChangesHistoryControllers
             }
             if (historyDto.ContractId.HasValue)
             {
-                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
-                var contract = await _contractService.GetContractByIdAsync(user,historyDto.ContractId.Value);
+                var contract = await _contractService.GetContractByIdAsync(historyDto.ContractId.Value);
                 if (contract == null)
                     return BadRequest(new { message = "Invalid ContractId." });
             }

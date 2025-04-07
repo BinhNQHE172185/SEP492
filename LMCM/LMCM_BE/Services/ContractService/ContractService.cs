@@ -6,6 +6,7 @@ using LMCM_BE.Models;
 using LMCM_BE.Repositories.AcceptanceRecordRepository;
 using LMCM_BE.Repositories.ContractRepository;
 using LMCM_BE.Services.GoogleDriveService;
+using LMCM_BE.Services.UserService;
 using LMCM_BE.UnitOfWork;
 using LMCM_BE.Utilities;
 
@@ -19,9 +20,11 @@ namespace LMCM_BE.Services.ContractService
         private readonly IFileHelper _fileHelper;
         private readonly IAcceptanceRecordRepository _acceptanceRecordRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserService _userService;
 
         public ContractService(IContractRepository contractRepository, IGoogleDriveService googleDriveService,
-            IMapper mapper, IFileHelper fileHelper, IAcceptanceRecordRepository acceptanceRecordRepository,IUnitOfWork unitOfWork)
+            IMapper mapper, IFileHelper fileHelper, IAcceptanceRecordRepository acceptanceRecordRepository,
+            IUnitOfWork unitOfWork,IUserService userService)
         {
             _contractRepository = contractRepository;
             _googleDriveService = googleDriveService;
@@ -29,9 +32,11 @@ namespace LMCM_BE.Services.ContractService
             _fileHelper = fileHelper;
             _acceptanceRecordRepository = acceptanceRecordRepository;
             _unitOfWork = unitOfWork;
+            _userService = userService;
         }
-        public async Task<bool> CreateContract(UserProfileResponseDto user, ContractInsertDto contractDto)
+        public async Task<bool> CreateContract( ContractInsertDto contractDto)
         {
+            UserProfileResponseDto user =await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
             // Step 1: Upload contract file to Google Drive (if provided)
@@ -68,7 +73,7 @@ namespace LMCM_BE.Services.ContractService
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<ContractDetailDto> GetContractByIdAsync(UserProfileResponseDto user, Guid contractId)
+        public async Task<ContractDetailDto> GetContractByIdAsync( Guid contractId)
         {
             if (contractId == Guid.Empty)
                 throw new ArgumentNullException("ID bị trống.", nameof(contractId));
@@ -76,6 +81,7 @@ namespace LMCM_BE.Services.ContractService
             if (contract == null)
                 throw new KeyNotFoundException($"Không tìm thấy hợp đồn với ID: {contractId}");
 
+            UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("Không tìm thấy người dùng");
             if (user.Id != contract.AuthorId && user.Roles.Contains("Staff"))
@@ -87,9 +93,10 @@ namespace LMCM_BE.Services.ContractService
             return contractDto;
         }
 
-        public async Task<PagedResult<ContractListDto>> GetContractsAsync(UserProfileResponseDto user, string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<PagedResult<ContractListDto>> GetContractsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             bool isHod = false;
+            UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("Không tìm thấy người dùng");
             if (user.Roles.Contains("Head of Department")) isHod = true;
@@ -106,9 +113,10 @@ namespace LMCM_BE.Services.ContractService
             };
         }
 
-        public async Task<List<ContractListDto>> GetContractsAsync(UserProfileResponseDto user,string? searchKey)
+        public async Task<List<ContractListDto>> GetContractsAsync(string? searchKey)
         {
             bool isHod = false;
+            UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("Không tìm thấy người dùng");
             if (user.Roles.Contains("Head of Department")) isHod = true;
@@ -120,13 +128,14 @@ namespace LMCM_BE.Services.ContractService
             return data;
         }
 
-        public async Task<bool> SoftDeleteContractAsync(UserProfileResponseDto user, Guid contractId)
+        public async Task<bool> SoftDeleteContractAsync(Guid contractId)
         {
             var contract = await _contractRepository.GetContractByIdAsync(contractId);
 
             if (contract == null)
                 throw new KeyNotFoundException("Không tìm thấy dữ liệu.");
 
+            UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new UnauthorizedAccessException("Không tìm thấy người dùng");
             if (user.Id != contract.AuthorId && user.Roles.Contains("Staff"))
@@ -151,7 +160,7 @@ namespace LMCM_BE.Services.ContractService
             }
         }
 
-        public async Task<bool> UpdateContractAsync(UserProfileResponseDto user, Guid contractId, ContractUpdateDto newContract)
+        public async Task<bool> UpdateContractAsync( Guid contractId, ContractUpdateDto newContract)
         {
             if (contractId == Guid.Empty)
                 throw new ArgumentNullException("Id không được trống.", nameof(contractId));
@@ -164,6 +173,7 @@ namespace LMCM_BE.Services.ContractService
             if (contract == null)
                 throw new KeyNotFoundException($"Không tìm thấy hợp đồng với ID: {contractId}");
 
+            UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("Không tìm thấy người dùng");
             if (user.Id != contract.AuthorId && user.Roles.Contains("Staff"))

@@ -2,7 +2,6 @@
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Services.BudgetPropasalService;
-using LMCM_BE.Services.UserService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMCM_BE.Controllers.BudgetPropasalControllers
@@ -12,12 +11,10 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
     public class BudgetProposalController : Controller
     {
         private readonly IBudgetProposalService _budgetProposalService;
-        private readonly IUserService _userService;
 
-        public BudgetProposalController(IBudgetProposalService budgetProposalService,IUserService userService)
+        public BudgetProposalController(IBudgetProposalService budgetProposalService)
         {
             _budgetProposalService = budgetProposalService; 
-            _userService = userService;
         }
 
         [HttpPost("getBudgetProposalList")]
@@ -25,8 +22,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
         {
             try
             {
-                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
-                var data = await _budgetProposalService.GetBudgetProposalsAsync(user,request.SearchKey, request.pageIndex, request.PageSize);
+                var data = await _budgetProposalService.GetBudgetProposalsAsync(request.SearchKey, request.pageIndex, request.PageSize);
                 if (data != null)
                 {
                     return Ok(data);
@@ -59,8 +55,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
         {
             try
             {
-                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
-                var data = await _budgetProposalService.GetBudgetProposalsAsync(user,searchKey);
+                var data = await _budgetProposalService.GetBudgetProposalsAsync(searchKey);
                 if (data != null)
                 {
                     return Ok(data);
@@ -93,8 +88,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
         {
             try
             {
-                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
-                var data = await _budgetProposalService.GetBudgetProposalByIdAsync(user, proposalId);
+                var data = await _budgetProposalService.GetBudgetProposalByIdAsync(proposalId);
                 if (data != null)
                 {
                     return Ok(data);
@@ -141,8 +135,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                         Errors = errors
                     });
                 }
-                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
-                var propasal = await _budgetProposalService.CreateBudgetProposalAsync(user, proposalDto);
+                var propasal = await _budgetProposalService.CreateBudgetProposalAsync(proposalDto);
                 return Ok(new
                 {
                     Success = true,
@@ -189,8 +182,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
                         Errors = errors
                     });
                 }
-                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
-                bool isSuccess= await _budgetProposalService.UpdateBudgetProposalAsync(user,id, newPropasal);
+                bool isSuccess= await _budgetProposalService.UpdateBudgetProposalAsync(id, newPropasal);
                 if (isSuccess)
                     return Ok(new
                     {
@@ -227,8 +219,7 @@ namespace LMCM_BE.Controllers.BudgetPropasalControllers
         {
             try
             {
-                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
-                var result = await _budgetProposalService.SoftDeleteBudgetProposalAsync(user, proposalId);
+                var result = await _budgetProposalService.SoftDeleteBudgetProposalAsync(proposalId);
                 return result ? Ok(new { message = "Xóa thành công." }) : NotFound(new { message = "Không tìm thấy ." });
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors

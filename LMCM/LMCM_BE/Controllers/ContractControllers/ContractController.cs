@@ -1,11 +1,7 @@
-﻿using LMCM_BE.DTOs.BudgetProposalDtos;
-using LMCM_BE.DTOs.ContractDtos;
+﻿using LMCM_BE.DTOs.ContractDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.UserDtos;
-using LMCM_BE.Repositories.ContractRepository;
-using LMCM_BE.Services.AcceptanceRecordService;
 using LMCM_BE.Services.ContractService;
-using LMCM_BE.Services.UserService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMCM_BE.Controllers.ContractControllers
@@ -15,12 +11,10 @@ namespace LMCM_BE.Controllers.ContractControllers
     public class ContractController : ControllerBase
     {
         private readonly IContractService _contractService;
-        private readonly IUserService _userService;
 
-        public ContractController(IContractService contractService, IUserService userService)
+        public ContractController(IContractService contractService)
         {
             _contractService = contractService;
-            _userService = userService; 
         }
 
         [HttpPost("getContractList")]
@@ -28,8 +22,7 @@ namespace LMCM_BE.Controllers.ContractControllers
         {
             try
             {
-                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
-                var data = await _contractService.GetContractsAsync(user,request.SearchKey, request.pageIndex, request.PageSize);
+                var data = await _contractService.GetContractsAsync(request.SearchKey, request.pageIndex, request.PageSize);
                 if (data != null)
                 {
                     return Ok(data);
@@ -62,8 +55,7 @@ namespace LMCM_BE.Controllers.ContractControllers
         {
             try
             {
-                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
-                var data = await _contractService.GetContractsAsync(user,searchKey);
+                var data = await _contractService.GetContractsAsync(searchKey);
                 if (data != null)
                 {
                     return Ok(data);
@@ -95,8 +87,7 @@ namespace LMCM_BE.Controllers.ContractControllers
                     });
                 }
 
-                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
-                var contract = await _contractService.CreateContract(user,contractDto);
+                var contract = await _contractService.CreateContract(contractDto);
                 return Ok(new
                 {
                     Success = true,
@@ -136,8 +127,7 @@ namespace LMCM_BE.Controllers.ContractControllers
         {
             try
             {
-                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
-                var data = await _contractService.GetContractByIdAsync(user, contractId);
+                var data = await _contractService.GetContractByIdAsync(contractId);
                 if (data != null)
                 {
                     return Ok(data);
@@ -178,8 +168,7 @@ namespace LMCM_BE.Controllers.ContractControllers
                     });
                 }
 
-                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
-                bool isSuccess = await _contractService.UpdateContractAsync(user,id, newContract);
+                bool isSuccess = await _contractService.UpdateContractAsync(id, newContract);
                 if (isSuccess)
                     return Ok(new
                     {
@@ -201,8 +190,7 @@ namespace LMCM_BE.Controllers.ContractControllers
         {
             try
             {
-                UserProfileResponseDto user = await _userService.GetProfileFromCookie();
-                var result = await _contractService.SoftDeleteContractAsync(user,contractId);
+                var result = await _contractService.SoftDeleteContractAsync(contractId);
                 return result ? Ok(new { message = "Xóa hợp đồng thành công." }) : NotFound(new { message = "Không tìm thấy ." });
             }
             catch (UnauthorizedAccessException ex) // Handle permission errors

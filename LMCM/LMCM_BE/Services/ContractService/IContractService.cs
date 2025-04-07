@@ -7,11 +7,11 @@ namespace LMCM_BE.Services.ContractService
 {
     public interface IContractService
     {
-        Task<bool> CreateContract(UserProfileResponseDto user, ContractInsertDto contractDto);
-        Task<ContractDetailDto> GetContractByIdAsync(UserProfileResponseDto user, Guid contractId);
-        Task<PagedResult<ContractListDto>> GetContractsAsync(UserProfileResponseDto user, string? searchKey, int pageIndex = 1, int pageSize = 10);
-        Task<List<ContractListDto>> GetContractsAsync(UserProfileResponseDto user, string? searchKey);
-        Task<bool> SoftDeleteContractAsync(UserProfileResponseDto user, Guid contractId);
-        Task<bool> UpdateContractAsync(UserProfileResponseDto user, Guid contractId, ContractUpdateDto newContract);
+        Task<bool> CreateContract(ContractInsertDto contractDto);
+        Task<ContractDetailDto> GetContractByIdAsync(Guid contractId);
+        Task<PagedResult<ContractListDto>> GetContractsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
+        Task<List<ContractListDto>> GetContractsAsync(string? searchKey);
+        Task<bool> SoftDeleteContractAsync(Guid contractId);
+        Task<bool> UpdateContractAsync(Guid contractId, ContractUpdateDto newContract);
     }
 }

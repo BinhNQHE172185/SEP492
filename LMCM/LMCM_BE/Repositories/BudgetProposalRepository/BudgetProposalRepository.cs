@@ -24,15 +24,18 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
 
             return true;
         }
-
         public async Task<BudgetProposal> GetBudgetProposalByIdAsync(Guid proposalId)
         {
             var budgetProposal = await _dbContext.BudgetProposals
-                .AsNoTracking()
                 .Include(s => s.Author)  
-                    .AsNoTracking()      
                 .Where(s => s.ProposalId == proposalId)
                 .SingleOrDefaultAsync();
+
+            // Detach the Author (User) entity to avoid tracking it
+            if (budgetProposal?.Author != null)
+            {
+                _dbContext.Entry(budgetProposal.Author).State = EntityState.Detached;
+            }
 
             return budgetProposal;
         }

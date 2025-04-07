@@ -9,6 +9,6 @@ namespace LMCM_BE.Services.DocumentTemplateService
         Task<PagedResult<DocumentTemplateListDto>> GetTemplatesAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<DocumentTemplateDetailDto> GetTemplateByIdAsync(Guid templateId);
         Task<bool> SoftDeleteTemplateAsync(Guid templateId);
-        Task<Guid?> UpdateTempalteAsync(Guid templateId, DocumentTemplateUpdateDto newTemplate);
+        Task<bool> UpdateTempalteAsync(Guid templateId, DocumentTemplateUpdateDto newTemplate);
     }
 }

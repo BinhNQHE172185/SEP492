@@ -22,7 +22,7 @@ namespace LMCM_BE.Services.ContractService
         private readonly IFileHelper _fileHelper;
         private readonly IAcceptanceRecordRepository _acceptanceRecordRepository;
         private readonly IBudgetProposalRepository _budgetProposalRepository;
-        private readonly IContractorRepository _contractorRepository
+        private readonly IContractorRepository _contractorRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
 

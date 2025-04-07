@@ -1,7 +1,6 @@
-﻿using LMCM_BE.Models;
+﻿using LMCM_BE.DTOs.ContractValueItemDtos;
 using LMCM_BE.Services.ContractValueItemService;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
 namespace LMCM_BE.Controllers.ContractValueItemControllers
 {
@@ -31,17 +30,25 @@ namespace LMCM_BE.Controllers.ContractValueItemControllers
         }
 
         [HttpPut("update")]
-        public async Task<IActionResult> UpdateContractValueItems([FromBody] List<ContractValueItem> newItems)
+        public async Task<IActionResult> UpdateContractValueItems([FromBody] List<ContractValueItemDto> newItems)
         {
             try
             {
-                if (newItems == null || newItems.Count == 0)
+                if (!ModelState.IsValid)
                 {
-                    return BadRequest(new { message = "Danh sách không hợp lệ hoặc trống." });
-                }
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                  .Select(e => e.ErrorMessage)
+                                                  .ToList();
 
-                await _contractValueItemService.UpdateAsync(newItems);
-                return Ok(new { message = "Cập nhật danh sách giá trị hợp đồng thành công." });
+                    return BadRequest(new
+                    {
+                        Success = false,
+                        Message = "Dữ liệu đầu vào không hợp lệ.",
+                        Errors = errors
+                    });
+                }
+                var result = await _contractValueItemService.UpdateAsync(newItems);
+                return result != null ? Ok(result) : BadRequest(new { message = "Không thể cập nhật danh sách giá trị hợp đồng." });
             }
             catch (ArgumentException ex)
             {

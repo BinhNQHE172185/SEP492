@@ -5,6 +5,8 @@ namespace LMCM_BE.Repositories.ContractValueItemRepository
     public interface IContractValueItemRepository
     {
         Task<List<ContractValueItem>> GetListAsync();
-        Task UpdateAsync(List<ContractValueItem> newItems);
+        Task DeleteRangeAsync(List<ContractValueItem> toDelete);
+        Task AddRangeAsync(List<ContractValueItem> toAdd);
+        Task UpdateRangeAsync(List<ContractValueItem> toUpdate);
     }
 }

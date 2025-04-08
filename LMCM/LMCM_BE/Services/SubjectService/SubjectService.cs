@@ -103,7 +103,49 @@ namespace LMCM_BE.Services.SubjectService
 
                 var subjects = _mapper.Map<List<Subject>>(subjectDtos);
 
-                var isSuccess = await _subjectRepository.ImportSubjectsAsync(subjects);
+                // Get existing subjects from DB (as a dictionary for fast lookup)
+                var existingSubjects = await _subjectRepository.GetSubjectsDictonaryAsync();
+
+                var subjectCodesToKeep = subjects.Select(s => s.SubjectCode).ToHashSet();
+                var newSubjects = new List<Subject>();
+                var updatedSubjects = new List<Subject>();
+
+                foreach (var subject in subjects)
+                {
+                    if (existingSubjects.TryGetValue(subject.SubjectCode, out var existingSubject))
+                    {
+                        if (await UpdateSubjectIfChangedAsync(existingSubject, subject))
+                        {
+                            existingSubject.UpdatedAt = DateTime.UtcNow;
+                            updatedSubjects.Add(existingSubject);
+                        }
+                    }
+                    else
+                    {
+                        var newSubject = subject;
+                        newSubject.SubjectId = Guid.NewGuid();
+                        newSubject.Status = "Active";
+                        newSubject.CreatedAt = DateTime.UtcNow;
+                        newSubject.UpdatedAt = DateTime.UtcNow;
+                        newSubjects.Add(newSubject);
+                    }
+                }
+
+                // Identify subjects to mark as inactive
+                var subjectsToDeactivate = existingSubjects.Values.Where(s => !subjectCodesToKeep.Contains(s.SubjectCode)).ToList();
+                foreach (var subject in subjectsToDeactivate)
+                {
+                    subject.Status = "Inactive";
+                    subject.UpdatedAt = DateTime.UtcNow;
+                    updatedSubjects.Add(subject);
+                }
+
+                // Apply updates and inserts
+                if (updatedSubjects.Any())
+                    await _subjectRepository.UpdateSubjectsAsync(updatedSubjects);
+
+                if (newSubjects.Any())
+                    await _subjectRepository.AddSubjectsAsync(newSubjects);
 
                 await _unitOfWork.CommitAsync();
 
@@ -115,7 +157,48 @@ namespace LMCM_BE.Services.SubjectService
                 throw new Exception(ex.Message);
             }
         }
+        private async Task<bool> UpdateSubjectIfChangedAsync(Subject existingSubject, Subject newSubject)
+        {
+            bool isUpdated = false;
 
+            if (existingSubject.SubjectName != newSubject.SubjectName)
+            {
+                existingSubject.SubjectName = newSubject.SubjectName;
+                isUpdated = true;
+            }
+            if (existingSubject.SubjectNameEnglish != newSubject.SubjectNameEnglish)
+            {
+                existingSubject.SubjectNameEnglish = newSubject.SubjectNameEnglish;
+                isUpdated = true;
+            }
+            if (existingSubject.IsConstructivist != newSubject.IsConstructivist)
+            {
+                existingSubject.IsConstructivist = newSubject.IsConstructivist;
+                isUpdated = true;
+            }
+            if (existingSubject.Method != newSubject.Method)
+            {
+                existingSubject.Method = newSubject.Method;
+                isUpdated = true;
+            }
+            if (existingSubject.Duration != newSubject.Duration)
+            {
+                existingSubject.Duration = newSubject.Duration;
+                isUpdated = true;
+            }
+            if (existingSubject.Reality != newSubject.Reality)
+            {
+                existingSubject.Reality = newSubject.Reality;
+                isUpdated = true;
+            }
+            if (existingSubject.Status != "Active")
+            {
+                existingSubject.Status = "Active";
+                isUpdated = true;
+            }
+
+            return await Task.FromResult(isUpdated);
+        }
         public async Task<Subject> GetSubjectByCodeAsync(string subjectCode)
         {
             if (string.IsNullOrEmpty(subjectCode))
@@ -137,10 +220,12 @@ namespace LMCM_BE.Services.SubjectService
             {
                 throw new InvalidOperationException("Không thể xóa môn học khi có thực thể liên quan đang hoạt động.");
             }
+            subject.Status = "Inactive";
+            subject.UpdatedAt = DateTime.UtcNow;
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                await _subjectRepository.SoftDeleteSubjectAsync(subject);
+                await _subjectRepository.UpdateSubjectAsync(subject);
                 await _unitOfWork.CommitAsync();
                 return true;
             }

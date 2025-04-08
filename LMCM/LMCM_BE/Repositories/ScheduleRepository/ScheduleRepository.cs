@@ -1,10 +1,6 @@
-﻿using AutoMapper;
-using LMCM_BE.DbContext;
-using LMCM_BE.DTOs.CLODtos;
-using LMCM_BE.DTOs.ScheduleDtos;
+﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace LMCM_BE.Repositories.ScheduleRepository
 {

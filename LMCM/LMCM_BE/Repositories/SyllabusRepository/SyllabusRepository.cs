@@ -1,11 +1,5 @@
-﻿using AutoMapper;
-using LMCM_BE.DbContext;
+﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
-using LMCM_BE.Repositories.CLORepository;
-using LMCM_BE.Repositories.ConstructivistQuestionRepository;
-using LMCM_BE.Repositories.GradingStructureRepository;
-using LMCM_BE.Repositories.LearningMaterialRepository;
-using LMCM_BE.Repositories.ScheduleRepository;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.SyllabusRepository

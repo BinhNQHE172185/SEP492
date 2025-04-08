@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using LMCM_BE.DbContext;
-using LMCM_BE.DTOs.CLODtos;
+﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
 using Microsoft.EntityFrameworkCore;
 

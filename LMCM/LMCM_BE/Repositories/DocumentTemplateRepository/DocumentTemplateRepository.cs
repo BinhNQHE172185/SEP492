@@ -35,7 +35,7 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
 
             query = query.OrderByDescending(s => s.UpdatedAt);
 
-            query = query.Where(s => s.Status == "Active");
+            query = query.Where(s => s.Status != "Deleted");
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {

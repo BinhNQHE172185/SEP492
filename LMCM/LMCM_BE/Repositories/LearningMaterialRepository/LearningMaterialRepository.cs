@@ -43,7 +43,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
         public async Task<List<LearningMaterial>> GetMaterialsBySyllabusIdAsync(Guid syllabusId)
         {
             return await _dbContext.LearningMaterials
-                .Where(m => m.SyllabusId == syllabusId && m.Status == "Active")
+                .Where(m => m.SyllabusId == syllabusId && m.Status != "Deleted")
                 .OrderByDescending(m => m.UpdatedAt)
                 .ToListAsync();
         }

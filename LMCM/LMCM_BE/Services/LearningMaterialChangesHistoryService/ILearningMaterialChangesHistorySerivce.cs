@@ -12,8 +12,7 @@ namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
         Task<PagedResult<ChangesHistoryOfSubjectDto>> GetLearningMaterialChangesHistoriesOfSubjectAsync(
      Guid? subjectId, string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<bool> SoftDeleteLearningMaterialChangesHistoryAsync(Guid historyId);
-        Task<Guid?> UpdateLearningMaterialChangesHistoryAsync(Guid historyId, UpdateLearningMaterialChangesHistoryDto dto);
-        Task<ChangesHistoryDetailDto> getHistoryOfChangeDetail(Guid id);
+        Task<bool> UpdateLearningMaterialChangesHistoryAsync(Guid historyId, UpdateLearningMaterialChangesHistoryDto dto);        Task<ChangesHistoryDetailDto> getHistoryOfChangeDetail(Guid id);
         Task<List<LearningMaterialChangesHistory>> GetAllWithCompletionDateAsync();
     }
 }

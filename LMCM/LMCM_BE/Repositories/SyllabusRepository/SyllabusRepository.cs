@@ -101,6 +101,14 @@ namespace LMCM_BE.Repositories.SyllabusRepository
 
             return syllabus;
         }
+        public async Task<List<Syllabus>> GetSyllabusesBySubjectIdAsync(Guid subjectId)
+        {
+            var syllabuses = await _dbContext.Syllabus
+                .Where(s => s.SubjectId == subjectId)
+                .ToListAsync();
+
+            return syllabuses;
+        }
 
         public async Task<Syllabus> GetSyllabusDetailAsync(Guid? syllabusId)
         {
@@ -121,6 +129,15 @@ namespace LMCM_BE.Repositories.SyllabusRepository
             var syllabus = await _dbContext.Syllabus
                 .AsNoTracking()
                 .Where(s => s.SyllabusId == syllabusId)
+                .SingleOrDefaultAsync();
+
+            return syllabus;
+        }
+        public async Task<Syllabus> GetActiveSyllabusByIdAsync(Guid? syllabusId)
+        {
+            var syllabus = await _dbContext.Syllabus
+                .AsNoTracking()
+                .Where(s => s.SyllabusId == syllabusId && s.Status == "Active")
                 .SingleOrDefaultAsync();
 
             return syllabus;

@@ -11,12 +11,12 @@ import { InputIconModule } from 'primeng/inputicon';
 import { TagModule } from 'primeng/tag';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
-import { UserApiService } from '../../../apis/userAPIs/user-api.service';
 import { MessageService } from 'primeng/api';
 import { FormsModule } from '@angular/forms';
 import { ProfileStatus } from '../../../../shared/Constants/StatusConstants';
 import { Subscription } from 'rxjs';
 import { searchService } from '../../service/search/search-service.service';
+import { UserApiService } from '../../../apis/userAPIs/user-api.service';
 
 interface PagingRequest {
   searchKey?: string;

@@ -49,4 +49,7 @@ export class UserApiService {
   getListUser(request: PagingRequest): Observable<PagedResult<any>> {
     return this.http.post<any>(`${this.apiUrl}/User/list-user`, request);
   }
+  getProfile(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/User/profile`, { withCredentials: true });
+  }
 }

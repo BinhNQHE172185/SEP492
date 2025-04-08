@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
+import { UserApiService } from '../../../apis/userAPIs/user-api.service';
 
 @Component({
   selector: 'app-profile',
@@ -17,23 +18,14 @@ export class ProfileComponent implements OnInit {
     avatar: ''
   };
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private userApiService: UserApiService) {}
 
   ngOnInit() {
     this.getUserProfile();
   }
 
   getUserProfile() {
-    const userId = localStorage.getItem('userId'); 
-    if (!userId) {
-      console.error('Không tìm thấy userId, vui lòng đăng nhập lại.');
-      return;
-    }
-
-    this.http.post<any>('http://localhost:5035/api/User/profile', 
-        JSON.stringify(userId), {
-          headers: { 'Content-Type': 'application/json' }
-        }).subscribe(response => {
+    this.userApiService.getProfile().subscribe(response => {
           if (response) {
             this.user = {
               name: response.name,

@@ -82,12 +82,12 @@ namespace LMCM_BE.Controllers.UserControllers
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        [HttpPost("profile")]
-        public async Task<IActionResult> ProfileAsync([FromBody] string staffId)
+        [HttpGet("profile")]
+        public async Task<IActionResult> ProfileAsync()
         {
             try
             {
-                var data = await _userService.GetProfile(staffId);
+                var data = await _userService.GetProfileFromCookie();
                 if (data != null)
                 {
                     return Ok(data);

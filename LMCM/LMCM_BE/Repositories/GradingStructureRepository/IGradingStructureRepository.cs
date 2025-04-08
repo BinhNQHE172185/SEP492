@@ -4,7 +4,8 @@ namespace LMCM_BE.Repositories.GradingStructureRepository
 {
     public interface IGradingStructureRepository
     {
-        Task<bool> ImportGradingStructuresAsync(List<GradingStructure> gradingStructures, Guid syllabusId);
-        Task<bool> DeleteGradingStructuresBySyllabusAsync(Guid syllabusId);
+        Task <List<GradingStructure>> GetGradingStructuresBySyllabusAsync(Guid syllabusId);
+        Task<bool> AddGradingStructuresAsync(List<GradingStructure> gradingStructures);
+        Task<bool> UpdateGradingStructuresAsync(List<GradingStructure> gradingStructures);
     }
 }

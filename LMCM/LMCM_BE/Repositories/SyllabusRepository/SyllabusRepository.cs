@@ -1,11 +1,5 @@
-﻿using AutoMapper;
-using LMCM_BE.DbContext;
+﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
-using LMCM_BE.Repositories.CLORepository;
-using LMCM_BE.Repositories.ConstructivistQuestionRepository;
-using LMCM_BE.Repositories.GradingStructureRepository;
-using LMCM_BE.Repositories.LearningMaterialRepository;
-using LMCM_BE.Repositories.ScheduleRepository;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.SyllabusRepository
@@ -19,11 +13,8 @@ namespace LMCM_BE.Repositories.SyllabusRepository
             _dbContext = dbContext;
         }
 
-        public async Task<bool> DeleteSyllabusAsync(Syllabus syllabus)
+        public async Task<bool> UpdateSyllabusAsync(Syllabus syllabus)
         {
-            syllabus.Status = "Inactive";
-            syllabus.UpdatedAt = DateTime.UtcNow;
-
             _dbContext.Syllabus.Update(syllabus);
             
             return true;

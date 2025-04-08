@@ -43,96 +43,11 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
                 .ToListAsync();
         }
 
-        public async Task<bool> ImportSubjectsAsync(List<Subject> subjects)
+        public async Task<bool> AddSubjectsAsync(List<Subject> subjects)
         {
-
-            // Get existing subjects from DB (as a dictionary for fast lookup)
-            var existingSubjects = await _dbContext.Subjects.ToDictionaryAsync(s => s.SubjectCode);
-
-            var subjectCodesToKeep = subjects.Select(s => s.SubjectCode).ToHashSet();
-            var newSubjects = new List<Subject>();
-            var updatedSubjects = new List<Subject>();
-
-            foreach (var subject in subjects)
-            {
-                if (existingSubjects.TryGetValue(subject.SubjectCode, out var existingSubject))
-                {
-                    if (await UpdateSubjectIfChangedAsync(existingSubject, subject))
-                    {
-                        existingSubject.UpdatedAt = DateTime.UtcNow;
-                        updatedSubjects.Add(existingSubject);
-                    }
-                }
-                else
-                {
-                    var newSubject = subject;
-                    newSubject.SubjectId = Guid.NewGuid();
-                    newSubject.Status = "Active";
-                    newSubject.CreatedAt = DateTime.UtcNow;
-                    newSubject.UpdatedAt = DateTime.UtcNow;
-                    newSubjects.Add(newSubject);
-                }
-            }
-
-            // Identify subjects to mark as inactive
-            var subjectsToDeactivate = existingSubjects.Values.Where(s => !subjectCodesToKeep.Contains(s.SubjectCode)).ToList();
-            foreach (var subject in subjectsToDeactivate)
-            {
-                subject.Status = "Inactive";
-                subject.UpdatedAt = DateTime.UtcNow;
-                updatedSubjects.Add(subject);
-            }
-
-            // Apply updates and inserts
-            if (updatedSubjects.Any())
-                _dbContext.Subjects.UpdateRange(updatedSubjects);
-
-            if (newSubjects.Any())
-                await _dbContext.Subjects.AddRangeAsync(newSubjects);
+            await _dbContext.Subjects.AddRangeAsync(subjects);
 
             return true;
-        }
-        public async Task<bool> UpdateSubjectIfChangedAsync(Subject existingSubject, Subject newSubject)
-        {
-            bool isUpdated = false;
-
-            if (existingSubject.SubjectName != newSubject.SubjectName)
-            {
-                existingSubject.SubjectName = newSubject.SubjectName;
-                isUpdated = true;
-            }
-            if (existingSubject.SubjectNameEnglish != newSubject.SubjectNameEnglish)
-            {
-                existingSubject.SubjectNameEnglish = newSubject.SubjectNameEnglish;
-                isUpdated = true;
-            }
-            if (existingSubject.IsConstructivist != newSubject.IsConstructivist)
-            {
-                existingSubject.IsConstructivist = newSubject.IsConstructivist;
-                isUpdated = true;
-            }
-            if (existingSubject.Method != newSubject.Method)
-            {
-                existingSubject.Method = newSubject.Method;
-                isUpdated = true;
-            }
-            if (existingSubject.Duration != newSubject.Duration)
-            {
-                existingSubject.Duration = newSubject.Duration;
-                isUpdated = true;
-            }
-            if (existingSubject.Reality != newSubject.Reality)
-            {
-                existingSubject.Reality = newSubject.Reality;
-                isUpdated = true;
-            }
-            if (existingSubject.Status != "Active")
-            {
-                existingSubject.Status = "Active";
-                isUpdated = true;
-            }
-
-            return await Task.FromResult(isUpdated);
         }
         public async Task<Subject> GetSubjectByCodeAsync(string code)
         {
@@ -152,14 +67,23 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
 
             return subject;
         }
-        public async Task<bool> SoftDeleteSubjectAsync(Subject subject)
+        public async Task<bool> UpdateSubjectAsync(Subject subject)
         {
-            subject.Status = "Inactive";
-            subject.UpdatedAt = DateTime.UtcNow;
             _dbContext.Subjects.Update(subject);
 
             return true;
         }
 
+        public async Task<Dictionary<string, Subject>> GetSubjectsDictonaryAsync()
+        {
+            return await _dbContext.Subjects.ToDictionaryAsync(s => s.SubjectCode);
+        }
+
+        public async Task<bool> UpdateSubjectsAsync(List<Subject> subjects)
+        {
+            _dbContext.Subjects.UpdateRange(subjects);
+
+            return true;
+        }
     }
 }

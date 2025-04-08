@@ -13,43 +13,26 @@ namespace LMCM_BE.Repositories.ConstructivistQuestionRepository
         {
             _dbContext = dbContext;
         }
-        public async Task<bool> DeleteConstructivistQuestionsBySyllabusAsync(Guid syllabusId)
+        public async Task<bool> UpdateConstructivistQuestionsBySyllabusAsync(List<ConstructivistQuestion> questions)
         {
-            var questions = await _dbContext.ConstructivistQuestions
-                .Where(s => s.SyllabusId == syllabusId)
-                .ToListAsync();
-
-            if (!questions.Any())
-                return false; // No grading structures found for the given syllabus
-
-            foreach (var question in questions)
-            {
-                question.Status = "Inactive";
-                question.UpdatedAt = DateTime.UtcNow;
-            }
-
             _dbContext.ConstructivistQuestions.UpdateRange(questions);
 
             return true;
         }
 
-        public async Task<bool> ImportConstructivistQuestionsAsync(List<ConstructivistQuestion> questions, Guid syllabusId)
+        public async Task<bool> AddConstructivistQuestionsAsync(List<ConstructivistQuestion> questions)
         {
-            if (questions == null || !questions.Any())
-                return false;
-
-            foreach (var question in questions)
-            {
-                question.SyllabusId = syllabusId;
-                question.QuestionId = Guid.NewGuid();
-                question.Status = "Active";
-                question.CreatedAt = DateTime.UtcNow;
-                question.UpdatedAt = DateTime.UtcNow;
-            }
-
             await _dbContext.ConstructivistQuestions.AddRangeAsync(questions);
 
             return true;
+        }
+
+        public async Task<List<ConstructivistQuestion>> GetConstructivistQuestionsBySyllabusAsync(Guid syllabusId)
+        {
+            var questions = await _dbContext.ConstructivistQuestions
+                .Where(s => s.SyllabusId == syllabusId)
+                .ToListAsync();
+            return questions;
         }
     }
 }

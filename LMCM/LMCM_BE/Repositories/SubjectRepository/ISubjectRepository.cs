@@ -8,8 +8,9 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
         Task<Subject> GetSubjectByCodeAsync(String subjectCode);
         Task<Subject> GetSubjectByIdAsync(Guid subjectId);
         Task<List<Subject>> GetActiveSubjectsByCodesAsync(List<string> subjectCodes);
-        Task<bool> UpdateSubjectIfChangedAsync(Subject existingSubject, Subject newSubject);
-        Task<bool> ImportSubjectsAsync(List<Subject> subjects);
-        Task<bool> SoftDeleteSubjectAsync(Subject subject);
+        Task<Dictionary<string, Subject>> GetSubjectsDictonaryAsync();
+        Task<bool> AddSubjectsAsync(List<Subject> subjects);
+        Task<bool> UpdateSubjectsAsync(List<Subject> subjects);
+        Task<bool> UpdateSubjectAsync(Subject subject);
     }
 }

@@ -164,7 +164,7 @@ namespace LMCM_BE.Services.SyllabusService
                 await ImportScheduleSheet(workbook.Worksheets["Schedule"], syllabusId, oldSyllabusId);
                 await ImportGradingStructureSheet(workbook.Worksheets["Grading structure"], syllabusId, oldSyllabusId);
                 await ImportConstructivistQuestionSheet(workbook.Worksheets["Constructivist Question"], syllabusId, oldSyllabusId);
-                await ImportMaterialsSheet(workbook.Worksheets["Materials"], syllabusId, oldSyllabusId,keepUserCreated);
+                await ImportMaterialsSheet(workbook.Worksheets["Materials"], syllabusId, oldSyllabusId, keepUserCreated);
 
                 // Commit the transaction after successful imports
                 await _unitOfWork.CommitAsync();
@@ -544,7 +544,7 @@ namespace LMCM_BE.Services.SyllabusService
 
             var learningMaterials = _mapper.Map<List<LearningMaterial>>(learningMaterialDtos);
             if (learningMaterials != null) await _LearningMaterialService.ImportLearningMaterialsAsync(learningMaterials, oldSyllabusId, newSyllabusId, keepUserCreated);
-            if (oldSyllabusId != Guid.Empty) await _LearningMaterialService.DeleteLearningMaterialsBySyllabusAsync((Guid)oldSyllabusId);
+            if (oldSyllabusId != Guid.Empty) await _LearningMaterialService.DeleteLearningMaterialsBySyllabusAsync(oldSyllabusId.Value);
 
             return true;
         }

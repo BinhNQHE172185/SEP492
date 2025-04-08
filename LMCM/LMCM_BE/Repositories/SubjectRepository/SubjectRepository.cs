@@ -1,5 +1,6 @@
 ﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
+using LMCM_BE.Models.Constant;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
@@ -26,7 +27,7 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
                                          s.SubjectName.ToLower().Contains(search));
             }
 
-            query = query.Where(s => s.Status != "Inactive");
+            query = query.Where(s => s.Status == GenericStatus.Active);
 
             int totalCount = await query.CountAsync();
 
@@ -39,7 +40,7 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
         public async Task<List<Subject>> GetActiveSubjectsByCodesAsync(List<string> subjectCodes)
         {
             return await _dbContext.Subjects
-                .Where(s => subjectCodes.Contains(s.SubjectCode) && s.Status == "Active")
+                .Where(s => subjectCodes.Contains(s.SubjectCode) && s.Status == GenericStatus.Active)
                 .ToListAsync();
         }
 
@@ -54,7 +55,7 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
 
             var subject = await _dbContext.Subjects
                                           .FirstOrDefaultAsync(s => s.SubjectCode == code &&
-                                                               (s.Status != null && s.Status.ToLower() == "active"));
+                                                               s.Status == GenericStatus.Active);
 
             return subject;
         }
@@ -63,7 +64,7 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
 
             var subject = await _dbContext.Subjects
                                           .FirstOrDefaultAsync(s => s.SubjectId == subjectId &&
-                                                               (s.Status != null && s.Status.ToLower() == "active"));
+                                                               s.Status == GenericStatus.Active);
 
             return subject;
         }

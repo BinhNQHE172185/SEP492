@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using LMCM_BE.Models.Constant;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 
@@ -11,7 +12,7 @@ public partial class User : IdentityUser<Guid>
 
     public string? Picture { get; set; }
 
-    public string? Status { get; set; }
+    public UserStatus Status { get; set; }
 
     public virtual ICollection<AcceptanceRecord> AcceptanceRecords { get; set; } = new List<AcceptanceRecord>();
 

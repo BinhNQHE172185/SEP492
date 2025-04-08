@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LMCM_BE.DTOs.PloDtos;
+using LMCM_BE.Models.Constant;
 using LMCM_BE.Repositories.PloRepository;
 
 namespace LMCM_BE.Services.PloService
@@ -26,7 +27,7 @@ namespace LMCM_BE.Services.PloService
 
             foreach (var plo in plos)
             {
-                plo.Status = "Inactive";
+                plo.Status = GenericStatus.Inactive;
                 plo.UpdatedAt = DateTime.UtcNow;
             }
 

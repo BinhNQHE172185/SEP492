@@ -2,6 +2,7 @@
 using LMCM_BE.DTOs.ContractorDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Models.Constant;
 using LMCM_BE.Repositories.ContractorRepository;
 using LMCM_BE.Repositories.ContractRepository;
 using LMCM_BE.UnitOfWork;
@@ -59,7 +60,7 @@ namespace LMCM_BE.Services.ContractorService
             if (await _contractRepository.HasActiveContractsAsync(contractorId))
                 throw new InvalidOperationException("Không thể xóa nhà thầu khi vẫn có hợp đồng đang hoạt động.");
 
-            contractor.Status = "Inactive";
+            contractor.Status = GenericStatus.Inactive;
             contractor.UpdatedAt = DateTime.UtcNow;
 
             try
@@ -91,7 +92,7 @@ namespace LMCM_BE.Services.ContractorService
         {
             var contractor = _mapper.Map<Contractor>(dto);
             contractor.ContractorId = Guid.NewGuid();
-            contractor.Status = "Active";
+            contractor.Status = GenericStatus.Active;
             contractor.CreatedAt = DateTime.UtcNow;
             contractor.UpdatedAt = DateTime.UtcNow;
 

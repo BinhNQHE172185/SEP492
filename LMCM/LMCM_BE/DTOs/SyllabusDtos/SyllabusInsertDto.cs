@@ -1,4 +1,6 @@
-﻿namespace LMCM_BE.DTOs.SyllabusDtos
+﻿using LMCM_BE.Models.Constant;
+
+namespace LMCM_BE.DTOs.SyllabusDtos
 {
     public class SyllabusInsertDto
     {
@@ -40,7 +42,7 @@
 
         public DateTime? ApprovedDate { get; set; }
 
-        public string? Status { get; set; }
+        public GenericStatus Status { get; set; }
 
         public DateTime? CreatedAt { get; set; }
 

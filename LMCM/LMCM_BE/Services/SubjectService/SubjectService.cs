@@ -2,6 +2,7 @@
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SubjectDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Models.Constant;
 using LMCM_BE.Repositories.CurriculumsSubjectRepository;
 using LMCM_BE.Repositories.PloSubjectRepository;
 using LMCM_BE.Repositories.SubjectRepository.SubjectRepository;
@@ -124,7 +125,7 @@ namespace LMCM_BE.Services.SubjectService
                     {
                         var newSubject = subject;
                         newSubject.SubjectId = Guid.NewGuid();
-                        newSubject.Status = "Active";
+                        newSubject.Status = GenericStatus.Active;
                         newSubject.CreatedAt = DateTime.UtcNow;
                         newSubject.UpdatedAt = DateTime.UtcNow;
                         newSubjects.Add(newSubject);
@@ -135,7 +136,7 @@ namespace LMCM_BE.Services.SubjectService
                 var subjectsToDeactivate = existingSubjects.Values.Where(s => !subjectCodesToKeep.Contains(s.SubjectCode)).ToList();
                 foreach (var subject in subjectsToDeactivate)
                 {
-                    subject.Status = "Inactive";
+                    subject.Status = GenericStatus.Inactive;
                     subject.UpdatedAt = DateTime.UtcNow;
                     updatedSubjects.Add(subject);
                 }
@@ -191,9 +192,9 @@ namespace LMCM_BE.Services.SubjectService
                 existingSubject.Reality = newSubject.Reality;
                 isUpdated = true;
             }
-            if (existingSubject.Status != "Active")
+            if (existingSubject.Status == GenericStatus.Inactive)
             {
-                existingSubject.Status = "Active";
+                existingSubject.Status = GenericStatus.Active;
                 isUpdated = true;
             }
 
@@ -220,7 +221,7 @@ namespace LMCM_BE.Services.SubjectService
             {
                 throw new InvalidOperationException("Không thể xóa môn học khi có thực thể liên quan đang hoạt động.");
             }
-            subject.Status = "Inactive";
+            subject.Status = GenericStatus.Inactive;
             subject.UpdatedAt = DateTime.UtcNow;
             try
             {

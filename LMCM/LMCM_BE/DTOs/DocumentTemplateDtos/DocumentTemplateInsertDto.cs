@@ -1,5 +1,5 @@
 ﻿using LMCM_BE.DTOs.UserDtos;
-using LMCM_BE.Models.Constant;
+using LMCM_BE.Shared.Constant;
 using System.ComponentModel.DataAnnotations;
 using static LMCM_BE.DTOs.Validators.SharedValidationAtributes;
 

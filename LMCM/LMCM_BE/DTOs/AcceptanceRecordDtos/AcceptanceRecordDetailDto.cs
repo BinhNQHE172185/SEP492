@@ -1,6 +1,6 @@
 ﻿using LMCM_BE.DTOs.ContractDtos;
 using LMCM_BE.DTOs.UserDtos;
-using LMCM_BE.Models.Constant;
+using LMCM_BE.Shared.Constant;
 
 namespace LMCM_BE.DTOs.AcceptanceRecordDtos
 {

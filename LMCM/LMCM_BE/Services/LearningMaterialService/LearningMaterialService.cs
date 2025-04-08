@@ -2,9 +2,9 @@
 using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
-using LMCM_BE.Models.Constant;
 using LMCM_BE.Repositories.LearningMaterialRepository;
 using LMCM_BE.Repositories.SyllabusRepository;
+using LMCM_BE.Shared.Constant;
 using LMCM_BE.UnitOfWork;
 
 namespace LMCM_BE.Services.LearningMaterialService

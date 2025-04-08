@@ -1,6 +1,5 @@
 ﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
-using LMCM_BE.Models.Constant;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Contracts;
 
@@ -23,7 +22,7 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
 
             if (!isHod) query = query.Where(s => s.AuthorId == userId);
 
-            query = query.Where(ar => ar.Status == GenericStatus.Active);
+            query = query.Where(ar => ar.Status == "Active");
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
@@ -63,7 +62,7 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
         {
             return await _dbContext.AcceptanceRecords
                .Include(ar => ar.Author)
-               .FirstOrDefaultAsync(ar => ar.AcceptanceId == acceptanceId && ar.Status == GenericStatus.Active);
+               .FirstOrDefaultAsync(ar => ar.AcceptanceId == acceptanceId && ar.Status == "Active");
         }
 
         public async Task<AcceptanceRecord?> GetAcceptanceRecordDetailAsync(Guid acceptanceId)
@@ -78,7 +77,7 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
         public async Task<bool> HasActiveAcceptanceRecordsAsync(Guid contractId)
         {
             return await _dbContext.AcceptanceRecords
-                .AnyAsync(p => p.ContractId == contractId && p.Status == GenericStatus.Active);
+                .AnyAsync(p => p.ContractId == contractId && p.Status == "Active");
         }
     }
 }

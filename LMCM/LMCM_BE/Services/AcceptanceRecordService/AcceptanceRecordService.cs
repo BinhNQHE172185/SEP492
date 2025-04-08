@@ -4,7 +4,6 @@ using LMCM_BE.DTOs.BudgetProposalDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
-using LMCM_BE.Models.Constant;
 using LMCM_BE.Repositories.AcceptanceRecordRepository;
 using LMCM_BE.Repositories.ContractRepository;
 using LMCM_BE.Repositories.UserRepositoriy;
@@ -99,7 +98,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
             acceptanceRecord.AuthorId = user.Id;
             acceptanceRecord.Url = fileUrl;
             acceptanceRecord.AcceptanceId = Guid.NewGuid();
-            acceptanceRecord.Status = GenericStatus.Active;
+            acceptanceRecord.Status = "Active";
             acceptanceRecord.CreatedAt = DateTime.UtcNow;
             acceptanceRecord.UpdatedAt = DateTime.UtcNow;
             try
@@ -188,7 +187,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
             if (user.Id != acceptanceRecord.AuthorId && user.Roles.Contains("Staff"))
                 throw new UnauthorizedAccessException("Người dùng không có quyền xóa biên bản nghiệm thu này.");
 
-            acceptanceRecord.Status = GenericStatus.Inactive;
+            acceptanceRecord.Status = "Inactive";
             acceptanceRecord.UpdatedAt = DateTime.UtcNow;
 
             try

@@ -1,13 +1,11 @@
-﻿using LMCM_BE.Models.Constant;
-
-namespace LMCM_BE.DTOs.LearningMaterialDtos
+﻿namespace LMCM_BE.DTOs.LearningMaterialDtos
 {
     public class LearningMaterialInsertDto
     {
         public Guid SyllabusId { get; set; }
 
         public string? LearningType { get; set; }
-        public MaterialType MaterialType { get; set; }
+        public string? MaterialType { get; set; }
         public bool? IsMainMaterial { get; set; }
 
         public string? MaterialName { get; set; }

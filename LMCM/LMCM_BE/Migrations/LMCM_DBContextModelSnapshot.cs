@@ -51,9 +51,9 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("decimal(19, 2)")
                         .HasColumnName("Final_Price");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -100,9 +100,9 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("Proposal_Date");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -148,9 +148,9 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("(sysutcdatetime())");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<Guid>("SyllabusId")
                         .HasColumnType("uniqueidentifier")
@@ -195,9 +195,9 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("int")
                         .HasColumnName("Session_No");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<Guid>("SyllabusId")
                         .HasColumnType("uniqueidentifier")
@@ -255,9 +255,9 @@ namespace LMCM_BE.Migrations
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -385,9 +385,9 @@ namespace LMCM_BE.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("TaxCode")
                         .HasMaxLength(255)
@@ -453,9 +453,9 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("English_Vocational_Name");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -499,9 +499,9 @@ namespace LMCM_BE.Migrations
                     b.Property<int?>("Options")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<int?>("TermNo")
                         .HasColumnType("int")
@@ -537,9 +537,9 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("(sysutcdatetime())");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("TemplateName")
                         .IsRequired()
@@ -635,9 +635,9 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("int")
                         .HasColumnName("Session_No");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<int>("StructureNo")
                         .HasColumnType("int")
@@ -710,8 +710,9 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("Material_Name");
 
-                    b.Property<int>("MaterialType")
-                        .HasColumnType("int")
+                    b.Property<string>("MaterialType")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("Material_Type");
 
                     b.Property<string>("Note")
@@ -732,8 +733,9 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("Purpose");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("Status");
 
                     b.Property<Guid>("SyllabusId")
@@ -795,9 +797,9 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("Start_Term");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<Guid>("SyllabusId")
                         .HasColumnType("uniqueidentifier")
@@ -836,9 +838,9 @@ namespace LMCM_BE.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -886,9 +888,9 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("PLO_Name");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -918,9 +920,9 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("(sysutcdatetime())");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -981,9 +983,9 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("int")
                         .HasColumnName("Schedule_No");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("StudentMaterial")
                         .HasColumnType("nvarchar(max)")
@@ -1041,9 +1043,9 @@ namespace LMCM_BE.Migrations
                     b.Property<int?>("Reality")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("SubjectCode")
                         .IsRequired()
@@ -1150,9 +1152,9 @@ namespace LMCM_BE.Migrations
                         .HasColumnType("decimal(19, 2)")
                         .HasColumnName("Scoring_Scale");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("StudentTask")
                         .HasColumnType("nvarchar(max)")
@@ -1237,9 +1239,9 @@ namespace LMCM_BE.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("Status")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");

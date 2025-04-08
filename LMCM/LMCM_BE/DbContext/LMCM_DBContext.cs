@@ -81,10 +81,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.FinalPrice)
                 .HasColumnType("decimal(19, 2)")
                 .HasColumnName("Final_Price");
-            entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.Title).HasMaxLength(255);
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.Url).HasMaxLength(255);
@@ -112,10 +109,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.AuthorId).HasColumnName("Author_ID");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.ProposalDate).HasColumnName("Proposal_Date");
-            entity.Property(e => e.Status)
-                .HasConversion<int>() 
-                .HasColumnName("Status")
-                .HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.Title).HasMaxLength(255);
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.Url).HasMaxLength(255);
@@ -142,10 +136,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasMaxLength(255)
                 .HasColumnName("CLO_Name");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.SyllabusId).HasColumnName("Syllabus_ID");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
 
@@ -172,10 +163,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasMaxLength(255)
                 .HasColumnName("Question_Name");
             entity.Property(e => e.SessionNo).HasColumnName("Session_No");
-            entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.SyllabusId).HasColumnName("Syllabus_ID");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
 
@@ -200,10 +188,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.ContractorId).HasColumnName("Contractor_ID");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.ProposalId).HasColumnName("Proposal_ID");
-            entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.Title).HasMaxLength(255);
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.Url).HasMaxLength(255);
@@ -258,10 +243,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasMaxLength(255)
                 .HasColumnName("Phone_Number");
             entity.Property(e => e.Position).HasMaxLength(255);
-            entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.TaxCode)
                 .HasMaxLength(255)
                 .HasColumnName("Tax_Code");
@@ -330,10 +312,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.EnglishVocationalName)
                 .HasMaxLength(255)
                 .HasColumnName("English_Vocational_Name");
-            entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.VocationalCode)
                 .HasMaxLength(255)
@@ -352,10 +331,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.CurriculumId).HasColumnName("Curriculum_ID");
             entity.Property(e => e.SubjectId).HasColumnName("Subject_ID");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.TermNo).HasColumnName("Term_No");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
 
@@ -381,10 +357,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasColumnName("Template_ID");
             entity.Property(e => e.AuthorId).HasColumnName("Author_ID");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.TemplateName)
                 .HasMaxLength(255)
                 .HasColumnName("Template_Name");
@@ -434,10 +407,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.Reference).HasMaxLength(255);
             entity.Property(e => e.Scope).HasColumnType("nvarchar(max)");
             entity.Property(e => e.SessionNo).HasColumnName("Session_No");
-            entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.StructureNo).HasColumnName("Structure_No");
             entity.Property(e => e.SyllabusId).HasColumnName("Syllabus_ID");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
@@ -467,9 +437,8 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasColumnName("Learning_Type");
 
             entity.Property(e => e.MaterialType)
-                .HasConversion<int>()
-                .HasColumnName("Material_Type")
-                .HasColumnType("int");
+                .HasMaxLength(255)
+                .HasColumnName("Material_Type");
 
             entity.Property(e => e.IsMainMaterial)
                 .HasColumnName("is_Main_Material");
@@ -514,9 +483,8 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasColumnName("Note");
 
             entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
+                .HasMaxLength(255)
+                .HasColumnName("Status");
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(sysutcdatetime())")
@@ -557,10 +525,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.StartTerm)
                 .HasMaxLength(255)
                 .HasColumnName("Start_Term");
-            entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.UserId).HasColumnName("User_ID");
 
             entity.HasOne(d => d.Syllabus)
@@ -590,10 +555,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasColumnName("Notification_ID");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.Message).HasColumnType("nvarchar(max)");
-            entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.Title).HasColumnType("nvarchar(max)");
             entity.Property(e => e.Url).HasColumnType("nvarchar(max)");
             entity.Property(e => e.UserId).HasColumnName("User_ID");
@@ -621,10 +583,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.PloName)
                 .HasMaxLength(255)
                 .HasColumnName("PLO_Name");
-            entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
 
             entity.HasOne(d => d.Curriculum).WithMany(p => p.Plos)
@@ -642,10 +601,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.PloId).HasColumnName("PLO_ID");
             entity.Property(e => e.SubjectId).HasColumnName("Subject_ID");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
 
             entity.HasOne(d => d.Plo).WithMany(p => p.PloSubjects)
@@ -689,10 +645,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasColumnName("Lecturer_Task");
             entity.Property(e => e.Method).HasColumnType("nvarchar(max)");
             entity.Property(e => e.ScheduleNo).HasColumnName("Schedule_No");
-            entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.StudentMaterial)
                 .HasColumnType("nvarchar(max)")
                 .HasColumnName("Student_Material");
@@ -721,10 +674,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.IsConstructivist).HasColumnName("isConstructivist");
             entity.Property(e => e.Method).HasMaxLength(255);
-            entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.SubjectCode)
                 .HasMaxLength(255)
                 .HasColumnName("Subject_Code");
@@ -781,10 +731,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.ScoringScale)
                 .HasColumnType("decimal(19, 2)")
                 .HasColumnName("Scoring_Scale");
-            entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(255);
             entity.Property(e => e.StudentTask)
                 .HasColumnType("nvarchar(max)")
                 .HasColumnName("Student_Task");
@@ -808,10 +755,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.Picture).HasMaxLength(255);
-            entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(255);
         });
 
         OnModelCreatingPartial(modelBuilder);

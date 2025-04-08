@@ -1,5 +1,4 @@
 ﻿using LMCM_BE.DTOs.UserDtos;
-using LMCM_BE.Models.Constant;
 
 namespace LMCM_BE.DTOs.BudgetProposalDtos
 {
@@ -15,7 +14,7 @@ namespace LMCM_BE.DTOs.BudgetProposalDtos
 
         public string? Url { get; set; }
 
-        public GenericStatus Status { get; set; }
+        public string? Status { get; set; }
 
         public DateTime? CreatedAt { get; set; }
 

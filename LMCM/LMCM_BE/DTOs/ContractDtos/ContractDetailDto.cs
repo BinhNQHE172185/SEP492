@@ -3,7 +3,6 @@ using LMCM_BE.DTOs.BudgetProposalDtos;
 using LMCM_BE.DTOs.ContractorDtos;
 using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.UserDtos;
-using LMCM_BE.Models.Constant;
 
 namespace LMCM_BE.DTOs.ContractDtos
 {
@@ -29,7 +28,7 @@ namespace LMCM_BE.DTOs.ContractDtos
 
         public string? Url { get; set; }
 
-        public GenericStatus Status { get; set; }
+        public string? Status { get; set; }
 
         public DateTime? CreatedAt { get; set; }
 

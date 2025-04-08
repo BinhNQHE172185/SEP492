@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using LMCM_BE.DTOs.SyllabusDtos;
 using LMCM_BE.Models;
-using LMCM_BE.Models.Constant;
 
 namespace LMCM_BE.AutoMapper.SyllabusProfiles
 {
@@ -11,7 +10,7 @@ namespace LMCM_BE.AutoMapper.SyllabusProfiles
         {
             CreateMap<Syllabus, SyllabusListViewDto>()
                 .ForMember(dest => dest.IsApproved, opt => opt.MapFrom(src => src.ApprovedDate.HasValue))
-                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.Status == GenericStatus.Active));
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.Status.ToLower() == "active"));
             CreateMap<Syllabus, SyllabusInsertDto>();
             CreateMap<SyllabusInsertDto, Syllabus>()
                 .ForMember(dest => dest.SyllabusId, opt => opt.Ignore()) // Ignored since we generate a new ID

@@ -1,5 +1,4 @@
-﻿using LMCM_BE.Models.Constant;
-using LMCM_BE.Repositories.CurriculumsSubjectRepository;
+﻿using LMCM_BE.Repositories.CurriculumsSubjectRepository;
 
 namespace LMCM_BE.Services.CurriculumsSubjectService
 {
@@ -21,7 +20,7 @@ namespace LMCM_BE.Services.CurriculumsSubjectService
 
             foreach (var cs in csList)
             {
-                cs.Status = GenericStatus.Inactive;
+                cs.Status = "Inactive";
                 cs.UpdatedAt = DateTime.UtcNow;
             }
 

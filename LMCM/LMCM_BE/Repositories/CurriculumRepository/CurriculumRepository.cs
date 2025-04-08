@@ -1,6 +1,5 @@
 ﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
-using LMCM_BE.Models.Constant;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.CurriculumRepository
@@ -17,7 +16,7 @@ namespace LMCM_BE.Repositories.CurriculumRepository
         }
         public async Task<(List<Curriculum>, int totalCount)> GetCurriculumsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
-            var query = _dbContext.Curriculums.Include(c => c.CurriculumsSubjects).Where(c => c.Status == GenericStatus.Active).AsQueryable();
+            var query = _dbContext.Curriculums.Include(c => c.CurriculumsSubjects).Where(c => c.Status == "Active").AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
@@ -44,18 +43,18 @@ namespace LMCM_BE.Repositories.CurriculumRepository
             return await _dbContext.Curriculums
                 .Include(c => c.CurriculumsSubjects)
                     .ThenInclude(cs => cs.Subject)
-                .Where(c => c.CurriculumId == curriculumId && c.Status == GenericStatus.Active)
+                .Where(c => c.CurriculumId == curriculumId && c.Status == "Active")
                 .FirstOrDefaultAsync();
         }
         public async Task<Curriculum?> GetActiveCurriculumByCodeAsync(string curriculumCode)
         {
             return await _dbContext.Curriculums
-                .FirstOrDefaultAsync(c => c.CurriculumCode == curriculumCode && c.Status == GenericStatus.Active);
+                .FirstOrDefaultAsync(c => c.CurriculumCode == curriculumCode && c.Status == "Active");
         }
         public async Task<Curriculum?> GetActiveCurriculumByIdAsync(Guid curriculumId)
         {
             return await _dbContext.Curriculums
-                .FirstOrDefaultAsync(c => c.CurriculumId == curriculumId && c.Status == GenericStatus.Active);
+                .FirstOrDefaultAsync(c => c.CurriculumId == curriculumId && c.Status == "Active");
         }
         public async Task<bool> ImportCurriculumAsync(Curriculum curriculum)
         {

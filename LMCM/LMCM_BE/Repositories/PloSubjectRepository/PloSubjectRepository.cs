@@ -1,6 +1,5 @@
 ﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
-using LMCM_BE.Models.Constant;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.PloSubjectRepository
@@ -18,7 +17,7 @@ namespace LMCM_BE.Repositories.PloSubjectRepository
             return await _dbContext.Plos
                 .Where(p => p.CurriculumId == curriculumId)
                 .SelectMany(p => p.PloSubjects)
-                .Where(ps => ps.Status == GenericStatus.Active)
+                .Where(ps => ps.Status == "Active")
                 .ToListAsync();
         }
 
@@ -30,12 +29,12 @@ namespace LMCM_BE.Repositories.PloSubjectRepository
         public async Task<bool> HasActivePloSubjectByCurriculumIdAsync(Guid curriculumId)
         {
             return await _dbContext.PloSubjects
-                .AnyAsync(ps => ps.Plo.CurriculumId == curriculumId && ps.Status == GenericStatus.Active);
+                .AnyAsync(ps => ps.Plo.CurriculumId == curriculumId && ps.Status == "Active");
         }
         public async Task<bool> HasActivePloSubjectBySubjectIdAsync(Guid subjectId)
         {
             return await _dbContext.PloSubjects
-                .AnyAsync(ps => ps.SubjectId == subjectId && ps.Status == GenericStatus.Active);
+                .AnyAsync(ps => ps.SubjectId == subjectId && ps.Status == "Active");
         }
 
 

@@ -1,6 +1,5 @@
 ﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
-using LMCM_BE.Models.Constant;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.LearningMaterialRepository
@@ -23,7 +22,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
         {
             var query = _dbContext.LearningMaterials.AsQueryable();
 
-            query = query.Where(s => s.SyllabusId == syllabusId && s.Status != LearningMaterialStatus.Deleted);
+            query = query.Where(s => s.SyllabusId == syllabusId && s.Status != "Deleted");
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
@@ -44,7 +43,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
         public async Task<List<LearningMaterial>> GetMaterialsBySyllabusIdAsync(Guid syllabusId)
         {
             return await _dbContext.LearningMaterials
-                .Where(m => m.SyllabusId == syllabusId && m.Status != LearningMaterialStatus.Deleted)
+                .Where(m => m.SyllabusId == syllabusId && m.Status != "Deleted")
                 .OrderByDescending(m => m.UpdatedAt)
                 .ToListAsync();
         }
@@ -52,7 +51,7 @@ namespace LMCM_BE.Repositories.LearningMaterialRepository
         public async Task<List<LearningMaterial>> GetUserCreatedMaterialsFromSyllabusIdAsync(Guid syllabusId)
         {
             return await _dbContext.LearningMaterials
-                .Where(s => s.SyllabusId == syllabusId && s.Status == LearningMaterialStatus.Active && s.IsImportedMaterial == false)
+                .Where(s => s.SyllabusId == syllabusId && s.Status == "Active" && s.IsImportedMaterial == false)
                 .ToListAsync();
         }
         public async Task<bool> AddMaterialsAsync(List<LearningMaterial> materials)

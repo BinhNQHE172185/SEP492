@@ -2,7 +2,6 @@
 using LMCM_BE.DTOs.SyllabusDtos;
 using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
-using LMCM_BE.Models.Constant;
 
 namespace LMCM_BE.DTOs.LearningMaterialDtos
 {
@@ -17,7 +16,7 @@ namespace LMCM_BE.DTOs.LearningMaterialDtos
         public DateTime? CompletionDate { get; set; }
         public string? StartTerm { get; set; }
         public string? CourseCode { get; set; }
-        public GenericStatus Status { get; set; }
+        public string? Status { get; set; }
         public virtual ContractDetailDto? Contract { get; set; }
         public virtual SyllabusDetailDto Syllabus { get; set; } = null!;
         public ListUserResponseDto User { get; set; } = null!;

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using LMCM_BE.DbContext;
 using LMCM_BE.Models;
-using LMCM_BE.Models.Constant;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.PloRepository
@@ -21,14 +20,14 @@ namespace LMCM_BE.Repositories.PloRepository
             return await _dbContext.Plos
                 .Include(p => p.PloSubjects)
                     .ThenInclude(ps => ps.Subject)
-                .Where(p => p.CurriculumId == curriculumId && p.Status == GenericStatus.Active)
+                .Where(p => p.CurriculumId == curriculumId && p.Status == "Active")
                 .OrderBy(p=>p.PloName)
                 .ToListAsync();
         }
         public async Task<List<Plo>> GetPloByCurriculumIdAsync(Guid curriculumId)
         {
             return await _dbContext.Plos
-                .Where(p => p.CurriculumId == curriculumId && p.Status == GenericStatus.Active)
+                .Where(p => p.CurriculumId == curriculumId && p.Status == "Active")
                 .ToListAsync();
         }
         public async Task<bool> UpdateRangeAsync(List<Plo> entities)
@@ -39,7 +38,7 @@ namespace LMCM_BE.Repositories.PloRepository
         public async Task<bool> HasActivePloAsync(Guid curriculumId)
         {
             return await _dbContext.Plos
-                .AnyAsync(p => p.CurriculumId == curriculumId && p.Status == GenericStatus.Active);
+                .AnyAsync(p => p.CurriculumId == curriculumId && p.Status == "Active");
         }
 
     }

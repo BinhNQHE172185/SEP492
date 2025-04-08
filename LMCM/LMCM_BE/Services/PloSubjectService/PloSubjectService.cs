@@ -1,5 +1,4 @@
-﻿using LMCM_BE.Models.Constant;
-using LMCM_BE.Repositories.PloSubjectRepository;
+﻿using LMCM_BE.Repositories.PloSubjectRepository;
 
 namespace LMCM_BE.Services.PloSubjectService
 {
@@ -22,7 +21,7 @@ namespace LMCM_BE.Services.PloSubjectService
 
             foreach (var ps in activePloSubject)
             {
-                ps.Status = GenericStatus.Inactive;
+                ps.Status = "Inactive";
                 ps.UpdatedAt = DateTime.UtcNow;
             }
 

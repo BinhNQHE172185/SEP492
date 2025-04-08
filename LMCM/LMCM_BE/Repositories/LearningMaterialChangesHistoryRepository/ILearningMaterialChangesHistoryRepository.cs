@@ -7,13 +7,13 @@ namespace LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository
 {
     public interface ILearningMaterialChangesHistoryRepository
     {
-        Task<(List<LearningMaterialChangesHistory>, int totalCount)> GetChangesHistoriesAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
-        Task<bool> CreateLearningMaterialChangesHistoryAsync(LearningMaterialChangesHistory history);
-        Task<(List<LearningMaterialChangesHistory>, int totalCount)> GetLearningMaterialChangesHistoriesOfSubjectAsync(
-    List<Syllabus> syllabuses, string? searchKey, int pageIndex = 1, int pageSize = 10);
-        Task<bool> UpdateLearningMaterialChangesHistoryAsync(LearningMaterialChangesHistory history);
-        Task<LearningMaterialChangesHistory?> GetActiveHistoryByIdAsync(Guid historyId);
-        Task<LearningMaterialChangesHistory?> getHistoryOfChangeDetail(Guid id);
+        Task<PagedResult<ChangesHistoryListDto>> GetChangesHistoriesAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
+        Task<bool> CreateLearningMaterialChangesHistoryAsync(CreateLearningMaterialChangesHistoryDto historyDto);
+        Task<PagedResult<ChangesHistoryOfSubjectDto>> GetLearningMaterialChangesHistoriesOfSubjectAsync(
+     Guid? subjectId, string? searchKey, int pageIndex = 1, int pageSize = 10);
+        Task<bool> SoftDeleteLearningMaterialChangesHistoryAsync(Guid historyId);
+        Task<Guid?> UpdateLearningMaterialChangesHistoryAsync(Guid historyId, UpdateLearningMaterialChangesHistoryDto dto);
+        Task<ChangesHistoryDetailDto> getHistoryOfChangeDetail(Guid id);
         Task<List<LearningMaterialChangesHistory>> GetAllWithCompletionDateAsync();
     }
 }

@@ -1,5 +1,4 @@
 ﻿using LMCM_BE.Models;
-using LMCM_BE.Models.Constant;
 
 namespace LMCM_BE.DTOs.LearningMaterialDtos
 {
@@ -21,6 +20,6 @@ namespace LMCM_BE.DTOs.LearningMaterialDtos
 
         public string? CourseCode { get; set; }
 
-        public GenericStatus Status { get; set; }
+        public string? Status { get; set; }
     }
 }

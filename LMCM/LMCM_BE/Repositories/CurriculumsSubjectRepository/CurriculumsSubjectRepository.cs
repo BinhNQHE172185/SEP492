@@ -1,6 +1,5 @@
 ﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
-using LMCM_BE.Models.Constant;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.CurriculumsSubjectRepository
@@ -16,7 +15,7 @@ namespace LMCM_BE.Repositories.CurriculumsSubjectRepository
         public async Task<List<CurriculumsSubject>> GetCurriculumsSubjectByCurriculumIdAsync(Guid curriculumId)
         {
             return await _dbContext.CurriculumsSubjects
-                .Where(cs => cs.CurriculumId == curriculumId && cs.Status == GenericStatus.Active)
+                .Where(cs => cs.CurriculumId == curriculumId && cs.Status == "Active")
                 .ToListAsync();
         }
         public async Task<bool> UpdateRangeAsync(List<CurriculumsSubject> entities)
@@ -27,12 +26,12 @@ namespace LMCM_BE.Repositories.CurriculumsSubjectRepository
         public async Task<bool> HasActiveCurriculumsSubjectsAsync(Guid curriculumId)
         {
             return await _dbContext.CurriculumsSubjects
-                .AnyAsync(cs => cs.CurriculumId == curriculumId && cs.Status == GenericStatus.Active);
+                .AnyAsync(cs => cs.CurriculumId == curriculumId && cs.Status == "Active");
         }
         public async Task<bool> HasActiveCurriculumSubjectsBySubjectIdAsync(Guid subjectId)
         {
             return await _dbContext.CurriculumsSubjects
-                .AnyAsync(cs => cs.SubjectId == subjectId && cs.Status == GenericStatus.Active);
+                .AnyAsync(cs => cs.SubjectId == subjectId && cs.Status == "Active");
         }
     }
 }

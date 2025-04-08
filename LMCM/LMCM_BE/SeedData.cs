@@ -1,6 +1,5 @@
 ﻿using LMCM_BE.DTOs.ContractValueItemDtos;
 using LMCM_BE.Models;
-using LMCM_BE.Models.Constant;
 using LMCM_BE.Services.ContractValueItemService;
 using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Utilities;
@@ -38,7 +37,7 @@ namespace LMCM_BE
                 {
                     UserName = hodEmail,
                     Email = hodEmail,
-                    Status = UserStatus.Active,
+                    Status = "2"
                 };
 
                 var result = await userManager.CreateAsync(newHOD);

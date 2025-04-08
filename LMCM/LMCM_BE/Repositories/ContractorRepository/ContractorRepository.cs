@@ -1,6 +1,5 @@
 ﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
-using LMCM_BE.Models.Constant;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.ContractorRepository
@@ -17,7 +16,7 @@ namespace LMCM_BE.Repositories.ContractorRepository
         public async Task<(List<Contractor>, int totalCount)> GetContractorsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.Contractors
-                .Where(c => c.Status == GenericStatus.Active)
+                .Where(c => c.Status == "Active")
                 .OrderByDescending(c => c.UpdatedAt)
                 .AsQueryable();
 
@@ -42,7 +41,7 @@ namespace LMCM_BE.Repositories.ContractorRepository
         public async Task<List<Contractor>> GetContractorsListAsync(string? searchKey)
         {
             var query = _dbContext.Contractors
-                .Where(c => c.Status == GenericStatus.Active)
+                .Where(c => c.Status == "Active")
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchKey))
@@ -76,7 +75,7 @@ namespace LMCM_BE.Repositories.ContractorRepository
         public async Task<Contractor> GetContractorDetailByIdAsync(Guid contractorId)
         {
             var contractor = await _dbContext.Contractors
-                .Where(c => c.ContractorId == contractorId && c.Status == GenericStatus.Active)
+                .Where(c => c.ContractorId == contractorId && c.Status == "Active")
                 .SingleOrDefaultAsync();
 
             return contractor;
@@ -84,7 +83,7 @@ namespace LMCM_BE.Repositories.ContractorRepository
         public async Task<Contractor?> GetActiveContractorByIdAsync(Guid contractorId)
         {
             var contractor = await _dbContext.Contractors
-                .Where(c => c.ContractorId == contractorId && c.Status == GenericStatus.Active)
+                .Where(c => c.ContractorId == contractorId && c.Status == "Active")
                 .SingleOrDefaultAsync();
 
             return contractor;

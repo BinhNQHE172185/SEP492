@@ -1,6 +1,5 @@
 ﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
-using LMCM_BE.Models.Constant;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.DocumentTemplateRepository
@@ -36,7 +35,7 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
 
             query = query.OrderByDescending(s => s.UpdatedAt);
 
-            query = query.Where(s => s.Status != DocumentTemplateStatus.Deleted);
+            query = query.Where(s => s.Status != "Deleted");
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
@@ -45,7 +44,7 @@ namespace LMCM_BE.Repositories.DocumentTemplateRepository
                                          s.TemplateName.ToLower().Contains(search) ||
                                          s.Author.UserName.ToLower().Contains(search) ||
                                          s.TemplateType.ToLower().Contains(search)||
-                                         s.Status.ToString().ToLower().Contains(search));
+                                         s.Status.ToLower().Contains(search));
             }
 
             int totalCount = await query.CountAsync();

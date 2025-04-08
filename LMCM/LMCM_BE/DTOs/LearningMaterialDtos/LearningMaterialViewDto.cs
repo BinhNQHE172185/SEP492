@@ -1,12 +1,10 @@
-﻿using LMCM_BE.Models.Constant;
-
-namespace LMCM_BE.DTOs.LearningMaterialDtos
+﻿namespace LMCM_BE.DTOs.LearningMaterialDtos
 {
     public class LearningMaterialViewDto
     {
         public string? LearningType { get; set; }
         public bool? IsImportedMaterial { get; set; }
-        public MaterialType MaterialType { get; set; }
+        public string? MaterialType { get; set; }
 
         public bool? IsMainMaterial { get; set; }
 
@@ -29,7 +27,7 @@ namespace LMCM_BE.DTOs.LearningMaterialDtos
 
         public string? Note { get; set; }
 
-        public LearningMaterialStatus Status { get; set; }
+        public string? Status { get; set; }
 
         public DateTime? CreatedAt { get; set; }
 

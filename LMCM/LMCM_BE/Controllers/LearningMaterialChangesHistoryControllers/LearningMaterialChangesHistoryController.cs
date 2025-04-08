@@ -1,7 +1,9 @@
 ﻿using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
+using LMCM_BE.Services.ContractService;
 using LMCM_BE.Services.LearningMaterialChangesHistoryService;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace LMCM_BE.Controllers.LearningMaterialChangesHistoryControllers
 {
@@ -10,12 +12,15 @@ namespace LMCM_BE.Controllers.LearningMaterialChangesHistoryControllers
     public class LearningMaterialChangesHistoryController : ControllerBase
     {
         private readonly ILearningMaterialChangesHistorySerivce _changesService;
+        private readonly IContractService _contractService;
 
         public LearningMaterialChangesHistoryController(
-            ILearningMaterialChangesHistorySerivce changesService
+            ILearningMaterialChangesHistorySerivce changesService,
+            IContractService contractService
             )
         {
             _changesService = changesService;
+            _contractService = contractService;
         }
 
         [HttpPost("getChangesHistoryList")]
@@ -59,101 +64,86 @@ namespace LMCM_BE.Controllers.LearningMaterialChangesHistoryControllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateLearningMaterialChangesHistory([FromBody] CreateLearningMaterialChangesHistoryDto historyDto)
         {
-            try
+            if (historyDto == null)
             {
-                if (!ModelState.IsValid)
-                {
-                    var errors = ModelState.Values.SelectMany(v => v.Errors)
-                                                  .Select(e => e.ErrorMessage)
-                                                  .ToList();
+                return BadRequest("Invalid data.");
+            }
+            if (historyDto.ContractId.HasValue)
+            {
+                var contract = await _contractService.GetContractByIdAsync(historyDto.ContractId.Value);
+                if (contract == null)
+                    return BadRequest(new { message = "Invalid ContractId." });
+            }
 
-                    return BadRequest(new
-                    {
-                        Success = false,
-                        Message = "Dữ liệu đầu vào không hợp lệ.",
-                        Errors = errors
-                    });
-                }
+            bool isSuccess = await _changesService.CreateLearningMaterialChangesHistoryAsync(historyDto);
+            if (isSuccess)
+                return Ok(new { message = "History created successfully" });
 
-                bool isSuccess = await _changesService.CreateLearningMaterialChangesHistoryAsync(historyDto);
-                
-                if (isSuccess)
-                    return Ok(new
-                    {
-                        Success = true,
-                        Message = "Tạo lịch sử thành công"
-                    });
-                return BadRequest(new
-                {
-                    Success = false,
-                    Message = "Không thể lịch sử. Vui lòng kiểm tra lại dữ liệu hoặc thử lại sau."
-                });
-            }
-            catch (InvalidDataException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-            catch (ArgumentNullException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
-            }
+            return StatusCode(500, "Failed to create history.");
         }
         [HttpPut("update/{historyId}")]
         public async Task<IActionResult> UpdateAcceptanceRecord(Guid historyId, [FromBody] UpdateLearningMaterialChangesHistoryDto request)
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    var errors = ModelState.Values.SelectMany(v => v.Errors)
-                                                  .Select(e => e.ErrorMessage)
-                                                  .ToList();
+                var updatedRecord = await _changesService.UpdateLearningMaterialChangesHistoryAsync(historyId, request);
 
-                    return BadRequest(new
-                    {
-                        Success = false,
-                        Message = "Dữ liệu đầu vào không hợp lệ.",
-                        Errors = errors
-                    });
-                }
-
-                bool isSuccess = await _changesService.UpdateLearningMaterialChangesHistoryAsync(historyId, request);
-
-                if (isSuccess)
+                if (updatedRecord.HasValue)
                     return Ok(new
                     {
-                        Success = true,
-                        Message = "Tạo lịch sử thành công"
+                        message = "Update thành công.",
+                        Data = updatedRecord,
+
                     });
+                else
+                {
+                    return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
+            }
+            catch (ValidationException ex)
+            {
                 return BadRequest(new
                 {
                     Success = false,
-                    Message = "Không thể lịch sử. Vui lòng kiểm tra lại dữ liệu hoặc thử lại sau."
+                    Message = ex.Message,
+                    Error = ex.Message
                 });
             }
-            catch (InvalidDataException ex)
+            catch (ArgumentException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
             }
-            catch (KeyNotFoundException ex)
+            catch (InvalidOperationException ex)
             {
-                return NotFound(new { message = ex.Message });
-            }
-            catch (ArgumentNullException ex)
-            {
-                return BadRequest(new { message = ex.Message });
+                return NotFound(new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
+                return StatusCode(500, new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
             }
         }
 

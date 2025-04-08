@@ -1,6 +1,5 @@
 ﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
-using LMCM_BE.Models.Constant;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.SyllabusRepository
@@ -36,7 +35,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
                                          s.CourseName.ToLower().Contains(search));
             }
 
-            query = query.Where(s => s.Status == GenericStatus.Active);
+            query = query.Where(s => s.Status == "Active");
 
             int totalCount = await query.CountAsync();
 
@@ -54,7 +53,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
 
             query = query.OrderBy(s => s.CourseCode);
 
-            query = query.Where(s => s.Status == GenericStatus.Active);
+            query = query.Where(s => s.Status != "Inactive");
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
@@ -97,18 +96,10 @@ namespace LMCM_BE.Repositories.SyllabusRepository
         public async Task<Syllabus?> GetActiveSyllabusBySubjectIdAsync(Guid subjectId)
         {
             var syllabus = await _dbContext.Syllabus
-               .Where(s => s.SubjectId == subjectId && s.Status == GenericStatus.Active)
+               .Where(s => s.SubjectId == subjectId && s.Status == "Active")
                .FirstOrDefaultAsync();
 
             return syllabus;
-        }
-        public async Task<List<Syllabus>> GetSyllabusesBySubjectIdAsync(Guid subjectId)
-        {
-            var syllabuses = await _dbContext.Syllabus
-                .Where(s => s.SubjectId == subjectId)
-                .ToListAsync();
-
-            return syllabuses;
         }
 
         public async Task<Syllabus> GetSyllabusDetailAsync(Guid? syllabusId)
@@ -134,20 +125,11 @@ namespace LMCM_BE.Repositories.SyllabusRepository
 
             return syllabus;
         }
-        public async Task<Syllabus> GetActiveSyllabusByIdAsync(Guid? syllabusId)
-        {
-            var syllabus = await _dbContext.Syllabus
-                .AsNoTracking()
-                .Where(s => s.SyllabusId == syllabusId && s.Status == GenericStatus.Active)
-                .SingleOrDefaultAsync();
-
-            return syllabus;
-        }
         public async Task<Syllabus> GetSyllabusByCourseCodeAsync(string courseCode)
         {
             var syllabus = await _dbContext.Syllabus
                 .AsNoTracking()
-                .Where(s => s.CourseCode == courseCode && s.Status == GenericStatus.Active)
+                .Where(s => s.CourseCode == courseCode && s.Status == "Active")
                 .SingleOrDefaultAsync();
 
             return syllabus;

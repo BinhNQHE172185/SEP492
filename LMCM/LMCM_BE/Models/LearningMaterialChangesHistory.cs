@@ -1,5 +1,4 @@
-﻿using LMCM_BE.Models.Constant;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace LMCM_BE.Models;
@@ -24,7 +23,7 @@ public partial class LearningMaterialChangesHistory
 
     public string? CourseCode { get; set; }
 
-    public GenericStatus Status { get; set; }
+    public string? Status { get; set; }
 
     public virtual Contract? Contract { get; set; }
 

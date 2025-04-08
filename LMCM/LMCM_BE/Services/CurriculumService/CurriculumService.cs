@@ -3,7 +3,6 @@ using LMCM_BE.DTOs.CurriculumDtos;
 using LMCM_BE.DTOs.CurriculumsSubjectDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
-using LMCM_BE.Models.Constant;
 using LMCM_BE.Repositories.CurriculumRepository;
 using LMCM_BE.Repositories.CurriculumsSubjectRepository;
 using LMCM_BE.Repositories.PloRepository;
@@ -98,7 +97,7 @@ namespace LMCM_BE.Services.CurriculumService
                 await _ploSubjectRepository.HasActivePloSubjectByCurriculumIdAsync(curriculumId))
                 throw new InvalidOperationException("Không thể xóa môn học khi có thực thể liên quan đang hoạt động.");
  
-            curriculum.Status = GenericStatus.Inactive;
+            curriculum.Status = "Inactive";
             curriculum.UpdatedAt = DateTime.UtcNow;
 
             return await _curriculumRepository.UpdateCurriculumAsync(curriculum);
@@ -109,7 +108,7 @@ namespace LMCM_BE.Services.CurriculumService
             if (curriculum == null)
                 return true;
 
-            curriculum.Status = GenericStatus.Inactive;
+            curriculum.Status = "Inactive";
             curriculum.UpdatedAt = DateTime.UtcNow;
 
             try
@@ -199,7 +198,7 @@ namespace LMCM_BE.Services.CurriculumService
                     EnglishVocationalName = curriculumSheet.Cells["C8"].Text,
                     DecisionNo = curriculumSheet.Cells["C9"].Text,
                     ApprovedDate = DateTime.TryParse(curriculumSheet.Cells["C10"].Text, out DateTime approvedDate) ? approvedDate : null,
-                    Status = GenericStatus.Active,
+                    Status = "Active",
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                     Plos = new List<Plo>(),
@@ -252,7 +251,7 @@ namespace LMCM_BE.Services.CurriculumService
                         TermNo = tempSubject.TermNo,
                         Credit = tempSubject.Credit,
                         Options = tempSubject.Options,
-                        Status = GenericStatus.Active,
+                        Status = "Active",
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow
                     });
@@ -269,7 +268,7 @@ namespace LMCM_BE.Services.CurriculumService
                         CurriculumId = curriculum.CurriculumId,
                         PloName = ploSheet.Cells[ploRow, 2].Text,
                         PloDescription = ploSheet.Cells[ploRow, 3].Text,
-                        Status = GenericStatus.Active,
+                        Status = "Active",
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
                         PloSubjects = new List<PloSubject>(),
@@ -305,7 +304,7 @@ namespace LMCM_BE.Services.CurriculumService
                             {
                                 PloId = plo.PloId,
                                 SubjectId = subject.SubjectId,
-                                Status = GenericStatus.Active,
+                                Status = "Active",
                                 CreatedAt = DateTime.UtcNow,
                                 UpdatedAt = DateTime.UtcNow
                             });

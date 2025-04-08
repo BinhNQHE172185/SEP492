@@ -1,5 +1,6 @@
 ﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
+using LMCM_BE.Models.Constant;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.BudgetPropasalRepository
@@ -32,7 +33,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
         {
             var budgetProposal = await _dbContext.BudgetProposals
                 .Include(s => s.Author)
-                .Where(s => s.ProposalId == proposalId && s.Status == "Active")
+                .Where(s => s.ProposalId == proposalId && s.Status == GenericStatus.Active)
                 .SingleOrDefaultAsync();
 
             return budgetProposal;
@@ -45,7 +46,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
 
             if (!isHod) query = query.Where(s => s.AuthorId == userId);
 
-            query = query.Where(s => s.Status == "Active");
+            query = query.Where(s => s.Status == GenericStatus.Active);
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
@@ -74,7 +75,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
 
             if (!isHod) query = query.Where(s => s.AuthorId == userId);
 
-            query = query.Where(s => s.Status == "Active");
+            query = query.Where(s => s.Status == GenericStatus.Active);
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
@@ -99,7 +100,7 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
         public async Task<int> BudgetCountAsync()
         {
             var budgetCount = await _dbContext.BudgetProposals
-                .Where(s => s.Status == "Active")
+                .Where(s => s.Status == GenericStatus.Active)
                 .CountAsync();
             return budgetCount;
         }

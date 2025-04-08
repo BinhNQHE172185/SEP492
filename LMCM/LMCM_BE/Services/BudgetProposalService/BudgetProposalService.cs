@@ -3,6 +3,7 @@ using LMCM_BE.DTOs.BudgetProposalDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Models.Constant;
 using LMCM_BE.Repositories.BudgetPropasalRepository;
 using LMCM_BE.Repositories.ContractRepository;
 using LMCM_BE.Repositories.UserRepositoriy;
@@ -67,7 +68,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
             newProposal.ProposalId = Guid.NewGuid();
             newProposal.Url = fileUrl;
             newProposal.AuthorId = user.Id;
-            newProposal.Status = "Active";
+            newProposal.Status = GenericStatus.Active;
             newProposal.CreatedAt = DateTime.UtcNow;
             newProposal.UpdatedAt = DateTime.UtcNow;
 
@@ -163,7 +164,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                budgetProposal.Status = "Inactive";
+                budgetProposal.Status = GenericStatus.Inactive;
                 budgetProposal.UpdatedAt = DateTime.UtcNow; 
 
                 await _budgetProposalRepository.UpdateBudgetProposalAsync(budgetProposal);

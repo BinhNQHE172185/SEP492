@@ -1,5 +1,6 @@
 ﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
+using LMCM_BE.Models.Constant;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.SyllabusRepository
@@ -35,7 +36,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
                                          s.CourseName.ToLower().Contains(search));
             }
 
-            query = query.Where(s => s.Status == "Active");
+            query = query.Where(s => s.Status == GenericStatus.Active);
 
             int totalCount = await query.CountAsync();
 
@@ -53,7 +54,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
 
             query = query.OrderBy(s => s.CourseCode);
 
-            query = query.Where(s => s.Status != "Inactive");
+            query = query.Where(s => s.Status == GenericStatus.Active);
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
@@ -96,7 +97,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
         public async Task<Syllabus?> GetActiveSyllabusBySubjectIdAsync(Guid subjectId)
         {
             var syllabus = await _dbContext.Syllabus
-               .Where(s => s.SubjectId == subjectId && s.Status == "Active")
+               .Where(s => s.SubjectId == subjectId && s.Status == GenericStatus.Active)
                .FirstOrDefaultAsync();
 
             return syllabus;
@@ -137,7 +138,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
         {
             var syllabus = await _dbContext.Syllabus
                 .AsNoTracking()
-                .Where(s => s.SyllabusId == syllabusId && s.Status == "Active")
+                .Where(s => s.SyllabusId == syllabusId && s.Status == GenericStatus.Active)
                 .SingleOrDefaultAsync();
 
             return syllabus;
@@ -146,7 +147,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
         {
             var syllabus = await _dbContext.Syllabus
                 .AsNoTracking()
-                .Where(s => s.CourseCode == courseCode && s.Status == "Active")
+                .Where(s => s.CourseCode == courseCode && s.Status == GenericStatus.Active)
                 .SingleOrDefaultAsync();
 
             return syllabus;

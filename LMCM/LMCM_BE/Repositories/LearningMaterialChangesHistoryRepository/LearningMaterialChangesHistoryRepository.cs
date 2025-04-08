@@ -1,5 +1,6 @@
 ﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
+using LMCM_BE.Models.Constant;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository
@@ -15,7 +16,7 @@ namespace LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository
         {
             var query = _dbContext.LearningMaterialChangesHistories.AsQueryable();
 
-            query = query.Where(s => s.Status != "Inactive");
+            query = query.Where(s => s.Status == GenericStatus.Active);
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
@@ -79,7 +80,7 @@ namespace LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository
         public async Task<LearningMaterialChangesHistory?> getHistoryOfChangeDetail(Guid id)
         {
             return await _dbContext.LearningMaterialChangesHistories
-                            .Where(h => h.HistoryId == id && h.Status == "Active")
+                            .Where(h => h.HistoryId == id && h.Status == GenericStatus.Active)
                             .Include(h => h.Syllabus)
                             .Include(h => h.Contract)
                             .FirstOrDefaultAsync();;
@@ -87,7 +88,7 @@ namespace LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository
         public async Task<LearningMaterialChangesHistory?> GetActiveHistoryByIdAsync(Guid historyId)
         {
             return await _dbContext.LearningMaterialChangesHistories
-                .FirstOrDefaultAsync(h => h.HistoryId == historyId && h.Status == "Active");
+                .FirstOrDefaultAsync(h => h.HistoryId == historyId && h.Status == GenericStatus.Active);
         }
 
         public async Task<List<LearningMaterialChangesHistory>> GetAllWithCompletionDateAsync()

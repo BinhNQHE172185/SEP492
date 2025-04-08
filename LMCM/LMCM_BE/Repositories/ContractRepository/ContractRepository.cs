@@ -1,5 +1,6 @@
 ﻿using LMCM_BE.DbContext;
 using LMCM_BE.Models;
+using LMCM_BE.Models.Constant;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Repositories.ContractRepository
@@ -28,7 +29,7 @@ namespace LMCM_BE.Repositories.ContractRepository
 
             if (!isHod) query = query.Where(s => s.AuthorId == userId);
 
-            query = query.Where(s => s.Status != "Inactive");
+            query = query.Where(s => s.Status == GenericStatus.Active);
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
@@ -62,7 +63,7 @@ namespace LMCM_BE.Repositories.ContractRepository
         {
             return await _dbContext.Contracts
                 .Include(s => s.Author)
-                .FirstOrDefaultAsync(s => s.ContractId == contractId && s.Status == "Active");
+                .FirstOrDefaultAsync(s => s.ContractId == contractId && s.Status == GenericStatus.Active);
         }
         public async Task<Contract?> GetContractByIdAsync(Guid contractId)
         {
@@ -79,7 +80,7 @@ namespace LMCM_BE.Repositories.ContractRepository
 
             if (!isHod) query = query.Where(s => s.AuthorId == userId);
 
-            query = query.Where(s => s.Status != "Inactive");
+            query = query.Where(s => s.Status == GenericStatus.Active);
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
@@ -105,13 +106,13 @@ namespace LMCM_BE.Repositories.ContractRepository
         public async Task<bool> HasActiveConntractsAsync(Guid proposalId)
         {
             return await _dbContext.Contracts
-                  .AnyAsync(p => p.ProposalId == proposalId && p.Status == "Active");
+                  .AnyAsync(p => p.ProposalId == proposalId && p.Status == GenericStatus.Active);
         }
 
         public async Task<bool> HasActiveContractsAsync(Guid contractorId)
         {
             return await _dbContext.Contracts
-                .AnyAsync(p => p.ContractorId == contractorId && p.Status == "Active");
+                .AnyAsync(p => p.ContractorId == contractorId && p.Status == GenericStatus.Active);
         }
 
         public async Task<bool> UpdateContractAsync(Contract newContract)

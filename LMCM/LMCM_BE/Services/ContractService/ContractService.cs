@@ -3,6 +3,7 @@ using LMCM_BE.DTOs.ContractDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Models.Constant;
 using LMCM_BE.Repositories.AcceptanceRecordRepository;
 using LMCM_BE.Repositories.BudgetPropasalRepository;
 using LMCM_BE.Repositories.ContractorRepository;
@@ -83,7 +84,7 @@ namespace LMCM_BE.Services.ContractService
             newContract.Url = fileUrl;
             newContract.AuthorId = user.Id;
             newContract.ContractId = Guid.NewGuid();
-            newContract.Status = "Active";
+            newContract.Status = GenericStatus.Active;
             newContract.CreatedAt = DateTime.UtcNow;
             newContract.UpdatedAt = DateTime.UtcNow;
 
@@ -176,8 +177,8 @@ namespace LMCM_BE.Services.ContractService
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                
-                contract.Status = "Inactive";
+
+                contract.Status = GenericStatus.Inactive;
                 contract.UpdatedAt = DateTime.UtcNow;
                 
                 await _contractRepository.UpdateContractAsync(contract);

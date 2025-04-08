@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LMCM_BE.Models.Constant;
+using System;
 using System.Collections.Generic;
 
 namespace LMCM_BE.Models;
@@ -25,7 +26,7 @@ public partial class Contract
 
     public string? Url { get; set; }
 
-    public string? Status { get; set; }
+    public GenericStatus Status { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 

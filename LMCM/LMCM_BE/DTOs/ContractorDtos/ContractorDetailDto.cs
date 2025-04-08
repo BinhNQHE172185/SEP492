@@ -1,4 +1,6 @@
-﻿namespace LMCM_BE.DTOs.ContractorDtos
+﻿using LMCM_BE.Models.Constant;
+
+namespace LMCM_BE.DTOs.ContractorDtos
 {
     public class ContractorDetailDto
     {
@@ -26,7 +28,7 @@
 
         public string? BankName { get; set; }
 
-        public string? Status { get; set; }
+        public GenericStatus Status { get; set; }
 
         public DateTime? CreatedAt { get; set; }
 

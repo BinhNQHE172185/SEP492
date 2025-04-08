@@ -4,6 +4,7 @@ using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Models.Constant;
 using LMCM_BE.Repositories.ContractRepository;
 using LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository;
 using LMCM_BE.Repositories.SyllabusRepository;
@@ -75,7 +76,7 @@ namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
             var history = _mapper.Map<LearningMaterialChangesHistory>(historyDto);
             history.UserId = user.Id;
             history.HistoryId = Guid.NewGuid();
-            history.Status = "Active";
+            history.Status = GenericStatus.Active;
 
             try
             {
@@ -171,7 +172,7 @@ namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
             if (user.Id != historyRecord.UserId && !user.Roles.Contains("Head of Department"))
                 throw new UnauthorizedAccessException("Người dùng không có quyền xóa lịch sử này.");
 
-            historyRecord.Status = "Inactive";
+            historyRecord.Status = GenericStatus.Inactive;
 
             try
             {

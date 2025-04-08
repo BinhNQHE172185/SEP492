@@ -7,6 +7,7 @@ using LMCM_BE.DTOs.ScheduleDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Models.Constant;
 using LMCM_BE.Repositories.CLORepository;
 using LMCM_BE.Repositories.ConstructivistQuestionRepository;
 using LMCM_BE.Repositories.GradingStructureRepository;
@@ -51,7 +52,7 @@ namespace LMCM_BE.Services.SyllabusService
             Syllabus syllabus = await _syllabusRepository.GetSyllabusByIdAsync(id);
             if (syllabus == null) throw new KeyNotFoundException("Không tìm thấy đề cương.");
 
-            syllabus.Status = "Inactive";
+            syllabus.Status = GenericStatus.Inactive;
             syllabus.UpdatedAt = DateTime.UtcNow;
 
             try
@@ -222,7 +223,7 @@ namespace LMCM_BE.Services.SyllabusService
                 var existingSyllabus = await _syllabusRepository.GetSyllabusByCourseCodeAsync(syllabus.CourseCode);
 
                 syllabus.SyllabusId = Guid.NewGuid();
-                syllabus.Status = "Active";
+                syllabus.Status = GenericStatus.Active;
                 syllabus.CreatedAt = DateTime.UtcNow;
                 syllabus.UpdatedAt = DateTime.UtcNow;
 
@@ -231,7 +232,7 @@ namespace LMCM_BE.Services.SyllabusService
                 // Delete old entities if syllabus already exists
                 if (existingSyllabus != null)
                 {
-                    existingSyllabus.Status = "Inactive";
+                    existingSyllabus.Status = GenericStatus.Inactive;
                     existingSyllabus.UpdatedAt= DateTime.UtcNow;    
                     await _syllabusRepository.UpdateSyllabusAsync(existingSyllabus);
                 }
@@ -288,7 +289,7 @@ namespace LMCM_BE.Services.SyllabusService
             {
                 schedule.SyllabusId = newSyllabusId;
                 schedule.ScheduleId = Guid.NewGuid();
-                schedule.Status = "Active";
+                schedule.Status = GenericStatus.Active;
                 schedule.CreatedAt = DateTime.UtcNow;
                 schedule.UpdatedAt = DateTime.UtcNow;
             }
@@ -299,7 +300,7 @@ namespace LMCM_BE.Services.SyllabusService
                 var oldSchedules = await _ScheduleRepository.GetSchedulesBySyllabusAsync((Guid)oldSyllabusId);
                 foreach (var schedule in oldSchedules)
                 {
-                    schedule.Status = "Inactive";
+                    schedule.Status = GenericStatus.Inactive;
                     schedule.UpdatedAt = DateTime.UtcNow;
                 }
                 await _ScheduleRepository.UpdateSchedulesAsync(oldSchedules);
@@ -344,7 +345,7 @@ namespace LMCM_BE.Services.SyllabusService
             {
                 clo.SyllabusId = newSyllabusId;
                 clo.CloId = Guid.NewGuid();
-                clo.Status = "Active";
+                clo.Status = GenericStatus.Active;
                 clo.CreatedAt = DateTime.UtcNow;
                 clo.UpdatedAt = DateTime.UtcNow;
             }
@@ -354,7 +355,7 @@ namespace LMCM_BE.Services.SyllabusService
                 var oldClos = await _CLORepository.GetCLOsBySyllabusASync((Guid)oldSyllabusId);
                 foreach (var clo in oldClos)
                 {
-                    clo.Status = "Inactive";
+                    clo.Status = GenericStatus.Inactive;
                     clo.UpdatedAt = DateTime.UtcNow;
                 }
                 await _CLORepository.UpdateCLOsAsync(oldClos);
@@ -411,7 +412,7 @@ namespace LMCM_BE.Services.SyllabusService
             {
                 structure.SyllabusId = newSyllabusId;
                 structure.StructureId = Guid.NewGuid();
-                structure.Status = "Active";
+                structure.Status = GenericStatus.Active;
                 structure.CreatedAt = DateTime.UtcNow;
                 structure.UpdatedAt = DateTime.UtcNow;
             }
@@ -421,7 +422,7 @@ namespace LMCM_BE.Services.SyllabusService
                 var oldGradingStructures = await _GradingStructureRepository.GetGradingStructuresBySyllabusAsync((Guid)oldSyllabusId);
                 foreach (var gradingStructure in gradingStructures)
                 {
-                    gradingStructure.Status = "Inactive";
+                    gradingStructure.Status = GenericStatus.Inactive;
                     gradingStructure.UpdatedAt = DateTime.UtcNow;
                 }
                 await _GradingStructureRepository.UpdateGradingStructuresAsync(oldGradingStructures);
@@ -468,7 +469,7 @@ namespace LMCM_BE.Services.SyllabusService
                 {
                     question.SyllabusId = newSyllabusId;
                     question.QuestionId = Guid.NewGuid();
-                    question.Status = "Active";
+                    question.Status = GenericStatus.Active;
                     question.CreatedAt = DateTime.UtcNow;
                     question.UpdatedAt = DateTime.UtcNow;
                 }
@@ -478,7 +479,7 @@ namespace LMCM_BE.Services.SyllabusService
                     var oldConstructivistQuestions = await _ConstructivistQuestionRepository.GetConstructivistQuestionsBySyllabusAsync((Guid)oldSyllabusId);
                     foreach (var question in oldConstructivistQuestions)
                     {
-                        question.Status = "Inactive";
+                        question.Status = GenericStatus.Inactive;
                         question.UpdatedAt = DateTime.UtcNow;
                     }
                     await _ConstructivistQuestionRepository.UpdateConstructivistQuestionsAsync(oldConstructivistQuestions);

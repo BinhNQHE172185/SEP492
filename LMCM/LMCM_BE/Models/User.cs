@@ -1,4 +1,4 @@
-﻿using LMCM_BE.Models.Constant;
+﻿using LMCM_BE.Shared.Constant;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;

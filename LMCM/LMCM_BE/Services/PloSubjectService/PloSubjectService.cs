@@ -1,5 +1,5 @@
-﻿using LMCM_BE.Repositories.PloSubjectRepository;
-using LMCM_BE.Shared.Constant;
+﻿using LMCM_BE.Models.Constant;
+using LMCM_BE.Repositories.PloSubjectRepository;
 
 namespace LMCM_BE.Services.PloSubjectService
 {

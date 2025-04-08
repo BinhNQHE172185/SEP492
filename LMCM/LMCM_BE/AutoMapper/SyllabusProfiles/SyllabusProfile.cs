@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using LMCM_BE.DTOs.SyllabusDtos;
 using LMCM_BE.Models;
-using LMCM_BE.Shared.Constant;
+using LMCM_BE.Models.Constant;
 
 namespace LMCM_BE.AutoMapper.SyllabusProfiles
 {

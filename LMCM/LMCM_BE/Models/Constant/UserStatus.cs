@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LMCM_BE.Shared.Constant
+namespace LMCM_BE.Models.Constant
 {
     public enum UserStatus
     {

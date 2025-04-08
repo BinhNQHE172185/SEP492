@@ -2,11 +2,11 @@
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SubjectDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Models.Constant;
 using LMCM_BE.Repositories.CurriculumsSubjectRepository;
 using LMCM_BE.Repositories.PloSubjectRepository;
 using LMCM_BE.Repositories.SubjectRepository.SubjectRepository;
 using LMCM_BE.Repositories.SyllabusRepository;
-using LMCM_BE.Shared.Constant;
 using LMCM_BE.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;

@@ -1,4 +1,4 @@
-﻿using LMCM_BE.Shared.Constant;
+﻿using LMCM_BE.Models.Constant;
 
 namespace LMCM_BE.DTOs.UserDtos
 {

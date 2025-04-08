@@ -3,7 +3,7 @@ using LMCM_BE.DTOs.BudgetProposalDtos;
 using LMCM_BE.DTOs.ContractorDtos;
 using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.UserDtos;
-using LMCM_BE.Shared.Constant;
+using LMCM_BE.Models.Constant;
 
 namespace LMCM_BE.DTOs.ContractDtos
 {

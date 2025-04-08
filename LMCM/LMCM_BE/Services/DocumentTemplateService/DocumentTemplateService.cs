@@ -3,10 +3,10 @@ using LMCM_BE.DTOs.DocumentTemplateDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Models.Constant;
 using LMCM_BE.Repositories.DocumentTemplateRepository;
 using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Services.UserService;
-using LMCM_BE.Shared.Constant;
 using LMCM_BE.UnitOfWork;
 using LMCM_BE.Utilities;
 

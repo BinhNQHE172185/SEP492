@@ -7,6 +7,7 @@ using LMCM_BE.DTOs.ScheduleDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.SyllabusDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Models.Constant;
 using LMCM_BE.Repositories.CLORepository;
 using LMCM_BE.Repositories.ConstructivistQuestionRepository;
 using LMCM_BE.Repositories.GradingStructureRepository;
@@ -14,7 +15,6 @@ using LMCM_BE.Repositories.ScheduleRepository;
 using LMCM_BE.Repositories.SubjectRepository.SubjectRepository;
 using LMCM_BE.Repositories.SyllabusRepository;
 using LMCM_BE.Services.LearningMaterialService;
-using LMCM_BE.Shared.Constant;
 using LMCM_BE.UnitOfWork;
 using OfficeOpenXml;
 

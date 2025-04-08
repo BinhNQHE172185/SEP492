@@ -4,7 +4,8 @@ namespace LMCM_BE.Repositories.CLORepository
 {
     public interface ICLORepository
     {
-        Task<bool> ImportCLOsAsync(List<Clo> cLOs,Guid syllabusId);
-        Task<bool> DeleteCLOBySyllabusAsync(Guid syllabusId);
+        Task<List<Clo>> GetCLOsBySyllabusASync(Guid syllabusId);
+        Task<bool> AddCLOsAsync(List<Clo> cLOs);
+        Task<bool> UpdateCLOsAsync(List<Clo> cLOs);
     }
 }

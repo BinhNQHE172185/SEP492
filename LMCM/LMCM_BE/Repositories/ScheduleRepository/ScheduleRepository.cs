@@ -15,43 +15,26 @@ namespace LMCM_BE.Repositories.ScheduleRepository
         {
             _dbContext = dbContext;
         }
-        public async Task<bool> DeleteSchedulesBySyllabusAsync(Guid syllabusId)
+        public async Task<bool> UpdateSchedulesAsync(List<Schedule> schedules)
         {
-            var schedules = await _dbContext.Schedules
-                .Where(s => s.SyllabusId == syllabusId)
-                .ToListAsync();
-
-            if (!schedules.Any())
-                return false; // No schedules found for the given syllabus
-
-            foreach (var schedule in schedules)
-            {
-                schedule.Status = "Inactive";
-                schedule.UpdatedAt = DateTime.UtcNow;
-            }
-
             _dbContext.Schedules.UpdateRange(schedules);
 
             return true;
         }
 
-        public async Task<bool> ImportSchedulesAsync(List<Schedule> schedules, Guid syllabusId)
+        public async Task<bool> AddSchedulesAsync(List<Schedule> schedules)
         {
-            if (schedules == null || !schedules.Any())
-                throw new ArgumentNullException(nameof(schedules));
-
-            foreach (var schedule in schedules)
-            {
-                schedule.SyllabusId = syllabusId;
-                schedule.ScheduleId = Guid.NewGuid();
-                schedule.Status = "Active";
-                schedule.CreatedAt = DateTime.UtcNow;
-                schedule.UpdatedAt = DateTime.UtcNow;
-            }
-
             await _dbContext.Schedules.AddRangeAsync(schedules);
 
             return true;
+        }
+
+        public async Task<List<Schedule>> GetSchedulesBySyllabusAsync(Guid syllabusId)
+        {
+            var schedules = await _dbContext.Schedules
+                .Where(s => s.SyllabusId == syllabusId)
+                .ToListAsync();
+            return schedules;
         }
     }
 }

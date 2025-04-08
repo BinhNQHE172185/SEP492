@@ -4,7 +4,7 @@ namespace LMCM_BE.Repositories.ConstructivistQuestionRepository
 {
     public interface IConstructivistQuestionRepository
     {
-        Task<bool> ImportConstructivistQuestionsAsync(List<ConstructivistQuestion> questions, Guid syllabusId);
+        Task<bool> AddConstructivistQuestionsAsync(List<ConstructivistQuestion> questions);
         Task<bool> DeleteConstructivistQuestionsBySyllabusAsync(Guid syllabusId);
     }
 }

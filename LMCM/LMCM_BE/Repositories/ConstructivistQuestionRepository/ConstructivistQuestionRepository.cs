@@ -33,20 +33,8 @@ namespace LMCM_BE.Repositories.ConstructivistQuestionRepository
             return true;
         }
 
-        public async Task<bool> ImportConstructivistQuestionsAsync(List<ConstructivistQuestion> questions, Guid syllabusId)
+        public async Task<bool> AddConstructivistQuestionsAsync(List<ConstructivistQuestion> questions)
         {
-            if (questions == null || !questions.Any())
-                return false;
-
-            foreach (var question in questions)
-            {
-                question.SyllabusId = syllabusId;
-                question.QuestionId = Guid.NewGuid();
-                question.Status = "Active";
-                question.CreatedAt = DateTime.UtcNow;
-                question.UpdatedAt = DateTime.UtcNow;
-            }
-
             await _dbContext.ConstructivistQuestions.AddRangeAsync(questions);
 
             return true;

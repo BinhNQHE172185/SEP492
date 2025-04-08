@@ -2,9 +2,9 @@
 using LMCM_BE.DTOs.ContractorDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
-using LMCM_BE.Models.Constant;
 using LMCM_BE.Repositories.ContractorRepository;
 using LMCM_BE.Repositories.ContractRepository;
+using LMCM_BE.Shared.Constant;
 using LMCM_BE.UnitOfWork;
 
 namespace LMCM_BE.Services.ContractorService

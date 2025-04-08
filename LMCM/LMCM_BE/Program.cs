@@ -62,6 +62,7 @@ using LMCM_BE.UnitOfWork;
 using LMCM_BE.Services.CurriculumsSubjectService;
 using LMCM_BE.Services.PloSubjectService;
 using LMCM_BE.Services.DashboardService;
+using LMCM_BE.AutoMapper.ContractValueItemProfiles;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -155,6 +156,7 @@ builder.Services.AddAutoMapper(typeof(PloProfile));
 builder.Services.AddAutoMapper(typeof(ContractProfile));
 builder.Services.AddAutoMapper(typeof(AcceptanceRecordProfile));
 builder.Services.AddAutoMapper(typeof(DocumentTemplateProfile));
+builder.Services.AddAutoMapper(typeof(ContractValueItemProfile));
 
 //DI
 builder.Services.AddScoped<RoleManager<IdentityRole<Guid>>>();

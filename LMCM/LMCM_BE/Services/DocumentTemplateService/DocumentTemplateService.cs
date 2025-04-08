@@ -3,6 +3,7 @@ using LMCM_BE.DTOs.DocumentTemplateDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Models.Constant;
 using LMCM_BE.Repositories.DocumentTemplateRepository;
 using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Services.UserService;
@@ -126,7 +127,7 @@ namespace LMCM_BE.Services.DocumentTemplateService
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                template.Status = "Deleted";
+                template.Status = DocumentTemplateStatus.Deleted;
                 template.UpdatedAt = DateTime.UtcNow;  
                 await _documentTemplateRepository.UpdateTemplateAsync(template);
                 await _unitOfWork.CommitAsync();

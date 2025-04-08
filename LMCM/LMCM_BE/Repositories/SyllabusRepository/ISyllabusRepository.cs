@@ -10,8 +10,10 @@ namespace LMCM_BE.Repositories.SyllabusRepository
         Task<bool> ImportSyllabusAsync(Syllabus syllabus);
         Task<Syllabus> GetSyllabusDetailAsync(Guid? syllabusId);
         Task<Syllabus> GetSyllabusByIdAsync(Guid? syllabusId);
+        Task<Syllabus> GetActiveSyllabusByIdAsync(Guid? syllabusId);
         Task<Syllabus> GetSyllabusByCourseCodeAsync(string courseCode);
         Task<Syllabus?> GetActiveSyllabusBySubjectIdAsync(Guid subjectId);
+        Task<List<Syllabus>> GetSyllabusesBySubjectIdAsync(Guid subjectId);
         Task<bool> UpdateSyllabusAsync(Syllabus syllabus);
     }
 }

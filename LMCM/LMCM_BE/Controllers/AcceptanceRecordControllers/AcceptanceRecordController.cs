@@ -52,12 +52,18 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
                     });
                 }
 
-                var acceptanceRecord = await _acceptanceRecordService.CreateAcceptanceRecordAsync(acceptanceRecordDto);
+                var isSuccess = await _acceptanceRecordService.CreateAcceptanceRecordAsync(acceptanceRecordDto);
+                
+                if (isSuccess)
                 return Ok(new
                 {
                     Success = true,
-                    Message = "Biên bản nghiệm thu đã được tạo thành công.",
-                    Data = acceptanceRecord
+                    Message = "Biên bản nghiệm thu đã được tạo thành công."
+                });
+                return BadRequest(new
+                {
+                    Success = false,
+                    Message = "Không thể tạo biên bản nghiệm thu. Vui lòng kiểm tra lại dữ liệu hoặc thử lại sau."
                 });
             }
             catch (UnauthorizedAccessException ex)

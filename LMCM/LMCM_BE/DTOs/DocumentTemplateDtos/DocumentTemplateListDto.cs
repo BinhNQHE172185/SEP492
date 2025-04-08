@@ -1,4 +1,5 @@
 ﻿using LMCM_BE.DTOs.UserDtos;
+using LMCM_BE.Models.Constant;
 
 namespace LMCM_BE.DTOs.DocumentTemplateDtos
 {
@@ -14,7 +15,7 @@ namespace LMCM_BE.DTOs.DocumentTemplateDtos
 
         public string? Url { get; set; }
 
-        public string? Status { get; set; }
+        public DocumentTemplateStatus Status { get; set; }
 
         public DateTime? CreatedAt { get; set; }
 

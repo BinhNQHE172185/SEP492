@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LMCM_BE.Models.Constant;
+using System;
 using System.Collections.Generic;
 
 namespace LMCM_BE.Models;
@@ -11,7 +12,7 @@ public partial class LearningMaterial
 
     public string? LearningType { get; set; } 
 
-    public string? MaterialType { get; set; } 
+    public MaterialType MaterialType { get; set; } 
 
     public bool? IsMainMaterial { get; set; } 
 
@@ -35,7 +36,7 @@ public partial class LearningMaterial
 
     public string? Note { get; set; } 
 
-    public string? Status { get; set; } 
+    public LearningMaterialStatus Status { get; set; } 
 
     public DateTime? CreatedAt { get; set; } 
 

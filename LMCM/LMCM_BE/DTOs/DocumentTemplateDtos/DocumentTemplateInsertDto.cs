@@ -1,4 +1,5 @@
 ﻿using LMCM_BE.DTOs.UserDtos;
+using LMCM_BE.Models.Constant;
 using System.ComponentModel.DataAnnotations;
 using static LMCM_BE.DTOs.Validators.SharedValidationAtributes;
 
@@ -14,7 +15,7 @@ namespace LMCM_BE.DTOs.DocumentTemplateDtos
         [MinLength(3, ErrorMessage = "Tên phải có ít nhất 3 ký tự")]
         [RegularExpression(@"^\s*\S.*$", ErrorMessage = "Tên không được chỉ chứa khoảng trắng")]
         public string TemplateName { get; set; } = null!;
-        public string? Status { get; set; }
+        public DocumentTemplateStatus Status { get; set; }
 
         [Required(ErrorMessage = "File đính kèm là bắt buộc")]
         [AllowedFileExtensions(new string[] { ".pdf" }, ErrorMessage = "Chỉ chấp nhận các tệp có định dạng .pdf")]

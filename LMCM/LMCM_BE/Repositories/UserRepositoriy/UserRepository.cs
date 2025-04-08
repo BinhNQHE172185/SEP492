@@ -4,6 +4,7 @@ using LMCM_BE.DbContext;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Models.Constant;
 using LMCM_BE.Services.GoogleDriveService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -49,7 +50,7 @@ namespace LMCM_BE.Repositories.UserRepositoriy
 
             if (user == null)
             {
-                var newStaff = new User { UserName = request, Email = request, Status = "1" };
+                var newStaff = new User { UserName = request, Email = request, Status = UserStatus.Pending };
                 var result = await _userManager.CreateAsync(newStaff);
 
                 if (result.Succeeded)
@@ -98,7 +99,7 @@ namespace LMCM_BE.Repositories.UserRepositoriy
         {
             var user = await _userManager.FindByEmailAsync(payload.Email);
 
-            if (user == null || user.Status.Equals("3"))
+            if (user == null || user.Status == UserStatus.Stopped)
             {
                 return null;
             }
@@ -107,7 +108,7 @@ namespace LMCM_BE.Repositories.UserRepositoriy
             {
                 user.Name = payload.Name;
                 user.Picture = payload.Picture;
-                user.Status = "2";
+                user.Status = UserStatus.Active;
                 await _userManager.UpdateAsync(user);
             }
             return user;

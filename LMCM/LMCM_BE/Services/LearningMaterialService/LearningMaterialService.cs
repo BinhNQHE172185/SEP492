@@ -2,6 +2,7 @@
 using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Models.Constant;
 using LMCM_BE.Repositories.LearningMaterialRepository;
 using LMCM_BE.Repositories.SyllabusRepository;
 using LMCM_BE.UnitOfWork;
@@ -33,7 +34,7 @@ namespace LMCM_BE.Services.LearningMaterialService
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                learningMaterial.Status = "Deleted";
+                learningMaterial.Status = LearningMaterialStatus.Deleted;
                 learningMaterial.UpdatedAt = DateTime.UtcNow;
                 await _materialRepository.UpdateLearningMaterialAsync(learningMaterial);
                 await _unitOfWork.CommitAsync();
@@ -89,7 +90,7 @@ namespace LMCM_BE.Services.LearningMaterialService
             var newMaterial = _mapper.Map<LearningMaterial>(material);
             newMaterial.MaterialId = Guid.NewGuid();
             newMaterial.IsImportedMaterial = false;
-            newMaterial.Status = "Active";
+            newMaterial.Status = LearningMaterialStatus.Active;
             newMaterial.CreatedAt = DateTime.UtcNow;
             newMaterial.UpdatedAt = DateTime.UtcNow;
 
@@ -117,8 +118,8 @@ namespace LMCM_BE.Services.LearningMaterialService
                 material.MaterialId = Guid.NewGuid();
                 material.IsMainMaterial = false;
                 material.IsImportedMaterial = true;
-                material.MaterialType = "Học Liệu";
-                material.Status = "Active";
+                material.MaterialType = MaterialType.HocLieu;
+                material.Status = LearningMaterialStatus.Active;
                 material.CreatedAt = DateTime.UtcNow;
                 material.UpdatedAt = DateTime.UtcNow;
             }
@@ -145,7 +146,7 @@ namespace LMCM_BE.Services.LearningMaterialService
                         Url = material.Url,
                         Purpose = material.Purpose,
                         Note = material.Note,
-                        Status = "Active",
+                        Status = LearningMaterialStatus.Active,
                         CreatedAt = DateTime.UtcNow,  // Set created date to current time
                         UpdatedAt = DateTime.UtcNow  // Set updated date to current time
                     };
@@ -196,7 +197,7 @@ namespace LMCM_BE.Services.LearningMaterialService
 
             foreach (var material in materials)
             {
-                material.Status = "Inactive";
+                material.Status = LearningMaterialStatus.Inactive;
                 material.UpdatedAt = DateTime.UtcNow;
             }
 

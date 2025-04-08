@@ -13,7 +13,7 @@ namespace LMCM_BE.Repositories.ConstructivistQuestionRepository
         {
             _dbContext = dbContext;
         }
-        public async Task<bool> UpdateConstructivistQuestionsBySyllabusAsync(List<ConstructivistQuestion> questions)
+        public async Task<bool> UpdateConstructivistQuestionsAsync(List<ConstructivistQuestion> questions)
         {
             _dbContext.ConstructivistQuestions.UpdateRange(questions);
 

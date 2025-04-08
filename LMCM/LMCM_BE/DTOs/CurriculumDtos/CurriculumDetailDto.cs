@@ -1,4 +1,5 @@
 ﻿using LMCM_BE.DTOs.CurriculumsSubjectDtos;
+using LMCM_BE.Models.Constant;
 
 namespace LMCM_BE.DTOs.CurriculumDtos
 {
@@ -14,7 +15,7 @@ namespace LMCM_BE.DTOs.CurriculumDtos
         public string? EnglishVocationalName { get; set; }
         public string? DecisionNo { get; set; }
         public DateTime? ApprovedDate { get; set; }
-        public string? Status { get; set; }
+        public GenericStatus Status { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 

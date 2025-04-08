@@ -5,7 +5,6 @@ using LMCM_BE.Models;
 using LMCM_BE.Repositories.LearningMaterialRepository;
 using LMCM_BE.Repositories.SyllabusRepository;
 using LMCM_BE.UnitOfWork;
-using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Services.LearningMaterialService
 {

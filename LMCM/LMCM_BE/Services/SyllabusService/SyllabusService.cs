@@ -473,7 +473,16 @@ namespace LMCM_BE.Services.SyllabusService
                     question.UpdatedAt = DateTime.UtcNow;
                 }
                 await _ConstructivistQuestionRepository.AddConstructivistQuestionsAsync(constructivistQuestions);
-                if (oldSyllabusId != Guid.Empty) await _ConstructivistQuestionRepository.DeleteConstructivistQuestionsBySyllabusAsync((Guid)oldSyllabusId);
+                if (oldSyllabusId != Guid.Empty)
+                {
+                    var oldConstructivistQuestions = await _ConstructivistQuestionRepository.GetConstructivistQuestionsBySyllabusAsync((Guid)oldSyllabusId);
+                    foreach (var question in oldConstructivistQuestions)
+                    {
+                        question.Status = "Inactive";
+                        question.UpdatedAt = DateTime.UtcNow;
+                    }
+                    await _ConstructivistQuestionRepository.UpdateConstructivistQuestionsAsync(oldConstructivistQuestions);
+                }
             }
             return true;
         }

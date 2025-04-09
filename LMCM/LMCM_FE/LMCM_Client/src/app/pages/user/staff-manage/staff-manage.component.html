@@ -22,14 +22,15 @@
                         Tên
                         <p-sortIcon field="name" />
                     </th>
-                    <th class="text-center">Trạng thái</th>
                     <th>Email</th>
+                    <th class="text-center">Trạng thái</th>
                     <th>Vai trò</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-user>
                 <tr>
                     <td>{{ user.name || '(Đang chờ cập nhật)' }}</td>
+                    <td>{{ user.email }}</td>
                     <td [pEditableColumn]="user.status" pEditableColumnField="status"
                         [pEditableColumnDisabled]="user.status === 1">
                         <p-cellEditor>
@@ -46,7 +47,6 @@
                             </ng-template>
                         </p-cellEditor>
                     </td>
-                    <td>{{ user.email }}</td>
                     <td [pEditableColumn]="user.roles[0]" pEditableColumnField="roles">
                         <p-cellEditor>
                             <ng-template pTemplate="input">

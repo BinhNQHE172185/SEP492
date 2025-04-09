@@ -136,7 +136,7 @@ namespace LMCM_BE.Controllers.UserControllers
                 var roles = await _userService.CheckRole();
                 if (!roles.Contains("Head of Department"))
                 {
-                    return StatusCode(401, new { success = false, message = "Không có quyền." });
+                    return Unauthorized(new { success = false, message = "Không có quyền." });
                 }
                 if (string.IsNullOrEmpty(request.userId) || string.IsNullOrEmpty(request.newRole))
                 {
@@ -173,7 +173,7 @@ namespace LMCM_BE.Controllers.UserControllers
                 var roles = await _userService.CheckRole();
                 if (!roles.Contains("Head of Department"))
                 {
-                    return StatusCode(401, new { success = false, message = "Không có quyền." });
+                    return Unauthorized(new { success = false, message = "Không có quyền." });
                 }
                 if (string.IsNullOrEmpty(request.userId) || string.IsNullOrEmpty(request.status))
                 {

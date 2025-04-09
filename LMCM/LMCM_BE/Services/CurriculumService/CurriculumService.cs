@@ -79,6 +79,7 @@ namespace LMCM_BE.Services.CurriculumService
                 await _unitOfWork.BeginTransactionAsync();
                 await SoftCascadeDeleteCurriculumByCodeAsync(curriculum.CurriculumCode);
                 await _curriculumRepository.ImportCurriculumAsync(curriculum);
+                await _unitOfWork.CommitAsync();
 
                 return true;
             }

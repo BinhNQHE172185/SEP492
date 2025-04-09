@@ -96,7 +96,19 @@ namespace LMCM_BE.Services.ContractorService
             contractor.CreatedAt = DateTime.UtcNow;
             contractor.UpdatedAt = DateTime.UtcNow;
 
-            return await _contractorRepository.CreateContractorAsync(contractor);
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+                await _contractorRepository.CreateContractorAsync(contractor);
+                await _unitOfWork.CommitAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<Guid?> UpdateContractorAsync(Guid contractorId, ContractorUpdateDto dto)

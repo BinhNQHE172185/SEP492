@@ -66,7 +66,7 @@ namespace LMCM_BE.Controllers.ContractorControllers
                 }
 
                 var result = await _contractorService.CreateContractorAsync(request);
-                return result == true ? Ok() : BadRequest(new { message = "Không thể tạo nhà thầu." });
+                return result == true ? Ok(new { message = "Tạo nhà thầu thành công." }) : BadRequest(new { message = "Không thể tạo nhà thầu." });
             }
             catch (ValidationException ex)
             {

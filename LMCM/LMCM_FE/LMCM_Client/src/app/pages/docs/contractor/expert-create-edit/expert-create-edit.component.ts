@@ -58,6 +58,7 @@ export class ExpertCreateEditComponent {
     }
 
     save() {
+        this.messageService.add({ severity: 'info', summary: 'Đang tải', detail: 'Vui lòng chờ.' });
         const reportData = {
             contractorName: this.expert.contractorName,
             email: this.expert.email,
@@ -84,7 +85,6 @@ export class ExpertCreateEditComponent {
                 }
             );
         } else {
-            this.messageService.add({ severity: 'info', summary: 'Đang tải', detail: 'Vui lòng chờ.' });
             this.expertService.createContractor(reportData).subscribe(
                 (response) => {
                     this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });

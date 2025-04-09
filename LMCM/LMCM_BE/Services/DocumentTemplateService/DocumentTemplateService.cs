@@ -64,6 +64,7 @@ namespace LMCM_BE.Services.DocumentTemplateService
             newTemplate.TemplateId = Guid.NewGuid();
             newTemplate.Url = fileUrl;
             newTemplate.AuthorId = user.Id;
+            newTemplate.Status=DocumentTemplateStatus.Active;
             newTemplate.CreatedAt = DateTime.UtcNow;
             newTemplate.UpdatedAt = DateTime.UtcNow;
 
@@ -127,7 +128,7 @@ namespace LMCM_BE.Services.DocumentTemplateService
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                template.Status = DocumentTemplateStatus.Deleted;
+                template.Status = DocumentTemplateStatus.Inactive;
                 template.UpdatedAt = DateTime.UtcNow;  
                 await _documentTemplateRepository.UpdateTemplateAsync(template);
                 await _unitOfWork.CommitAsync();

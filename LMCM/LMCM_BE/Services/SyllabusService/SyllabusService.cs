@@ -295,7 +295,7 @@ namespace LMCM_BE.Services.SyllabusService
             }
 
             await _ScheduleRepository.AddSchedulesAsync(schedules);
-            if (oldSyllabusId != Guid.Empty)
+            if (oldSyllabusId!=null && oldSyllabusId != Guid.Empty)
             {
                 var oldSchedules = await _ScheduleRepository.GetSchedulesBySyllabusAsync((Guid)oldSyllabusId);
                 foreach (var schedule in oldSchedules)
@@ -350,7 +350,7 @@ namespace LMCM_BE.Services.SyllabusService
                 clo.UpdatedAt = DateTime.UtcNow;
             }
             await _CLORepository.AddCLOsAsync(cLOs);
-            if (oldSyllabusId != Guid.Empty)
+            if (oldSyllabusId != null && oldSyllabusId != Guid.Empty)
             {
                 var oldClos = await _CLORepository.GetCLOsBySyllabusASync((Guid)oldSyllabusId);
                 foreach (var clo in oldClos)
@@ -417,7 +417,7 @@ namespace LMCM_BE.Services.SyllabusService
                 structure.UpdatedAt = DateTime.UtcNow;
             }
             await _GradingStructureRepository.AddGradingStructuresAsync(gradingStructures);
-            if (oldSyllabusId != Guid.Empty)
+            if (oldSyllabusId != null && oldSyllabusId != Guid.Empty)
             {
                 var oldGradingStructures = await _GradingStructureRepository.GetGradingStructuresBySyllabusAsync((Guid)oldSyllabusId);
                 foreach (var gradingStructure in gradingStructures)
@@ -474,7 +474,7 @@ namespace LMCM_BE.Services.SyllabusService
                     question.UpdatedAt = DateTime.UtcNow;
                 }
                 await _ConstructivistQuestionRepository.AddConstructivistQuestionsAsync(constructivistQuestions);
-                if (oldSyllabusId != Guid.Empty)
+                if (oldSyllabusId != null && oldSyllabusId != Guid.Empty)
                 {
                     var oldConstructivistQuestions = await _ConstructivistQuestionRepository.GetConstructivistQuestionsBySyllabusAsync((Guid)oldSyllabusId);
                     foreach (var question in oldConstructivistQuestions)
@@ -543,8 +543,10 @@ namespace LMCM_BE.Services.SyllabusService
             }
 
             var learningMaterials = _mapper.Map<List<LearningMaterial>>(learningMaterialDtos);
-            if (learningMaterials != null) await _LearningMaterialService.ImportLearningMaterialsAsync(learningMaterials, oldSyllabusId, newSyllabusId, keepUserCreated);
-            if (oldSyllabusId != Guid.Empty) await _LearningMaterialService.DeleteLearningMaterialsBySyllabusAsync(oldSyllabusId.Value);
+            if (learningMaterials != null) 
+                await _LearningMaterialService.ImportLearningMaterialsAsync(learningMaterials, oldSyllabusId, newSyllabusId, keepUserCreated);
+            if (oldSyllabusId != null && oldSyllabusId != Guid.Empty) 
+                await _LearningMaterialService.DeleteLearningMaterialsBySyllabusAsync(oldSyllabusId.Value);
 
             return true;
         }

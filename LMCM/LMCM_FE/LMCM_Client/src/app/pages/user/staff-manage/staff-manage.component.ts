@@ -17,6 +17,8 @@ import { ProfileStatus } from '../../../../shared/Constants/StatusConstants';
 import { Subscription } from 'rxjs';
 import { searchService } from '../../service/search/search-service.service';
 import { UserApiService } from '../../../apis/userAPIs/user-api.service';
+import { DropdownModule } from 'primeng/dropdown';
+import { UserRole, UserStatus, UserStatusLabels } from '../../../../shared/Constants/UserConstants';
 
 interface PagingRequest {
   searchKey?: string;
@@ -39,7 +41,8 @@ interface PagingRequest {
     TagModule,
     DialogModule,
     ToastModule,
-    FormsModule
+    FormsModule,
+    DropdownModule
   ],
   standalone: true,
   templateUrl: './staff-manage.component.html',
@@ -56,6 +59,23 @@ export class StaffManageComponent implements OnInit, OnDestroy {
   searchKey = '';
   userDialog: boolean = false;
   staffId: string = '';
+
+  cols = [
+    { field: 'name', header: 'Tên' },
+    { field: 'status', header: 'Trạng thái' },
+    { field: 'email', header: 'Email' },
+    { field: 'actions', header: 'Hành động' }
+  ];
+
+  roles = [
+    { label: 'Trưởng phòng', value: 'Head of Department' },
+    { label: 'Nhân viên', value: 'Staff' }
+  ];
+
+  statusOptions = Object.entries(UserStatusLabels).map(([key, label]) => ({
+    label,
+    value: +key
+  }));
 
   private searchSubscription!: Subscription;
 
@@ -87,28 +107,35 @@ export class StaffManageComponent implements OnInit, OnDestroy {
     );
   }
 
-  cols = [
-    { field: 'name', header: 'Tên' },
-    { field: 'status', header: 'Trạng thái' },
-    { field: 'email', header: 'Email' },
-    { field: 'actions', header: 'Hành động' }
-  ];
-
   getStatusLabel(status: number): string {
-    return ProfileStatus[status] || "Không xác định";
+    return UserStatusLabels[status] || 'Không xác định';
   }
 
-  getTagSeverity(status: string | number): "success" | "info" | "danger" | "warn" | "secondary" | "contrast" | undefined {
-    const statusNumber = +status; // Ép kiểu từ string sang number
-    switch (statusNumber) {
-      case 1:
-        return "info";     // Đang chờ
-      case 2:
-        return "success";  // Hoạt động
-      case 3:
-        return "danger";   // Ngừng hoạt động
+  getRoleLabel(role: string): string {
+    return UserRole[role as keyof typeof UserRole] || "Không xác định";
+  }
+
+  getTagSeverity(status: number): "success" | "info" | "danger" | "secondary" {
+    switch (status) {
+      case UserStatus.Pending:
+        return "info";
+      case UserStatus.Active:
+        return "success";
+      case UserStatus.Stopped:
+        return "danger";
       default:
-        return "secondary"; // Mặc định nếu giá trị không hợp lệ
+        return "secondary";
+    }
+  }
+
+  getTagSeverityRole(status: string): "success" | "info" | "danger" | "warn" | "secondary" | "contrast" | undefined {
+    switch (status) {
+      case "Staff":
+        return "info";
+      case "Head of Department":
+        return "success";
+      default:
+        return "secondary";
     }
   }
 
@@ -133,6 +160,34 @@ export class StaffManageComponent implements OnInit, OnDestroy {
         this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: error.error.message });
       }
     );
+  }
+
+  onRoleChange(userId: string, newRole: string) {
+    this.apiService.changeRole(userId, newRole).subscribe({
+      next: (response) => {
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
+        this.loadUser();
+      },
+      error: (error) => {
+        const errMsg = error?.error?.message || `Không có quyền.`;
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: errMsg });
+        this.loadUser();
+      }
+    });
+  }
+
+  onStatusChange(userId: string, status: string) {
+    this.apiService.updateStatus(userId, status.toString()).subscribe({
+      next: (response) => {
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
+        this.loadUser();
+      },
+      error: (error) => {
+        const errMsg = error?.error?.message || `Không có quyền.`;
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: errMsg });
+        this.loadUser();
+      }
+    });
   }
 
   ngOnDestroy(): void {

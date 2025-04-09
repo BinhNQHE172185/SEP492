@@ -17,6 +17,7 @@ namespace LMCM_BE.DTOs.UserDtos
         public string? Name { get; set; }
         public string? Email { get; set; }
         public UserStatus Status { get; set; }
+        public List<string> Roles { get; set; }
     }
 
     public class UserLoginResponseDto
@@ -34,4 +35,15 @@ namespace LMCM_BE.DTOs.UserDtos
     {
         public string StaffId { get; set; }
     }
+    public class AssignRole
+    {
+        public string userId { get; set; }
+        public string newRole { get; set; }
+    }
+    public class UpdateStatus
+    {
+        public string userId { get; set; }
+        public string status { get; set; }
+    }
+    
 }

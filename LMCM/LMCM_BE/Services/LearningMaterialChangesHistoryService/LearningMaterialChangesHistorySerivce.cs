@@ -8,6 +8,7 @@ using LMCM_BE.Repositories.ContractRepository;
 using LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository;
 using LMCM_BE.Repositories.SyllabusRepository;
 using LMCM_BE.Repositories.UserRepositoriy;
+using LMCM_BE.Services.UserService;
 using LMCM_BE.Shared.Constant;
 using LMCM_BE.UnitOfWork;
 
@@ -19,7 +20,7 @@ namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
         private readonly ISyllabusRepository _syllabusRepository;
         private readonly IContractRepository _contractRepository;
         private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepositoriy;
+        private readonly IUserService _userService;
         private readonly IUnitOfWork _unitOfWork;
 
         public LearningMaterialChangesHistorySerivce(
@@ -27,7 +28,7 @@ namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
             ISyllabusRepository syllabusRepository,
             IContractRepository contractRepository,
             IMapper mapper,
-            IUserRepository userRepository,
+            IUserService userService,
             IUnitOfWork unitOfWork
             )
         {
@@ -35,7 +36,7 @@ namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
             _syllabusRepository = syllabusRepository;
             _contractRepository = contractRepository;
             _mapper = mapper;
-            _userRepositoriy = userRepository;
+            _userService = userService;
             _unitOfWork = unitOfWork;
         }
         public async Task<PagedResult<ChangesHistoryListDto>> GetChangesHistoriesAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
@@ -57,7 +58,7 @@ namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
             {
                 throw new ArgumentNullException(nameof(historyDto));
             }
-            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
+            UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
 
@@ -124,7 +125,7 @@ namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
             if (existingHistory == null)
                 throw new Exception("Không tìm thấy lịch sử thay đổi.");
 
-            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
+            UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("Không tìm thấy người dùng");
 
@@ -165,7 +166,7 @@ namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
             if (historyRecord == null)
                 throw new KeyNotFoundException("Không tìm thấy lịch sử thay đổi hoặc đã bị xóa.");
 
-            UserProfileResponseDto user = await _userRepositoriy.GetProfileFromCookie();
+            UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("Không tìm thấy người dùng");
 

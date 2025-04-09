@@ -6,6 +6,7 @@ using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.UserRepositoriy;
 using LMCM_BE.Services.GoogleDriveService;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Data;
@@ -41,6 +42,11 @@ namespace LMCM_BE.Services.UserService
                 Audience = new[] { "433474498165-m4uv6c6h9hc3ss9vk74d9v7u8t57irr5.apps.googleusercontent.com" }
             });
             var user = await _userRepository.Login(payload);
+
+            if (user == null)
+            {
+                return null;
+            }
 
             var token = await GenerateJwtToken(user);
 

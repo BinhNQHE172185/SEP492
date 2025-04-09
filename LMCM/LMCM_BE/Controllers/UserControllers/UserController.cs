@@ -128,16 +128,16 @@ namespace LMCM_BE.Controllers.UserControllers
         /// <param name="newRole"></param>
         /// <returns></returns>
         [HttpPost("assign-role")]
-        public async Task<IActionResult> AssignRole(string userId, string newRole)
+        public async Task<IActionResult> AssignRole([FromBody] AssignRole request)
         {
             try
             {
-                if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(newRole))
+                if (string.IsNullOrEmpty(request.userId) || string.IsNullOrEmpty(request.newRole))
                 {
                     return BadRequest(new { success = false, message = "Thiếu userId hoặc role mới." });
                 }
 
-                var result = await _userService.AssignRoleAsync(userId, newRole);
+                var result = await _userService.AssignRoleAsync(request.userId, request.newRole);
                 return Ok(new { success = result, message = "Vai trò đã được cập nhật." });
             }
             catch (ArgumentException ex)

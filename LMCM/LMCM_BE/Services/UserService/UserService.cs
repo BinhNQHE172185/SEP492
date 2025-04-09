@@ -59,14 +59,20 @@ namespace LMCM_BE.Services.UserService
 
         public async Task<PagedResult<ListUserResponseDto>> GetListUser(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
-            var items = await _userRepository.GetListUser(searchKey, pageIndex, pageSize);
+            var users = await _userRepository.GetListUser(searchKey, pageIndex, pageSize);
 
-            var data = _mapper.Map<List<ListUserResponseDto>>(items);
+            var data = _mapper.Map<List<ListUserResponseDto>>(users);
+
+            foreach (var dto in data)
+            {
+                var roles = await _userRepository.getRoleAsync(dto.Id.ToString());
+                dto.Roles = roles.ToList(); // Gán danh sách vai trò
+            }
 
             return new PagedResult<ListUserResponseDto>
             {
                 Items = data,
-                TotalCount = items.Count(),
+                TotalCount = users.Count(),
                 CurrentPage = pageIndex,
                 PageSize = pageSize
             };

@@ -40,4 +40,10 @@ namespace LMCM_BE.DTOs.UserDtos
         public string userId { get; set; }
         public string newRole { get; set; }
     }
+    public class UpdateStatus
+    {
+        public string userId { get; set; }
+        public string status { get; set; }
+    }
+    
 }

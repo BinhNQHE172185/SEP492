@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs';
 import { searchService } from '../../service/search/search-service.service';
 import { UserApiService } from '../../../apis/userAPIs/user-api.service';
 import { DropdownModule } from 'primeng/dropdown';
-import { UserRole } from '../../../../shared/Constants/UserConstants';
+import { UserRole, UserStatus, UserStatusLabels } from '../../../../shared/Constants/UserConstants';
 
 interface PagingRequest {
   searchKey?: string;
@@ -72,6 +72,11 @@ export class StaffManageComponent implements OnInit, OnDestroy {
     { label: 'Nhân viên', value: 'Staff' }
   ];
 
+  statusOptions = Object.entries(UserStatusLabels).map(([key, label]) => ({
+    label,
+    value: +key
+  }));
+
   private searchSubscription!: Subscription;
 
   constructor(private apiService: UserApiService, private messageService: MessageService, private searchService: searchService) { }
@@ -103,21 +108,20 @@ export class StaffManageComponent implements OnInit, OnDestroy {
   }
 
   getStatusLabel(status: number): string {
-    return ProfileStatus[status] || "Không xác định";
+    return UserStatusLabels[status] || 'Không xác định';
   }
 
   getRoleLabel(role: string): string {
     return UserRole[role as keyof typeof UserRole] || "Không xác định";
   }
 
-  getTagSeverity(status: string | number): "success" | "info" | "danger" | "warn" | "secondary" | "contrast" | undefined {
-    const statusNumber = +status;
-    switch (statusNumber) {
-      case 1:
+  getTagSeverity(status: number): "success" | "info" | "danger" | "secondary" {
+    switch (status) {
+      case UserStatus.Pending:
         return "info";
-      case 2:
+      case UserStatus.Active:
         return "success";
-      case 3:
+      case UserStatus.Stopped:
         return "danger";
       default:
         return "secondary";
@@ -165,7 +169,23 @@ export class StaffManageComponent implements OnInit, OnDestroy {
         this.loadUser();
       },
       error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: error.error.message });
+        const errMsg = error?.error?.message || `Không có quyền.`;
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: errMsg });
+        this.loadUser();
+      }
+    });
+  }
+
+  onStatusChange(userId: string, status: string) {
+    this.apiService.updateStatus(userId, status.toString()).subscribe({
+      next: (response) => {
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
+        this.loadUser();
+      },
+      error: (error) => {
+        const errMsg = error?.error?.message || `Không có quyền.`;
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: errMsg });
+        this.loadUser();
       }
     });
   }

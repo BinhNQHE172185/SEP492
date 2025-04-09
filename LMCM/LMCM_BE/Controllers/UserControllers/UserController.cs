@@ -11,6 +11,7 @@ using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Services.UserService;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using LMCM_BE.DTOs.ShareDtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LMCM_BE.Controllers.UserControllers
 {
@@ -132,9 +133,14 @@ namespace LMCM_BE.Controllers.UserControllers
         {
             try
             {
+                var roles = await _userService.CheckRole();
+                if (!roles.Contains("Head of Department"))
+                {
+                    return StatusCode(401, new { success = false, message = "Không có quyền." });
+                }
                 if (string.IsNullOrEmpty(request.userId) || string.IsNullOrEmpty(request.newRole))
                 {
-                    return BadRequest(new { success = false, message = "Thiếu userId hoặc role mới." });
+                    return BadRequest(new { success = false, message = "Vui lòng chon vai trò." });
                 }
 
                 var result = await _userService.AssignRoleAsync(request.userId, request.newRole);
@@ -154,5 +160,41 @@ namespace LMCM_BE.Controllers.UserControllers
             }
         }
 
+        /// <summary>
+        /// Cập nhật trạng thái
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("update-status")]
+        public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatus request)
+        {
+            try
+            {
+                var roles = await _userService.CheckRole();
+                if (!roles.Contains("Head of Department"))
+                {
+                    return StatusCode(401, new { success = false, message = "Không có quyền." });
+                }
+                if (string.IsNullOrEmpty(request.userId) || string.IsNullOrEmpty(request.status))
+                {
+                    return BadRequest(new { success = false, message = "Vui lòng chon trạng thái" });
+                }
+
+                var result = await _userService.UpdateStatus(request.userId, request.status);
+                return Ok(new { success = result, message = "Trạng thái đã được cập nhật." });
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(new { success = false, message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = "Đã xảy ra lỗi.", error = ex.Message });
+            }
+        }
     }
 }

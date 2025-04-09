@@ -194,5 +194,20 @@ namespace LMCM_BE.Services.UserService
         {
             return await _userRepository.UserCountAsync();
         }
+        public async Task<List<string>> CheckRole()
+        {
+            var user = await GetProfileFromCookie();
+            var role = await _userRepository.getRoleAsync(user.Id.ToString());
+            return role;
+        }
+        public async Task<bool> UpdateStatus(string userId, string status)
+        {
+            var currentUser = await GetProfileFromCookie();
+            if (currentUser.Id.ToString() == userId)
+            {
+                throw new InvalidOperationException("Không thể thay đổi trạng thái của chính bạn.");
+            }
+            return await _userRepository.UpdateStatusAsync(userId, status);
+        }
     }
 }

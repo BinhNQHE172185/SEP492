@@ -2,6 +2,7 @@
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Shared.Constant;
 
 namespace LMCM_BE.Repositories.UserRepositoriy
 {
@@ -13,7 +14,7 @@ namespace LMCM_BE.Repositories.UserRepositoriy
         Task<List<User>> GetListUser(string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<bool> AssignRoleAsync(string userId, string role);
         Task<List<string>> getRoleAsync(string userId);
-        Task<UserProfileResponseDto> GetProfileFromCookie();
         Task<int> UserCountAsync();
+        Task<bool> UpdateStatusAsync(string userId, string status);
     }
 }

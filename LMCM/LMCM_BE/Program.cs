@@ -97,7 +97,7 @@ builder.Services.AddAuthentication(options =>
 
         RequireExpirationTime = true,
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero
+        ClockSkew = TimeSpan.Zero,
     };
 });
 builder.Services.AddDistributedMemoryCache(); // Required for session

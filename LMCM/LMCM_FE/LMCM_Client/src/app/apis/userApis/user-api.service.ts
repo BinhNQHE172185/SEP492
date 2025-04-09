@@ -54,6 +54,10 @@ export class UserApiService {
   }
   changeRole(userId: string, newRole: string): Observable<any> {
     const data = { userId, newRole };
-    return this.http.post<any>(`${this.apiUrl}/User/assign-role`, data);
+    return this.http.post<any>(`${this.apiUrl}/User/assign-role`, data, {withCredentials: true});
+  }
+  updateStatus(userId: string, status: string): Observable<any> {
+    const data = { userId, status };
+    return this.http.post<any>(`${this.apiUrl}/User/update-status`, data, {withCredentials: true});
   }
 }

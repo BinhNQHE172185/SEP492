@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs';
 import { searchService } from '../../service/search/search-service.service';
 import { UserApiService } from '../../../apis/userAPIs/user-api.service';
 import { DropdownModule } from 'primeng/dropdown';
-import { UserRole, UserStatus, UserStatusLabels } from '../../../../shared/Constants/UserConstants';
+import { UpdateUserStatusLabels, UserRole, UserStatus, UserStatusLabels } from '../../../../shared/Constants/UserConstants';
 
 interface PagingRequest {
   searchKey?: string;
@@ -72,7 +72,7 @@ export class StaffManageComponent implements OnInit, OnDestroy {
     { label: 'Nhân viên', value: 'Staff' }
   ];
 
-  statusOptions = Object.entries(UserStatusLabels).map(([key, label]) => ({
+  statusOptions = Object.entries(UpdateUserStatusLabels).map(([key, label]) => ({
     label,
     value: +key
   }));

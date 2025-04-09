@@ -14,3 +14,8 @@ export const UserStatusLabels = {
     [UserStatus.Active]: 'Hoạt động',
     [UserStatus.Stopped]: 'Ngừng hoạt động'
 };
+
+export const UpdateUserStatusLabels = {
+    [UserStatus.Active]: 'Hoạt động',
+    [UserStatus.Stopped]: 'Ngừng hoạt động'
+};

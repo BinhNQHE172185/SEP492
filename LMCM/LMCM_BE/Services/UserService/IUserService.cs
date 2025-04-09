@@ -12,5 +12,7 @@ namespace LMCM_BE.Services.UserService
         Task<UserProfileResponseDto> GetProfileFromCookie();
         Task<bool> AssignRoleAsync(string userId, string role);
         Task<int> UserCountAsync();
+        Task<List<string>> CheckRole();
+        Task<bool> UpdateStatus(string userId, string status);
     }
 }

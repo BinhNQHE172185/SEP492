@@ -22,22 +22,44 @@
                         Tên
                         <p-sortIcon field="name" />
                     </th>
-                    <th style="width: 20%;" class="text-center">Trạng thái</th>
-                    <th style="width: 30%;">Email</th>
-                    <th style="width: 20%;" class="text-center">Hành động</th>
+                    <th class="text-center">Trạng thái</th>
+                    <th>Email</th>
+                    <th>Vai trò</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-user>
                 <tr>
                     <td>{{ user.name || '(Đang chờ cập nhật)' }}</td>
-                    <td>
-                        <p-tag [value]="getStatusLabel(user.status)" [severity]="getTagSeverity(user.status)"></p-tag>
+                    <td [pEditableColumn]="user.status" pEditableColumnField="status"
+                        [pEditableColumnDisabled]="user.status === 1">
+                        <p-cellEditor>
+                            <ng-template pTemplate="input">
+                                <p-dropdown [options]="statusOptions" [(ngModel)]="user.status" optionLabel="label"
+                                    optionValue="value" (onChange)="onStatusChange(user.id, $event.value)"
+                                    appendTo="body">
+                                </p-dropdown>
+                            </ng-template>
+
+                            <ng-template pTemplate="output">
+                                <p-tag [value]="getStatusLabel(user.status)" [severity]="getTagSeverity(user.status)">
+                                </p-tag>
+                            </ng-template>
+                        </p-cellEditor>
                     </td>
                     <td>{{ user.email }}</td>
-                    <td class="text-center">
-                        <p-button icon="pi pi-pencil" class="p-button-text p-button-sm" title="Chỉnh sửa"></p-button>
-                        <p-button icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger"
-                            title="Xóa"></p-button>
+                    <td [pEditableColumn]="user.roles[0]" pEditableColumnField="roles">
+                        <p-cellEditor>
+                            <ng-template pTemplate="input">
+                                <p-dropdown [options]="roles" [(ngModel)]="user.roles[0]" placeholder="Chọn vai trò"
+                                    optionLabel="label" optionValue="value"
+                                    (onChange)="onRoleChange(user.id, $event.value)" appendTo="body"></p-dropdown>
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                                <p-tag [value]="getRoleLabel(user.roles[0])"
+                                    [severity]="getTagSeverityRole(user.roles[0])">
+                                </p-tag>
+                            </ng-template>
+                        </p-cellEditor>
                     </td>
                 </tr>
             </ng-template>

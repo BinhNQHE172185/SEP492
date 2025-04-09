@@ -148,60 +148,23 @@ namespace LMCM_BE.Repositories.UserRepositoriy
 
             return true;
         }
-        public async Task<UserProfileResponseDto> GetProfileFromCookie()
+
+        public async Task<bool> UpdateStatusAsync(string userId, string status)
         {
-            try
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
             {
-                var request = _httpContextAccessor.HttpContext.Request;
-                var authToken = request.Cookies["AuthToken"];
-
-                if (string.IsNullOrEmpty(authToken))
-                {
-                    return null;
-                }
-
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]);
-
-                try
-                {
-                    var principal = tokenHandler.ValidateToken(authToken, new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(key),
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ClockSkew = TimeSpan.Zero
-                    }, out SecurityToken validatedToken);
-
-                    Console.WriteLine("Token validated successfully.");
-                    foreach (var claim in principal.Claims)
-                    {
-                        Console.WriteLine($"🔹 Decoded Claim: {claim.Type} = {claim.Value}");
-                    }
-                    var userId = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-                    Console.WriteLine($"Extracted User ID: {userId}");
-
-                    if (string.IsNullOrEmpty(userId))
-                    {
-                        Console.WriteLine("User ID is empty.");
-                        return null;
-                    }
-
-                    return null;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Token validation error: {ex.Message}");
-                    return null;
-                }
+                throw new ArgumentException("Người dùng không tồn tại.");
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error retrieving profile from cookie: {ex.Message}");
-                return null;
-            }
+
+            user.Status = (UserStatus)Convert.ToInt32(status);
+
+            _dbContext.Users.Update(user);
+            var result = await _dbContext.SaveChangesAsync();
+
+            return true;
         }
+
         public async Task<int> UserCountAsync()
         {
             var data = await _dbContext.Users.CountAsync();

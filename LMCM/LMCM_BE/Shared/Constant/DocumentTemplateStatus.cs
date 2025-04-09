@@ -3,7 +3,6 @@
     public enum DocumentTemplateStatus
     {
         Inactive,
-        Active,
-        Deleted
+        Active
     }
 }

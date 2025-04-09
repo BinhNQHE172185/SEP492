@@ -1,45 +1,23 @@
-﻿using AutoMapper;
-using Google.Apis.Auth;
+﻿using Google.Apis.Auth;
 using LMCM_BE.DbContext;
-using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
-using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Shared.Constant;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace LMCM_BE.Repositories.UserRepositoriy
 {
     public class UserRepository : IUserRepository
     {
         private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        private readonly IConfiguration _configuration;
-        private readonly IMapper _mapper;
         private readonly LMCM_DBContext _dbContext;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IGoogleDriveService _googleDriveService;
 
         public UserRepository(
             UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            IConfiguration configuration,
-            IMapper mapper,
-            LMCM_DBContext dbContext,
-            IHttpContextAccessor httpContextAccessor,
-            IGoogleDriveService googleDriveService)
+            LMCM_DBContext dbContext)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
-            _configuration = configuration;
-            _mapper = mapper;
             _dbContext = dbContext;
-            _httpContextAccessor = httpContextAccessor;
-            _googleDriveService = googleDriveService;
         }
 
         public async Task<bool> CreateStaff(string request)

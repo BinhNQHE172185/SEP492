@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Google.Apis.Auth;
 using LMCM_BE.DbContext;
-using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Services.GoogleDriveService;
@@ -12,7 +11,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LMCM_BE.Repositories.UserRepositoriy
 {
@@ -61,7 +59,7 @@ namespace LMCM_BE.Repositories.UserRepositoriy
             }
             return false;
         }
-        public async Task<User> GetProfile(string userId)
+        public async Task<User?> GetProfile(string userId)
         {
             var data = await _userManager.FindByIdAsync(userId);
             if (data != null)

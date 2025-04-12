@@ -56,6 +56,15 @@ namespace LMCM_BE.Controllers.CurriculumControllers
             {
                 return NotFound(new { message = ex.Message });
             }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
+            }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });

@@ -66,18 +66,6 @@ namespace LMCM_BE.Controllers.ContractControllers
             {
                 return StatusCode(StatusCodes.Status403Forbidden, new { message = "Lỗi: " + ex.Message });
             }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-            catch (ArgumentNullException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });

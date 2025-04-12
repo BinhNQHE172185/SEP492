@@ -3,6 +3,7 @@ using LMCM_BE.Services.CurriculumService;
 using LMCM_BE.Services.PloService;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LMCM_BE.Controllers.CurriculumControllers
 {
@@ -45,7 +46,11 @@ namespace LMCM_BE.Controllers.CurriculumControllers
             try
             {
                 var curriculum = await _curriculumService.GetCurriculumDetailAsync(curriculumId);
-                return Ok(curriculum);
+                if (curriculum != null)
+                {
+                    return Ok(curriculum);
+                }
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
             catch (KeyNotFoundException ex)
             {

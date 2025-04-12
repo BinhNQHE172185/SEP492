@@ -240,7 +240,11 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
             try
             {
                 var record = await _acceptanceRecordService.GetAcceptanceRecordDetailAsync(acceptanceId);
-                return Ok(record);
+                if (record != null)
+                {
+                    return Ok(record);
+                }
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
             catch (KeyNotFoundException ex)
             {

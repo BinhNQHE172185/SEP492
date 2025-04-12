@@ -51,7 +51,7 @@ namespace LMCM_BE.Services.ContractService
         {
             UserProfileResponseDto user =await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
-                throw new Exception("User not found");
+                throw new UnauthorizedAccessException("Không tìm thấy người dùng");
 
             if (await _budgetProposalRepository.GetActiveBudgetProposalByIdAsync(contractDto.ProposalId) == null)
             {
@@ -71,7 +71,7 @@ namespace LMCM_BE.Services.ContractService
 
                 if (string.IsNullOrWhiteSpace(fileUrl))
                 {
-                    throw new Exception("Failed to upload the file.");
+                    throw new Exception("Tải file thất bại.");
                 }
                 else
                 {
@@ -126,7 +126,7 @@ namespace LMCM_BE.Services.ContractService
             bool isHod = false;
             UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
-                throw new Exception("Không tìm thấy người dùng");
+                throw new UnauthorizedAccessException("Không tìm thấy người dùng");
             if (user.Roles.Contains("Head of Department")) isHod = true;
 
             var (items, totalCount) = await _contractRepository.GetContractsAsync(isHod, user.Id, searchKey, pageIndex, pageSize);
@@ -146,7 +146,7 @@ namespace LMCM_BE.Services.ContractService
             bool isHod = false;
             UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
-                throw new Exception("Không tìm thấy người dùng");
+                throw new UnauthorizedAccessException("Không tìm thấy người dùng");
             if (user.Roles.Contains("Head of Department")) isHod = true;
 
             var items = await _contractRepository.GetContractsAsync(isHod, user.Id, searchKey);

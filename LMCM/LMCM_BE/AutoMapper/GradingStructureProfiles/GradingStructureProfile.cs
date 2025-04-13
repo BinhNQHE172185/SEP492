@@ -8,13 +8,12 @@ namespace LMCM_BE.AutoMapper.GradingStructureProfiles
     {
         public GradingStructureProfile()
         {
-            CreateMap<GradingStructure, GradingStructureInsertDto>();
-            CreateMap<GradingStructureInsertDto, GradingStructure>()
+            CreateMap<GradingStructure, GradingStructureDto>();
+            CreateMap<GradingStructureDto, GradingStructure>()
                 .ForMember(dest => dest.StructureId, opt => opt.Ignore()) // Ignored since we generate a new ID
                 .ForMember(dest => dest.Status, opt => opt.Ignore()) // Set manually
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Set manually
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
-            CreateMap<GradingStructure, GradingStructureListDto>();
         }
     }
 }

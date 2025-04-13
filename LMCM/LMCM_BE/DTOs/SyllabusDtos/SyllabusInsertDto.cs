@@ -41,12 +41,5 @@ namespace LMCM_BE.DTOs.SyllabusDtos
         public decimal? ScoringScale { get; set; }
 
         public DateTime? ApprovedDate { get; set; }
-
-        public GenericStatus Status { get; set; }
-
-        public DateTime? CreatedAt { get; set; }
-
-        public DateTime? UpdatedAt { get; set; }
-
     }
 }

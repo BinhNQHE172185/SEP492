@@ -9,13 +9,12 @@ namespace LMCM_BE.AutoMapper.CLOProfiles
     {
         public CLOProfile()
         {
-            CreateMap<Clo, CLOInsertDto>();
-            CreateMap<CLOInsertDto, Clo>()
+            CreateMap<Clo, CLODto>();
+            CreateMap<CLODto, Clo>()
                 .ForMember(dest => dest.CloId, opt => opt.Ignore())
                 .ForMember(dest => dest.Status, opt => opt.Ignore()) 
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) 
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
-            CreateMap<Clo, CLOListDto>();
         }
     }
 }

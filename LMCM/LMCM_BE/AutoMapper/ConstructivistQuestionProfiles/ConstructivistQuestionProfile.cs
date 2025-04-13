@@ -8,13 +8,12 @@ namespace LMCM_BE.AutoMapper.ConstructivistQuestionProfiles
     {
         public ConstructivistQuestionProfile()
         {
-            CreateMap<ConstructivistQuestion, ConstructivistQuestionInsertDto>();
-            CreateMap<ConstructivistQuestionInsertDto, ConstructivistQuestion>()
+            CreateMap<ConstructivistQuestion, ConstructivistQuestionDto>();
+            CreateMap<ConstructivistQuestionDto, ConstructivistQuestion>()
                 .ForMember(dest => dest.QuestionId, opt => opt.Ignore()) // Ignored since we generate a new ID
                 .ForMember(dest => dest.Status, opt => opt.Ignore()) // Set manually
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Set manually
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
-            CreateMap<ConstructivistQuestion, ConstructivistQuestionListDto>();
         }
     }
 }

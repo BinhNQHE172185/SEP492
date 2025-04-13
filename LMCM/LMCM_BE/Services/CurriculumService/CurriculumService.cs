@@ -98,7 +98,7 @@ namespace LMCM_BE.Services.CurriculumService
                 await _ploRepository.HasActivePloAsync(curriculumId) ||
                 await _ploSubjectRepository.HasActivePloSubjectByCurriculumIdAsync(curriculumId))
                 throw new InvalidOperationException("Không thể xóa môn học khi có thực thể liên quan đang hoạt động.");
- 
+
             curriculum.Status = GenericStatus.Inactive;
             curriculum.UpdatedAt = DateTime.UtcNow;
 
@@ -135,6 +135,8 @@ namespace LMCM_BE.Services.CurriculumService
         }
         public async Task<CurriculumDetailDto?> GetCurriculumDetailAsync(Guid curriculumId)
         {
+            if (curriculumId == Guid.Empty)
+                throw new ArgumentException("Chương trình giảng dạy ID không được để trống.");
             var curriculum = await _curriculumRepository.GetCurriculumDetailAsync(curriculumId);
             if (curriculum == null)
                 throw new KeyNotFoundException("Không tìm thấy chương trình giảng dạy.");
@@ -180,155 +182,153 @@ namespace LMCM_BE.Services.CurriculumService
         }
         public async Task<bool> ImportCurriculumFromWorkbookAsync(ExcelWorkbook workbook)
         {
-            if (await ValidateSheets(workbook, ExpectedHeaders.CurriculumImportHeaders))
-            {
-                ExcelWorksheet curriculumSubjectSheet = workbook.Worksheets["Curriculum Subject"];
-                ExcelWorksheet curriculumSheet = workbook.Worksheets["Curriculum"];
-                ExcelWorksheet ploSheet = workbook.Worksheets["PLO"];
-                ExcelWorksheet ploSubjectSheet = workbook.Worksheets["PLO Mappings"];
+            await ValidateSheets(workbook, ExpectedHeaders.CurriculumImportHeaders);
 
-                // Read Curriculum data
-                var curriculum = new Curriculum
+            ExcelWorksheet curriculumSubjectSheet = workbook.Worksheets["Curriculum Subject"];
+            ExcelWorksheet curriculumSheet = workbook.Worksheets["Curriculum"];
+            ExcelWorksheet ploSheet = workbook.Worksheets["PLO"];
+            ExcelWorksheet ploSubjectSheet = workbook.Worksheets["PLO Mappings"];
+
+            // Read Curriculum data
+            var curriculum = new Curriculum
+            {
+                CurriculumId = Guid.NewGuid(),
+                CurriculumCode = curriculumSheet.Cells["C2"].Text,
+                CurriculumName = curriculumSheet.Cells["C3"].Text,
+                CurriculumNameEnglish = curriculumSheet.Cells["C4"].Text,
+                CurriculumDescription = curriculumSheet.Cells["C5"].Text,
+                VocationalCode = curriculumSheet.Cells["C6"].Text,
+                VocationalName = curriculumSheet.Cells["C7"].Text,
+                EnglishVocationalName = curriculumSheet.Cells["C8"].Text,
+                DecisionNo = curriculumSheet.Cells["C9"].Text,
+                ApprovedDate = DateTime.TryParse(curriculumSheet.Cells["C10"].Text, out DateTime approvedDate) ? approvedDate : null,
+                Status = GenericStatus.Active,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                Plos = new List<Plo>(),
+                CurriculumsSubjects = new List<CurriculumsSubject>()
+            };
+
+            // Retrieve Curriculum Subjects
+            var tempCurriculumsSubjects = new List<TempCurriculumsSubject>();
+            var subjectCodes = new List<string>();
+
+            int row = 2; // Start from row 2 (row 1 contains headers)
+            while (!string.IsNullOrWhiteSpace(curriculumSubjectSheet.Cells[row, 1].Text))
+            {
+                var tempCurriculumsSubject = new TempCurriculumsSubject
                 {
-                    CurriculumId = Guid.NewGuid(),
-                    CurriculumCode = curriculumSheet.Cells["C2"].Text,
-                    CurriculumName = curriculumSheet.Cells["C3"].Text,
-                    CurriculumNameEnglish = curriculumSheet.Cells["C4"].Text,
-                    CurriculumDescription = curriculumSheet.Cells["C5"].Text,
-                    VocationalCode = curriculumSheet.Cells["C6"].Text,
-                    VocationalName = curriculumSheet.Cells["C7"].Text,
-                    EnglishVocationalName = curriculumSheet.Cells["C8"].Text,
-                    DecisionNo = curriculumSheet.Cells["C9"].Text,
-                    ApprovedDate = DateTime.TryParse(curriculumSheet.Cells["C10"].Text, out DateTime approvedDate) ? approvedDate : null,
+                    SubjectCode = curriculumSubjectSheet.Cells[row, 1].Text,
+                    TermNo = int.TryParse(curriculumSubjectSheet.Cells[row, 4].Text, out int termNo) ? termNo : (int?)null,
+                    Credit = int.TryParse(curriculumSubjectSheet.Cells[row, 5].Text, out int credit) ? credit : (int?)null,
+                    Options = int.TryParse(curriculumSubjectSheet.Cells[row, 6].Text, out int options) ? options : (int?)null,
+                };
+
+                subjectCodes.Add(tempCurriculumsSubject.SubjectCode);
+                tempCurriculumsSubjects.Add(tempCurriculumsSubject);
+                row++;
+            }
+
+            // Validate Subjects in Database
+            var existingSubjects = await _subjectService.GetActiveSubjectsByCodesAsync(subjectCodes);
+            var missingSubjects = subjectCodes.Except(existingSubjects.Select(s => s.SubjectCode)).ToList();
+
+            if (missingSubjects.Any())
+            {
+                throw new KeyNotFoundException("Các môn học sau đây không tồn tại hoặc không hoạt động: " +
+                    string.Join(", ", missingSubjects));
+            }
+
+
+            // Step 4: Convert Temporary Subjects to CurriculumsSubjects
+            var curriculumsSubjects = new List<CurriculumsSubject>();
+            foreach (var tempSubject in tempCurriculumsSubjects)
+            {
+                var existingSubject = existingSubjects.FirstOrDefault(s => s.SubjectCode == tempSubject.SubjectCode);
+                if (existingSubject == null)
+                    continue; // Skip if not found in DB
+
+                curriculumsSubjects.Add(new CurriculumsSubject
+                {
+                    CurriculumId = curriculum.CurriculumId,
+                    SubjectId = existingSubject.SubjectId,
+                    TermNo = tempSubject.TermNo,
+                    Credit = tempSubject.Credit,
+                    Options = tempSubject.Options,
+                    Status = GenericStatus.Active,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                });
+            }
+
+            // Read PLO data
+            var plos = new List<Plo>();
+            int ploRow = 2; // first row is headers
+            while (!string.IsNullOrWhiteSpace(ploSheet.Cells[ploRow, 2].Text)) // Check if PLO Name exists
+            {
+                plos.Add(new Plo
+                {
+                    PloId = Guid.NewGuid(),
+                    CurriculumId = curriculum.CurriculumId,
+                    PloName = ploSheet.Cells[ploRow, 2].Text,
+                    PloDescription = ploSheet.Cells[ploRow, 3].Text,
                     Status = GenericStatus.Active,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
-                    Plos = new List<Plo>(),
-                    CurriculumsSubjects = new List<CurriculumsSubject>()
-                };
+                    PloSubjects = new List<PloSubject>(),
+                });
+                ploRow++;
+            }
 
-                // Retrieve Curriculum Subjects
-                var tempCurriculumsSubjects = new List<TempCurriculumsSubject>();
-                var subjectCodes = new List<string>();
+            // Read PLO-Subject Mapping (PloSubject)
+            var ploSubjectMappings = new List<PloSubject>();
+            int columnStart = 2; // PLOs start from column B
+            int subjectRowStart = 3; // Subjects start from row 3
 
-                int row = 2; // Start from row 2 (row 1 contains headers)
-                while (!string.IsNullOrWhiteSpace(curriculumSubjectSheet.Cells[row, 1].Text))
+            for (int subjectRow = subjectRowStart; subjectRow <= ploSubjectSheet.Dimension.End.Row; subjectRow++)
+            {
+                var subjectCode = ploSubjectSheet.Cells[subjectRow, 1].Text;
+
+                // Skip merged header rows
+                if (string.IsNullOrWhiteSpace(subjectCode) || ploSubjectSheet.Cells[subjectRow, 1].Merge)
+                    continue;
+
+                // Get subject from curriculum subjects
+                var subject = existingSubjects.FirstOrDefault(s => s.SubjectCode == subjectCode);
+                if (subject == null)
+                    continue;
+
+                for (int ploCol = columnStart; ploCol <= ploSubjectSheet.Dimension.End.Column; ploCol++)
                 {
-                    var tempCurriculumsSubject = new TempCurriculumsSubject
+                    var ploName = ploSubjectSheet.Cells[2, ploCol].Text; // PLO name from row 2
+                    var plo = plos.FirstOrDefault(p => p.PloName == ploName);
+                    if (plo != null && ploSubjectSheet.Cells[subjectRow, ploCol].Text == "ü")
                     {
-                        SubjectCode = curriculumSubjectSheet.Cells[row, 1].Text,
-                        TermNo = int.TryParse(curriculumSubjectSheet.Cells[row, 4].Text, out int termNo) ? termNo : (int?)null,
-                        Credit = int.TryParse(curriculumSubjectSheet.Cells[row, 5].Text, out int credit) ? credit : (int?)null,
-                        Options = int.TryParse(curriculumSubjectSheet.Cells[row, 6].Text, out int options) ? options : (int?)null,
-                    };
-
-                    subjectCodes.Add(tempCurriculumsSubject.SubjectCode);
-                    tempCurriculumsSubjects.Add(tempCurriculumsSubject);
-                    row++;
-                }
-
-                // Validate Subjects in Database
-                var existingSubjects = await _subjectService.GetActiveSubjectsByCodesAsync(subjectCodes);
-                var missingSubjects = subjectCodes.Except(existingSubjects.Select(s => s.SubjectCode)).ToList();
-
-                if (missingSubjects.Any())
-                {
-                    throw new KeyNotFoundException("Các môn học sau đây không tồn tại hoặc không hoạt động: " +
-                        string.Join(", ", missingSubjects));
-                }
-
-
-                // Step 4: Convert Temporary Subjects to CurriculumsSubjects
-                var curriculumsSubjects = new List<CurriculumsSubject>();
-                foreach (var tempSubject in tempCurriculumsSubjects)
-                {
-                    var existingSubject = existingSubjects.FirstOrDefault(s => s.SubjectCode == tempSubject.SubjectCode);
-                    if (existingSubject == null)
-                        continue; // Skip if not found in DB
-
-                    curriculumsSubjects.Add(new CurriculumsSubject
-                    {
-                        CurriculumId = curriculum.CurriculumId,
-                        SubjectId = existingSubject.SubjectId,
-                        TermNo = tempSubject.TermNo,
-                        Credit = tempSubject.Credit,
-                        Options = tempSubject.Options,
-                        Status = GenericStatus.Active,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
-                    });
-                }
-
-                // Read PLO data
-                var plos = new List<Plo>();
-                int ploRow = 2; // first row is headers
-                while (!string.IsNullOrWhiteSpace(ploSheet.Cells[ploRow, 2].Text)) // Check if PLO Name exists
-                {
-                    plos.Add(new Plo
-                    {
-                        PloId = Guid.NewGuid(),
-                        CurriculumId = curriculum.CurriculumId,
-                        PloName = ploSheet.Cells[ploRow, 2].Text,
-                        PloDescription = ploSheet.Cells[ploRow, 3].Text,
-                        Status = GenericStatus.Active,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow,
-                        PloSubjects = new List<PloSubject>(),
-                    });
-                    ploRow++;
-                }
-
-                // Read PLO-Subject Mapping (PloSubject)
-                var ploSubjectMappings = new List<PloSubject>();
-                int columnStart = 2; // PLOs start from column B
-                int subjectRowStart = 3; // Subjects start from row 3
-
-                for (int subjectRow = subjectRowStart; subjectRow <= ploSubjectSheet.Dimension.End.Row; subjectRow++)
-                {
-                    var subjectCode = ploSubjectSheet.Cells[subjectRow, 1].Text;
-
-                    // Skip merged header rows
-                    if (string.IsNullOrWhiteSpace(subjectCode) || ploSubjectSheet.Cells[subjectRow, 1].Merge)
-                        continue;
-
-                    // Get subject from curriculum subjects
-                    var subject = existingSubjects.FirstOrDefault(s => s.SubjectCode == subjectCode);
-                    if (subject == null)
-                        continue;
-
-                    for (int ploCol = columnStart; ploCol <= ploSubjectSheet.Dimension.End.Column; ploCol++)
-                    {
-                        var ploName = ploSubjectSheet.Cells[2, ploCol].Text; // PLO name from row 2
-                        var plo = plos.FirstOrDefault(p => p.PloName == ploName);
-                        if (plo != null && ploSubjectSheet.Cells[subjectRow, ploCol].Text == "ü")
+                        ploSubjectMappings.Add(new PloSubject
                         {
-                            ploSubjectMappings.Add(new PloSubject
-                            {
-                                PloId = plo.PloId,
-                                SubjectId = subject.SubjectId,
-                                Status = GenericStatus.Active,
-                                CreatedAt = DateTime.UtcNow,
-                                UpdatedAt = DateTime.UtcNow
-                            });
-                        }
+                            PloId = plo.PloId,
+                            SubjectId = subject.SubjectId,
+                            Status = GenericStatus.Active,
+                            CreatedAt = DateTime.UtcNow,
+                            UpdatedAt = DateTime.UtcNow
+                        });
                     }
                 }
-
-                // Assign curriculum subjects
-                curriculum.CurriculumsSubjects = curriculumsSubjects;
-
-                // Assign PLOs to the curriculum
-                curriculum.Plos = plos;
-
-                // Assign PLO-Subject mappings to each PLO
-                foreach (var plo in curriculum.Plos)
-                {
-                    plo.PloSubjects = ploSubjectMappings.Where(ps => ps.PloId == plo.PloId).ToList();
-                }
-
-                return await ImportCurriculumAsync(curriculum);
             }
-            return false;
+
+            // Assign curriculum subjects
+            curriculum.CurriculumsSubjects = curriculumsSubjects;
+
+            // Assign PLOs to the curriculum
+            curriculum.Plos = plos;
+
+            // Assign PLO-Subject mappings to each PLO
+            foreach (var plo in curriculum.Plos)
+            {
+                plo.PloSubjects = ploSubjectMappings.Where(ps => ps.PloId == plo.PloId).ToList();
+            }
+
+            return await ImportCurriculumAsync(curriculum);
         }
     }
 }

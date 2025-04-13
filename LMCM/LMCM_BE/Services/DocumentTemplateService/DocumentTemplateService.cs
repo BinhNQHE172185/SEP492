@@ -173,7 +173,7 @@ namespace LMCM_BE.Services.DocumentTemplateService
 
                 if (uploadedFileHash != existingFileHash)
                 {
-                    fileUrl = await _googleDriveService.UploadBudgetProposalFileAsync(newTemplate.File);
+                    fileUrl = await _googleDriveService.UploadDocumentTemplateFileAsync(newTemplate.File);
                     if (string.IsNullOrWhiteSpace(fileUrl))
                         throw new Exception("Tải file thất bại.");
 

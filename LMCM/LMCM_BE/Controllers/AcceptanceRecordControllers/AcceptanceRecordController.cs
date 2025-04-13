@@ -26,6 +26,15 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
                 var data = await _acceptanceRecordService.GetAcceptanceRecordsAsync(request.SearchKey, request.pageIndex, request.PageSize);
                 return data != null ? Ok(data) : NotFound(new { message = "Không tìm thấy dữ liệu biên bản nghiệm thu." });
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
+            }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
@@ -78,15 +87,6 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new
-                {
-                    Success = false,
-                    Message = ex.Message,
-                    Error = ex.Message
-                });
-            }
-            catch (ValidationException ex)
-            {
-                return BadRequest(new
                 {
                     Success = false,
                     Message = ex.Message,
@@ -165,15 +165,6 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
                     Error = ex.Message
                 });
             }
-            catch (ValidationException ex)
-            {
-                return BadRequest(new
-                {
-                    Success = false,
-                    Message = ex.Message,
-                    Error = ex.Message
-                });
-            }
             catch (ArgumentException ex)
             {
                 return BadRequest(new
@@ -224,9 +215,14 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
                     Error = ex.Message
                 });
             }
-            catch (InvalidOperationException ex)
+            catch (ArgumentException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
             }
             catch (Exception ex)
             {
@@ -240,7 +236,20 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
             try
             {
                 var record = await _acceptanceRecordService.GetAcceptanceRecordDetailAsync(acceptanceId);
-                return Ok(record);
+                if (record != null)
+                {
+                    return Ok(record);
+                }
+                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
             }
             catch (KeyNotFoundException ex)
             {

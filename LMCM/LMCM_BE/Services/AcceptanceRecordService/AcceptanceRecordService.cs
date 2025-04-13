@@ -49,7 +49,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
             UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             bool isHod = false;
             if (user == null || string.IsNullOrEmpty(user.Email))
-                throw new Exception("Không tìm thấy người dùng");
+                throw new UnauthorizedAccessException("Không tìm thấy người dùng");
             if (!user.Roles.Contains("Head of Department")) isHod = true;
 
             var (items, totalCount) = await _acceptanceRecordRepository.GetAcceptanceRecordsAsync(isHod, user.Id, searchKey, pageIndex, pageSize);
@@ -135,7 +135,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
 
             UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
-                throw new Exception("Không tìm thấy người dùng");
+                throw new UnauthorizedAccessException("Không tìm thấy người dùng");
             if (user.Id != acceptanceRecord.AuthorId && user.Roles.Contains("Staff"))
                 throw new UnauthorizedAccessException("Người dùng không có quyền cập nhật biên bản nghiệm thu này.");
 
@@ -152,7 +152,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
 
                 if (uploadedFileHash != existingFileHash)
                 {
-                    fileUrl = await _googleDriveService.UploadBudgetProposalFileAsync(dto.File);
+                    fileUrl = await _googleDriveService.UploadAcceptanceRecordFileAsync(dto.File);
                     if (string.IsNullOrWhiteSpace(fileUrl))
                         throw new Exception("Tải file thất bại.");
 
@@ -177,6 +177,9 @@ namespace LMCM_BE.Services.AcceptanceRecordService
         }
         public async Task<bool> SoftDeleteAcceptanceRecordAsync(Guid acceptanceId)
         {
+            if (acceptanceId == Guid.Empty)
+                throw new ArgumentException("ID biên bản nghiệm thu không được để trống.", nameof(acceptanceId));
+
             var acceptanceRecord = await _acceptanceRecordRepository.GetActiveAcceptanceRecordByIdAsync(acceptanceId);
 
             if (acceptanceRecord == null)

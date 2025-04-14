@@ -1,8 +1,9 @@
 <p-dialog header="Thêm hợp đồng" [(visible)]="displayAddDialog" [modal]="true" [draggable]="false" [resizable]="false"
-addAddress class="custom-dialog" (onHide)="closeDialog()">
+  addAddress class="custom-dialog" (onHide)="closeDialog()">
   <ng-template pTemplate="content">
-    <section class="p-8 w-full bg-white rounded-xl">
-      <div class="flex flex-col gap-6">
+    <section class="p-8 w-full bg-white rounded-xl flex">
+      <div class="flex flex-col gap-6 w-full"
+        [ngClass]="{'w-2/3': showCalculationPanel, 'w-full': !showCalculationPanel}">
         <div class="flex flex-col gap-2">
           <label class="block font-semibold text-orange-500">Tiêu đề <span class="text-red-500">*</span></label>
           <input pInputText [(ngModel)]="contract.title" placeholder="Nhập tiêu đề"
@@ -12,9 +13,9 @@ addAddress class="custom-dialog" (onHide)="closeDialog()">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
             <label class="block font-semibold text-orange-500">Chọn nhà thầu<span class="text-red-500">*</span></label>
-            <p-dropdown [options]="contractor" [(ngModel)]="contract.contractorId" optionLabel="title"
+            <p-select [options]="contractor" [(ngModel)]="contract.contractorId" optionLabel="contractorName"
               placeholder="Chọn nhà thầu" [filter]="true" class="w-full border border-gray-300 rounded"
-              optionValue="contractorId">
+              optionValue="contractorId" appendTo="body">
               <ng-template let-contractor pTemplate="item">
                 {{ contractor.contractorName.length > 25 ? (contractor.contractorName | slice:0:25) + '...' :
                 contractor.contractorName }}
@@ -24,15 +25,15 @@ addAddress class="custom-dialog" (onHide)="closeDialog()">
                 '...' :
                 selectedContractor.contractorName }}
               </ng-template>
-            </p-dropdown>
+            </p-select>
           </div>
 
           <div class="flex flex-col gap-2">
             <label class="block font-semibold text-orange-500">Tờ trình <span class="text-red-500">*</span></label>
 
-            <p-dropdown [options]="budgetProposal" [(ngModel)]="contract.proposalId" optionLabel="title"
+            <p-select [options]="budgetProposal" [(ngModel)]="contract.proposalId" optionLabel="title"
               placeholder="Chọn tờ trình" [filter]="true" class="w-full border border-gray-300 rounded"
-              optionValue="proposalId">
+              optionValue="proposalId" appendTo="body">
               <ng-template let-proposal pTemplate="item">
                 {{ proposal.title.length > 25 ? (proposal.title | slice:0:25) + '...' : proposal.title }}
               </ng-template>
@@ -40,7 +41,7 @@ addAddress class="custom-dialog" (onHide)="closeDialog()">
                 {{ selectedProposal?.title.length > 25 ? (selectedProposal.title | slice:0:25) + '...' :
                 selectedProposal.title }}
               </ng-template>
-            </p-dropdown>
+            </p-select>
           </div>
         </div>
 
@@ -86,16 +87,87 @@ addAddress class="custom-dialog" (onHide)="closeDialog()">
           <div *ngIf="file && selectedContractId" class="flex items-center gap-4">
             <p-button icon="pi pi-file" label="Xem file đính kèm" (click)="viewFile(file)" outlined>
             </p-button>
-            <p-button icon="pi pi-download" text (click)="downloadFile(file)">
-            </p-button>
+            <p-button icon="pi pi-download" text (click)="downloadFile(file)"></p-button>
           </div>
         </div>
       </div>
+
+      <p-table *ngIf="showCalculationPanel" [value]="selectedItems"
+        class="w-[700px] max-w-[700px] min-w-[700px] w-full md:w-2/3 p-4 border-l border-gray-300 ml-5">
+        <ng-template pTemplate="caption">
+          <h4 class="font-semibold text-orange-500">Bảng tính giá trị hợp đồng</h4>
+        </ng-template>
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="w-[120px]">Hạng mục</th>
+            <th class="w-[120px]">Đơn vị tính</th> 
+            <th class="w-[80px]">Số lượng</th> 
+            <th class="w-[120px]">Hành động</th> 
+            <th class="w-[120px]">Giá trị</th> 
+            <th class="w-[80px] text-center">Xóa</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-row let-i="rowIndex">
+          <tr>
+            <td class="w-[120px]">
+              <p-select [options]="contractValueList" [(ngModel)]="row.selected" placeholder="Chọn hạng mục"
+                (onChange)="updateTotalValue()" optionLabel="category" appendTo="body" class="w-[120px]">
+                <ng-template let-selectedItem pTemplate="selectedItem">
+                  <span [title]="selectedItem?.category">
+                    {{ selectedItem?.category?.length > 15 ? (selectedItem?.category | slice:0:15) + '...' :
+                    selectedItem?.category }}
+                  </span>
+                </ng-template>
+              </p-select>
+            </td>
+
+            <td class="w-[120px]">{{ row.selected?.measurementUnit || '-' }}</td>
+
+            <td class="w-[80px]">
+              <input type="number" [(ngModel)]="row.quantity" (ngModelChange)="updateTotalValue()"
+                class="border p-2 rounded w-full" min="0" />
+            </td>
+
+            <td class="w-[120px]">
+              <p-select [options]="[ { label: 'Xây mới', value: 'new' }, { label: 'Điều chỉnh', value: 'adjust' } ]"
+                [(ngModel)]="row.isNew" (onChange)="updateTotalValue()" placeholder="Loại" class="w-full">
+              </p-select>
+            </td>
+
+            <td class="w-[120px] text-right font-medium">
+              {{ row.calculatedValue | currency: 'VND':'symbol':'1.0-0':'vi' }}
+            </td>
+
+            <td class="w-[80px] text-center">
+              <button (click)="removeRow(i)" type="button" class="text-red-500 hover:text-red-700">
+                <i class="pi pi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+          <tr>
+            <td colspan="6">
+              <p-button icon="pi pi-plus" (onClick)="addRow()"></p-button>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="6" class="text-right text-green-600 font-semibold text-lg">
+              Tổng giá trị: {{ totalValue | currency: 'VND':'symbol':'1.0-0':'vi' }}
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
     </section>
   </ng-template>
 
   <ng-template pTemplate="footer">
     <div class="flex justify-end gap-4 p-2">
+      <button pButton type="button" label="Bảng tính giá trị hợp đồng" outlined class="p-button-warning"
+        (click)="toggleCalculationPanel()"></button>
       <button pButton type="button" label="Hủy" class="p-button-text text-gray-500 hover:text-gray-700"
         (click)="closeDialog()"></button>
       <button pButton type="button" label="Lưu" class="p-button-warning" (click)="save()"></button>

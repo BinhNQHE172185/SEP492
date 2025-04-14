@@ -1,4 +1,5 @@
 ﻿using LMCM_BE.Models;
+using LMCM_BE.Shared.Constant;
 
 namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
 {
@@ -12,5 +13,6 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
         Task<bool> AddSubjectsAsync(List<Subject> subjects);
         Task<bool> UpdateSubjectsAsync(List<Subject> subjects);
         Task<bool> UpdateSubjectAsync(Subject subject);
+        Task<int> CountSubjectByStatusAsync(GenericStatus status);
     }
 }

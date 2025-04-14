@@ -28,5 +28,11 @@ namespace LMCM_BE.Controllers.DashboardControllers
             var result = await _dashboardService.GetColumnChartDataAsync();
             return Ok(result);
         }
+        [HttpGet("items")]
+        public async Task<IActionResult> GetItems()
+        {
+            var result = await _dashboardService.GetItemsAsync();
+            return Ok(result);
+        }
     }
 }

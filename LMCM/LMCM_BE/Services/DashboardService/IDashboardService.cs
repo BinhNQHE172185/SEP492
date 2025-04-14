@@ -6,5 +6,6 @@ namespace LMCM_BE.Services.DashboardService
     {
         Task<ChartDataDto> GetPieChartDataAsync();
         Task<ChartDataDto> GetColumnChartDataAsync();
+        Task<ItemsDto> GetItemsAsync();
     }
 }

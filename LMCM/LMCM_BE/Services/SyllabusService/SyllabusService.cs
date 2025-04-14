@@ -46,6 +46,11 @@ namespace LMCM_BE.Services.SyllabusService
             _GradingStructureRepository = gradingStructureRepository;
         }
 
+        public async Task<int> getSyllabusCountAsync()
+        {
+            return await _syllabusRepository.CountSyllabusByStatus(GenericStatus.Active);
+        }
+
         public async Task<bool> DeleteSyllabusAsync(Guid id)
         {
 

@@ -21,6 +21,14 @@ namespace LMCM_BE.Repositories.SyllabusRepository
             return true;
         }
 
+        public async Task<int> CountSyllabusByStatus(GenericStatus status)
+        {
+            var count = await _dbContext.Syllabus
+                .Where(s => s.Status == status)
+                .CountAsync();
+
+            return count;
+        }
 
         public async Task<(List<Syllabus>, int totalCount)> GetSyllabusesAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {

@@ -1,14 +1,32 @@
 ﻿using LMCM_BE.DTOs.DashboardDtos;
+using LMCM_BE.Services.CurriculumService;
 using LMCM_BE.Services.LearningMaterialChangesHistoryService;
+using LMCM_BE.Services.SubjectService;
+using LMCM_BE.Services.SyllabusService;
+using LMCM_BE.Services.UserService;
 
 namespace LMCM_BE.Services.DashboardService
 {
     public class DashboardService : IDashboardService
     {
         private readonly ILearningMaterialChangesHistorySerivce _changesService;
-        public DashboardService(ILearningMaterialChangesHistorySerivce changesService)
+        private readonly IUserService _userService;
+        private readonly ISubjectService _subjectService;
+        private readonly ICurriculumService _curriculumService;
+        private readonly ISyllabusService _syllabusService;
+
+        public DashboardService(
+            ILearningMaterialChangesHistorySerivce changesService,
+            IUserService userService,
+            ISubjectService subjectService,
+            ICurriculumService curriculumService,
+            ISyllabusService syllabusService)
         {
             _changesService = changesService;
+            _userService = userService;
+            _subjectService = subjectService;
+            _curriculumService = curriculumService;
+            _syllabusService = syllabusService;
         }
 
         public async Task<ChartDataDto> GetPieChartDataAsync()
@@ -63,6 +81,17 @@ namespace LMCM_BE.Services.DashboardService
 
             return dto;
         }
+        public async Task<ItemsDto> GetItemsAsync()
+        {
+            var data = new ItemsDto
+            {
+                subjectCount = await _subjectService.getSubjectCountAsync(),
+                syllabusCount = await _syllabusService.getSyllabusCountAsync(),
+                userCount = await _userService.GetActiveUserCountAsync(),
+                curriculumnCount = await _curriculumService.getCurriculumnCountAsync()
+            };
 
+            return data;
+        }
     }
 }

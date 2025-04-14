@@ -20,6 +20,13 @@ namespace LMCM_BE.Repositories.UserRepositoriy
             _dbContext = dbContext;
         }
 
+        public async Task<int> CountUserByStatusAsync(UserStatus status)
+        {
+            return await _dbContext.Users
+                .Where(u => u.Status != status) //check status khác 3 (Stopped)
+                .CountAsync();
+        }
+
         public async Task<bool> CreateStaff(string request)
         {
             var user = await _userManager.FindByEmailAsync(request);

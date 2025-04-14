@@ -15,6 +15,14 @@ namespace LMCM_BE.Repositories.CurriculumRepository
         {
             _dbContext = dbContext;
         }
+
+        public async Task<int> CountCurriculumByStatusAsync(GenericStatus status)
+        {
+            return await _dbContext.Curriculums
+                .Where(c => c.Status == status)
+                .CountAsync();
+        }
+
         public async Task<(List<Curriculum>, int totalCount)> GetCurriculumsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.Curriculums.Include(c => c.CurriculumsSubjects).Where(c => c.Status == GenericStatus.Active).AsQueryable();

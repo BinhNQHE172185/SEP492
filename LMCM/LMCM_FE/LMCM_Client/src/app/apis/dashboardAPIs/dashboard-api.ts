@@ -17,4 +17,7 @@ export class DashboardApiService {
   getbarChartData(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/Dashboard/column-chart`, { withCredentials: true });
   }
+  getItemData(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/Dashboard/items`, { withCredentials: true });
+  }
 }

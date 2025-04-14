@@ -6,6 +6,7 @@ using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.UserRepositoriy;
 using LMCM_BE.Services.GoogleDriveService;
+using LMCM_BE.Shared.Constant;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -35,6 +36,12 @@ namespace LMCM_BE.Services.UserService
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
         }
+
+        public async Task<int> GetActiveUserCountAsync()
+        {
+            return await _userRepository.CountUserByStatusAsync(UserStatus.Stopped);
+        }
+
         public async Task<UserLoginResponseDto> Login(GoogleLoginRequest request)
         {
             var payload = await GoogleJsonWebSignature.ValidateAsync(request.Token, new GoogleJsonWebSignature.ValidationSettings

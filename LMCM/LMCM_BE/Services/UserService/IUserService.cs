@@ -14,5 +14,6 @@ namespace LMCM_BE.Services.UserService
         Task<int> UserCountAsync();
         Task<List<string>> CheckRole();
         Task<bool> UpdateStatus(string userId, string status);
+        Task<int> GetActiveUserCountAsync();
     }
 }

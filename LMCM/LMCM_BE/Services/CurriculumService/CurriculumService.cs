@@ -56,6 +56,11 @@ namespace LMCM_BE.Services.CurriculumService
             _subjectService = subjectService;
         }
 
+        public async Task<int> getCurriculumnCountAsync()
+        {
+            return await _curriculumRepository.CountCurriculumByStatusAsync(GenericStatus.Active);
+        }
+
         public async Task<PagedResult<CurriculumDto>> GetCurriculumsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var (curriculums, totalCount) = await _curriculumRepository.GetCurriculumsAsync(searchKey, pageIndex, pageSize);

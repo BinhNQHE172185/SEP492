@@ -14,6 +14,13 @@ namespace LMCM_BE.Repositories.SubjectRepository.SubjectRepository
             _dbContext = dbContext;
         }
 
+        public async Task<int> CountSubjectByStatusAsync(GenericStatus status)
+        {
+            return await _dbContext.Subjects
+             .Where(s => s.Status == status)
+             .CountAsync();
+        }
+
         public async Task<(List<Subject>, int totalCount)> GetSubjectsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var query = _dbContext.Subjects.AsQueryable();

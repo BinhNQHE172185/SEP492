@@ -1,4 +1,5 @@
 ﻿using LMCM_BE.Models;
+using LMCM_BE.Shared.Constant;
 
 namespace LMCM_BE.Repositories.SyllabusRepository
 {
@@ -15,5 +16,6 @@ namespace LMCM_BE.Repositories.SyllabusRepository
         Task<Syllabus?> GetActiveSyllabusBySubjectIdAsync(Guid subjectId);
         Task<List<Syllabus>> GetSyllabusesBySubjectIdAsync(Guid subjectId);
         Task<bool> UpdateSyllabusAsync(Syllabus syllabus);
+        Task<int> CountSyllabusByStatus(GenericStatus status);
     }
 }

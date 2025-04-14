@@ -31,6 +31,11 @@ namespace LMCM_BE.Services.SubjectService
             _syllabusSubjectRepository = syllabusRepository;
         }
 
+        public async Task<int> getSubjectCountAsync()
+        {
+            return await _subjectRepository.CountSubjectByStatusAsync(GenericStatus.Active);
+        }
+
         public async Task<PagedResult<SubjectViewDto>> GetSubjectsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var (data, totalCount) = await _subjectRepository.GetSubjectsAsync(searchKey, pageIndex, pageSize);

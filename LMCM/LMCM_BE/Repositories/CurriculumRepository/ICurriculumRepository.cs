@@ -1,4 +1,5 @@
 ﻿using LMCM_BE.Models;
+using LMCM_BE.Shared.Constant;
 
 namespace LMCM_BE.Repositories.CurriculumRepository
 {
@@ -10,5 +11,6 @@ namespace LMCM_BE.Repositories.CurriculumRepository
         Task<Curriculum?> GetCurriculumDetailAsync(Guid curriculumId);
         Task<Curriculum?> GetActiveCurriculumByCodeAsync(string curriculumCode);
         Task<Curriculum?> GetActiveCurriculumByIdAsync(Guid curriculumId);
+        Task<int> CountCurriculumByStatusAsync(GenericStatus status);
     }
 }

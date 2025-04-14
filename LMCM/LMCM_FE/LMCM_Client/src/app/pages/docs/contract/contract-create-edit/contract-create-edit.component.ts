@@ -13,6 +13,8 @@ import { BudgetApiService } from '../../../../apis/budgetProposalAPIs/budget-api
 import { DropdownModule } from 'primeng/dropdown';
 import { ContractorApiService } from '../../../../apis/contractorAPIs/contractor-api.service';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { TableModule } from 'primeng/table';
+import { SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'app-contract-create-edit',
@@ -26,7 +28,9 @@ import { InputNumberModule } from 'primeng/inputnumber';
     DatePickerModule,
     ToastModule,
     DropdownModule,
-    InputNumberModule
+    InputNumberModule,
+    TableModule,
+    SelectModule
   ],
   templateUrl: './contract-create-edit.component.html',
   styleUrl: './contract-create-edit.component.scss',
@@ -44,6 +48,24 @@ export class ContractCreateEditComponent implements OnChanges {
   contract: any;
   budgetProposal: any;
   contractor: any;
+  contractValueList: any[] = [];
+  price: any[] = [];
+  selectedItems: {
+    selected: {
+      standardRate?: number;
+      valueRatioForUpdate?: number;
+      contractValue?: number;
+      measurementUnit?: string;
+    } | null;
+    quantity: number;
+    isNew: string | null;
+    calculatedValue: number;
+  }[] = [
+      { selected: null, quantity: 1, isNew: 'new', calculatedValue: 0 }
+    ];
+  totalValue: number = 0;
+
+  showCalculationPanel: boolean = false;
 
   constructor(
     private messageService: MessageService,
@@ -51,8 +73,25 @@ export class ContractCreateEditComponent implements OnChanges {
     private budgetProposalService: BudgetApiService,
     private contractorService: ContractorApiService
   ) { }
-
   loadData() {
+    this.contractService.getContractValue().subscribe(
+      (response) => {
+        if (response) {
+          this.price = response;
+          this.contractValueList = response.map((item: any) => ({
+            ...item,
+            selected: false
+          }));
+        }
+      },
+      (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Thất bại',
+          detail: error?.error?.message || 'Đã xảy ra lỗi khi tải dữ liệu.'
+        });
+      }
+    )
     this.budgetProposalService.getBudgetList().subscribe(
       (response) => {
         if (response) {
@@ -81,6 +120,51 @@ export class ContractCreateEditComponent implements OnChanges {
         });
       }
     );
+  }
+
+  addRow() {
+    this.selectedItems.push({
+      selected: null,
+      quantity: 0,
+      isNew: 'new',
+      calculatedValue: 0
+    });
+  }
+
+  removeRow(index: number) {
+    this.selectedItems.splice(index, 1);
+    this.updateTotalValue();
+  }
+
+  updateTotalValue() {
+    let total = 0;
+
+    this.selectedItems.forEach((row) => {
+      const item = row.selected;
+
+      const quantity = Number(row.quantity);
+      const isValidQuantity = !isNaN(quantity) && quantity > 0;
+
+      if (item && isValidQuantity) {
+        const standardRate = Number(item.standardRate) || 0;
+        const ratio = Number(item.valueRatioForUpdate) || 1;
+        const value = Number(item.contractValue) || 1;
+
+        if (row.isNew === 'new') {
+          row.calculatedValue = value * quantity * standardRate;
+        } else if (row.isNew === 'adjust') {
+          row.calculatedValue = value * quantity * standardRate * ratio;
+        } else {
+          row.calculatedValue = 0;
+        }
+      } else {
+        row.calculatedValue = 0;
+      }
+
+      total += row.calculatedValue;
+    });
+
+    this.totalValue = total;
   }
 
   ngOnChanges() {
@@ -150,6 +234,10 @@ export class ContractCreateEditComponent implements OnChanges {
     }
   }
 
+  toggleCalculationPanel() {
+    this.showCalculationPanel = !this.showCalculationPanel;
+  }
+
   onFileSelect(event: any) {
     if (event.files && event.files.length > 0) {
       this.uploadedFiles = event.files[0];
@@ -179,6 +267,10 @@ export class ContractCreateEditComponent implements OnChanges {
       content: ''
     };
     this.file = '';
+    this.selectedItems = [
+      { selected: null, quantity: 1, isNew: 'new', calculatedValue: 0 }
+    ];
+    this.showCalculationPanel = false;
   }
 
   closeDialog() {

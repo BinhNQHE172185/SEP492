@@ -22,7 +22,6 @@
                 <tr>
                     <th>Tên tài liệu</th>
                     <th>Loại tài liệu</th>
-                    <th>Trạng thái</th>
                     <th style="display: flex; justify-content: center;">Hành động</th>
                 </tr>
             </ng-template>
@@ -31,12 +30,6 @@
                 <tr>
                     <td>{{ template.templateName }}</td>
                     <td>{{ template.templateType }}</td>
-                    <td>
-                        <p-tag [value]="template.status"
-                            [severity]="template.status === 'Đang sử dụng' ? 'success' : 'warn'">
-                        </p-tag>
-                    </td>
-
                     <td class="p-2 flex justify-center gap-2">
                         <p-button label="Chi tiết" outlined severity="info"
                             (click)="openDetailDialog(template.templateId)"></p-button>

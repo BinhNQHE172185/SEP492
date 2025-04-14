@@ -29,14 +29,13 @@ import { TemplateStatus } from '../../../../../shared/Constants/StatusConstants'
     ToastModule,
     DropdownModule,
     InputNumberModule,
-    
   ],
   providers: [ConfirmationService, MessageService],
   standalone: true,
   templateUrl: './template-create-edit.component.html',
   styleUrl: './template-create-edit.component.scss'
 })
-export class TemplateCreateEditComponent implements OnChanges{
+export class TemplateCreateEditComponent implements OnChanges {
   @Input() displayAddDialog: boolean = false;
   @Input() selectedId: string | null = null;
   @Output() closeDialogEvent = new EventEmitter<void>();
@@ -54,25 +53,25 @@ export class TemplateCreateEditComponent implements OnChanges{
     private templateService: DocumentTemplateApiService,
 
   ) { }
-statusList = Object.keys(TemplateStatus)
- 
-  .map(key => ({
-    label: key, 
-    value: TemplateStatus[key as keyof typeof TemplateStatus]
-  }));
+  statusList = Object.keys(TemplateStatus)
+
+    .map(key => ({
+      label: key,
+      value: TemplateStatus[key as keyof typeof TemplateStatus]
+    }));
 
 
   ngOnChanges() {
     console.log("Selected ID:", this.selectedId);
 
-  
+
     if (this.selectedId) {
       console.log("Selected ID:", this.selectedId);
       this.templateService.getTemplateDetail(this.selectedId).subscribe(
         (response) => {
           if (response) {
             this.template = response;
-        
+
           }
         },
         (error) => {
@@ -92,9 +91,6 @@ statusList = Object.keys(TemplateStatus)
     const reportData = new FormData();
     reportData.append("templateName", this.template.templateName!);
     reportData.append("templateType", this.template.templateType!);
-    reportData.append("status", this.template.status);
-   
-   
     reportData.append("file", this.file);
 
     if (this.selectedId) {
@@ -145,7 +141,7 @@ statusList = Object.keys(TemplateStatus)
     };
     this.file = null; // Đảm bảo không bị null
   }
-  
+
   closeDialog() {
     this.selectedId = '';
     this.displayAddDialog = false;

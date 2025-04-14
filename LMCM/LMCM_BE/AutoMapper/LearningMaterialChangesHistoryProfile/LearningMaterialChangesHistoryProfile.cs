@@ -9,16 +9,18 @@ namespace LMCM_BE.AutoMapper.LearningMaterialChangesHistoryProfile
     {
         public LearningMaterialChangesHistoryProfile()
         {
-            CreateMap<LearningMaterialChangesHistory, ChangesHistoryListDto>();
+            CreateMap<LearningMaterialChangesHistory, ChangesHistoryListDto>()
+                .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.Name))
+                .ForMember(dest => dest.ContractTitle, opt => opt.MapFrom(src => src.Contract != null ? src.Contract.Title : null));
             CreateMap<CreateLearningMaterialChangesHistoryDto, LearningMaterialChangesHistory>();
             CreateMap<UpdateLearningMaterialChangesHistoryDto, LearningMaterialChangesHistory>();
             CreateMap<LearningMaterialChangesHistory, ChangesHistoryOfSubjectDto>()
-               .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.Contract))
-               .ForMember(dest => dest.Syllabus, opt => opt.MapFrom(src => src.Syllabus))
-               .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
+                .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.Name))
+                .ForMember(dest => dest.ContractTitle, opt => opt.MapFrom(src => src.Contract != null ? src.Contract.Title : null));
             CreateMap<LearningMaterial, LearningMaterialViewDto>();
             CreateMap<LearningMaterialChangesHistory, ChangesHistoryDetailDto>()
-                .ForMember(dest => dest.ContractTitle, opt => opt.MapFrom(src => src.Contract.Title))
+                .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.Name))
+                .ForMember(dest => dest.ContractTitle, opt => opt.MapFrom(src => src.Contract != null ? src.Contract.Title : null))
                 .ReverseMap();
         }
     }

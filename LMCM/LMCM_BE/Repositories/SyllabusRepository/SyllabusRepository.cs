@@ -73,7 +73,7 @@ namespace LMCM_BE.Repositories.SyllabusRepository
         {
             var siblingSyllabuses = await _dbContext.Syllabus
                 .Where(s => s.CourseCode == courseCode)
-                .OrderByDescending(s => s.UpdatedAt ?? s.CreatedAt)
+                .OrderByDescending(s => s.CreatedAt)
                 .ToListAsync();
 
             var paginatedItems = siblingSyllabuses

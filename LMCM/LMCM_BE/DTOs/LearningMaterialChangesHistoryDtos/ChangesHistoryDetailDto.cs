@@ -1,4 +1,5 @@
 ﻿using LMCM_BE.Models;
+using LMCM_BE.Shared.Constant;
 
 namespace LMCM_BE.DTOs.LearningMaterialChangesHistoryDtos
 {
@@ -6,7 +7,13 @@ namespace LMCM_BE.DTOs.LearningMaterialChangesHistoryDtos
     {
         public Guid HistoryId { get; set; }
 
+        public Guid UserId { get; set; }
+
+        public string? Username { get; set; }
+
         public Guid? ContractId { get; set; }
+
+        public string? ContractTitle { get; set; }
 
         public Guid SyllabusId { get; set; }
 
@@ -19,6 +26,7 @@ namespace LMCM_BE.DTOs.LearningMaterialChangesHistoryDtos
         public string? StartTerm { get; set; }
 
         public string? CourseCode { get; set; }
-        public string? ContractTitle { get; set; }
+
+        public GenericStatus Status { get; set; }
     }
 }

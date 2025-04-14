@@ -1,6 +1,6 @@
 <p-card>
     <div class="flex justify-between items-center">
-        <h2 class="text-xl font-bold text-orange-500">Lịch sử thay đổi đề cương</h2>
+        <h2 class="text-xl font-bold text-orange-500">Lịch sử thay đổi học liệu</h2>
     </div>
 
     <div class="mt-3">
@@ -11,19 +11,19 @@
     </div>
     <div class="mt-4">
         <p-table [value]="historyList" [rows]="pageSize" [paginator]="true" [totalRecords]="totalCount" [lazy]="true"
-            (onPage)="loadSyllabus($event)"
+            (onPage)="loadHistory($event)"
             currentPageReportTemplate="Hiển thị {first} - {last} của {totalRecords} bản ghi"
             [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 20, 30]" class="w-full"
             *ngIf="historyList && historyList.length > 0; else noDataTemplate">
             <ng-template pTemplate="header">
                 <tr>
                     <th>Mã môn</th>
-                    <th>Tên môn học</th>
-                    <th>Tên tiếng Anh</th>
-                    <th>Số quyết định</th>
-                    <th>Ngày tạo</th>
-                    <th>Lần cuối chỉnh sửa</th>
-                    <th>Trạng thái duyệt</th>
+                    <th>Tên người thay đổi</th>
+                    <th>Loại thay đổi</th>
+                    <th>Nội dung thay đổi</th>
+                    <th>Ngày hoàn thành</th>
+                    <th>Kỳ áp dụng</th>
+                    <th style="display: flex; justify-content: center;">Trạng thái</th>
                     <th>Hoạt động</th>
                 </tr>
             </ng-template>
@@ -32,21 +32,25 @@
             <ng-template pTemplate="body" let-item>
                 <tr>
                     <td>{{ item.courseCode }}</td>
-                    <td>{{ item.courseName }}</td>
-                    <td>{{ item.courseNameEnglish }}</td>
-                    <td>{{ item.decisionNo || 'N/A' }}</td>
-                    <td>{{ item.createdAt | date: 'dd/MM/yyyy' }}</td>
-                    <td>{{ item.updatedAt | date: 'dd/MM/yyyy' }}</td>
+                    <td>{{ item.username }}</td>
                     <td>
-                        <p-tag
-                            [value]="item.isApproved === true ? 'Đã duyệt' : (item.isApproved === false ? 'Chưa duyệt' : 'N/A')"
-                            [severity]="item.isApproved === true ? 'success' : (item.isApproved === false ? 'warn' : 'danger')">
+                        <p-tag [value]="item.changeType ? 'Xây mới' : 'Điều chỉnh'"
+                            [severity]="item.changeType ? 'success' : 'danger'">
+                        </p-tag>
+                    </td>
+                    <td>{{ item.changeDescription }}</td>
+                    <td>{{ item.completionDate | date: 'dd/MM/yyyy' }}</td>
+                    <td>{{ item.startTerm }}</td>
+                    <td>
+                        <p-tag [value]="item.status === 1 ? 'Active' : 'Inactive'"
+                            [severity]="item.status === 1 ? 'success' : 'danger'">
                         </p-tag>
                     </td>
                     <td>
-                        <p-tag [value]="item.isActive ? 'Active' : 'Inactive'"
-                            [severity]="item.isActive ? 'success' : 'danger'">
-                        </p-tag>
+                        <div class="flex gap-2">
+                            <p-button icon="pi pi-eye" (onClick)="goToDetail(item.syllabusId)" outlined></p-button>
+                            <p-button icon="pi pi-book" (onClick)="goToContractDetail(item.contractId)" outlined></p-button>
+                        </div>
                     </td>
                 </tr>
             </ng-template>

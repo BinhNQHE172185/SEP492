@@ -119,8 +119,8 @@ export class ListSubjectsComponent implements OnInit, OnDestroy {
     );
   }
 
-  goToSyllabusHistory(subjectId: string) {
-    const url = `/learning/syllabus-history/${subjectId}`;
+  goToSubjectHistory(subjectId: string) {
+    const url = `/learning/subject-history/${subjectId}`;
     window.open(url, '_blank');
   }
 

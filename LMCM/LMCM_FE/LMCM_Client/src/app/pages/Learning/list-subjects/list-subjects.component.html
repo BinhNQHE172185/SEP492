@@ -45,7 +45,7 @@
                     <td>{{ subject.duration }}</td>
                     <td>{{ subject.reality }}</td>
                     <td class="flex justify-center gap-2">
-                        <p-button icon="pi pi-history" (onClick)="goToSyllabusHistory(subject.subjectId)" outlined class="inline-button"></p-button>
+                        <p-button icon="pi pi-history" (onClick)="goToSubjectHistory(subject.subjectId)" outlined class="inline-button"></p-button>
                         <p-button label="Xóa" (click)="deleteSubject(subject.subjectId)" outlined class="inline-button"></p-button>
                     </td>
                 </tr>

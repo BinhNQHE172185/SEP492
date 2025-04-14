@@ -55,4 +55,7 @@ export class LearningMaterialApiService {
   getPublishers(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/LearningMaterial/getPublishersList`);
   }
+  getHistoryBySubjectId(request: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/LearningMaterialChangesHistory/getLearningMaterialChangesHistoriesOfSubjectList`, request);
+  }
 }

@@ -149,6 +149,11 @@ export class SyllabusDetailComponent implements OnInit {
     window.open(url, '_blank');
   }
 
+  goToSubjectHistory() {
+    const url = `/learning/subject-history/${this.subjectId}`;
+    window.open(url, '_blank');
+  }
+
   // Material dialog properties
   materialDialog: boolean = false;
   selectedMaterial: any = null;

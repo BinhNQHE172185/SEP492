@@ -1,0 +1,57 @@
+<p-card>
+    <div class="flex justify-between items-center">
+        <h2 class="text-xl font-bold text-orange-500">Lịch sử thay đổi</h2>
+    </div>
+
+    <div class="mt-3">
+        <p-inputgroup class="w-full">
+            <p-button label="Tìm kiếm" />
+            <input [(ngModel)]="searchKey" (ngModelChange)="onSearchChange($event)" pInputText placeholder="Từ khóa" />
+        </p-inputgroup>
+    </div>
+    <div class="mt-4">
+        <p-table [value]="historyList" [rows]="pageSize" [paginator]="true" [totalRecords]="totalCount" [lazy]="true"
+            (onPage)="loadSyllabus($event)"
+            currentPageReportTemplate="Hiển thị {first} - {last} của {totalRecords} bản ghi"
+            [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 20, 30]" class="w-full"
+            *ngIf="historyList && historyList.length > 0; else noDataTemplate">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Mã môn</th>
+                    <th>Tên môn học</th>
+                    <th>Tên tiếng Anh</th>
+                    <th>Số quyết định</th>
+                    <th style="display: flex; justify-content: center;">Trạng thái duyệt</th>
+                    <th>Hoạt động</th>
+                </tr>
+            </ng-template>
+
+
+            <ng-template pTemplate="body" let-item>
+                <tr>
+                    <td>{{ item.courseCode }}</td>
+                    <td>{{ item.courseName }}</td>
+                    <td>{{ item.courseNameEnglish }}</td>
+                    <td >{{ item.decisionNo || '---' }}</td>
+                    <td style="display: flex; justify-content: center;">
+                        <p-tag [value]="item.isApproved ? 'item.isApproved' : 'N/A'"
+                            [severity]="item.isApproved ? 'success' : 'danger'">
+                        </p-tag>
+                    </td>
+                    <td>
+                        <p-tag [value]="item.isActive ? 'Đang hoạt động' : 'Ngừng hoạt động'"
+                            [severity]="item.isActive ? 'success' : 'danger'">
+                        </p-tag>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+    <ng-template #noDataTemplate>
+        <p class="text-center text-gray-500 mt-4">Không có dữ liệu.</p>
+    </ng-template>
+</p-card>
+
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>

@@ -74,6 +74,7 @@ interface MenuItem {
 })
 export class SyllabusDetailComponent implements OnInit {
   syllabusId: string = '';
+  subjectId: string = '';
   syllabusDetail!: any;
   materials!: any;
   materialsDetail!: any;
@@ -106,7 +107,8 @@ export class SyllabusDetailComponent implements OnInit {
     if (id) {
       this.syllabusService.getSyllabusDetail(id).subscribe({
         next: (data) => {
-          this.syllabusDetail = data
+          this.syllabusDetail = data,
+          this.subjectId = data.subjectId
         },
         error: (err) => {
           console.error('Error fetching curriculum detail:', err);
@@ -141,6 +143,11 @@ export class SyllabusDetailComponent implements OnInit {
         }
       });
     }
+  }
+
+  goToSyllabusHistory() {
+    const url = `/learning/syllabus-history/${this.subjectId}`;
+    window.open(url, '_blank');
   }
 
   // Material dialog properties

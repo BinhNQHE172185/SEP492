@@ -44,8 +44,9 @@
                     <td>{{ subject.method }}</td>
                     <td>{{ subject.duration }}</td>
                     <td>{{ subject.reality }}</td>
-                    <td>
-                        <p-button label="Xóa" (onClick)="deleteSubject(subject.subjectId)" outlined></p-button>
+                    <td class="flex justify-center gap-2">
+                        <p-button icon="pi pi-history" (onClick)="goToSyllabusHistory(subject.subjectId)" outlined class="inline-button"></p-button>
+                        <p-button label="Xóa" (click)="deleteSubject(subject.subjectId)" outlined class="inline-button"></p-button>
                     </td>
                 </tr>
             </ng-template>

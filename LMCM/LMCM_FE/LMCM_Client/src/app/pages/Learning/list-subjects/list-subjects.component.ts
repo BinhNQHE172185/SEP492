@@ -119,6 +119,11 @@ export class ListSubjectsComponent implements OnInit, OnDestroy {
     );
   }
 
+  goToSyllabusHistory(subjectId: string) {
+    const url = `/learning/syllabus-history/${subjectId}`;
+    window.open(url, '_blank');
+  }
+
   ngOnDestroy(): void {
     if (this.searchSubscription) {
       this.searchService.updateSearchQuery('');

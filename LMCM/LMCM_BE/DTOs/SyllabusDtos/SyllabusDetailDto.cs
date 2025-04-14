@@ -10,6 +10,7 @@ namespace LMCM_BE.DTOs.SyllabusDtos
     public class SyllabusDetailDto
     {
         public Guid SyllabusId { get; set; }
+        public Guid SubjectId { get; set; }
 
         public string ProgramName { get; set; } = null!;
 

@@ -40,4 +40,7 @@ export class SyllabusApiService {
   getSyllabusList(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/Syllabus/getSyllabusesListNoPaging`);
   }
+  getSyllabusHistory(request: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/Syllabus/getSyllabusChangeHistoryList`, request);
+  }
 }

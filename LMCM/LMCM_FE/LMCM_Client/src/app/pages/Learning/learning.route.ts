@@ -7,6 +7,7 @@ import { ListSyllabusComponent } from './list-syllabus/list-syllabus.component';
 import { SyllabusDetailComponent } from './syllabus-detail/syllabus-detail.component';
 import { HistoryOfChangeComponent } from './history-of-change/history-of-change.component';
 import { SyllabusHistoryComponent } from './syllabus-history/syllabus-history.component';
+import { SubjectHistoryComponent } from './subject-history/subject-history.component';
 
 export default [
     { path: 'subject', component: ListSubjectsComponent },
@@ -17,4 +18,5 @@ export default [
     { path: 'syllabus', component: ListSyllabusComponent },
     { path: 'syllabus/:id', component: SyllabusDetailComponent },
     { path: 'syllabus-history/:id', component: SyllabusHistoryComponent },
+    { path: 'subject-history/:id', component: SubjectHistoryComponent },
 ] as Routes;

@@ -10,5 +10,6 @@ export default [
     { path: 'report', component: ListReportComponent },
     { path: 'acceptance-report', component: ListAcceptanceReportComponent },
     { path: 'contract', component: ListContractComponent },
+    { path: 'contract/:id', component: ListContractComponent },
     { path: 'template', component: ListTemplateComponent },  
 ] as Routes;

@@ -19,6 +19,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ContractApiService } from '../../../../apis/contractAPIs/contract-api.service';
 import { ContractCreateEditComponent } from '../contract-create-edit/contract-create-edit.component';
 import { ContractDetailComponent } from '../contract-detail/contract-detail.component';
+import { ActivatedRoute } from '@angular/router';
 
 interface PagingRequest {
   searchKey?: string;
@@ -70,7 +71,8 @@ export class ListContractComponent implements OnInit {
   constructor(private contractService: ContractApiService,
     private searchService: searchService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private route: ActivatedRoute
   ) { }
 
   displayAddDialog = false;
@@ -80,6 +82,13 @@ export class ListContractComponent implements OnInit {
   contractId: string | null = null;
 
   ngOnInit() {
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.contractId = id;
+        this.displayDetailDialog = true;
+      }
+    });
     this.searchSubscription = this.searchService.searchQuery$.subscribe(
       (query) => {
         this.searchKey = query;

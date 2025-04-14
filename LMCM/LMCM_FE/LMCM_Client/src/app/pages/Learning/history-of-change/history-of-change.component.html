@@ -104,8 +104,9 @@
 
                     <div class="flex flex-col gap-2">
                         <label class="text-sm">Kỳ bắt đầu áp dụng <span class="text-orange-500">*</span></label>
-                        <input pInputText [(ngModel)]="newHistory.startTerm" class="w-full"
-                            placeholder="kỳ bắt đầu áp dụng" />
+                        <p-autoComplete [(ngModel)]="newHistory.startTerm" [suggestions]="filteredStartTerms"
+                            (completeMethod)="filterStartTerm($event)" placeholder="Nhập kỳ học">
+                        </p-autoComplete>
                     </div>
                 </div>
 

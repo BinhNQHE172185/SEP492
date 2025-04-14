@@ -21,10 +21,11 @@ import { ContractApiService } from '../../../apis/contractAPIs/contract-api.serv
 import { SyllabusApiService } from '../../../apis/syllabusAPIs/syllabus-api.service';
 import { HistoryOfChangeApiService } from '../../../apis/historyAPIs/history-api';
 import { searchService } from '../../service/search/search-service.service';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 
 @Component({
     standalone: true,
-    imports: [TextareaModule, ConfirmDialogModule, DatePickerModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, CalendarModule, DropdownModule, InputTextModule],
+    imports: [AutoCompleteModule, TextareaModule, ConfirmDialogModule, DatePickerModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, CalendarModule, DropdownModule, InputTextModule],
     selector: 'app-history-of-change',
     templateUrl: './history-of-change.component.html',
     styleUrls: ['./history-of-change.component.scss'],
@@ -47,6 +48,8 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
 
     contract: any[] = [];
     syllabus: any[] = [];
+    suggestedStartTerms: string[] = [];
+    filteredStartTerms: string[] = [];
 
     constructor(
         private searchService: searchService,
@@ -56,7 +59,7 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
         private contractService: ContractApiService,
         private syllabusService: SyllabusApiService
     ) { }
-    //dữ liệu fix cứng
+
     changeTypeOptions = [
         { label: 'Xây mới', value: 'Xây mới' },
         { label: 'Điều chỉnh', value: 'Điều chỉnh' },
@@ -106,6 +109,13 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
             next: (response) => {
                 this.historyList = response.items;
                 this.totalCount = response.totalCount;
+                this.suggestedStartTerms = Array.from(
+                    new Set(
+                        (response.items || [])
+                            .map(item => item.startTerm?.trim())
+                            .filter(term => !!term)
+                    )
+                );
             },
             error: (error) => {
                 console.error('Lỗi khi gọi API:', error);
@@ -114,8 +124,14 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
         });
     }
 
-    paginate(event: any) {
+    filterStartTerm(event: any) {
+        const query = event.query.toLowerCase();
+        this.filteredStartTerms = this.suggestedStartTerms.filter(term =>
+            term.toLowerCase().includes(query)
+        );
+    }
 
+    paginate(event: any) {
         this.loadHistory(event);
     }
     showDetail(id: any) {

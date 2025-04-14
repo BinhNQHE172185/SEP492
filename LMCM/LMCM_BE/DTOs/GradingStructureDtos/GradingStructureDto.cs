@@ -1,11 +1,8 @@
-﻿using LMCM_BE.Models;
-
-namespace LMCM_BE.DTOs.GradingStructureDtos
+﻿namespace LMCM_BE.DTOs.GradingStructureDtos
 {
-    public class GradingStructureInsertDto
+    public class GradingStructureDto
     {
         public Guid StructureId { get; set; }
-
         public int StructureNo { get; set; }
 
         public string? AssessmentComponent { get; set; }
@@ -35,7 +32,5 @@ namespace LMCM_BE.DTOs.GradingStructureDtos
         public int? SessionNo { get; set; }
 
         public string? Reference { get; set; }
-
-        public Guid SyllabusId { get; set; }
     }
 }

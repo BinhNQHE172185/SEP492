@@ -1,6 +1,6 @@
 ﻿namespace LMCM_BE.DTOs.ScheduleDtos
 {
-    public class ScheduleListDto
+    public class ScheduleDto
     {
         public Guid ScheduleId { get; set; }
 

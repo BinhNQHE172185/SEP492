@@ -9,7 +9,7 @@ namespace LMCM_BE.Services.SyllabusService
     {
         Task<PagedResult<SyllabusListViewDto>> GetSyllabusesAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<List<SyllabusListViewDto>> GetSyllabusesAsync(string? searchKey);
-        Task<PagedResult<SyllabusListViewDto>> GetSyllabusChangeHistoriesAsync(Guid? subjectId, string? searchKey, int pageIndex = 1, int pageSize = 10);
+        Task<PagedResult<SyllabusHistoryList>> GetSyllabusChangeHistoriesAsync(Guid? subjectId, string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<bool> ImportSyllabusAsync(ExcelWorkbook workbook, bool keepUserCreated);
         Task<bool> DeleteSyllabusAsync(Guid id);
         Task<SyllabusListViewDto?> GetActiveSyllabusBySubjectIdAsync(Guid subjectId);

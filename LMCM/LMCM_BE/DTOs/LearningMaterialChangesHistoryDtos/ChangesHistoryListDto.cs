@@ -9,7 +9,11 @@ namespace LMCM_BE.DTOs.LearningMaterialDtos
 
         public Guid UserId { get; set; }
 
+        public string? Username { get; set; }
+
         public Guid? ContractId { get; set; }
+
+        public string? ContractTitle { get; set; }
 
         public Guid SyllabusId { get; set; }
 

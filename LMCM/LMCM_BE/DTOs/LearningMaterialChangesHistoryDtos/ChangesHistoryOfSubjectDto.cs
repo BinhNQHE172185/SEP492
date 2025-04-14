@@ -10,7 +10,9 @@ namespace LMCM_BE.DTOs.LearningMaterialDtos
     {
         public Guid HistoryId { get; set; }
         public Guid UserId { get; set; }
+        public string? Username { get; set; }
         public Guid? ContractId { get; set; }
+        public string? ContractTitle { get; set; }
         public Guid SyllabusId { get; set; }
         public string ChangeType { get; set; } = null!;
         public string? ChangeDescription { get; set; }
@@ -18,8 +20,5 @@ namespace LMCM_BE.DTOs.LearningMaterialDtos
         public string? StartTerm { get; set; }
         public string? CourseCode { get; set; }
         public GenericStatus Status { get; set; }
-        public virtual ContractDetailDto? Contract { get; set; }
-        public virtual SyllabusDetailDto Syllabus { get; set; } = null!;
-        public ListUserResponseDto User { get; set; } = null!;
     }
 }

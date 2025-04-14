@@ -92,7 +92,7 @@ namespace LMCM_BE.Services.SyllabusService
 
             return dataDtos;
         }
-        public async Task<PagedResult<SyllabusListViewDto>> GetSyllabusChangeHistoriesAsync(Guid? subjectId, string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<PagedResult<SyllabusHistoryList>> GetSyllabusChangeHistoriesAsync(Guid? subjectId, string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             if (subjectId == Guid.Empty)
                 throw new ArgumentNullException("Subject Id là bắt buộc");
@@ -103,9 +103,9 @@ namespace LMCM_BE.Services.SyllabusService
                 throw new KeyNotFoundException("Không tìm thấy môn học.");
             var (data, totalCount) = await _syllabusRepository.GetSyllabusChangeHistoriesAsync(subject.SubjectCode, searchKey, pageIndex, pageSize);
 
-            var dataDtos = _mapper.Map<List<SyllabusListViewDto>>(data);
+            var dataDtos = _mapper.Map<List<SyllabusHistoryList>>(data);
 
-            return new PagedResult<SyllabusListViewDto>
+            return new PagedResult<SyllabusHistoryList>
             {
                 Items = dataDtos,
                 TotalCount = totalCount,
@@ -257,12 +257,12 @@ namespace LMCM_BE.Services.SyllabusService
                 }
             }
 
-            var scheduleDtos = new List<ScheduleInsertDto>();
+            var scheduleDtos = new List<ScheduleDto>();
             int rowCount = worksheet.Dimension.Rows;
 
             for (int row = 2; row <= rowCount; row++)
             {
-                var scheduleData = new ScheduleInsertDto
+                var scheduleData = new ScheduleDto
                 {
                     ScheduleNo = int.TryParse(worksheet.Cells[row, 1].Text, out int session) ? session : 0,
                     Method = worksheet.Cells[row, 2].Text.Trim(),
@@ -320,13 +320,13 @@ namespace LMCM_BE.Services.SyllabusService
                 }
             }
 
-            var cLODtos = new List<CLOInsertDto>();
+            var cLODtos = new List<CLODto>();
 
             int rowCount = worksheet.Dimension.Rows;
 
             for (int row = 2; row <= rowCount; row++)
             {
-                var cloData = new CLOInsertDto
+                var cloData = new CLODto
                 {
                     CloName = worksheet.Cells[row, 2].Text.Trim(),
                     CloDescription = worksheet.Cells[row, 3].Text.Trim()
@@ -375,12 +375,12 @@ namespace LMCM_BE.Services.SyllabusService
                 }
             }
 
-            var gradingStructureDtos = new List<GradingStructureInsertDto>();
+            var gradingStructureDtos = new List<GradingStructureDto>();
             int rowCount = worksheet.Dimension.Rows;
 
             for (int row = 2; row <= rowCount; row++)
             {
-                var gradingData = new GradingStructureInsertDto
+                var gradingData = new GradingStructureDto
                 {
                     StructureNo = int.TryParse(worksheet.Cells[row, 1].Text, out int structureNo) ? structureNo : 0,
                     AssessmentComponent = worksheet.Cells[row, 2].Text.Trim(),
@@ -442,12 +442,12 @@ namespace LMCM_BE.Services.SyllabusService
                 }
             }
 
-            var constructivistQuestionDtos = new List<ConstructivistQuestionInsertDto>();
+            var constructivistQuestionDtos = new List<ConstructivistQuestionDto>();
             int rowCount = worksheet.Dimension.Rows;
 
             for (int row = 2; row <= rowCount; row++)
             {
-                var questionData = new ConstructivistQuestionInsertDto
+                var questionData = new ConstructivistQuestionDto
                 {
                     SessionNo = int.TryParse(worksheet.Cells[row, 2].Text, out int sessionNo) ? sessionNo : 0,
                     QuestionName = worksheet.Cells[row, 3].Text.Trim(),

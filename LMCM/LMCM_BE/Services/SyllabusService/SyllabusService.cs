@@ -92,7 +92,7 @@ namespace LMCM_BE.Services.SyllabusService
 
             return dataDtos;
         }
-        public async Task<PagedResult<SyllabusListViewDto>> GetSyllabusChangeHistoriesAsync(Guid? subjectId, string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<PagedResult<SyllabusHistoryList>> GetSyllabusChangeHistoriesAsync(Guid? subjectId, string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             if (subjectId == Guid.Empty)
                 throw new ArgumentNullException("Subject Id là bắt buộc");
@@ -103,9 +103,9 @@ namespace LMCM_BE.Services.SyllabusService
                 throw new KeyNotFoundException("Không tìm thấy môn học.");
             var (data, totalCount) = await _syllabusRepository.GetSyllabusChangeHistoriesAsync(subject.SubjectCode, searchKey, pageIndex, pageSize);
 
-            var dataDtos = _mapper.Map<List<SyllabusListViewDto>>(data);
+            var dataDtos = _mapper.Map<List<SyllabusHistoryList>>(data);
 
-            return new PagedResult<SyllabusListViewDto>
+            return new PagedResult<SyllabusHistoryList>
             {
                 Items = dataDtos,
                 TotalCount = totalCount,

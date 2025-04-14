@@ -83,6 +83,7 @@ namespace LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository
                             .Where(h => h.HistoryId == id && h.Status == GenericStatus.Active)
                             .Include(h => h.Syllabus)
                             .Include(h => h.Contract)
+                            .Include(h => h.User)
                             .FirstOrDefaultAsync();;
         }
         public async Task<LearningMaterialChangesHistory?> GetActiveHistoryByIdAsync(Guid historyId)

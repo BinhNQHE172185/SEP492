@@ -8,7 +8,6 @@ using LMCM_BE.Repositories.SubjectRepository.SubjectRepository;
 using LMCM_BE.Repositories.SyllabusRepository;
 using LMCM_BE.Shared.Constant;
 using LMCM_BE.UnitOfWork;
-using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 
 namespace LMCM_BE.Services.SubjectService
@@ -36,13 +35,13 @@ namespace LMCM_BE.Services.SubjectService
             return await _subjectRepository.CountSubjectByStatusAsync(GenericStatus.Active);
         }
 
-        public async Task<PagedResult<SubjectViewDto>> GetSubjectsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<PagedResult<SubjectDto>> GetSubjectsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
             var (data, totalCount) = await _subjectRepository.GetSubjectsAsync(searchKey, pageIndex, pageSize);
 
-            var dataDtos = _mapper.Map<List<SubjectViewDto>>(data);
+            var dataDtos = _mapper.Map<List<SubjectDto>>(data);
 
-            return new PagedResult<SubjectViewDto>
+            return new PagedResult<SubjectDto>
             {
                 Items = dataDtos,
                 TotalCount = totalCount,
@@ -71,7 +70,7 @@ namespace LMCM_BE.Services.SubjectService
             // Read and Process Data
             int rowCount = worksheet.Dimension.Rows;
 
-            List<SubjectInsertDto> subjectDtos = new List<SubjectInsertDto>();
+            List<SubjectDto> subjectDtos = new List<SubjectDto>();
             HashSet<string> subjectCodes = new HashSet<string>();
 
             for (int row = 2; row <= rowCount; row++)
@@ -84,13 +83,13 @@ namespace LMCM_BE.Services.SubjectService
                 }
                 subjectCodes.Add(subjectCode);
 
-                var subject = new SubjectInsertDto
+                var subject = new SubjectDto
                 {
                     SubjectId = Guid.NewGuid(),
                     SubjectCode = subjectCode,
                     SubjectName = worksheet.Cells[row, 2].Text,
                     SubjectNameEnglish = worksheet.Cells[row, 3].Text,
-                    PreviousSubjectCode = worksheet.Cells[row, 4].Text,
+                    //PreviousSubjectCode = worksheet.Cells[row, 4].Text,
                     IsConstructivist = worksheet.Cells[row, 5].Text.ToLower() == "true",
                     Method = worksheet.Cells[row, 6].Text,
                     Duration = int.TryParse(worksheet.Cells[row, 7].Text, out int duration) ? duration : 0,

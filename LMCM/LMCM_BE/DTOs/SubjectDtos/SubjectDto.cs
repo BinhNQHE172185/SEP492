@@ -1,6 +1,6 @@
 ﻿namespace LMCM_BE.DTOs.SubjectDtos
 {
-    public class SubjectViewDto
+    public class SubjectDto
     {
         public Guid SubjectId { get; set; }
         public string SubjectCode { get; set; } = null!;

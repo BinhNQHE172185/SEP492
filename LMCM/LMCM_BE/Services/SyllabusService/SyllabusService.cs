@@ -54,16 +54,50 @@ namespace LMCM_BE.Services.SyllabusService
         public async Task<bool> DeleteSyllabusAsync(Guid id)
         {
 
-            Syllabus syllabus = await _syllabusRepository.GetSyllabusByIdAsync(id);
+            Syllabus syllabus = await _syllabusRepository.GetSyllabusDetailAsync(id);
             if (syllabus == null) throw new KeyNotFoundException("Không tìm thấy đề cương.");
 
             syllabus.Status = GenericStatus.Inactive;
             syllabus.UpdatedAt = DateTime.UtcNow;
+            if (syllabus.Clos.Count > 0)
+            {
+                foreach(var obj in syllabus.Clos)
+                {
+                    obj.Status = GenericStatus.Inactive;
+                    obj.UpdatedAt = DateTime.UtcNow;
+                }
+            }
+            if (syllabus.ConstructivistQuestions.Count > 0)
+            {
+                foreach (var obj in syllabus.ConstructivistQuestions)
+                {
+                    obj.Status = GenericStatus.Inactive;
+                    obj.UpdatedAt = DateTime.UtcNow;
+                }
+            }
+            if (syllabus.GradingStructures.Count > 0)
+            {
+                foreach (var obj in syllabus.GradingStructures)
+                {
+                    obj.Status = GenericStatus.Inactive;
+                    obj.UpdatedAt = DateTime.UtcNow;
+                }
+            }
+            if (syllabus.Schedules.Count > 0)
+            {
+                foreach (var obj in syllabus.Schedules)
+                {
+                    obj.Status = GenericStatus.Inactive;
+                    obj.UpdatedAt = DateTime.UtcNow;
+                }
+            }
 
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
                 await _syllabusRepository.UpdateSyllabusAsync(syllabus);
+                await _LearningMaterialService.DeleteLearningMaterialsBySyllabusAsync(id);
+
                 await _unitOfWork.CommitAsync();
 
                 return true;

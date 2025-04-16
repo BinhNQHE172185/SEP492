@@ -75,6 +75,9 @@ namespace LMCM_BE.Services.SubjectService
 
             for (int row = 2; row <= rowCount; row++)
             {
+                // Skip if the entire row is empty
+                if (worksheet.Cells[row, 1, row, worksheet.Dimension.End.Column].All(cell => string.IsNullOrWhiteSpace(cell.Text)))
+                    continue;
                 string subjectCode = worksheet.Cells[row, 1].Text;
 
                 if (subjectCodes.Contains(subjectCode))
@@ -100,7 +103,7 @@ namespace LMCM_BE.Services.SubjectService
             }
 
             if (subjectDtos == null || subjectDtos.Count == 0)
-                throw new InvalidDataException("Danh sách môn học không bị trống");
+                throw new InvalidDataException("Danh sách môn học không được để trống");
 
             try
             {

@@ -214,7 +214,7 @@ namespace LMCM_BE.Services.SyllabusService
             {
                 // Rollback the transaction in case of any error
                 await _unitOfWork.RollbackAsync();
-                throw new Exception(ex.Message); // Rethrow the exception
+                throw;
             }
         }
 
@@ -280,7 +280,7 @@ namespace LMCM_BE.Services.SyllabusService
             }
             else
             {
-                throw new KeyNotFoundException("Subject not found for syllabus.");
+                throw new KeyNotFoundException($"Không tìm thấy môn học {syllabusData.CourseCode}.");
             }
         }
         private async Task<bool> ImportScheduleSheet(ExcelWorksheet worksheet, Guid newSyllabusId, Guid? oldSyllabusId)
@@ -301,6 +301,9 @@ namespace LMCM_BE.Services.SyllabusService
 
             for (int row = 2; row <= rowCount; row++)
             {
+                // Skip if the entire row is empty
+                if (worksheet.Cells[row, 1, row, worksheet.Dimension.End.Column].All(cell => string.IsNullOrWhiteSpace(cell.Text)))
+                    continue;
                 var scheduleData = new ScheduleDto
                 {
                     ScheduleNo = int.TryParse(worksheet.Cells[row, 1].Text, out int session) ? session : 0,
@@ -365,6 +368,9 @@ namespace LMCM_BE.Services.SyllabusService
 
             for (int row = 2; row <= rowCount; row++)
             {
+                // Skip if the entire row is empty
+                if (worksheet.Cells[row, 1, row, worksheet.Dimension.End.Column].All(cell => string.IsNullOrWhiteSpace(cell.Text)))
+                    continue;
                 var cloData = new CLODto
                 {
                     CloName = worksheet.Cells[row, 2].Text.Trim(),
@@ -419,6 +425,9 @@ namespace LMCM_BE.Services.SyllabusService
 
             for (int row = 2; row <= rowCount; row++)
             {
+                // Skip if the entire row is empty
+                if (worksheet.Cells[row, 1, row, worksheet.Dimension.End.Column].All(cell => string.IsNullOrWhiteSpace(cell.Text)))
+                    continue;
                 var gradingData = new GradingStructureDto
                 {
                     StructureNo = int.TryParse(worksheet.Cells[row, 1].Text, out int structureNo) ? structureNo : 0,
@@ -486,6 +495,9 @@ namespace LMCM_BE.Services.SyllabusService
 
             for (int row = 2; row <= rowCount; row++)
             {
+                // Skip if the entire row is empty
+                if (worksheet.Cells[row, 1, row, worksheet.Dimension.End.Column].All(cell => string.IsNullOrWhiteSpace(cell.Text)))
+                    continue;
                 var questionData = new ConstructivistQuestionDto
                 {
                     SessionNo = int.TryParse(worksheet.Cells[row, 2].Text, out int sessionNo) ? sessionNo : 0,
@@ -544,6 +556,9 @@ namespace LMCM_BE.Services.SyllabusService
 
             for (int row = 2; row <= rowCount; row++)
             {
+                // Skip if the entire row is empty
+                if (worksheet.Cells[row, 1, row, worksheet.Dimension.End.Column].All(cell => string.IsNullOrWhiteSpace(cell.Text)))
+                    continue;
                 var materialDescription = worksheet.Cells[row, 2].Text.Trim(); // Read MaterialDescription
                 string materialName = null;
                 string url = null;

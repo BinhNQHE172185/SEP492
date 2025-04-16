@@ -118,25 +118,13 @@ namespace LMCM_BE.Services.CurriculumService
             curriculum.Status = GenericStatus.Inactive;
             curriculum.UpdatedAt = DateTime.UtcNow;
 
-            try
-            {
-                await _unitOfWork.BeginTransactionAsync();
+            await _curriculumsSubjectService.DeleteCurriculumsSubjectAsync(curriculum.CurriculumId);
+            await _ploService.DeletePlosAsync(curriculum.CurriculumId);
+            await _ploSubjectService.DeletePloSubjectsAsync(curriculum.CurriculumId);
 
-                await _curriculumsSubjectService.DeleteCurriculumsSubjectAsync(curriculum.CurriculumId);
-                await _ploService.DeletePlosAsync(curriculum.CurriculumId);
-                await _ploSubjectService.DeletePloSubjectsAsync(curriculum.CurriculumId);
+            await _curriculumRepository.UpdateCurriculumAsync(curriculum);
 
-                await _curriculumRepository.UpdateCurriculumAsync(curriculum);
-
-                await _unitOfWork.CommitAsync();
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                await _unitOfWork.RollbackAsync();
-                throw new Exception(ex.Message);
-            }
+            return true;
         }
         public async Task<CurriculumDetailDto?> GetCurriculumDetailAsync(Guid curriculumId)
         {
@@ -166,7 +154,12 @@ namespace LMCM_BE.Services.CurriculumService
                 foreach (var (expectedHeader, cellAddress) in expectedHeaders[sheetName])
                 {
                     string actualHeader = worksheet.Cells[cellAddress].Text.Trim();
-                    if (!expectedHeader.Equals(actualHeader, StringComparison.OrdinalIgnoreCase))
+
+                    if (string.IsNullOrWhiteSpace(actualHeader))
+                    {
+                        invalidSheetsHeader.Add($"{sheetName} (ô {cellAddress}): thiếu tiêu đề, kỳ vọng '{expectedHeader}'");
+                    }
+                    else if (!expectedHeader.Equals(actualHeader, StringComparison.OrdinalIgnoreCase))
                     {
                         invalidSheetsHeader.Add($"{sheetName} (ô {cellAddress}): kỳ vọng '{expectedHeader}' nhưng thấy '{actualHeader}'");
                     }
@@ -218,24 +211,31 @@ namespace LMCM_BE.Services.CurriculumService
             var tempCurriculumsSubjects = new List<TempCurriculumsSubject>();
             var subjectCodes = new List<string>();
 
-            int row = 2; // Start from row 2 (row 1 contains headers)
-            while (!string.IsNullOrWhiteSpace(curriculumSubjectSheet.Cells[row, 1].Text))
+            int curriculumSubjectRowStart = 2; // Start from row 2 (row 1 contains headers)
+            int lastCurriculumsSubjectRow = curriculumSubjectSheet.Dimension.End.Row;
+
+            for (int subjectRow = curriculumSubjectRowStart; subjectRow <= lastCurriculumsSubjectRow; subjectRow++)
             {
+                var subjectCode = curriculumSubjectSheet.Cells[subjectRow, 1].Text;
+                if (string.IsNullOrWhiteSpace(subjectCode))
+                    continue;
+
                 var tempCurriculumsSubject = new TempCurriculumsSubject
                 {
-                    SubjectCode = curriculumSubjectSheet.Cells[row, 1].Text,
-                    TermNo = int.TryParse(curriculumSubjectSheet.Cells[row, 4].Text, out int termNo) ? termNo : (int?)null,
-                    Credit = int.TryParse(curriculumSubjectSheet.Cells[row, 5].Text, out int credit) ? credit : (int?)null,
-                    Options = int.TryParse(curriculumSubjectSheet.Cells[row, 6].Text, out int options) ? options : (int?)null,
+                    SubjectCode = subjectCode,
+                    TermNo = int.TryParse(curriculumSubjectSheet.Cells[subjectRow, 4].Text, out int termNo) ? termNo : (int?)null,
+                    Credit = int.TryParse(curriculumSubjectSheet.Cells[subjectRow, 5].Text, out int credit) ? credit : (int?)null,
+                    Options = int.TryParse(curriculumSubjectSheet.Cells[subjectRow, 6].Text, out int options) ? options : (int?)null,
                 };
 
                 subjectCodes.Add(tempCurriculumsSubject.SubjectCode);
                 tempCurriculumsSubjects.Add(tempCurriculumsSubject);
-                row++;
             }
 
             // Validate Subjects in Database
             var existingSubjects = await _subjectService.GetActiveSubjectsByCodesAsync(subjectCodes);
+
+
             var missingSubjects = subjectCodes.Except(existingSubjects.Select(s => s.SubjectCode)).ToList();
 
             if (missingSubjects.Any())
@@ -268,29 +268,37 @@ namespace LMCM_BE.Services.CurriculumService
 
             // Read PLO data
             var plos = new List<Plo>();
-            int ploRow = 2; // first row is headers
-            while (!string.IsNullOrWhiteSpace(ploSheet.Cells[ploRow, 2].Text)) // Check if PLO Name exists
+            int ploRowStart = 2; // first row is headers
+            int lastPloRow = ploSheet.Dimension.End.Row;
+
+            for (int ploRow = ploRowStart; ploRow <= lastPloRow; ploRow++)
             {
+                var ploName = ploSheet.Cells[ploRow, 2].Text;
+                if (string.IsNullOrWhiteSpace(ploName))
+                    continue;
+
                 plos.Add(new Plo
                 {
                     PloId = Guid.NewGuid(),
                     CurriculumId = curriculum.CurriculumId,
-                    PloName = ploSheet.Cells[ploRow, 2].Text,
+                    PloName = ploName,
                     PloDescription = ploSheet.Cells[ploRow, 3].Text,
                     Status = GenericStatus.Active,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                     PloSubjects = new List<PloSubject>(),
                 });
-                ploRow++;
             }
+
 
             // Read PLO-Subject Mapping (PloSubject)
             var ploSubjectMappings = new List<PloSubject>();
             int columnStart = 2; // PLOs start from column B
             int subjectRowStart = 3; // Subjects start from row 3
+            int lastPloSubjectRow = ploSubjectSheet.Dimension.End.Row;
+            int lastPloSubjectCollum = ploSubjectSheet.Dimension.End.Column;
 
-            for (int subjectRow = subjectRowStart; subjectRow <= ploSubjectSheet.Dimension.End.Row; subjectRow++)
+            for (int subjectRow = subjectRowStart; subjectRow <= lastPloSubjectRow; subjectRow++)
             {
                 var subjectCode = ploSubjectSheet.Cells[subjectRow, 1].Text;
 
@@ -303,10 +311,12 @@ namespace LMCM_BE.Services.CurriculumService
                 if (subject == null)
                     continue;
 
-                for (int ploCol = columnStart; ploCol <= ploSubjectSheet.Dimension.End.Column; ploCol++)
+                for (int ploCol = columnStart; ploCol <= lastPloSubjectCollum; ploCol++)
                 {
                     var ploName = ploSubjectSheet.Cells[2, ploCol].Text; // PLO name from row 2
                     var plo = plos.FirstOrDefault(p => p.PloName == ploName);
+                    if (plo == null)
+                        continue;
                     if (plo != null && ploSubjectSheet.Cells[subjectRow, ploCol].Text == "ü")
                     {
                         ploSubjectMappings.Add(new PloSubject

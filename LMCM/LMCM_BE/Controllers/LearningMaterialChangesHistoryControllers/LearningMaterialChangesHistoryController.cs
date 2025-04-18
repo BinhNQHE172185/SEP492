@@ -107,7 +107,7 @@ namespace LMCM_BE.Controllers.LearningMaterialChangesHistoryControllers
             }
         }
         [HttpPut("update/{historyId}")]
-        public async Task<IActionResult> UpdateAcceptanceRecord(Guid historyId, [FromBody] UpdateLearningMaterialChangesHistoryDto request)
+        public async Task<IActionResult> UpdateLearningMaterialChangesHistory(Guid historyId, [FromBody] UpdateLearningMaterialChangesHistoryDto request)
         {
             try
             {
@@ -158,7 +158,7 @@ namespace LMCM_BE.Controllers.LearningMaterialChangesHistoryControllers
         }
 
         [HttpDelete("{historyId}")]
-        public async Task<IActionResult> DeleteAcceptanceRecord(Guid historyId)
+        public async Task<IActionResult> DeleteLearningMaterialChangesHistory(Guid historyId)
         {
             try
             {

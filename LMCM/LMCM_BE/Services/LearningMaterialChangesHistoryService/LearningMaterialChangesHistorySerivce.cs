@@ -60,7 +60,7 @@ namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
             }
             UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
-                throw new Exception("User not found");
+                throw new UnauthorizedAccessException("User not found");
 
             if (historyDto.ContractId != null)
             {
@@ -100,6 +100,8 @@ namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
 
             var siblingSyllabus = await _syllabusRepository.GetSyllabusesBySubjectIdAsync(subjectId.Value);
 
+            if (siblingSyllabus == null) throw new KeyNotFoundException("Đề cương của môn học không tồn tại.");
+
             var (items, totalCount) = await _changesRepository.GetLearningMaterialChangesHistoriesOfSubjectAsync(siblingSyllabus, searchKey, pageIndex, pageSize);
 
             var data = _mapper.Map<List<ChangesHistoryOfSubjectDto>>(items);
@@ -123,7 +125,7 @@ namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
             var existingHistory = await _changesRepository.GetActiveHistoryByIdAsync(historyId);
 
             if (existingHistory == null)
-                throw new Exception("Không tìm thấy lịch sử thay đổi.");
+                throw new KeyNotFoundException("Không tìm thấy lịch sử thay đổi.");
 
             UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
@@ -161,6 +163,9 @@ namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
         }
         public async Task<bool> SoftDeleteLearningMaterialChangesHistoryAsync(Guid historyId)
         {
+            if (historyId == Guid.Empty)
+                throw new ArgumentException("ID lịch sử thay đổi không được để trống.", nameof(historyId));
+
             var historyRecord = await _changesRepository.GetActiveHistoryByIdAsync(historyId);
 
             if (historyRecord == null)
@@ -168,7 +173,7 @@ namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
 
             UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
-                throw new Exception("Không tìm thấy người dùng");
+                throw new UnauthorizedAccessException("Không tìm thấy người dùng");
 
             if (user.Id != historyRecord.UserId && !user.Roles.Contains("Head of Department"))
                 throw new UnauthorizedAccessException("Người dùng không có quyền xóa lịch sử này.");
@@ -190,7 +195,11 @@ namespace LMCM_BE.Services.LearningMaterialChangesHistoryService
         }
         public async Task<ChangesHistoryDetailDto> getHistoryOfChangeDetail(Guid id)
         {
+            if (id == Guid.Empty)
+                throw new ArgumentException("Lịch sử ID không được để trống.");
+
             var history = await _changesRepository.getHistoryOfChangeDetail(id);
+
             if (history == null)
             {
                 throw new KeyNotFoundException("Không tìm thấy lịch sử thay đổi.");

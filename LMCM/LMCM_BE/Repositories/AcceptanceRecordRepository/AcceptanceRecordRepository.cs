@@ -70,6 +70,7 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
         {
             return await _dbContext.AcceptanceRecords
                 .Include(ar => ar.Contract)
+                .ThenInclude(c => c.Contractor)
                 .Include(ar => ar.Author)
                 .Where(ar => ar.AcceptanceId == acceptanceId)
                 .FirstOrDefaultAsync();

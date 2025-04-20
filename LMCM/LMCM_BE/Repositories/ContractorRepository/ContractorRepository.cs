@@ -53,7 +53,8 @@ namespace LMCM_BE.Repositories.ContractorRepository
             }
 
             return await query
-                .OrderBy(c => c.ContractorName)
+                //.OrderBy(c => c.ContractorName)
+                .OrderByDescending(c => c.UpdatedAt)
                 .ToListAsync();
         }
 

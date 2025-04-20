@@ -50,6 +50,24 @@ namespace LMCM_BE.Controllers.LearningMaterialChangesHistoryControllers
 
                 return NotFound(new { message = "Dữ liệu không được tìm thấy." });
             }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
+            }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = ex.Message });
@@ -93,11 +111,20 @@ namespace LMCM_BE.Controllers.LearningMaterialChangesHistoryControllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
+            }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });
             }
-            catch (ArgumentNullException ex)
+            catch (ArgumentException ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
@@ -143,11 +170,20 @@ namespace LMCM_BE.Controllers.LearningMaterialChangesHistoryControllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
+            }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });
             }
-            catch (ArgumentNullException ex)
+            catch (ArgumentException ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
@@ -164,6 +200,10 @@ namespace LMCM_BE.Controllers.LearningMaterialChangesHistoryControllers
             {
                 var result = await _changesService.SoftDeleteLearningMaterialChangesHistoryAsync(historyId);
                 return result ? Ok(new { message = "Xóa lịch sử thay đổi thu thành công." }) : NotFound(new { message = "Không tìm thấy lịch sử thay đổi hoặc đã bị xóa trước đó." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (KeyNotFoundException ex)
             {
@@ -198,6 +238,14 @@ namespace LMCM_BE.Controllers.LearningMaterialChangesHistoryControllers
                     return Ok(data);
                 }
                 return NotFound(new { message = "Dữ liệu không được tìm thấy." });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {

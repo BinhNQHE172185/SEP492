@@ -164,4 +164,8 @@ export class ListAcceptanceReportComponent implements OnInit {
       }
     });
   }
+  goToContractDetail(id: string) {
+    const url = `/document/contract/${id}`;
+    window.open(url, '_blank');
+  }
 }

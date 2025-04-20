@@ -19,6 +19,7 @@ import { ReportDetailComponent } from '../report-detail/report-detail.component'
 import { BudgetApiService } from '../../../../apis/budgetProposalAPIs/budget-api.service';
 import { searchService } from '../../../service/search/search-service.service';
 import { ReportCreateEditComponent } from '../report-create-edit/report-create-edit.component';
+import { ActivatedRoute } from '@angular/router';
 
 interface PagingRequest {
   searchKey?: string;
@@ -73,7 +74,8 @@ export class ListReportComponent implements OnInit {
   constructor(private reportService: BudgetApiService,
     private searchService: searchService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private route: ActivatedRoute
   ) { }
 
   displayAddDialog = false;
@@ -83,6 +85,13 @@ export class ListReportComponent implements OnInit {
   proposalId: string | null = null;
 
   ngOnInit() {
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.proposalId = id;
+        this.displayDetailDialog = true;
+      }
+    });
     this.searchSubscription = this.searchService.searchQuery$.subscribe(
       (query) => {
         this.searchKey = query;

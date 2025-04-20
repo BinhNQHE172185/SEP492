@@ -19,7 +19,8 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
         {
             var query = _dbContext.AcceptanceRecords.AsQueryable();
 
-            query = query.OrderByDescending(s => s.UpdatedAt);
+            query = query.OrderByDescending(s => s.UpdatedAt)
+                .Include(a => a.Contract);
 
             if (!isHod) query = query.Where(s => s.AuthorId == userId);
 

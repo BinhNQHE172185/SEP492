@@ -62,7 +62,11 @@ export class SubjectHistoryComponent {
   historyList: any[] = [];
 
   displayImportDialog: boolean = false;
+  displayDetailDialog = false;
   uploadedFiles: any[] = [];
+  selectedHistoryDetail: any;
+  courseTitle: string = '';
+  courseCode: string = '';
 
   private searchSubscription!: Subscription;
 
@@ -100,6 +104,8 @@ export class SubjectHistoryComponent {
       (response) => {
         this.historyList = response.items;
         this.totalCount = response.totalCount;
+        this.courseTitle = this.historyList[0]?.courseName;
+        this.courseCode = this.historyList[0]?.courseCode;
       },
       (error) => {
         console.error("Lỗi khi tải danh sách:", error);
@@ -113,6 +119,11 @@ export class SubjectHistoryComponent {
 
   closeDialog() {
     this.displayImportDialog = false;
+  }
+
+  showDetail(item: any) {
+    this.selectedHistoryDetail = item;
+    this.displayDetailDialog = true;
   }
 
   ngOnDestroy(): void {

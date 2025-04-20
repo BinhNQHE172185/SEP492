@@ -120,6 +120,14 @@ namespace LMCM_BE.Repositories.ContractRepository
             _dbContext.Contracts.Update(newContract);
             return true;
         }
-
+        public async Task<Guid?> CheckContractByTitle(string title)
+        {
+            var data = await _dbContext.Contracts.FirstOrDefaultAsync(c => c.Title.Contains(title));
+            if (data != null)
+            {
+                return data.ContractId;
+            }
+            return null;
+        }
     }
 }

@@ -13,5 +13,6 @@ namespace LMCM_BE.Services.ContractService
         Task<List<ContractListDto>> GetContractsAsync(string? searchKey);
         Task<bool> SoftDeleteContractAsync(Guid contractId);
         Task<bool> UpdateContractAsync(Guid contractId, ContractUpdateDto newContract);
+        Task<Guid?> CheckContractByTitle(string title);
     }
 }

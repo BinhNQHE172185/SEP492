@@ -3,6 +3,7 @@ namespace LMCM_BE.Services.OpenAIService
 {
     public interface IOpenAIService
     {
-        Task<ContractorInfoFromAIDto?> UploadAndAnalyzeFileAsync(Stream fileStream, string fileName, string prompt);
+        Task<ContractInfoFromAIDto?> UploadAndAnalyzeContractFileAsync(Stream fileStream, string fileName, string prompt);
+        Task<AcceptantRecordInfoFromAIDto?> UploadAndAnalyzeRecordFileAsync(Stream fileStream, string fileName, string prompt);
     }
 }

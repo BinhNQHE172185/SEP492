@@ -287,6 +287,7 @@ export class ContractCreateEditComponent implements OnChanges {
             summary: 'Thất bại',
             detail: error?.error?.message || 'Có lỗi xảy ra. Vui lòng thử lại.'
           });
+          this.isLoading = false;
         },
         complete: () => {
           this.isLoading = false;

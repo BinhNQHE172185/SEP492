@@ -63,6 +63,8 @@ using LMCM_BE.Services.CurriculumsSubjectService;
 using LMCM_BE.Services.PloSubjectService;
 using LMCM_BE.Services.DashboardService;
 using LMCM_BE.AutoMapper.ContractValueItemProfiles;
+using LMCM_BE.Services.OpenAIService;
+using LMCM_BE.Repositories.OpenAIRepository;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -72,7 +74,7 @@ builder.Services.AddDbContext<LMCM_DBContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllers();
-
+builder.Services.AddHttpClient();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAuthentication(options =>
@@ -200,7 +202,8 @@ builder.Services.AddScoped<IDocumentTemplateRepository, DocumentTemplateReposito
 builder.Services.AddScoped<IDocumentTemplateService, DocumentTemplateService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
-
+builder.Services.AddScoped<IOpenAIService, OpenAIService>();
+builder.Services.AddScoped<IOpenAIRepository, OpenAIRepository>();
 builder.Services.AddScoped<IGoogleDriveService, GoogleDriveService>();
 
 builder.Services.AddAuthorization();

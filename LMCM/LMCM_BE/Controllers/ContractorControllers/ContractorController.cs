@@ -72,6 +72,19 @@ namespace LMCM_BE.Controllers.ContractorControllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
@@ -98,6 +111,19 @@ namespace LMCM_BE.Controllers.ContractorControllers
                 }
                 var result = await _contractorService.UpdateContractorAsync(contractorId, request);
                 return result != null ? Ok(new { message = "Cập nhật nhà thầu thành công.", contractorId = result }) : NotFound(new { message = "Không tìm thấy nhà thầu hoặc cập nhật thất bại." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (KeyNotFoundException ex)
             {

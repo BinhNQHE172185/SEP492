@@ -43,6 +43,12 @@ namespace LMCM_BE.Services.BudgetPropasalService
             {
                 throw new ArgumentNullException(nameof(proposal), "Dữ liệu tờ trình là bắt buộc.");
             }
+
+            if (await _budgetProposalRepository.GetDuplicatedTitleIdAsync(proposal.Title) != null)
+            {
+                throw new InvalidOperationException("Tiêu đề đã tồn tại.");
+            }
+
             UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new UnauthorizedAccessException("Không tìm thấy người dùng");
@@ -184,6 +190,12 @@ namespace LMCM_BE.Services.BudgetPropasalService
 
             if (newProposal == null)
                 throw new ArgumentNullException(nameof(newProposal), "Dữ liệu mới không được null.");
+
+            var duplicateId = await _budgetProposalRepository.GetDuplicatedTitleIdAsync(newProposal.Title);
+            if (duplicateId != null && duplicateId != proposalId)
+            {
+                throw new InvalidOperationException("Tiêu đề đã tồn tại.");
+            }
 
             var proposal = await _budgetProposalRepository.GetActiveBudgetProposalByIdAsync(proposalId);
 

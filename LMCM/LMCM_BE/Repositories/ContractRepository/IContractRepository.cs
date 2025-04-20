@@ -14,5 +14,6 @@ namespace LMCM_BE.Repositories.ContractRepository
         Task<bool> HasActiveConntractsAsync(Guid proposalId);
         Task<bool> UpdateContractAsync(Contract newContract);
         Task<Guid?> CheckContractByTitle(string title);
+        Task<Guid?> GetDuplicatedTitleIdAsync(string title);
     }
 }

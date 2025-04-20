@@ -40,8 +40,6 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
 
     public virtual DbSet<LearningMaterialChangesHistory> LearningMaterialChangesHistories { get; set; }
 
-    public virtual DbSet<Notification> Notifications { get; set; }
-
     public virtual DbSet<Plo> Plos { get; set; }
 
     public virtual DbSet<PloSubject> PloSubjects { get; set; }
@@ -113,7 +111,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.ProposalDate).HasColumnName("Proposal_Date");
             entity.Property(e => e.Status)
-                .HasConversion<int>() 
+                .HasConversion<int>()
                 .HasColumnName("Status")
                 .HasColumnType("int");
             entity.Property(e => e.Title).HasMaxLength(255);
@@ -577,31 +575,6 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Learning___User___245D67DE");
-        });
-
-        modelBuilder.Entity<Notification>(entity =>
-        {
-            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__8C1160B5E7DB044A");
-
-            entity.ToTable("Notification");
-
-            entity.Property(e => e.NotificationId)
-                .HasDefaultValueSql("(newid())")
-                .HasColumnName("Notification_ID");
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.Message).HasColumnType("nvarchar(max)");
-            entity.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasColumnName("Status")
-                .HasColumnType("int");
-            entity.Property(e => e.Title).HasColumnType("nvarchar(max)");
-            entity.Property(e => e.Url).HasColumnType("nvarchar(max)");
-            entity.Property(e => e.UserId).HasColumnName("User_ID");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Notifications)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Notificat__User___02084FDA");
         });
 
         modelBuilder.Entity<Plo>(entity =>

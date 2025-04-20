@@ -122,12 +122,19 @@ namespace LMCM_BE.Repositories.ContractRepository
         }
         public async Task<Guid?> CheckContractByTitle(string title)
         {
-            var data = await _dbContext.Contracts.FirstOrDefaultAsync(c => c.Title.Contains(title));
-            if (data != null)
-            {
-                return data.ContractId;
-            }
-            return null;
+            return await _dbContext.Contracts
+                .Where(r => r.Status == GenericStatus.Active)
+                .Where(c => c.Title.ToLower().Contains(title.Trim().ToLower()))
+                .Select(r => (Guid?)r.ContractId)
+                .FirstOrDefaultAsync();
+        }
+        public async Task<Guid?> GetDuplicatedTitleIdAsync(string title)
+        {
+            return await _dbContext.Contracts
+                .Where(r => r.Status == GenericStatus.Active)
+                .Where(r => r.Title.ToLower() == title.Trim().ToLower())
+                .Select(r => (Guid?)r.ContractId)
+                .FirstOrDefaultAsync();
         }
     }
 }

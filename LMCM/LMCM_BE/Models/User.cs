@@ -23,6 +23,4 @@ public partial class User : IdentityUser<Guid>
     public virtual ICollection<DocumentTemplate> DocumentTemplates { get; set; } = new List<DocumentTemplate>();
 
     public virtual ICollection<LearningMaterialChangesHistory> LearningMaterialChangesHistories { get; set; } = new List<LearningMaterialChangesHistory>();
-
-    public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 }

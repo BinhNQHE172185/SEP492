@@ -95,36 +95,31 @@ namespace LMCM_BE.Repositories.ContractorRepository
 
             return contractor;
         }
-        public async Task<Guid?> CheckContractor(string taxcode, string? email, string? phoneNumber)
+        public async Task<Guid?> CheckContractor(string? taxCode, string? email, string? phoneNumber)
         {
-            var contractor = await _dbContext.Contractors
-                .Where(c => c.TaxCode == taxcode && c.Status == GenericStatus.Active)
+            return await _dbContext.Contractors
+                .Where(c => c.Status == GenericStatus.Active)
+                .Where(c =>
+                    (!string.IsNullOrWhiteSpace(taxCode) && c.TaxCode == taxCode) ||
+                    (!string.IsNullOrWhiteSpace(email) && c.Email == email) ||
+                    (!string.IsNullOrWhiteSpace(phoneNumber) && c.PhoneNumber == phoneNumber)
+                )
+                .Select(c => (Guid?)c.ContractorId)
                 .FirstOrDefaultAsync();
+        }
 
-            if (contractor != null)
-            {
-                return contractor.ContractorId;
-            }
-
-            var contractorEmail = await _dbContext.Contractors
-                .Where(c => c.Email == email && c.Status == GenericStatus.Active)
+        public async Task<Guid?> GetDuplicatedContractorIdAsync(string? taxCode, string? employeeCode, string? idCardNumber, string? email)
+        {
+            return await _dbContext.Contractors
+                .Where(c => c.Status == GenericStatus.Active)
+                .Where(c =>
+                    (!string.IsNullOrWhiteSpace(taxCode) && c.TaxCode == taxCode) ||
+                    (!string.IsNullOrWhiteSpace(employeeCode) && c.EmployeeCode == employeeCode) ||
+                    (!string.IsNullOrWhiteSpace(idCardNumber) && c.IdCardNumber == idCardNumber) ||
+                    (!string.IsNullOrWhiteSpace(email) && c.Email == email)
+                )
+                .Select(c => (Guid?)c.ContractorId)
                 .FirstOrDefaultAsync();
-
-            if (contractorEmail != null)
-            {
-                return contractorEmail.ContractorId;
-            }
-
-            //var contractorPhoneNumber = await _dbContext.Contractors
-            //    .Where(c => c.PhoneNumber == phoneNumber && c.Status == GenericStatus.Active)
-            //    .FirstOrDefaultAsync();
-
-            //if (contractorPhoneNumber != null)
-            //{
-            //    return contractor.ContractorId;
-            //}
-
-            return null;
         }
     }
 }

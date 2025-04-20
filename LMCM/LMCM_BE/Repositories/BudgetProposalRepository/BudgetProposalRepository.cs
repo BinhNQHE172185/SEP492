@@ -104,5 +104,13 @@ namespace LMCM_BE.Repositories.BudgetPropasalRepository
                 .CountAsync();
             return budgetCount;
         }
+        public async Task<Guid?> GetDuplicatedTitleIdAsync(string title)
+        {
+            return await _dbContext.BudgetProposals
+                .Where(r => r.Status == GenericStatus.Active)
+                .Where(r => r.Title.ToLower() == title.Trim().ToLower())
+                .Select(r => (Guid?)r.ProposalId)
+                .FirstOrDefaultAsync();
+        }
     }
 }

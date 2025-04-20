@@ -12,5 +12,6 @@ namespace LMCM_BE.Repositories.ContractorRepository
         Task<bool> CreateContractorAsync(Contractor contractor);
         Task<bool> UpdateContractorAsync(Contractor contractor);
         Task<Guid?> CheckContractor(string taxcode, string? email, string? phoneNumber);
+        Task<Guid?> GetDuplicatedContractorIdAsync(string? taxCode, string? employeeCode, string? idCardNumber, string? email);
     }
 }

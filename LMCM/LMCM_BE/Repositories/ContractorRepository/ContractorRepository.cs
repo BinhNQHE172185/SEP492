@@ -37,8 +37,6 @@ namespace LMCM_BE.Repositories.ContractorRepository
 
             return (items, totalCount);
         }
-
-
         public async Task<List<Contractor>> GetContractorsListAsync(string? searchKey)
         {
             var query = _dbContext.Contractors
@@ -58,7 +56,6 @@ namespace LMCM_BE.Repositories.ContractorRepository
                 .OrderBy(c => c.ContractorName)
                 .ToListAsync();
         }
-
 
         public async Task<bool> CreateContractorAsync(Contractor contractor)
         {
@@ -96,6 +93,37 @@ namespace LMCM_BE.Repositories.ContractorRepository
                  .SingleOrDefaultAsync();
 
             return contractor;
+        }
+        public async Task<Guid?> CheckContractor(string taxcode, string? email, string? phoneNumber)
+        {
+            var contractor = await _dbContext.Contractors
+                .Where(c => c.TaxCode == taxcode && c.Status == GenericStatus.Active)
+                .FirstOrDefaultAsync();
+
+            if (contractor != null)
+            {
+                return contractor.ContractorId;
+            }
+
+            var contractorEmail = await _dbContext.Contractors
+                .Where(c => c.Email == email && c.Status == GenericStatus.Active)
+                .FirstOrDefaultAsync();
+
+            if (contractorEmail != null)
+            {
+                return contractorEmail.ContractorId;
+            }
+
+            //var contractorPhoneNumber = await _dbContext.Contractors
+            //    .Where(c => c.PhoneNumber == phoneNumber && c.Status == GenericStatus.Active)
+            //    .FirstOrDefaultAsync();
+
+            //if (contractorPhoneNumber != null)
+            //{
+            //    return contractor.ContractorId;
+            //}
+
+            return null;
         }
     }
 }

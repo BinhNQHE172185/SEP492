@@ -1,6 +1,6 @@
 <p-dialog header="Thêm hợp đồng" [(visible)]="displayAddDialog" [modal]="true" [draggable]="false" [resizable]="false"
   addAddress class="custom-dialog" (onHide)="closeDialog()">
-  <ng-template pTemplate="content">
+  <ng-template pTemplate="content" #formContent>
     <section class="p-8 w-full bg-white rounded-xl flex">
       <div class="flex flex-col gap-6 w-full"
         [ngClass]="{'w-2/3': showCalculationPanel, 'w-full': !showCalculationPanel}">
@@ -71,10 +71,10 @@
         <div class="flex flex-col gap-2">
           <label class="block font-semibold text-orange-500">File đính kèm</label>
           <!-- Upload File -->
-          <p-fileupload (onSelect)="onFileSelect($event)" [showUploadButton]="false" [multiple]="false" accept=".pdf"
-            maxFileSize="5000000" mode="advanced">
+          <p-fileupload (onSelect)="onFileSelect($event)" [showUploadButton]="false" [multiple]="false"
+            accept=".pdf, .docx" maxFileSize="5000000" mode="advanced">
             <ng-template #empty>
-              <div>Kéo thả file để đăng tải.</div>
+              <div>Kéo thả file để đăng tải. Có thể đăng tải file trước để tự điền thông tin.</div>
             </ng-template>
             <ng-template #content>
               <ul *ngIf="uploadedFiles.length">
@@ -101,10 +101,10 @@
         <ng-template pTemplate="header">
           <tr>
             <th class="w-[120px]">Hạng mục</th>
-            <th class="w-[120px]">Đơn vị tính</th> 
-            <th class="w-[80px]">Số lượng</th> 
-            <th class="w-[120px]">Hành động</th> 
-            <th class="w-[120px]">Giá trị</th> 
+            <th class="w-[120px]">Đơn vị tính</th>
+            <th class="w-[80px]">Số lượng</th>
+            <th class="w-[120px]">Hành động</th>
+            <th class="w-[120px]">Giá trị</th>
             <th class="w-[80px] text-center">Xóa</th>
           </tr>
         </ng-template>
@@ -176,3 +176,6 @@
 </p-dialog>
 
 <p-toast></p-toast>
+<div *ngIf="isLoading" class="overlay-spinner">
+  <p-progressSpinner></p-progressSpinner>
+</div>

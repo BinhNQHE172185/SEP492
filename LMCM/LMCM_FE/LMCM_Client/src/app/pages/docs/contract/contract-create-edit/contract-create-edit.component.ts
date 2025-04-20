@@ -15,6 +15,8 @@ import { ContractorApiService } from '../../../../apis/contractorAPIs/contractor
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TableModule } from 'primeng/table';
 import { SelectModule } from 'primeng/select';
+import { OpenAIApiService } from '../../../../apis/openAIAPIs/openAI-api';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-contract-create-edit',
@@ -30,7 +32,8 @@ import { SelectModule } from 'primeng/select';
     DropdownModule,
     InputNumberModule,
     TableModule,
-    SelectModule
+    SelectModule,
+    ProgressSpinnerModule
   ],
   templateUrl: './contract-create-edit.component.html',
   styleUrl: './contract-create-edit.component.scss',
@@ -66,12 +69,15 @@ export class ContractCreateEditComponent implements OnChanges {
   totalValue: number = 0;
 
   showCalculationPanel: boolean = false;
+  prompt: string = `Hãy phân tích nội dung hợp đồng và trích xuất các thông tin`
+  isLoading: boolean = false;
 
   constructor(
     private messageService: MessageService,
     private contractService: ContractApiService,
     private budgetProposalService: BudgetApiService,
-    private contractorService: ContractorApiService
+    private contractorService: ContractorApiService,
+    private openAIService: OpenAIApiService,
   ) { }
   loadData() {
     this.contractService.getContractValue().subscribe(
@@ -241,7 +247,51 @@ export class ContractCreateEditComponent implements OnChanges {
   onFileSelect(event: any) {
     if (event.files && event.files.length > 0) {
       this.uploadedFiles = event.files[0];
-      this.file = event.files[0]
+      this.file = event.files[0];
+    }
+
+    const isAllFieldsEmpty =
+      !this.contract.title &&
+      !this.contract.contractorId &&
+      !this.contract.contractValue &&
+      !this.contract.proposalId;
+
+    if (isAllFieldsEmpty) {
+      this.isLoading = true;
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Đang tải',
+        detail: 'Vui lòng chờ.'
+      });
+
+      this.openAIService.analyzeUploadFile(this.file, this.prompt).subscribe({
+        next: (response) => {
+          const result = response.result;
+          this.contract.title = result.title;
+          this.contract.contractorId = result.contractorId;
+          this.contract.contractValue = result.contractValue;
+          this.contract.contractNo = result.contractNo;
+          this.contract.startDate = new Date(result.startDate);
+          this.contract.endDate = new Date(result.endDate);
+          this.contract.contractDate = new Date(result.contractDate);
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Thành công',
+            detail: response.message
+          });
+        },
+        error: (error) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Thất bại',
+            detail: error?.error?.message || 'Có lỗi xảy ra. Vui lòng thử lại.'
+          });
+        },
+        complete: () => {
+          this.isLoading = false;
+        }
+      });
     }
   }
 

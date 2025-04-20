@@ -20,7 +20,6 @@ namespace LMCM_BE.DTOs.OpenAIDtos
         }
         public class ContractInfoFromAIDto
         {
-            public string? proposalId { get; set; }
             public string? contractorId { get; set; }
             public string? title { get; set; }
             public decimal? contractValue { get; set; }

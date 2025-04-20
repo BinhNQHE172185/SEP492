@@ -16,14 +16,19 @@ namespace LMCM_BE.DTOs.ContractorDtos
         [StringLength(20, ErrorMessage = "Số điện thoại không được vượt quá 20 ký tự")]
         public string? PhoneNumber { get; set; }
 
+        [Required(ErrorMessage = "Mã số thuế là bắt buộc")]
+        [StringLength(20, ErrorMessage = "Mã số thuế không được vượt quá 20 ký tự")]
         public string? TaxCode { get; set; }
 
+        [Required(ErrorMessage = "Email là bắt buộc")]
         [EmailAddress(ErrorMessage = "Email không hợp lệ")]
         [StringLength(100, ErrorMessage = "Email không được vượt quá 100 ký tự")]
         public string? Email { get; set; }
 
+        [Required(ErrorMessage = "Mã nhân viên là bắt buộc")]
         public string? EmployeeCode { get; set; }
 
+        [Required(ErrorMessage = "Số CMND là bắt buộc")]
         public string? IdCardNumber { get; set; }
 
         public string? IdIssuedPlace { get; set; }

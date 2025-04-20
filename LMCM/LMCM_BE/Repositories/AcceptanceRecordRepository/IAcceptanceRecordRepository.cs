@@ -13,5 +13,6 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
         Task<AcceptanceRecord?> GetAcceptanceRecordByIdAsync(Guid acceptanceId);
         Task<AcceptanceRecord?> GetActiveAcceptanceRecordByIdAsync(Guid acceptanceId);
         Task<AcceptanceRecord?> GetAcceptanceRecordDetailAsync(Guid acceptanceId);
+        Task<Guid?> GetDuplicatedTitleIdAsync(string title);
     }
 }

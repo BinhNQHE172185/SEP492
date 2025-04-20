@@ -90,6 +90,23 @@ namespace LMCM_BE.Services.ContractorService
 
         public async Task<bool> CreateContractorAsync(ContractorCreateDto dto)
         {
+            if (dto == null)
+            {
+                throw new ArgumentNullException(nameof(dto), "Dữ liệu nhà thầu là bắt buộc.");
+            }
+
+            var duplicatedContractorId = await _contractorRepository.GetDuplicatedContractorIdAsync(
+                   dto.TaxCode,
+                   dto.EmployeeCode,
+                   dto.IdCardNumber,
+                   dto.Email
+               );
+
+            if (duplicatedContractorId != null)
+            {
+                throw new InvalidOperationException("Nhà thầu đã tồn tại với mã số thuế, mã nhân viên, số CMND hoặc email đã cung cấp.");
+            }
+
             var contractor = _mapper.Map<Contractor>(dto);
             contractor.ContractorId = Guid.NewGuid();
             contractor.Status = GenericStatus.Active;
@@ -113,6 +130,23 @@ namespace LMCM_BE.Services.ContractorService
 
         public async Task<Guid?> UpdateContractorAsync(Guid contractorId, ContractorUpdateDto dto)
         {
+            if (dto == null)
+            {
+                throw new ArgumentNullException(nameof(dto), "Dữ liệu nhà thầu là bắt buộc.");
+            }
+
+            var duplicatedContractorId = await _contractorRepository.GetDuplicatedContractorIdAsync(
+                   dto.TaxCode,
+                   dto.EmployeeCode,
+                   dto.IdCardNumber,
+                   dto.Email
+               );
+
+            if (duplicatedContractorId != null && duplicatedContractorId != contractorId)
+            {
+                throw new InvalidOperationException("Nhà thầu đã tồn tại với mã số thuế, mã nhân viên, số CMND hoặc email đã cung cấp.");
+            }
+
             var contractor = await _contractorRepository.GetActiveContractorByIdAsync(contractorId);
 
             if (contractor == null)

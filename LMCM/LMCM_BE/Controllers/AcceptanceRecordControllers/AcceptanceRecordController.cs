@@ -75,6 +75,15 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
                     Message = "Không thể tạo biên bản nghiệm thu. Vui lòng kiểm tra lại dữ liệu hoặc thử lại sau."
                 });
             }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
+            }
             catch (UnauthorizedAccessException ex)
             {
                 return StatusCode(StatusCodes.Status403Forbidden, new

@@ -82,5 +82,13 @@ namespace LMCM_BE.Repositories.AcceptanceRecordRepository
             return await _dbContext.AcceptanceRecords
                 .AnyAsync(p => p.ContractId == contractId && p.Status == GenericStatus.Active);
         }
+        public async Task<Guid?> GetDuplicatedTitleIdAsync(string title)
+        {
+            return await _dbContext.AcceptanceRecords
+                .Where(r => r.Status == GenericStatus.Active)
+                .Where(r => r.Title.ToLower() == title.Trim().ToLower())
+                .Select(r => (Guid?)r.AcceptanceId)
+                .FirstOrDefaultAsync();
+        }
     }
 }

@@ -39,6 +39,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
     public virtual DbSet<LearningMaterial> LearningMaterials { get; set; }
 
     public virtual DbSet<LearningMaterialChangesHistory> LearningMaterialChangesHistories { get; set; }
+
     public virtual DbSet<Plo> Plos { get; set; }
 
     public virtual DbSet<PloSubject> PloSubjects { get; set; }
@@ -86,8 +87,6 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.Url).HasMaxLength(255);
 
-            entity.HasIndex(e => e.Title).IsUnique();
-
             entity.HasOne(d => d.Author).WithMany(p => p.AcceptanceRecords)
                 .HasForeignKey(d => d.AuthorId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -118,8 +117,6 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.Title).HasMaxLength(255);
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.Url).HasMaxLength(255);
-
-            entity.HasIndex(e => e.Title).IsUnique();
 
             entity.HasOne(d => d.Author).WithMany(p => p.BudgetProposals)
                 .HasForeignKey(d => d.AuthorId)
@@ -209,8 +206,6 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.Url).HasMaxLength(255);
 
-            entity.HasIndex(e => e.Title).IsUnique();
-
             entity.HasOne(d => d.Author).WithMany(p => p.Contracts)
                 .HasForeignKey(d => d.AuthorId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -269,10 +264,6 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasMaxLength(255)
                 .HasColumnName("Tax_Code");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.HasIndex(e => e.TaxCode).IsUnique();
-            entity.HasIndex(e => e.EmployeeCode).IsUnique();
-            entity.HasIndex(e => e.IdCardNumber).IsUnique();
-            entity.HasIndex(e => e.Email).IsUnique();
         });
 
         modelBuilder.Entity<ContractValueItem>(entity =>

@@ -49,6 +49,16 @@ namespace LMCM_BE.Services.ContractService
         }
         public async Task<bool> CreateContract( ContractInsertDto contractDto)
         {
+            if (contractDto == null)
+            {
+                throw new ArgumentNullException(nameof(contractDto), "Dữ liệu hợp đồng là bắt buộc.");
+            }
+
+            if (await _contractRepository.GetDuplicatedTitleIdAsync(contractDto.Title) != null)
+            {
+                throw new InvalidOperationException("Tiêu đề đã tồn tại.");
+            }
+
             UserProfileResponseDto user =await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new UnauthorizedAccessException("Không tìm thấy người dùng");
@@ -199,6 +209,12 @@ namespace LMCM_BE.Services.ContractService
 
             if (newContract == null)
                 throw new ArgumentNullException(nameof(newContract), "Dữ liệu mới không được null.");
+
+            var duplicateId = await _contractRepository.GetDuplicatedTitleIdAsync(newContract.Title);
+            if (duplicateId != null && duplicateId != contractId)
+            {
+                throw new InvalidOperationException("Tiêu đề đã tồn tại.");
+            }
 
             var contract = await _contractRepository.GetActiveContractByIdAsync(contractId);
 

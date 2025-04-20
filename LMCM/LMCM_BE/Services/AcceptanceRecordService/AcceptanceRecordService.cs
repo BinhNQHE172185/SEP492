@@ -69,6 +69,12 @@ namespace LMCM_BE.Services.AcceptanceRecordService
             {
                 throw new ArgumentNullException(nameof(dto), "Dữ liệu tờ trình là bắt buộc.");
             }
+
+            if (await _acceptanceRecordRepository.GetDuplicatedTitleIdAsync(dto.Title) != null)
+            {
+                throw new InvalidOperationException("Tiêu đề đã tồn tại.");
+            }
+
             UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new UnauthorizedAccessException("Không tìm thấy người dùng");
@@ -122,6 +128,12 @@ namespace LMCM_BE.Services.AcceptanceRecordService
 
             if (dto == null)
                 throw new ArgumentNullException(nameof(dto), "Dữ liệu cập nhật không được để trống.");
+
+            var duplicateId = await _acceptanceRecordRepository.GetDuplicatedTitleIdAsync(dto.Title);
+            if (duplicateId != null && duplicateId != acceptanceId)
+            {
+                throw new InvalidOperationException("Tiêu đề đã tồn tại.");
+            }
 
             var acceptanceRecord = await _acceptanceRecordRepository.GetActiveAcceptanceRecordByIdAsync(acceptanceId);
 

@@ -4,7 +4,7 @@ namespace LMCM_BE.DTOs.OpenAIDtos
 {
     public class OpenAIDto
     {
-        public class AnalyzeContractRequest
+        public class AnalyzeRequest
         {
             [FromForm(Name = "file")]
             public IFormFile File { get; set; }
@@ -18,7 +18,7 @@ namespace LMCM_BE.DTOs.OpenAIDtos
             public string Instruction { get; set; }
             public string Name { get; set; }
         }
-        public class ContractorInfoFromAIDto
+        public class ContractInfoFromAIDto
         {
             public string? proposalId { get; set; }
             public Guid? contractorId { get; set; }
@@ -37,6 +37,14 @@ namespace LMCM_BE.DTOs.OpenAIDtos
             public string? position { get; set; }
             public string? bankAccountNumber { get; set; }
             public string? bankName { get; set; }
+        }
+        public class AcceptantRecordInfoFromAIDto
+        {
+            public string? contractId { get; set; }
+            public string? contractTitle { get; set; }
+            public string? title { get; set; }
+            public decimal? finalPrice { get; set; }
+            public DateTime? acceptanceDate { get; set; }
         }
     }
 }

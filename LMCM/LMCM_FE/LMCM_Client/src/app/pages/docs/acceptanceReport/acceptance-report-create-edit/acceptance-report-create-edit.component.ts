@@ -14,6 +14,8 @@ import { AcceptanceRecordApiService } from '../../../../apis/acceptanceRecordAPI
 import { ContractApiService } from '../../../../apis/contractAPIs/contract-api.service';
 import { TableModule } from 'primeng/table';
 import { SelectModule } from 'primeng/select';
+import { OpenAIApiService } from '../../../../apis/openAIAPIs/openAI-api';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-acceptance-report-create-edit',
@@ -28,6 +30,8 @@ import { SelectModule } from 'primeng/select';
     DropdownModule,
     InputNumberModule,
     TableModule,
+    SelectModule,
+    ProgressSpinnerModule,
     SelectModule
   ],
   providers: [ConfirmationService, MessageService],
@@ -61,6 +65,8 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
   totalValue: number = 0;
 
   showCalculationPanel: boolean = false;
+  prompt: string = `Hãy phân tích nội dung biên bản nghiệm thu và trích xuất các thông tin`
+  isLoading: boolean = false;
 
   report: any;
   contract: { contractId: string; contractValue: string }[] = [];
@@ -69,6 +75,7 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
     private messageService: MessageService,
     private acceptanceService: AcceptanceRecordApiService,
     private contractService: ContractApiService,
+    private openAIService: OpenAIApiService,
   ) { }
 
   loadData() {
@@ -230,6 +237,46 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
     if (event.files && event.files.length > 0) {
       this.uploadedFiles = event.files[0];
       this.file = event.files[0]
+    }
+
+    const isAllFieldsEmpty =
+      !this.report.title &&
+      !this.report.contractId;
+
+    if (isAllFieldsEmpty) {
+      this.isLoading = true;
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Đang tải',
+        detail: 'Vui lòng chờ.'
+      });
+
+      this.openAIService.analyzeUploadRecordFile(this.file, this.prompt).subscribe({
+        next: (response) => {
+          const result = response.result;
+          this.report.title = result.title;
+          this.report.contractId = result.contractId;
+          this.report.finalPrice = result.finalPrice;
+          this.report.acceptanceDate = new Date(result.acceptanceDate);
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Thành công',
+            detail: response.message
+          });
+        },
+        error: (error) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Thất bại',
+            detail: error?.error?.message || 'Có lỗi xảy ra. Vui lòng thử lại.'
+          });
+          this.isLoading = false;
+        },
+        complete: () => {
+          this.isLoading = false;
+        }
+      });
     }
   }
 

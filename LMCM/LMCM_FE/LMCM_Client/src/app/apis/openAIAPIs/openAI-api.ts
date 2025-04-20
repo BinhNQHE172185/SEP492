@@ -20,4 +20,13 @@ export class OpenAIApiService {
       withCredentials: true
     });
   }
+  analyzeUploadRecordFile(file: File, prompt: string): Observable<any> {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("prompt", prompt);
+  
+    return this.http.post<any>(`${this.apiUrl}/OpenAI/analyze-upload-record-file`, formData, {
+      withCredentials: true
+    });
+  }
 }

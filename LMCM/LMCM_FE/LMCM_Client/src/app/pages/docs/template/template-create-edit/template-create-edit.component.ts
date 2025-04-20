@@ -88,6 +88,11 @@ export class TemplateCreateEditComponent implements OnChanges {
   }
 
   save() {
+    if (!this.template.templateName) {
+      this.messageService.add({ severity: 'warn', summary: 'Thất bại', detail: 'Vui lòng nhập tên mẫu tài liệu.' });
+      return;
+    }
+
     const reportData = new FormData();
     reportData.append("templateName", this.template.templateName!);
     reportData.append("templateType", this.template.templateType!);
@@ -104,6 +109,11 @@ export class TemplateCreateEditComponent implements OnChanges {
         }
       );
     } else {
+      if (!this.file) {
+        this.messageService.add({ severity: 'warn', summary: 'Thất bại', detail: 'Vui lòng tải lên tệp.' });
+        return;
+      }
+
       this.messageService.add({ severity: 'info', summary: 'Đang tải', detail: 'Vui lòng chờ.' });
       this.templateService.createTemplate(reportData).subscribe(
         (response) => {

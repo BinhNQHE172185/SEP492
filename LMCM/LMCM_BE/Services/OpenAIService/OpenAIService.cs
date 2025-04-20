@@ -89,7 +89,7 @@ namespace LMCM_BE.Services.OpenAIService
 
             if (existingId != null)
             {
-                aiContractorInfo.contractorId = existingId;
+                aiContractorInfo.contractorId = existingId.ToString();
                 return aiContractorInfo;
             }
 
@@ -113,10 +113,11 @@ namespace LMCM_BE.Services.OpenAIService
                 var isCreated = await _contractorService.CreateContractorAsync(newContractor);
                 if (isCreated)
                 {
-                    aiContractorInfo.contractorId = await _contractorService.CheckContractor(
-                        aiContractorInfo.taxCode,
-                        aiContractorInfo.email,
-                        aiContractorInfo.phoneNumber);
+                    var id = await _contractorService.CheckContractor(
+                       aiContractorInfo.taxCode,
+                       aiContractorInfo.email,
+                       aiContractorInfo.phoneNumber);
+                    aiContractorInfo.contractorId = id.ToString();
                 }
             }
 

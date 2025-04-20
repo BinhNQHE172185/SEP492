@@ -8,16 +8,16 @@ import { CalendarModule } from 'primeng/calendar';
 import { ContractApiService } from '../../../../apis/contractAPIs/contract-api.service';
 import { ToastModule } from 'primeng/toast';
 import { AcceptanceRecordApiService } from '../../../../apis/acceptanceRecordAPIs/acceptance-api.service';
+import { Router } from '@angular/router';
 
 @Component({
-    selector: 'app-acceptance-report-detail',
-    imports: [CalendarModule, FormsModule, DialogModule, CommonModule, ButtonModule, ToastModule],
-    templateUrl: './acceptance-report-detail.component.html',
-    styleUrl: './acceptance-report-detail.component.scss',
-    providers: [ConfirmationService, MessageService]
+  selector: 'app-acceptance-report-detail',
+  imports: [CalendarModule, FormsModule, DialogModule, CommonModule, ButtonModule, ToastModule],
+  templateUrl: './acceptance-report-detail.component.html',
+  styleUrl: './acceptance-report-detail.component.scss',
+  providers: [ConfirmationService, MessageService]
 })
-export class AcceptanceReportDetailComponent 
-{
+export class AcceptanceReportDetailComponent {
   @Input() acceptanceId!: string;
   @Input() displayDetailDialog: boolean = false;
   @Output() closeDialogEvent = new EventEmitter<void>();
@@ -29,7 +29,8 @@ export class AcceptanceReportDetailComponent
 
   constructor(
     private messageService: MessageService,
-    private acceptanceService: AcceptanceRecordApiService
+    private acceptanceService: AcceptanceRecordApiService,
+    private router: Router
   ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -65,7 +66,18 @@ export class AcceptanceReportDetailComponent
     link.click();
     document.body.removeChild(link);
   }
+
   viewFile(url: string) {
+    window.open(url, '_blank');
+  }
+
+  goToContractDetail(id: string) {
+    const url = `/document/contract/${id}`;
+    window.open(url, '_blank');
+  }
+
+  goToContractorDetail(id: string) {
+    const url = `/document/expert/${id}`;
     window.open(url, '_blank');
   }
 }

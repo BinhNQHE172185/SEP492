@@ -4,9 +4,14 @@
     <ng-template pTemplate="content">
         <section class="p-8 w-full bg-white rounded-xl" *ngIf="contract">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                <div class="flex flex-col gap-2 md:col-span-2">
-                    <label class="block font-semibold text-orange-500">Tên biên bản</label>
+                <div class="flex flex-col gap-2">
+                    <label class="block font-semibold text-orange-500">Số biên bản</label>
                     <p class="truncate">{{ contract.title }}</p>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="block font-semibold text-orange-500">Số hợp đồng</label>
+                    <a (click)="goToContractDetail(contract.contractId)" class="text-blue-600 hover:underline cursor-pointer"><p class="truncate">{{ contract.contract.title }}</p></a>
                 </div>
 
                 <div class="flex flex-col gap-2">
@@ -30,6 +35,11 @@
                 </div>
 
                 <div class="flex flex-col gap-2">
+                    <label class="block font-semibold text-orange-500">Chuyên gia</label>
+                    <a (click)="goToContractorDetail(contract.contract.contractor.contractorId)" class="text-blue-600 hover:underline cursor-pointer"><p class="whitespace-pre-line">{{ contract.contract.contractor.contractorName }}</p></a>
+                </div>
+
+                <div class="flex flex-col gap-2">
                     <label class="block font-semibold text-orange-500">Ngày sửa đổi</label>
                     <p class="whitespace-pre-line">{{ contract.updatedAt | date: 'dd/MM/yyyy' }}</p>
                 </div>
@@ -47,8 +57,6 @@
                     </ng-template>
                 </div>
             </div>
-            
-            
         </section>
     </ng-template>
 </p-dialog>

@@ -20,6 +20,7 @@ import { Subscription } from 'rxjs';
 import { ExpertCreateEditComponent } from '../expert-create-edit/expert-create-edit.component';
 import { ExpertDetailComponent } from '../expert-detail/expert-detail.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 interface PagingRequest {
     searchKey?: string;
@@ -71,7 +72,8 @@ export class ListExpertComponent implements OnInit {
         private ExpertService: ContractorApiService,
         private searchService: searchService,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private route: ActivatedRoute
     ) {}
 
     displayAddDialog = false;
@@ -81,6 +83,13 @@ export class ListExpertComponent implements OnInit {
     expertId: string | null = null;
 
     ngOnInit() {
+        this.route.paramMap.subscribe(params => {
+            const id = params.get('id');
+            if (id) {
+              this.expertId = id;
+              this.displayDetailDialog = true;
+            }
+          });
         this.searchSubscription = this.searchService.searchQuery$.subscribe((query) => {
             this.searchKey = query;
             this.loadExpert();

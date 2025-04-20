@@ -58,15 +58,6 @@ import { CookieService } from 'ngx-cookie-service';
                 -->
                 <app-configurator />
             </div>
-
-            <div class="layout-topbar-menu hidden lg:block">
-                <div class="layout-topbar-menu-content">
-                    <button (click)="menu.toggle($event)" class="layout-topbar-action">
-                        <i class="pi pi-user"></i>
-                    </button>
-                    <p-menu #menu [popup]="true" [model]="UserItems" ></p-menu>
-                </div>
-            </div>
         </div>
     </div>`
 })

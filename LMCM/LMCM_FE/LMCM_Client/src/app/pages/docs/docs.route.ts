@@ -7,9 +7,11 @@ import { ListTemplateComponent } from './template/list-template/list-template.co
 
 export default [
     { path: 'expert', component: ListExpertComponent },
+    { path: 'expert/:id', component: ListExpertComponent },
     { path: 'report', component: ListReportComponent },
+    { path: 'report/:id', component: ListReportComponent },
     { path: 'acceptance-report', component: ListAcceptanceReportComponent },
     { path: 'contract', component: ListContractComponent },
     { path: 'contract/:id', component: ListContractComponent },
-    { path: 'template', component: ListTemplateComponent },  
+    { path: 'template', component: ListTemplateComponent },
 ] as Routes;

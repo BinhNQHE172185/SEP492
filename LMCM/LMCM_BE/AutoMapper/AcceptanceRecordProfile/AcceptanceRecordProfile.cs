@@ -11,7 +11,9 @@ namespace LMCM_BE.AutoMapper.AcceptanceRecordProfile
     {
         public AcceptanceRecordProfile()
         {
-            CreateMap<AcceptanceRecord, AcceptanceRecordListDto>();
+            CreateMap<AcceptanceRecord, AcceptanceRecordListDto>()
+                .ForMember(dest => dest.contractId, opt => opt.MapFrom(src=>src.Contract.ContractId))
+                .ForMember(dest => dest.contractTitle, opt => opt.MapFrom(src=>src.Contract.Title));
             CreateMap<AcceptanceRecordCreateDto, AcceptanceRecord>()
                 .ForMember(dest => dest.Url, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())

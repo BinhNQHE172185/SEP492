@@ -9,5 +9,7 @@
         public DateTime? AcceptanceDate { get; set; }
 
         public decimal? FinalPrice { get; set; }
+        public Guid? contractId { get; set; }
+        public decimal? contractTitle { get; set; }
     }
 }

@@ -22,7 +22,7 @@
                     <div class="flex flex-col gap-2">
                         <label class="block font-semibold text-orange-500">Chọn hợp đồng<span
                                 class="text-red-500">*</span></label>
-                        <p-dropdown [options]="contract" [(ngModel)]="report.contractId" optionLabel="title"
+                        <p-select [options]="contract" [(ngModel)]="report.contractId" optionLabel="title"
                             placeholder="Chọn hợp đồng" [filter]="true" class="w-full border border-gray-300 rounded"
                             optionValue="contractId" appendTo="body">
                             <ng-template let-contract pTemplate="item">
@@ -33,7 +33,7 @@
                                 {{ selectedContract?.title.length > 30 ? (selectedContract.title | slice:0:30) + '...' :
                                 selectedContract.title }}
                             </ng-template>
-                        </p-dropdown>
+                        </p-select>
                     </div>
                     <div class="flex flex-col gap-2">
                         <label class="block font-semibold text-orange-500">Ngày nghiệm thu</label>
@@ -46,7 +46,7 @@
                 <div class="flex flex-col gap-2">
                     <label class="block font-semibold text-orange-500">File đính kèm</label>
                     <p-fileupload (onSelect)="onFileSelect($event)" [showUploadButton]="false" [multiple]="false"
-                        accept=".pdf" maxFileSize="5000000" mode="advanced">
+                        accept=".pdf, .docx" maxFileSize="5000000" mode="advanced">
                         <ng-template #empty>
                             <div>Kéo thả file để đăng tải.</div>
                         </ng-template>
@@ -153,3 +153,6 @@
 </p-dialog>
 
 <p-toast></p-toast>
+<div *ngIf="isLoading" class="overlay-spinner">
+    <p-progressSpinner></p-progressSpinner>
+</div>

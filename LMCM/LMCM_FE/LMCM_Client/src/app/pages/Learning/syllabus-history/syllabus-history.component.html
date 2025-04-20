@@ -23,8 +23,8 @@
                     <th>Số quyết định</th>
                     <th>Ngày tạo</th>
                     <th>Lần cuối chỉnh sửa</th>
-                    <th>Trạng thái duyệt</th>
-                    <th>Hoạt động</th>
+                    <th>Trạng thái</th>
+                    <th>Chi tiết</th>
                 </tr>
             </ng-template>
 
@@ -38,15 +38,12 @@
                     <td>{{ item.createdAt | date: 'dd/MM/yyyy' }}</td>
                     <td>{{ item.updatedAt | date: 'dd/MM/yyyy' }}</td>
                     <td>
-                        <p-tag
-                            [value]="item.isApproved === true ? 'Đã duyệt' : (item.isApproved === false ? 'Chưa duyệt' : 'N/A')"
-                            [severity]="item.isApproved === true ? 'success' : (item.isApproved === false ? 'warn' : 'danger')">
-                        </p-tag>
-                    </td>
-                    <td>
                         <p-tag [value]="item.isActive ? 'Active' : 'Inactive'"
                             [severity]="item.isActive ? 'success' : 'danger'">
                         </p-tag>
+                    </td>
+                    <td>
+                        <p-button icon="pi pi-eye" (onClick)="goToDetail(item.syllabusId)" outlined></p-button>
                     </td>
                 </tr>
             </ng-template>

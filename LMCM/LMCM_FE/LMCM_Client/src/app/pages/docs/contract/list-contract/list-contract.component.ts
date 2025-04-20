@@ -174,4 +174,13 @@ export class ListContractComponent implements OnInit {
       }
     });
   }
+  goToExpertDetail(id: string) {
+    const url = `/document/expert/${id}`;
+    window.open(url, '_blank');
+  }
+
+  goToProposalDetail(id: string) {
+    const url = `/document/report/${id}`;
+    window.open(url, '_blank');
+  }
 }

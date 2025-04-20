@@ -21,8 +21,8 @@
       <!-- Table Header -->
       <ng-template pTemplate="header">
         <tr>
-          <th>Tiêu đề</th>
-          <th>Bên nhận khoán</th>
+          <th>Số hợp đồng</th>
+          <th>Chuyên gia</th>
           <th>Tờ trình</th>
           <th>Giá trị</th>
           <th>Ngày bắt đầu</th>
@@ -35,9 +35,17 @@
       <ng-template pTemplate="body" let-contract>
         <tr>
           <td>{{ contract.title | slice: 0:10 }}{{ contract.title.length > 10 ? '...' : '' }}</td>
-          <td>{{ contract.contractor.contractorName }}</td>
-          <td>{{ contract.proposal.title | slice: 0:20 }}{{ contract.proposal.title.length > 20 ? '...' : '' }}</td>
-          <td>{{ contract.contractValue }}</td>
+          <td>
+            <a (click)="goToExpertDetail(contract.contractor.contractorId)" class="text-blue-600 hover:underline cursor-pointer">
+              {{ contract.contractor.contractorName }}
+            </a>
+          </td>
+          <td>
+            <a (click)="goToProposalDetail(contract.proposalId)" class="text-blue-600 hover:underline cursor-pointer">
+              {{ contract.proposal.title | slice: 0:20 }}{{ contract.proposal.title.length > 20 ? '...' : '' }}
+            </a>
+          </td>
+          <td>{{ contract.contractValue | currency: 'VND':'symbol':'1.0-0':'vi-VN' }}</td>
           <td>{{ contract.startDate | date: 'dd/MM/yyyy' }}</td>
           <td>{{ contract.endDate | date: 'dd/MM/yyyy' }}</td>
 

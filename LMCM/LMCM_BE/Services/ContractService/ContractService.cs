@@ -257,5 +257,9 @@ namespace LMCM_BE.Services.ContractService
                 throw new Exception(ex.Message);
             }
         }
+        public async Task<Guid?> CheckContractByTitle(string title)
+        {
+            return await _contractRepository.CheckContractByTitle(title);
+        }
     }
 }

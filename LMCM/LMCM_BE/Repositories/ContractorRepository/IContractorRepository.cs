@@ -11,5 +11,6 @@ namespace LMCM_BE.Repositories.ContractorRepository
         Task<Contractor?> GetContractorByIdAsync(Guid contractorId);
         Task<bool> CreateContractorAsync(Contractor contractor);
         Task<bool> UpdateContractorAsync(Contractor contractor);
+        Task<Guid?> CheckContractor(string taxcode, string? email, string? phoneNumber);
     }
 }

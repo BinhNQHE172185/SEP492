@@ -135,5 +135,9 @@ namespace LMCM_BE.Services.ContractorService
                 throw new Exception(ex.Message);
             }
         }
+        public async Task<Guid?> CheckContractor(string taxcode, string? email, string? phoneNumber)
+        {
+            return await _contractorRepository.CheckContractor(taxcode, email, phoneNumber);
+        }
     }
 }

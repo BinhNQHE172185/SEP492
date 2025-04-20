@@ -1,6 +1,6 @@
 <p-card>
     <div class="flex justify-between items-center">
-        <h2 class="text-xl font-bold text-orange-500">Lịch sử thay đổi học liệu</h2>
+        <h2 class="text-xl font-bold text-orange-500">Lịch sử thay đổi môn: {{ courseTitle }} - {{ courseCode }}</h2>
     </div>
 
     <div class="mt-3">
@@ -17,13 +17,11 @@
             *ngIf="historyList && historyList.length > 0; else noDataTemplate">
             <ng-template pTemplate="header">
                 <tr>
-                    <th>Mã môn</th>
                     <th>Tên người thay đổi</th>
                     <th>Loại thay đổi</th>
                     <th>Nội dung thay đổi</th>
                     <th>Ngày hoàn thành</th>
                     <th>Kỳ áp dụng</th>
-                    <th style="display: flex; justify-content: center;">Trạng thái</th>
                     <th>Hoạt động</th>
                 </tr>
             </ng-template>
@@ -31,25 +29,22 @@
 
             <ng-template pTemplate="body" let-item>
                 <tr>
-                    <td>{{ item.courseCode }}</td>
                     <td>{{ item.username }}</td>
                     <td>
                         <p-tag [value]="item.changeType ? 'Xây mới' : 'Điều chỉnh'"
                             [severity]="item.changeType ? 'success' : 'danger'">
                         </p-tag>
                     </td>
-                    <td>{{ item.changeDescription }}</td>
+                    <td>{{ item.changeDescription?.length > 30 ? (item.changeDescription | slice:0:30) + '...' :
+                        item.changeDescription }}</td>
                     <td>{{ item.completionDate | date: 'dd/MM/yyyy' }}</td>
                     <td>{{ item.startTerm }}</td>
                     <td>
-                        <p-tag [value]="item.status === 1 ? 'Active' : 'Inactive'"
-                            [severity]="item.status === 1 ? 'success' : 'danger'">
-                        </p-tag>
-                    </td>
-                    <td>
                         <div class="flex gap-2">
+                            <p-button icon="pi pi-info-circle" (click)="showDetail(item)" outlined></p-button>
                             <p-button icon="pi pi-eye" (onClick)="goToDetail(item.syllabusId)" outlined></p-button>
-                            <p-button icon="pi pi-book" (onClick)="goToContractDetail(item.contractId)" outlined></p-button>
+                            <p-button icon="pi pi-book" (onClick)="goToContractDetail(item.contractId)"
+                                outlined></p-button>
                         </div>
                     </td>
                 </tr>
@@ -60,6 +55,45 @@
     <ng-template #noDataTemplate>
         <p class="text-center text-gray-500 mt-4">Không có dữ liệu.</p>
     </ng-template>
+
+    <!-- detail dialog -->
+    <p-dialog [(visible)]="displayDetailDialog" [modal]="true" [closable]="true" header="Chi tiết lịch sử thay đổi"
+        [style]="{ width: '580px', height: '630px', 'border-radius': '8px' }">
+        <ng-template pTemplate="content">
+            <section class="p-8 w-full bg-white rounded-xl" *ngIf="selectedHistoryDetail">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex flex-col gap-2">
+                        <label class="block font-semibold text-orange-500">Mã môn</label>
+                        <p class="truncate">{{ selectedHistoryDetail.courseCode }}</p>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="block font-semibold text-orange-500">Tên môn</label>
+                        <p>{{ selectedHistoryDetail.courseName }}</p>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="block font-semibold text-orange-500">Ngày hoàn thành</label>
+                        <p>{{ selectedHistoryDetail.completionDate | date: 'dd/MM/yyyy' }}</p>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="block font-semibold text-orange-500">Kỳ bắt đầu áp dụng</label>
+                        <p>{{ selectedHistoryDetail.startTerm }}</p>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="block font-semibold text-orange-500">Hợp đồng</label>
+                        <p>{{ selectedHistoryDetail.contractTitle }}</p>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="block font-semibold text-orange-500">Loại thay đổi</label>
+                        <p>{{ selectedHistoryDetail.changeType }}</p>
+                    </div>
+                    <div class="flex flex-col gap-2 md:col-span-2">
+                        <label class="block font-semibold text-orange-500">Nội dung thay đổi</label>
+                        <p class="whitespace-pre-line">{{ selectedHistoryDetail.changeDescription }}</p>
+                    </div>
+                </div>
+            </section>
+        </ng-template>
+    </p-dialog>
 </p-card>
 
 <p-toast></p-toast>

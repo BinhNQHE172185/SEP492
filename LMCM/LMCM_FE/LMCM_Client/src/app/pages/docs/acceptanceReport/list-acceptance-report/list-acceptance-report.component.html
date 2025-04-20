@@ -22,7 +22,9 @@
             <ng-template pTemplate="header">
                 <tr>
                     <th>Ngày nghiệm thu</th>
-                    <th>Tiêu đề</th>
+                    <th>Số bản nghiệm thu</th>
+                    <th>Số hợp đồng</th>
+                    <th>Số ghiệm thu</th>
                     <th>Giá trị quyết toán</th>
                     <th style="display: flex; justify-content: center;">Hành động</th>
                 </tr>
@@ -32,7 +34,13 @@
                 <tr>
                     <td>{{ report.acceptanceDate | date: 'dd/MM/yyyy' }}</td>
                     <td>{{ report.title}}</td>
-                    <td>{{ report.finalPrice | currency:'VND' }}</td>
+                    <td>
+                        <a (click)="goToContractDetail(report.contractId)"
+                            class="text-blue-600 hover:underline cursor-pointer">
+                            {{ report.contractTitle}}
+                        </a>
+                    </td>
+                    <td>{{ report.finalPrice | currency: 'VND':'symbol':'1.0-0':'vi-VN' }}</td>
                     <td class="p-2 flex justify-center gap-2">
                         <p-button label="Chi tiết" outlined severity="info" outlined
                             (click)="openDetailDialog(report.acceptanceId)"></p-button>

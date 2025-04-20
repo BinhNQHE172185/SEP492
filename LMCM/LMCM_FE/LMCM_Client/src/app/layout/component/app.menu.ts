@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from './app.menuitem';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
     selector: 'app-menu',
@@ -17,11 +18,15 @@ import { AppMenuitem } from './app.menuitem';
 })
 export class AppMenu {
     model: MenuItem[] = [];
+    constructor(
+            private router: Router,
+            private cookieService: CookieService
+        ) { }
 
     ngOnInit() {
         this.model = [
             {
-                label: 'Home',
+                label: 'Trang chủ',
                 items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }]
             },
             {
@@ -71,14 +76,14 @@ export class AppMenu {
                 routerLink: ['/document'],
                 items: [
                     {
-                        label: 'Quản lý hợp đồng',
-                        icon: 'pi pi-fw pi-print',
-                        routerLink: ['document/contract']
-                    },
-                    {
                         label: 'Quản lý tờ trình',
                         icon: 'pi pi-fw pi-print',
                         routerLink: ['document/report']
+                    },
+                    {
+                        label: 'Quản lý hợp đồng',
+                        icon: 'pi pi-fw pi-print',
+                        routerLink: ['document/contract']
                     },
                     {
                         label: 'Quản lý biên bản nghiệm thu',
@@ -94,6 +99,16 @@ export class AppMenu {
                         label: 'Quản lý mẫu tài liệu',
                         icon: 'pi pi-fw pi-print',
                         routerLink: ['document/template']
+                    },
+                ]
+            },
+            {
+                label: 'Người dùng',
+                items: [
+                    { label: 'Trang cá nhân', icon: 'pi pi-fw pi-user', routerLink: ['/user/profile'] },
+                    {
+                        label: 'Đăng xuất', icon: 'pi pi-sign-out',
+                        command: () => this.logout() // Gọi hàm logout
                     },
                 ]
             },
@@ -127,7 +142,7 @@ export class AppMenu {
             //             icon: 'pi pi-fw pi-globe',
             //             routerLink: ['/landing']
             //         },
-                    
+
             //         {
             //             label: 'Auth',
             //             icon: 'pi pi-fw pi-user',
@@ -227,5 +242,9 @@ export class AppMenu {
             //     ]
             // }
         ];
+    }
+    logout() {
+        this.cookieService.delete('AuthToken', '/', '');
+        this.router.navigate(['/auth/login']);
     }
 }

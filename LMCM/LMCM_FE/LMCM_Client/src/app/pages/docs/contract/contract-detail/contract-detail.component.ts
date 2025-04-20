@@ -75,4 +75,9 @@ export class ContractDetailComponent {
   viewFile(url: string) {
     window.open(url, '_blank');
   }
+
+  goToProposalDetail(id: string) {
+    const url = `/document/report/${id}`;
+    window.open(url, '_blank');
+  }
 }

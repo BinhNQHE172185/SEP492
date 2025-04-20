@@ -160,4 +160,9 @@ export class SyllabusHistoryComponent implements OnInit, OnDestroy {
     //   }
     // });
   }
+  
+  goToDetail(id: string) {
+    const url = `/learning/syllabus/${id}`;
+    window.open(url, '_blank');
+  }
 }

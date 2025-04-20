@@ -19,6 +19,7 @@ namespace LMCM_BE.DTOs.LearningMaterialDtos
         public DateTime? CompletionDate { get; set; }
         public string? StartTerm { get; set; }
         public string? CourseCode { get; set; }
+        public string? CourseName { get; set; }
         public GenericStatus Status { get; set; }
     }
 }

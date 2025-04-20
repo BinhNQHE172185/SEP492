@@ -5,14 +5,22 @@
       <div class="flex flex-col gap-6 w-full"
         [ngClass]="{'w-2/3': showCalculationPanel, 'w-full': !showCalculationPanel}">
         <div class="flex flex-col gap-2">
-          <label class="block font-semibold text-orange-500">Tiêu đề <span class="text-red-500">*</span></label>
-          <input pInputText [(ngModel)]="contract.title" placeholder="Nhập tiêu đề"
-            class="w-full border border-gray-300 rounded p-2" />
+          <label class="block font-semibold text-orange-500">Số hợp đồng <span class="text-red-500">*</span></label>
+          <input pInputText [(ngModel)]="contract.title" #addTitleRef="ngModel" placeholder="Nhập số hợp đồng"
+            class="w-full border border-gray-300 rounded p-2" minlength="3" maxlength="100" pattern="^\s*\S.*$"
+            required />
+          <small class="text-red-500" *ngIf="addTitleRef.invalid && (addTitleRef.dirty || addTitleRef.touched)">
+            <span *ngIf="addTitleRef.errors?.['required']">Tên tiêu đề là bắt buộc.</span>
+            <span *ngIf="addTitleRef.errors?.['minlength']">Phải có ít nhất 3 ký tự.</span>
+            <span *ngIf="addTitleRef.errors?.['maxlength']">Không được quá 100 ký tự.</span>
+            <span *ngIf="addTitleRef.errors?.['pattern']">Tên tiêu đề không được chỉ chứa khoảng
+              trắng.</span>
+          </small>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <label class="block font-semibold text-orange-500">Chọn nhà thầu<span class="text-red-500">*</span></label>
+            <label class="block font-semibold text-orange-500">Chọn chuyên gia<span class="text-red-500">*</span></label>
             <p-select [options]="contractor" [(ngModel)]="contract.contractorId" optionLabel="contractorName"
               placeholder="Chọn nhà thầu" [filter]="true" class="w-full border border-gray-300 rounded"
               optionValue="contractorId" appendTo="body">
@@ -33,7 +41,7 @@
 
             <p-select [options]="budgetProposal" [(ngModel)]="contract.proposalId" optionLabel="title"
               placeholder="Chọn tờ trình" [filter]="true" class="w-full border border-gray-300 rounded"
-              optionValue="proposalId" appendTo="body">
+              optionValue="proposalId" appendTo="body" required>
               <ng-template let-proposal pTemplate="item">
                 {{ proposal.title.length > 25 ? (proposal.title | slice:0:25) + '...' : proposal.title }}
               </ng-template>
@@ -47,29 +55,42 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <label class="block font-semibold text-orange-500">Ngày bắt đầu <span class="text-red-500">*</span></label>
+            <label class="block font-semibold text-orange-500">Ngày bắt đầu </label>
             <p-datepicker [(ngModel)]="contract.startDate" dateFormat="dd-mm-yy" [showIcon]="true" class="w-full"
               appendTo="body"></p-datepicker>
           </div>
           <div class="flex flex-col gap-2">
-            <label class="block font-semibold text-orange-500">Ngày kết thúc <span class="text-red-500">*</span></label>
+            <label class="block font-semibold text-orange-500">Ngày kết thúc </label>
             <p-datepicker [(ngModel)]="contract.endDate" dateFormat="dd-mm-yy" [showIcon]="true" class="w-full"
               appendTo="body"></p-datepicker>
           </div>
         </div>
 
         <div class="flex flex-col gap-2">
-          <label class="block font-semibold text-orange-500">Giá trị hợp đồng <span
-              class="text-red-500">*</span></label>
-          <p-inputNumber [(ngModel)]="contract.contractValue" mode="currency" currency="VND" locale="vi-VN"
+          <label class="block font-semibold text-orange-500">
+            Giá trị hợp đồng <span class="text-red-500">*</span>
+          </label>
+          <p-inputNumber
+            [(ngModel)]="contract.contractValue"
+            name="contractValue"
+            #contractValueRef="ngModel"
+            required
+            min="0"
+            mode="currency"
+            currency="VND"
+            locale="vi-VN"
             placeholder="Nhập giá trị">
           </p-inputNumber>
+        
+          <small class="text-red-500" *ngIf="contractValueRef.invalid && (contractValueRef.dirty || contractValueRef.touched)">
+            <span *ngIf="contractValueRef.errors?.['required']">Giá trị hợp đồng là bắt buộc.</span>
+            <span *ngIf="contractValueRef.errors?.['min']">Giá trị hợp đồng phải lớn hơn hoặc bằng 0.</span>
+          </small>
         </div>
-
 
         <!-- File đính kèm -->
         <div class="flex flex-col gap-2">
-          <label class="block font-semibold text-orange-500">File đính kèm</label>
+          <label class="block font-semibold text-orange-500">File đính kèm <span class="text-red-500">*</span></label>
           <!-- Upload File -->
           <p-fileupload (onSelect)="onFileSelect($event)" [showUploadButton]="false" [multiple]="false"
             accept=".pdf, .docx" maxFileSize="5000000" mode="advanced">

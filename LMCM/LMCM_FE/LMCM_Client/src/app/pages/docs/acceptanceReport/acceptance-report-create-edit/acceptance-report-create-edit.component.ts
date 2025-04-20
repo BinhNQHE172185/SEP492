@@ -201,6 +201,16 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
         });
       }
     }
+    if (this.report.contractId === '') {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Cảnh báo',
+        detail: 'Vui lòng chọn hợp đồng.'
+      });
+      return;
+    }
+
+
 
     const reportData = new FormData();
     reportData.append("title", this.report.title);
@@ -216,10 +226,30 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
           this.closeDialog();
         },
         (error) => {
-          this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+          const errors = error.error.errors;
+          const allMessages = [];
+
+          for (const key in errors) {
+            if (errors.hasOwnProperty(key)) {
+              allMessages.push(...errors[key]);
+            }
+          }
+
+          allMessages.forEach(msg => {
+            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg });
+          });
         }
       );
     } else {
+      if (this.report.file === null || this.report.file === undefined) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Cảnh báo',
+          detail: 'Vui lòng chọn file.'
+        });
+        return;
+      }
+
       this.messageService.add({ severity: 'info', summary: 'Đang tải', detail: 'Vui lòng chờ.' });
       this.acceptanceService.createAcceptanceRecord(reportData).subscribe(
         (response) => {
@@ -227,7 +257,18 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
           this.closeDialog();
         },
         (error) => {
-          this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+          const errors = error.error.errors;
+          const allMessages = [];
+
+          for (const key in errors) {
+            if (errors.hasOwnProperty(key)) {
+              allMessages.push(...errors[key]);
+            }
+          }
+
+          allMessages.forEach(msg => {
+            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg });
+          });
         }
       );
     }

@@ -80,13 +80,10 @@ export class ReportCreateEditComponent {
   }
 
   saveReport() {
-    if (!this.addTitle || !this.addDate || !this.file) {
-      console.error("Vui lòng điền đầy đủ thông tin");
-      return;
-    }
+    
     const reportData = new FormData();
     reportData.append("title", this.addTitle);
-    reportData.append("proposalDate", this.addDate.toLocaleDateString('en-CA'));
+    reportData.append("proposalDate", this.addDate ? this.addDate.toLocaleDateString('en-CA') : '');
     reportData.append("file", this.file);
 
     if (this.selectedReportId) {
@@ -96,7 +93,18 @@ export class ReportCreateEditComponent {
           this.closeDialog();
         },
         (error) => {
-          this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+          const errors = error.error.errors;
+          const allMessages = [];
+        
+          for (const key in errors) {
+            if (errors.hasOwnProperty(key)) {
+              allMessages.push(...errors[key]);
+            }
+          }
+        
+          allMessages.forEach(msg => {
+            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg });
+          });
         }
       );
     } else {
@@ -107,7 +115,18 @@ export class ReportCreateEditComponent {
           this.closeDialog();
         },
         (error) => {
-          this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+          const errors = error.error.errors;
+          const allMessages = [];
+        
+          for (const key in errors) {
+            if (errors.hasOwnProperty(key)) {
+              allMessages.push(...errors[key]);
+            }
+          }
+        
+          allMessages.forEach(msg => {
+            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg });
+          });
         }
       );
     }

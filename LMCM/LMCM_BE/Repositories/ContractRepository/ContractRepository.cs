@@ -14,7 +14,7 @@ namespace LMCM_BE.Repositories.ContractRepository
             _dbContext = dbContext;
         }
 
-        public async Task<bool> CreateContract(Contract contract)
+        public async Task<bool> CreateContractAsync(Contract contract)
         {
             await _dbContext.Contracts.AddAsync(contract);
 

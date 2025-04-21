@@ -42,7 +42,7 @@ namespace LMCM_BE.Controllers.SubjectControllers
             }
         }
         [HttpPost("importSubjects")]
-        public async Task<IActionResult> ImportSubjectsFromExcel(IFormFile file)
+        public async Task<IActionResult> ImportSubjectsFromExcelAsync(IFormFile file)
         {
             if (file == null || file.Length == 0)
                 return BadRequest(new { message = "Vui lòng tải lên tệp Excel hợp lệ." });
@@ -89,7 +89,7 @@ namespace LMCM_BE.Controllers.SubjectControllers
             }
         }
         [HttpDelete("{subjectId}")]
-        public async Task<IActionResult> DeleteSubject(Guid subjectId)
+        public async Task<IActionResult> DeleteSubjectAsync(Guid subjectId)
         {
             try
             {

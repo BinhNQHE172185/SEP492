@@ -54,7 +54,7 @@ namespace LMCM_BE.Services.DocumentTemplateService
                 }
                 else
                 {
-                    await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
+                    await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email);
                 }
             }
 
@@ -93,7 +93,7 @@ namespace LMCM_BE.Services.DocumentTemplateService
                 throw new KeyNotFoundException($"Không tìm được mẫu với ID: {templateId}");
 
             var templateDto = _mapper.Map<DocumentTemplateDetailDto>(template);
-            templateDto.DownloadUrl = await _googleDriveService.GetDownloadUrl(template.Url);
+            templateDto.DownloadUrl = await _googleDriveService.GetDownloadUrlAsync(template.Url);
 
             return templateDto;
         }
@@ -177,7 +177,7 @@ namespace LMCM_BE.Services.DocumentTemplateService
                     if (string.IsNullOrWhiteSpace(fileUrl))
                         throw new Exception("Tải file thất bại.");
 
-                    await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
+                    await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email);
 
                     // Update the proposal's file URL **only if a new file was uploaded**
                     template.Url = fileUrl;

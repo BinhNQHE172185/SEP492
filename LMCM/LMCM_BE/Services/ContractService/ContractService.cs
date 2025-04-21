@@ -47,7 +47,7 @@ namespace LMCM_BE.Services.ContractService
             _unitOfWork = unitOfWork;
             _userService = userService;
         }
-        public async Task<bool> CreateContract( ContractInsertDto contractDto)
+        public async Task<bool> CreateContractAsync( ContractInsertDto contractDto)
         {
             if (contractDto == null)
             {
@@ -85,7 +85,7 @@ namespace LMCM_BE.Services.ContractService
                 }
                 else
                 {
-                    await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
+                    await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email);
                 }
             }
 
@@ -101,7 +101,7 @@ namespace LMCM_BE.Services.ContractService
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                await _contractRepository.CreateContract(newContract);
+                await _contractRepository.CreateContractAsync(newContract);
                 await _unitOfWork.CommitAsync();
                 return true;
             }
@@ -126,7 +126,7 @@ namespace LMCM_BE.Services.ContractService
                 throw new UnauthorizedAccessException("Người dùng không có quyền xem hợp đồng này.");
 
             var contractDto = _mapper.Map<ContractDetailDto>(contract);
-            contractDto.DownloadUrl = await _googleDriveService.GetDownloadUrl(contract.Url);
+            contractDto.DownloadUrl = await _googleDriveService.GetDownloadUrlAsync(contract.Url);
 
             return contractDto;
         }
@@ -254,7 +254,7 @@ namespace LMCM_BE.Services.ContractService
                     if (string.IsNullOrWhiteSpace(fileUrl))
                         throw new Exception("Tải file thất bại.");
 
-                    await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
+                    await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email);
 
                     // Update the proposal's file URL **only if a new file was uploaded**
                     contract.Url = fileUrl;

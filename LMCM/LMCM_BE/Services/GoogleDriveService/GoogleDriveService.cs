@@ -86,36 +86,36 @@ namespace LMCM_BE.Services.GoogleDriveService
             return uploadedFile.WebViewLink; // Return Google Drive File URL
         }
 
-        public async Task<(byte[]? FileContent, string? FileName)> FetchFileAsync(string fileId)
-        {
-            if (string.IsNullOrEmpty(fileId))
-                return (null, null);
+        //public async Task<(byte[]? FileContent, string? FileName)> FetchFileAsync(string fileId)
+        //{
+        //    if (string.IsNullOrEmpty(fileId))
+        //        return (null, null);
 
-            try
-            {
-                // Retrieve file metadata (including name)
-                var request = _driveService.Files.Get(fileId);
-                request.Fields = "name"; // Only fetch the file name
-                var fileMetadata = await request.ExecuteAsync();
-                string fileName = fileMetadata?.Name ?? "UnknownFile.pdf";
+        //    try
+        //    {
+        //        // Retrieve file metadata (including name)
+        //        var request = _driveService.Files.Get(fileId);
+        //        request.Fields = "name"; // Only fetch the file name
+        //        var fileMetadata = await request.ExecuteAsync();
+        //        string fileName = fileMetadata?.Name ?? "UnknownFile.pdf";
 
-                // Download file content
-                using var stream = new MemoryStream();
-                await _driveService.Files.Get(fileId).DownloadAsync(stream);
+        //        // Download file content
+        //        using var stream = new MemoryStream();
+        //        await _driveService.Files.Get(fileId).DownloadAsync(stream);
 
-                return (stream.ToArray(), fileName);
-            }
-            catch (Google.GoogleApiException ex) when (ex.HttpStatusCode == System.Net.HttpStatusCode.Forbidden)
-            {
-                Console.WriteLine($"Error: Unauthorized access to file {fileId}");
-                return (null, null);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error fetching file: {ex.Message}");
-                return (null, null);
-            }
-        }
+        //        return (stream.ToArray(), fileName);
+        //    }
+        //    catch (Google.GoogleApiException ex) when (ex.HttpStatusCode == System.Net.HttpStatusCode.Forbidden)
+        //    {
+        //        Console.WriteLine($"Error: Unauthorized access to file {fileId}");
+        //        return (null, null);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Error fetching file: {ex.Message}");
+        //        return (null, null);
+        //    }
+        //}
 
 
         public async Task<string?> UploadBudgetProposalFileAsync(IFormFile file)
@@ -140,7 +140,7 @@ namespace LMCM_BE.Services.GoogleDriveService
             var uploadedFile = request.ResponseBody;
             return uploadedFile.WebViewLink; // Return Google Drive File URL
         }
-        public async Task<bool> ShareFoldersWithUser(string email, string role = "reader")
+        public async Task<bool> ShareFoldersWithUserAsync(string email, string role = "reader")
         {
             try
             {
@@ -162,7 +162,7 @@ namespace LMCM_BE.Services.GoogleDriveService
                 return false;
             }
         }
-        public async Task<bool> ShareFoldersWithHeadOfDepartment(string email, string role = "reader")
+        public async Task<bool> ShareFoldersWithHeadOfDepartmentAsync(string email, string role = "reader")
         {
             try
             {
@@ -188,14 +188,14 @@ namespace LMCM_BE.Services.GoogleDriveService
                 return false;
             }
         }
-        private async Task<string> ExtractFileId(string url)
+        private async Task<string> ExtractFileIdAsync(string url)
         {
             var match = Regex.Match(url, @"(?:/d/|id=)([a-zA-Z0-9_-]+)");
             return match.Success ? match.Groups[1].Value : null;
         }
-        public async Task<string> GetDownloadUrl(string fileUrl)
+        public async Task<string> GetDownloadUrlAsync(string fileUrl)
         {
-            string fileId = await ExtractFileId(fileUrl);
+            string fileId = await ExtractFileIdAsync(fileUrl);
 
             // Generate a direct download link
             string downloadUrl = $"https://drive.usercontent.google.com/download?id={fileId}&export=download";
@@ -203,7 +203,7 @@ namespace LMCM_BE.Services.GoogleDriveService
             return downloadUrl;
         }
 
-        public async Task<bool> SharePdfFileWithUser(string url, string email, string role = "reader")
+        public async Task<bool> SharePdfFileWithUserAsync(string url, string email, string role = "reader")
         {
             try
             {
@@ -214,7 +214,7 @@ namespace LMCM_BE.Services.GoogleDriveService
                     EmailAddress = email,
                 };
 
-                string fileId = await ExtractFileId(url);
+                string fileId = await ExtractFileIdAsync(url);
 
                 Console.WriteLine(fileId);
                 // Share the specific PDF file

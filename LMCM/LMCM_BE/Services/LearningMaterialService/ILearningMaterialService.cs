@@ -6,7 +6,6 @@ namespace LMCM_BE.Services.LearningMaterialService
 {
     public interface ILearningMaterialService
     {
-        Task<PagedResult<LearningMaterialListDto>> GetMaterialsBySyllabusIdAsync(Guid syllabusId, string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<List<LearningMaterialListDto>> GetMaterialsBySyllabusIdAsync(Guid syllabusId);
         Task<bool> InsertLearningMaterialAsync(LearningMaterialInsertDto material);
         Task<bool> ImportLearningMaterialsAsync(List<LearningMaterial> materials, Guid? oldSyllabusId, Guid newSyllabusId, bool keepUserCreated);

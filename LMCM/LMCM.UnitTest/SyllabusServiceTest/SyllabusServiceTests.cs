@@ -20,7 +20,7 @@ using Moq;
 using NUnit.Framework;
 using OfficeOpenXml;
 
-namespace LMCM.UnitTest.ServiceTests
+namespace LMCM.UnitTest.SyllabusServiceTest
 {
     [TestFixture]
     public class SyllabusServiceTests

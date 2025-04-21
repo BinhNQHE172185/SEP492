@@ -17,6 +17,7 @@ using Moq;
 using NUnit.Framework;
 using LMCM_BE.Shared.Constant;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace LMCM.UnitTest.AcceptanceRecordTest
 {
@@ -30,6 +31,7 @@ namespace LMCM.UnitTest.AcceptanceRecordTest
         private Mock<IFileHelper> _fileHelperMock;
         private Mock<IUserService> _userServiceMock;
         private Mock<IUnitOfWork> _unitOfWorkMock;
+        private Mock<IConfiguration> _configuration;
         private AcceptanceRecordService _service;
 
         [SetUp]
@@ -42,6 +44,7 @@ namespace LMCM.UnitTest.AcceptanceRecordTest
             _fileHelperMock = new Mock<IFileHelper>();
             _userServiceMock = new Mock<IUserService>();
             _unitOfWorkMock = new Mock<IUnitOfWork>();
+            _configuration = new Mock<IConfiguration>();
 
             _service = new AcceptanceRecordService(
                 _acceptanceRecordRepositoryMock.Object,
@@ -50,7 +53,8 @@ namespace LMCM.UnitTest.AcceptanceRecordTest
                 _googleDriveServiceMock.Object,
                 _fileHelperMock.Object,
                 _userServiceMock.Object,
-                _unitOfWorkMock.Object
+                _unitOfWorkMock.Object,
+                _configuration.Object
             );
         }
 
@@ -92,7 +96,7 @@ namespace LMCM.UnitTest.AcceptanceRecordTest
             _acceptanceRecordRepositoryMock.Setup(x => x.GetDuplicatedTitleIdAsync(dto.Title)).ReturnsAsync((Guid?)null);
             _userServiceMock.Setup(x => x.GetProfileFromCookie()).ReturnsAsync(user);
             _contractRepositoryMock.Setup(x => x.GetActiveContractByIdAsync(dto.ContractId)).ReturnsAsync(contract);
-            _googleDriveServiceMock.Setup(x => x.UploadAcceptanceRecordFileAsync(dto.File)).ReturnsAsync("fileUrl");
+            _googleDriveServiceMock.Setup(x => x.UploadFileAsync(dto.File,"folderId")).ReturnsAsync("fileUrl");
             _googleDriveServiceMock.Setup(x => x.SharePdfFileWithUserAsync("fileUrl", user.Email,"reader")).ReturnsAsync(true);
             _mapperMock.Setup(x => x.Map<AcceptanceRecord>(dto)).Returns(acceptanceRecord);
             _unitOfWorkMock.Setup(x => x.BeginTransactionAsync()).Returns(Task.CompletedTask);
@@ -128,7 +132,7 @@ namespace LMCM.UnitTest.AcceptanceRecordTest
             _userServiceMock.Setup(x => x.GetProfileFromCookie()).ReturnsAsync(user);
             _fileHelperMock.Setup(x => x.ComputeFileHashAsync(dto.File)).ReturnsAsync("newhash");
             _googleDriveServiceMock.Setup(x => x.ComputeGoogleDriveFileHashAsync(acceptanceRecord.Url)).ReturnsAsync("oldhash");
-            _googleDriveServiceMock.Setup(x => x.UploadAcceptanceRecordFileAsync(dto.File)).ReturnsAsync("newFileUrl");
+            _googleDriveServiceMock.Setup(x => x.UploadFileAsync(dto.File, "folderId")).ReturnsAsync("newFileUrl");
             _googleDriveServiceMock.Setup(x => x.SharePdfFileWithUserAsync("newFileUrl", user.Email,"reader")).ReturnsAsync(true);
             _mapperMock.Setup(x => x.Map(dto, acceptanceRecord));
             _unitOfWorkMock.Setup(x => x.BeginTransactionAsync()).Returns(Task.CompletedTask);

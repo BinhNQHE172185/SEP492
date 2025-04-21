@@ -94,7 +94,7 @@ namespace LMCM_BE.Services.UserService
 
                 if (!isShared)
                 {
-                    Console.WriteLine("Failed to share Google Drive folder with user.");
+                    Console.WriteLine("Không thể chia sẻ folder Google Drive với người dùng.");
                 }
                 return true;
             }

@@ -88,4 +88,142 @@ public class UserServiceTests
             CollectionAssert.AreEquivalent(new[] { "Admin", "User" }, item.Roles);
         }
     }
+
+    [Test]
+    public async Task CreateStaff_ShouldReturnTrue_WhenStaffIsCreatedAndFolderIsShared()
+    {
+        // Arrange
+        var request = new StaffRequest { StaffId = "staff123" };
+        var email = "staff123@fpt.edu.vn";
+
+        _userRepositoryMock
+            .Setup(repo => repo.CreateStaff(email))
+            .ReturnsAsync(true);
+
+        _googleDriveServiceMock
+            .Setup(service => service.ShareFoldersWithUserAsync(email, false, "reader"))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _userService.CreateStaff(request);
+
+        // Assert
+        Assert.IsTrue(result);
+        _userRepositoryMock.Verify(repo => repo.CreateStaff(email), Times.Once);
+        _googleDriveServiceMock.Verify(service => service.ShareFoldersWithUserAsync(email, false, "reader"), Times.Once);
+    }
+
+    [Test]
+    public async Task CreateStaff_ShouldReturnFalse_WhenStaffCreationFails()
+    {
+        // Arrange
+        var request = new StaffRequest { StaffId = "staff123" };
+        var email = "staff123@fpt.edu.vn";
+
+        _userRepositoryMock
+            .Setup(repo => repo.CreateStaff(email))
+            .ReturnsAsync(false);
+
+        // Act
+        var result = await _userService.CreateStaff(request);
+
+        // Assert
+        Assert.IsFalse(result);
+        _userRepositoryMock.Verify(repo => repo.CreateStaff(email), Times.Once);
+        _googleDriveServiceMock.Verify(service => service.ShareFoldersWithUserAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Test]
+    public async Task CreateStaff_ShouldLogWarning_WhenFolderSharingFails()
+    {
+        // Arrange
+        var request = new StaffRequest { StaffId = "staff123" };
+        var email = "staff123@fpt.edu.vn";
+
+        _userRepositoryMock
+            .Setup(repo => repo.CreateStaff(email))
+            .ReturnsAsync(true);
+
+        _googleDriveServiceMock
+            .Setup(service => service.ShareFoldersWithUserAsync(email, false, "reader"))
+            .ReturnsAsync(false);
+
+        // Act
+        var result = await _userService.CreateStaff(request);
+
+        // Assert
+        Assert.IsTrue(result);
+        _userRepositoryMock.Verify(repo => repo.CreateStaff(email), Times.Once);
+        _googleDriveServiceMock.Verify(service => service.ShareFoldersWithUserAsync(email, false, "reader"), Times.Once);
+    }
+    [Test]
+    public async Task GetProfile_ShouldReturnUserProfileResponseDto_WhenUserExists()
+    {
+        // Arrange
+        var userId = Guid.NewGuid().ToString();
+        var user = new User
+        {
+            Id = Guid.Parse(userId),
+            Name = "John Doe",
+            Email = "johndoe@example.com"
+        };
+        var roles = new List<string> { "Admin", "User" };
+        var expectedProfile = new UserProfileResponseDto
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            Roles = roles
+        };
+
+        _userRepositoryMock
+            .Setup(repo => repo.GetProfile(userId))
+            .ReturnsAsync(user);
+
+        _userRepositoryMock
+            .Setup(repo => repo.getRoleAsync(userId))
+            .ReturnsAsync(roles);
+
+        _mapperMock
+            .Setup(mapper => mapper.Map<UserProfileResponseDto>(user))
+            .Returns(new UserProfileResponseDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email
+            });
+
+        // Act
+        var result = await _userService.GetProfile(userId);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(expectedProfile.Id, result.Id);
+        Assert.AreEqual(expectedProfile.Name, result.Name);
+        Assert.AreEqual(expectedProfile.Email, result.Email);
+        Assert.AreEqual(expectedProfile.Roles, result.Roles);
+
+        _userRepositoryMock.Verify(repo => repo.GetProfile(userId), Times.Once);
+        _userRepositoryMock.Verify(repo => repo.getRoleAsync(userId), Times.Once);
+        _mapperMock.Verify(mapper => mapper.Map<UserProfileResponseDto>(user), Times.Once);
+    }
+
+    [Test]
+    public void GetProfile_ShouldThrowKeyNotFoundException_WhenUserDoesNotExist()
+    {
+        // Arrange
+        var userId = Guid.NewGuid().ToString();
+
+        _userRepositoryMock
+            .Setup(repo => repo.GetProfile(userId))
+            .ReturnsAsync((User)null);
+
+        // Act & Assert
+        var exception = Assert.ThrowsAsync<KeyNotFoundException>(async () => await _userService.GetProfile(userId));
+        Assert.AreEqual("User not found", exception.Message);
+
+        _userRepositoryMock.Verify(repo => repo.GetProfile(userId), Times.Once);
+        _userRepositoryMock.Verify(repo => repo.getRoleAsync(It.IsAny<string>()), Times.Never);
+        _mapperMock.Verify(mapper => mapper.Map<UserProfileResponseDto>(It.IsAny<User>()), Times.Never);
+    }
 }

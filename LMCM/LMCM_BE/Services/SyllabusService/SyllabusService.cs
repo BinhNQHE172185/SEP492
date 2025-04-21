@@ -196,14 +196,14 @@ namespace LMCM_BE.Services.SyllabusService
                 await _unitOfWork.BeginTransactionAsync();
 
                 // Import Syllabus
-                var (oldSyllabusId, syllabusId) = await ImportSyllabusSheet(workbook.Worksheets["Syllabus"]);
+                var (oldSyllabusId, syllabusId) = await ImportSyllabusSheetAsync(workbook.Worksheets["Syllabus"]);
 
                 // Import different sheets (CLO, Schedule, Grading, etc.)
-                await ImportCLOSheet(workbook.Worksheets["CLO"], syllabusId, oldSyllabusId);
-                await ImportScheduleSheet(workbook.Worksheets["Schedule"], syllabusId, oldSyllabusId);
-                await ImportGradingStructureSheet(workbook.Worksheets["Grading structure"], syllabusId, oldSyllabusId);
-                await ImportConstructivistQuestionSheet(workbook.Worksheets["Constructivist Question"], syllabusId, oldSyllabusId);
-                await ImportMaterialsSheet(workbook.Worksheets["Materials"], syllabusId, oldSyllabusId, keepUserCreated);
+                await ImportCLOSheetAsync(workbook.Worksheets["CLO"], syllabusId, oldSyllabusId);
+                await ImportScheduleSheetAsync(workbook.Worksheets["Schedule"], syllabusId, oldSyllabusId);
+                await ImportGradingStructureSheetAsync(workbook.Worksheets["Grading structure"], syllabusId, oldSyllabusId);
+                await ImportConstructivistQuestionSheetAsync(workbook.Worksheets["Constructivist Question"], syllabusId, oldSyllabusId);
+                await ImportMaterialsSheetAsync(workbook.Worksheets["Materials"], syllabusId, oldSyllabusId, keepUserCreated);
 
                 // Commit the transaction after successful imports
                 await _unitOfWork.CommitAsync();
@@ -218,7 +218,7 @@ namespace LMCM_BE.Services.SyllabusService
             }
         }
 
-        private async Task<(Guid? oldSyllabusId, Guid syllabusId)> ImportSyllabusSheet(ExcelWorksheet worksheet)
+        private async Task<(Guid? oldSyllabusId, Guid syllabusId)> ImportSyllabusSheetAsync(ExcelWorksheet worksheet)
         {
             // Validate expected headers
             string[] expectedHeaders = { "No", "Title", "Details" };
@@ -283,7 +283,7 @@ namespace LMCM_BE.Services.SyllabusService
                 throw new KeyNotFoundException($"Không tìm thấy môn học {syllabusData.CourseCode}.");
             }
         }
-        private async Task<bool> ImportScheduleSheet(ExcelWorksheet worksheet, Guid newSyllabusId, Guid? oldSyllabusId)
+        private async Task<bool> ImportScheduleSheetAsync(ExcelWorksheet worksheet, Guid newSyllabusId, Guid? oldSyllabusId)
         {
             // Validate expected headers
             string[] expectedHeaders = { "Sess.", "Leaning-Teaching Method", "Content", "CLO", "ITU", "Student's materials", "Student's task", "Lecturer's Materials", "Lecturer's task", "Student's materials link", "Lecturer's Materials link" };
@@ -349,7 +349,7 @@ namespace LMCM_BE.Services.SyllabusService
             }
             return true;
         }
-        private async Task<bool> ImportCLOSheet(ExcelWorksheet worksheet, Guid newSyllabusId, Guid? oldSyllabusId)
+        private async Task<bool> ImportCLOSheetAsync(ExcelWorksheet worksheet, Guid newSyllabusId, Guid? oldSyllabusId)
         {
             // Validate expected headers
             string[] expectedHeaders = { "No", "CLO Name", "CLO Description" };
@@ -407,7 +407,7 @@ namespace LMCM_BE.Services.SyllabusService
             }
             return true;
         }
-        private async Task<bool> ImportGradingStructureSheet(ExcelWorksheet worksheet, Guid newSyllabusId, Guid? oldSyllabusId)
+        private async Task<bool> ImportGradingStructureSheetAsync(ExcelWorksheet worksheet, Guid newSyllabusId, Guid? oldSyllabusId)
         {
             // Validate expected headers
             string[] expectedHeaders = { "#", "Assessment Component\nHạng mục đánh giá", "Assessment Type", "Weight\nTrọng số %", "Part\nPhần", "Minimun value to meet Completion Criteria", "Duration", "CLO", "Type of questions", "Number of questions", "Scope of knowledge and skill of questions", "How?", "Note", "SessionNo", "Reference" };
@@ -477,7 +477,7 @@ namespace LMCM_BE.Services.SyllabusService
             }
             return true;
         }
-        private async Task<bool> ImportConstructivistQuestionSheet(ExcelWorksheet worksheet, Guid newSyllabusId, Guid? oldSyllabusId)
+        private async Task<bool> ImportConstructivistQuestionSheetAsync(ExcelWorksheet worksheet, Guid newSyllabusId, Guid? oldSyllabusId)
         {
             // Validate expected headers
             string[] expectedHeaders = { "No", "SessionNo", "Name", "Detail" };
@@ -538,7 +538,7 @@ namespace LMCM_BE.Services.SyllabusService
             }
             return true;
         }
-        private async Task<bool> ImportMaterialsSheet(ExcelWorksheet worksheet, Guid newSyllabusId, Guid? oldSyllabusId, bool keepUserCreated)
+        private async Task<bool> ImportMaterialsSheetAsync(ExcelWorksheet worksheet, Guid newSyllabusId, Guid? oldSyllabusId, bool keepUserCreated)
         {
             // Validate expected headers
             string[] expectedHeaders = { "No", "MaterialDescription", "Purpose", "ISBN", "Type", "Note", "Author", "Publisher", "Published Date", "Edition" };

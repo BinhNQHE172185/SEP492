@@ -90,7 +90,7 @@ namespace LMCM_BE.Services.UserService
             var email = request.StaffId + "@fpt.edu.vn";
             if (await _userRepository.CreateStaff(email))
             {
-                bool isShared = await _googleDriveService.ShareFoldersWithUser(email, "reader");
+                bool isShared = await _googleDriveService.ShareFoldersWithUserAsync(email, "reader");
 
                 if (!isShared)
                 {

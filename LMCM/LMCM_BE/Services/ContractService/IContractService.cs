@@ -7,7 +7,7 @@ namespace LMCM_BE.Services.ContractService
 {
     public interface IContractService
     {
-        Task<bool> CreateContract(ContractInsertDto contractDto);
+        Task<bool> CreateContractAsync(ContractInsertDto contractDto);
         Task<ContractDetailDto> GetContractByIdAsync(Guid contractId);
         Task<PagedResult<ContractListDto>> GetContractsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10);
         Task<List<ContractListDto>> GetContractsAsync(string? searchKey);

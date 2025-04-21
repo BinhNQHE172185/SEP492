@@ -65,7 +65,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
                 }
                 else
                 {
-                    await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
+                    await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email);
                 }
             }
             // Step 2: Create Contract object
@@ -109,7 +109,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
                 throw new UnauthorizedAccessException("Người dùng không có quyền xem tờ trình.");
 
             var budgetProposalDto = _mapper.Map<BudgetProposalDetailDto>(budgetProposal);
-            budgetProposalDto.DownloadUrl = await _googleDriveService.GetDownloadUrl(budgetProposal.Url);
+            budgetProposalDto.DownloadUrl = await _googleDriveService.GetDownloadUrlAsync(budgetProposal.Url);
             return budgetProposalDto;
         }
 
@@ -225,7 +225,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
                     if (string.IsNullOrWhiteSpace(fileUrl))
                         throw new Exception("Tải file thất bại.");
 
-                    await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
+                    await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email);
 
                     // Update the proposal's file URL **only if a new file was uploaded**
                     proposal.Url = fileUrl;

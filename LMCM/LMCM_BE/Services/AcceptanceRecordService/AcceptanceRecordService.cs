@@ -96,7 +96,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
                 }
                 else
                 {
-                    await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
+                    await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email);
                 }
             }
 
@@ -168,7 +168,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
                     if (string.IsNullOrWhiteSpace(fileUrl))
                         throw new Exception("Tải file thất bại.");
 
-                    await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
+                    await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email);
 
                     // Update the proposal's file URL **only if a new file was uploaded**
                     acceptanceRecord.Url = fileUrl;
@@ -236,7 +236,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
                 throw new UnauthorizedAccessException("Người dùng không có quyền xem biên bản nghiệm thu này.");
 
             var acceptanceRecordDto = _mapper.Map<AcceptanceRecordDetailDto>(acceptanceRecord);
-            acceptanceRecordDto.DownloadUrl = await _googleDriveService.GetDownloadUrl(acceptanceRecord.Url);
+            acceptanceRecordDto.DownloadUrl = await _googleDriveService.GetDownloadUrlAsync(acceptanceRecord.Url);
             return acceptanceRecordDto;
         }
     }

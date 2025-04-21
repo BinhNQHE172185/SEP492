@@ -90,7 +90,7 @@ namespace LMCM_BE.Services.UserService
             var email = request.StaffId + "@fpt.edu.vn";
             if (await _userRepository.CreateStaff(email))
             {
-                bool isShared = await _googleDriveService.ShareFoldersWithUserAsync(email, "reader");
+                bool isShared = await _googleDriveService.ShareFoldersWithUserAsync(email,false, "reader");
 
                 if (!isShared)
                 {
@@ -168,6 +168,33 @@ namespace LMCM_BE.Services.UserService
         }
         public async Task<bool> AssignRoleAsync(string userId, string role)
         {
+            var user=await _userRepository.GetProfile(userId);
+            if (user == null||role==null)
+            {
+                return false;
+            }
+            var userRole = await _userRepository.getRoleAsync(userId);
+            if (userRole.Contains("Staff") && role.Equals("Head of Department")){
+                if (user.Email != null)
+                {
+                    bool isShared = await _googleDriveService.ShareFoldersWithUserAsync(user.Email, false, "reader");
+
+                    if (isShared)
+                    {
+                        Console.WriteLine("Share Google Drive folder with user successfully.");
+                    }
+                }
+            }else if (userRole.Contains("Head of Department") && role.Equals("Staff"))
+            {
+                if (user.Email != null){
+                    bool isRevoked = await _googleDriveService.RevokePermissionFromFolderAsync(user.Email, true);
+
+                    if (isRevoked)
+                    {
+                        Console.WriteLine("Revoke Google Drive folder access for user successfully.");
+                    }
+                }
+            }
             return await _userRepository.AssignRoleAsync(userId, role);
         }
         private async Task<string> GenerateJwtToken(User user)

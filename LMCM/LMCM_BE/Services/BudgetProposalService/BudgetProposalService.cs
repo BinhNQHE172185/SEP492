@@ -24,10 +24,11 @@ namespace LMCM_BE.Services.BudgetPropasalService
         private readonly IFileHelper _fileHelper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
+        private readonly string _budgetProposalFolderId;
 
         public BudgetProposalService(IBudgetProposalRepository budgetPropasalRepository, IContractRepository contractRepository,
             IGoogleDriveService googleDriveService, IMapper mapper, IFileHelper fileHelper,
-            IUnitOfWork unitOfWork,IUserService userService)
+            IUnitOfWork unitOfWork,IUserService userService, IConfiguration configuration)
         {
             _budgetProposalRepository = budgetPropasalRepository;
             _contractRepository = contractRepository;
@@ -36,6 +37,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
             _fileHelper = fileHelper;
             _unitOfWork = unitOfWork;
             _userService = userService;
+            _budgetProposalFolderId = configuration["GoogleDriveFolders:BudgetProposal"];
         }
         public async Task<bool> CreateBudgetProposalAsync( BudgetProposalInsertDto proposal)
         {
@@ -57,7 +59,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
 
             if (proposal.File != null)
             {
-                fileUrl = await _googleDriveService.UploadBudgetProposalFileAsync(proposal.File);
+                fileUrl = await _googleDriveService.UploadFileAsync(proposal.File,_budgetProposalFolderId);
 
                 if (string.IsNullOrWhiteSpace(fileUrl))
                 {
@@ -65,7 +67,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
                 }
                 else
                 {
-                    await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email);
+                    await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email, "reader");
                 }
             }
             // Step 2: Create Contract object
@@ -221,11 +223,11 @@ namespace LMCM_BE.Services.BudgetPropasalService
 
                 if (uploadedFileHash != existingFileHash)
                 {
-                    fileUrl = await _googleDriveService.UploadBudgetProposalFileAsync(newProposal.File);
+                    fileUrl = await _googleDriveService.UploadFileAsync(newProposal.File,_budgetProposalFolderId);
                     if (string.IsNullOrWhiteSpace(fileUrl))
                         throw new Exception("Tải file thất bại.");
 
-                    await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email);
+                    await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email, "reader");
 
                     // Update the proposal's file URL **only if a new file was uploaded**
                     proposal.Url = fileUrl;

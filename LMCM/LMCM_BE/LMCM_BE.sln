@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMCM_BE", "LMCM_BE.csproj", "{DB56B63A-EE10-4ED6-8565-E4401AD4E3C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LMCM_BE", "LMCM_BE.csproj", "{DB56B63A-EE10-4ED6-8565-E4401AD4E3C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMCM.UnitTest", "..\LMCM.UnitTest\LMCM.UnitTest.csproj", "{7CFC0CB1-0091-4CC8-9D1D-E7ADFF24A104}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{DB56B63A-EE10-4ED6-8565-E4401AD4E3C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB56B63A-EE10-4ED6-8565-E4401AD4E3C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB56B63A-EE10-4ED6-8565-E4401AD4E3C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CFC0CB1-0091-4CC8-9D1D-E7ADFF24A104}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CFC0CB1-0091-4CC8-9D1D-E7ADFF24A104}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CFC0CB1-0091-4CC8-9D1D-E7ADFF24A104}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CFC0CB1-0091-4CC8-9D1D-E7ADFF24A104}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

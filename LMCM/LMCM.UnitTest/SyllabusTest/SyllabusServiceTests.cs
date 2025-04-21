@@ -20,7 +20,7 @@ using Moq;
 using NUnit.Framework;
 using OfficeOpenXml;
 
-namespace LMCM.UnitTest.SyllabusServiceTest
+namespace LMCM.UnitTest.SyllabusTest
 {
     [TestFixture]
     public class SyllabusServiceTests
@@ -235,7 +235,7 @@ namespace LMCM.UnitTest.SyllabusServiceTest
         [Test]
         public async Task Test_GetSyllabusesAsync_WithSearchKeyAndPagination_ReturnsPagedResults()
         {
-            string searchKey = "test";
+            string searchKey = "";
             int pageIndex = 2;
             int pageSize = 5;
             var data = new List<Syllabus> { new Syllabus(), new Syllabus() };

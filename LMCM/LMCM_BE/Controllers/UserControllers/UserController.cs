@@ -44,7 +44,7 @@ namespace LMCM_BE.Controllers.UserControllers
                 }
                 else
                 {
-                    return Ok(new { success = true, data });
+                    return Ok(new { success = true, data, message = "Đăng nhập thành công." });
 
                 }
             }
@@ -115,7 +115,7 @@ namespace LMCM_BE.Controllers.UserControllers
                 {
                     return Ok(data);
                 }
-                return NotFound(new { message = "Data not found" });
+                return NotFound(new { message = "Không tìm thấy dữ liệu." });
             }
             catch (Exception ex)
             {

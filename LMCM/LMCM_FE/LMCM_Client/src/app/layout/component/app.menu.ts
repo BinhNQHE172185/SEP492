@@ -93,7 +93,7 @@ export class AppMenu {
                     {
                         label: 'Quản lý chuyên gia',
                         icon: 'pi pi-fw pi-print',
-                        routerLink: ['document/expert']
+                        routerLink: ['document/contractor']
                     },
                     {
                         label: 'Quản lý mẫu tài liệu',

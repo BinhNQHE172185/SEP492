@@ -175,7 +175,7 @@ export class ListContractComponent implements OnInit {
     });
   }
   goToExpertDetail(id: string) {
-    const url = `/document/expert/${id}`;
+    const url = `/document/contractor/${id}`;
     window.open(url, '_blank');
   }
 

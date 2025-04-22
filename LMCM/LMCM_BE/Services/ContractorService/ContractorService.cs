@@ -52,13 +52,16 @@ namespace LMCM_BE.Services.ContractorService
 
         public async Task<bool> SoftDeleteContractorAsync(Guid contractorId)
         {
+            if (contractorId == Guid.Empty)
+                throw new ArgumentException("ID nhà thầu không được để trống.", nameof(contractorId));
+
             var contractor = await _contractorRepository.GetActiveContractorByIdAsync(contractorId);
 
             if (contractor == null)
-                throw new KeyNotFoundException("Không tìm thấy nhà thầu hoặc đã bị xóa.");
+                throw new KeyNotFoundException("Không tìm thấy chuyên gia hoặc đã bị xóa.");
 
             if (await _contractRepository.HasActiveContractsAsync(contractorId))
-                throw new InvalidOperationException("Không thể xóa nhà thầu khi vẫn có hợp đồng đang hoạt động.");
+                throw new InvalidOperationException("Không thể xóa chuyên gia khi vẫn có hợp đồng đang hoạt động.");
 
             contractor.Status = GenericStatus.Inactive;
             contractor.UpdatedAt = DateTime.UtcNow;
@@ -83,7 +86,7 @@ namespace LMCM_BE.Services.ContractorService
             var contractor = await _contractorRepository.GetContractorDetailByIdAsync(contractorId);
 
             if (contractor == null)
-                throw new KeyNotFoundException("Không tìm thấy nhà thầu.");
+                throw new KeyNotFoundException("Không tìm thấy chuyên gia.");
 
             return _mapper.Map<ContractorDetailDto>(contractor);
         }
@@ -92,7 +95,7 @@ namespace LMCM_BE.Services.ContractorService
         {
             if (dto == null)
             {
-                throw new ArgumentNullException(nameof(dto), "Dữ liệu nhà thầu là bắt buộc.");
+                throw new ArgumentNullException(nameof(dto), "Dữ liệu chuyên gia là bắt buộc.");
             }
 
             var duplicatedContractorId = await _contractorRepository.GetDuplicatedContractorIdAsync(
@@ -104,7 +107,7 @@ namespace LMCM_BE.Services.ContractorService
 
             if (duplicatedContractorId != null)
             {
-                throw new InvalidOperationException("Nhà thầu đã tồn tại với mã số thuế, mã nhân viên, số CMND hoặc email đã cung cấp.");
+                throw new InvalidOperationException("Chuyên gia đã tồn tại với mã số thuế, mã nhân viên, số CMND hoặc email đã cung cấp.");
             }
 
             var contractor = _mapper.Map<Contractor>(dto);
@@ -130,9 +133,12 @@ namespace LMCM_BE.Services.ContractorService
 
         public async Task<Guid?> UpdateContractorAsync(Guid contractorId, ContractorUpdateDto dto)
         {
+            if (contractorId == Guid.Empty)
+                throw new ArgumentException("ID nhà thầu không được để trống.", nameof(contractorId));
+
             if (dto == null)
             {
-                throw new ArgumentNullException(nameof(dto), "Dữ liệu nhà thầu là bắt buộc.");
+                throw new ArgumentNullException(nameof(dto), "Dữ liệu chuyên gia là bắt buộc.");
             }
 
             var duplicatedContractorId = await _contractorRepository.GetDuplicatedContractorIdAsync(
@@ -144,13 +150,13 @@ namespace LMCM_BE.Services.ContractorService
 
             if (duplicatedContractorId != null && duplicatedContractorId != contractorId)
             {
-                throw new InvalidOperationException("Nhà thầu đã tồn tại với mã số thuế, mã nhân viên, số CMND hoặc email đã cung cấp.");
+                throw new InvalidOperationException("chuyên gia đã tồn tại với mã số thuế, mã nhân viên, số CMND hoặc email đã cung cấp.");
             }
 
             var contractor = await _contractorRepository.GetActiveContractorByIdAsync(contractorId);
 
             if (contractor == null)
-                throw new KeyNotFoundException("Không tìm thấy nhà thầu hoặc đã bị xóa.");
+                throw new KeyNotFoundException("Không tìm thấy chuyên gia hoặc đã bị xóa.");
 
             _mapper.Map(dto, contractor);
             contractor.UpdatedAt = DateTime.UtcNow;

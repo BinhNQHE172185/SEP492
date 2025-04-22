@@ -94,7 +94,7 @@ namespace LMCM_BE.Services.UserService
 
                 if (!isShared)
                 {
-                    Console.WriteLine("Failed to share Google Drive folder with user.");
+                    Console.WriteLine("Không thể chia sẻ folder Google Drive với người dùng.");
                 }
                 return true;
             }
@@ -105,7 +105,7 @@ namespace LMCM_BE.Services.UserService
         {
             var user = await _userRepository.GetProfile(userId);
             if (user == null)
-                throw new KeyNotFoundException("User not found");
+                throw new KeyNotFoundException("Không tìm thấy người dùng.");
             var profile = _mapper.Map<UserProfileResponseDto>(user);
             var roles = await _userRepository.getRoleAsync(user.Id.ToString());
             profile.Roles = roles.ToList();

@@ -2,15 +2,13 @@
 {
     public interface IGoogleDriveService
     {
+        Task<Dictionary<string, string>> CreateDefaultFoldersAsync(string rootFolderName = "LMCM");
+        Task<List<string>> ListFolderPermissionsAsync(string folderId);
         Task<string> ComputeGoogleDriveFileHashAsync(string fileUrl);
-        Task<(byte[]? FileContent, string? FileName)> FetchFileAsync(string fileId);
-        Task<string?> UploadContractFileAsync(IFormFile file);
-        Task<string?> UploadBudgetProposalFileAsync(IFormFile file);
-        Task<string?> UploadAcceptanceRecordFileAsync(IFormFile file);
-        Task<string?> UploadDocumentTemplateFileAsync(IFormFile file);
-        Task<bool> ShareFoldersWithUser(string email, string role = "reader");
-        Task<bool> ShareFoldersWithHeadOfDepartment(string email, string role = "reader");
-        Task<bool> SharePdfFileWithUser(string url, string email, string role = "reader");
-        Task<string> GetDownloadUrl(string fileUrl);
+        Task<string?> UploadFileAsync(IFormFile file,string folderId);
+        Task<bool> ShareFoldersWithUserAsync(string email, bool isHod, string role);
+        Task<bool> RevokePermissionFromFolderAsync(string email, bool isHod);
+        Task<bool> SharePdfFileWithUserAsync(string url, string email, string role);
+        Task<string> GetDownloadUrlAsync(string fileUrl);
     }
 }

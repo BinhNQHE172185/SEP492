@@ -208,9 +208,47 @@ export class ContractCreateEditComponent implements OnChanges {
       return;
     }
 
+    if (this.contract.proposalId === null || this.contract.proposalId === undefined) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Cảnh báo',
+        detail: 'Vui lòng chọn tờ trình.'
+      });
+      return;
+    }
+
+    if (this.contract.contractorId === null || this.contract.contractorId === undefined) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Cảnh báo',
+        detail: 'Vui lòng chọn chuyên gia.'
+      });
+      return;
+    }
+
+    if (this.contract.title === null || this.contract.title === undefined || this.contract.title === '') {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Cảnh báo',
+        detail: 'Vui lòng điền số hợp đồng.'
+      });
+      return;
+    }
+
+    if (this.contract.contractValue === null || this.contract.contractValue === undefined || this.contract.title === 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Cảnh báo',
+        detail: 'Vui lòng điền giá trị hợp đồng.'
+      });
+      return;
+    }
+
+
+
     const reportData = new FormData();
-    reportData.append("proposalId", this.contract.proposalId!);
-    reportData.append("contractorId", this.contract.contractorId!);
+    reportData.append("proposalId", this.contract.proposalId);
+    reportData.append("contractorId", this.contract.contractorId);
     reportData.append("title", this.contract.title);
     reportData.append("contractValue", this.contract.contractValue);
     reportData.append("startDate", this.contract.startDate.toLocaleDateString('en-CA'));
@@ -223,10 +261,30 @@ export class ContractCreateEditComponent implements OnChanges {
           this.closeDialog();
         },
         (error) => {
-          this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+          const errors = error.error.errors;
+          const allMessages = [];
+
+          for (const key in errors) {
+            if (errors.hasOwnProperty(key)) {
+              allMessages.push(...errors[key]);
+            }
+          }
+
+          allMessages.forEach(msg => {
+            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg });
+          });
         }
       );
     } else {
+      if (this.contract.file === null || this.contract.file === undefined) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Cảnh báo',
+          detail: 'Vui lòng chọn file.'
+        });
+        return;
+      }
+
       this.messageService.add({ severity: 'info', summary: 'Đang tải', detail: 'Vui lòng chờ.' });
       this.contractService.createContract(reportData).subscribe(
         (response) => {
@@ -234,7 +292,18 @@ export class ContractCreateEditComponent implements OnChanges {
           this.closeDialog();
         },
         (error) => {
-          this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+          const errors = error.error.errors;
+          const allMessages = [];
+
+          for (const key in errors) {
+            if (errors.hasOwnProperty(key)) {
+              allMessages.push(...errors[key]);
+            }
+          }
+
+          allMessages.forEach(msg => {
+            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg });
+          });
         }
       );
     }

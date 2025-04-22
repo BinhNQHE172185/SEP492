@@ -1,19 +1,33 @@
-
-<p-dialog header="Thêm tờ trình" [(visible)]="displayAddDialog" [modal]="true" [resizable]="true" class="custom-dialog" (onHide)="closeDialog()">
+<p-dialog header="Thêm tờ trình" [(visible)]="displayAddDialog" [modal]="true" class="custom-dialog"
+    (onHide)="closeDialog()">
     <ng-template pTemplate="content">
         <section class="p-8 w-full bg-white rounded-xl">
             <div class="flex flex-col gap-4">
                 <div class="flex flex-col gap-2">
-                    <label class="block font-semibold ">Tiêu đề</label>
-                    <input pInputText [(ngModel)]="addTitle" class="w-full p-2 border border-gray-300 rounded"
-                        placeholder="Nhập tiêu đề" />
+                    <label class="block font-semibold">Tiêu đề <span class="text-red-500">*</span></label>
+                    <input pInputText name="addTitle" [(ngModel)]="addTitle" #addTitleRef="ngModel" required
+                        minlength="3" maxlength="100" pattern="^\s*\S.*$"
+                        class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập tiêu đề" />
+
+                    <small class="text-red-500"
+                        *ngIf="addTitleRef.invalid && (addTitleRef.dirty || addTitleRef.touched)">
+                        <span *ngIf="addTitleRef.errors?.['required']">Tên tiêu đề là bắt buộc.</span>
+                        <span *ngIf="addTitleRef.errors?.['minlength']">Phải có ít nhất 3 ký tự.</span>
+                        <span *ngIf="addTitleRef.errors?.['maxlength']">Không được quá 100 ký tự.</span>
+                        <span *ngIf="addTitleRef.errors?.['pattern']">Tên tiêu đề không được chỉ chứa khoảng
+                            trắng.</span>
+                    </small>
                 </div>
 
                 <div class="flex gap-4">
                     <div *ngIf="selectedReportId" class="flex flex-col grow gap-2">
-                        <label class="block font-semibold"> Người tạo <span class="text-red-500">*</span></label>
-                        <input disabled pInputText [(ngModel)]="addAuthor"
+                        <label class="block font-semibold"> Người tạo </label>
+                        <input disabled pInputText [(ngModel)]="addAuthor" #addDateRef="ngModel"
                             class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập tên người viết" />
+                        <small class="text-red-500"
+                            *ngIf="addDateRef.invalid && (addDateRef.dirty || addDateRef.touched)">
+                            <span *ngIf="addDateRef.errors?.['required']">Vui lòng chọn ngày.</span>
+                        </small>
                     </div>
 
                     <div class="flex flex-col grow gap-2">
@@ -26,7 +40,7 @@
                     <label class="block font-semibold ">File đính kèm</label>
                     <div class="flex flex-col gap-2">
                         <p-fileupload (onSelect)="onFileSelect($event)" [showUploadButton]="false" [multiple]="false"
-                            accept=".pdf" maxFileSize="5000000" mode="advanced">
+                            accept=".pdf, .docx" maxFileSize="5000000" mode="advanced">
                             <ng-template #empty>
                                 <div>Kéo thả file để đăng tải.</div>
                             </ng-template>

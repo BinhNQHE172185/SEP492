@@ -91,7 +91,7 @@ namespace LMCM_BE.Controllers.ContractControllers
                     });
                 }
 
-                var contract = await _contractService.CreateContract(contractDto);
+                var contract = await _contractService.CreateContractAsync(contractDto);
                 return Ok(new
                 {
                     Success = true,

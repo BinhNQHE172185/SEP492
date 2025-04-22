@@ -4,74 +4,132 @@
         <section class="p-8 w-full bg-white rounded-xl">
             <div class="flex flex-col gap-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Tên chuyên gia -->
                     <div class="flex flex-col gap-2">
-                        <label class="block font-semibold text-orange-500">Tên chuyên gia <span class="text-red-500">*</span></label>
-                        <input pInputText [(ngModel)]="expert.contractorName" class="w-full p-2 border border-gray-300 rounded" 
-                            placeholder="Nhập tên chuyên gia" />
+                        <label class="block font-semibold text-orange-500">
+                            Tên chuyên gia <span class="text-red-500">*</span>
+                        </label>
+                        <input pInputText name="contractorName" [(ngModel)]="expert.contractorName"
+                            #contractorNameRef="ngModel" required minlength="3" maxlength="100" pattern="^\s*\S.*$"
+                            class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập tên chuyên gia" />
+
+                        <small class="text-red-500"
+                            *ngIf="contractorNameRef.invalid && (contractorNameRef.dirty || contractorNameRef.touched)">
+                            <span *ngIf="contractorNameRef.errors?.['required']">Tên chuyên gia là bắt buộc.</span>
+                            <span *ngIf="contractorNameRef.errors?.['minlength']">Phải có ít nhất 3 ký tự.</span>
+                            <span *ngIf="contractorNameRef.errors?.['maxlength']">Không được vượt quá 100 ký tự.</span>
+                            <span *ngIf="contractorNameRef.errors?.['pattern']">Tên không được chỉ chứa khoảng
+                                trắng.</span>
+                        </small>
                     </div>
+
+                    <!-- Email -->
                     <div class="flex flex-col gap-2">
-                        <label class="block font-semibold text-orange-500">Email <span class="text-red-500">*</span></label>
-                        <input pInputText [(ngModel)]="expert.email" class="w-full p-2 border border-gray-300 rounded" 
+                        <label class="block font-semibold text-orange-500">
+                            Email <span class="text-red-500">*</span>
+                        </label>
+                        <input pInputText name="email" [(ngModel)]="expert.email" #emailRef="ngModel" required email
+                            maxlength="100" class="w-full p-2 border border-gray-300 rounded"
                             placeholder="Nhập email" />
+
+                        <small class="text-red-500" *ngIf="emailRef.invalid && (emailRef.dirty || emailRef.touched)">
+                            <span *ngIf="emailRef.errors?.['required']">Email là bắt buộc.</span>
+                            <span *ngIf="emailRef.errors?.['email']">Email không hợp lệ.</span>
+                            <span *ngIf="emailRef.errors?.['maxlength']">Không được vượt quá 100 ký tự.</span>
+                        </small>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="flex flex-col gap-2">
-                        <label class="block font-semibold text-orange-500">Số điện thoại</label>
-                        <input pInputText [(ngModel)]="expert.phoneNumber" class="w-full p-2 border border-gray-300 rounded" 
-                            placeholder="Nhập số điện thoại" />
+                        <label class="block font-semibold text-orange-500">
+                            Số điện thoại <span class="text-red-500">*</span>
+                        </label>
+                        <input pInputText name="phoneNumber" [(ngModel)]="expert.phoneNumber" #phoneNumberRef="ngModel"
+                            required maxlength="20" pattern="^(\+?\d{1,3}[- ]?)?\d{10,15}$"
+                            class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập số điện thoại" />
+
+                        <small class="text-red-500"
+                            *ngIf="phoneNumberRef.invalid && (phoneNumberRef.dirty || phoneNumberRef.touched)">
+                            <span *ngIf="phoneNumberRef.errors?.['required']">Số điện thoại là bắt buộc.</span>
+                            <span *ngIf="phoneNumberRef.errors?.['maxlength']">Không được vượt quá 20 ký tự.</span>
+                            <span *ngIf="phoneNumberRef.errors?.['pattern']">Số điện thoại không hợp lệ.</span>
+                        </small>
                     </div>
                     <div class="flex flex-col gap-2">
-                        <label class="block font-semibold text-orange-500">Mã số thuế</label>
-                        <input pInputText [(ngModel)]="expert.taxCode" class="w-full p-2 border border-gray-300 rounded" 
+                        <label class="block font-semibold text-orange-500">
+                            Mã số thuế <span class="text-red-500">*</span>
+                        </label>
+                        <input pInputText name="taxCode" [(ngModel)]="expert.taxCode" #taxCodeRef="ngModel" required
+                            maxlength="20" class="w-full p-2 border border-gray-300 rounded"
                             placeholder="Nhập mã số thuế" />
+
+                        <small class="text-red-500"
+                            *ngIf="taxCodeRef.invalid && (taxCodeRef.dirty || taxCodeRef.touched)">
+                            <span *ngIf="taxCodeRef.errors?.['required']">Mã số thuế là bắt buộc.</span>
+                            <span *ngIf="taxCodeRef.errors?.['maxlength']">Mã số thuế không được vượt quá 20 ký
+                                tự.</span>
+                        </small>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="flex flex-col gap-2">
-                        <label class="block font-semibold text-orange-500">Mã nhân viên</label>
-                        <input pInputText [(ngModel)]="expert.employeeCode" class="w-full p-2 border border-gray-300 rounded" 
+                        <label class="block font-semibold text-orange-500">Mã nhân viên <span
+                            class="text-red-500">*</span></label>
+                        <input pInputText [(ngModel)]="expert.employeeCode" name="employeeCode"
+                            #employeeCodeRef="ngModel" required class="w-full p-2 border border-gray-300 rounded"
                             placeholder="Nhập mã nhân viên" />
+                        <small class="text-red-500"
+                            *ngIf="employeeCodeRef.invalid && (employeeCodeRef.dirty || employeeCodeRef.touched)">
+                            <span *ngIf="employeeCodeRef.errors?.['required']">Mã nhân viên là bắt buộc.</span>
+                        </small>
                     </div>
+
                     <div class="flex flex-col gap-2">
-                        <label class="block font-semibold text-orange-500">CMND/CCCD</label>
-                        <input pInputText [(ngModel)]="expert.idCardNumber" class="w-full p-2 border border-gray-300 rounded" 
+                        <label class="block font-semibold text-orange-500">CMND/CCCD <span
+                                class="text-red-500">*</span></label>
+                        <input pInputText [(ngModel)]="expert.idCardNumber" name="idCardNumber"
+                            #idCardNumberRef="ngModel" required class="w-full p-2 border border-gray-300 rounded"
                             placeholder="Nhập số CMND/CCCD" />
+                        <small class="text-red-500"
+                            *ngIf="idCardNumberRef.invalid && (idCardNumberRef.dirty || idCardNumberRef.touched)">
+                            <span *ngIf="idCardNumberRef.errors?.['required']">Số CMND là bắt buộc.</span>
+                        </small>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="flex flex-col gap-2">
                         <label class="block font-semibold text-orange-500">Nơi cấp CMND/CCCD</label>
-                        <input pInputText [(ngModel)]="expert.idIssuedPlace" class="w-full p-2 border border-gray-300 rounded" 
-                            placeholder="Nhập nơi cấp CMND/CCCD" />
+                        <input pInputText [(ngModel)]="expert.idIssuedPlace"
+                            class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập nơi cấp CMND/CCCD" />
                     </div>
                     <div class="flex flex-col gap-2">
                         <label class="block font-semibold text-orange-500">Chức vụ</label>
-                        <input pInputText [(ngModel)]="expert.position" class="w-full p-2 border border-gray-300 rounded" 
-                            placeholder="Nhập chức vụ" />
+                        <input pInputText [(ngModel)]="expert.position"
+                            class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập chức vụ" />
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="flex flex-col gap-2">
                         <label class="block font-semibold text-orange-500">Số tài khoản ngân hàng</label>
-                        <input pInputText [(ngModel)]="expert.bankAccountNumber" class="w-full p-2 border border-gray-300 rounded" 
+                        <input pInputText [(ngModel)]="expert.bankAccountNumber"
+                            class="w-full p-2 border border-gray-300 rounded"
                             placeholder="Nhập số tài khoản ngân hàng" />
                     </div>
                     <div class="flex flex-col gap-2">
                         <label class="block font-semibold text-orange-500">Tên ngân hàng</label>
-                        <input pInputText [(ngModel)]="expert.bankName" class="w-full p-2 border border-gray-300 rounded" 
-                            placeholder="Nhập tên ngân hàng" />
+                        <input pInputText [(ngModel)]="expert.bankName"
+                            class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập tên ngân hàng" />
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-2">
                     <label class="block font-semibold text-orange-500">Địa chỉ</label>
-                    <textarea pInputTextarea [(ngModel)]="expert.address" rows="2" class="w-full p-2 border border-gray-300 rounded" 
-                        placeholder="Nhập địa chỉ"></textarea>
+                    <textarea pInputTextarea [(ngModel)]="expert.address" rows="2"
+                        class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập địa chỉ"></textarea>
                 </div>
             </div>
         </section>
@@ -79,7 +137,8 @@
 
     <ng-template pTemplate="footer">
         <div class="flex justify-end gap-4 p-2">
-            <button pButton type="button" label="Hủy" class="p-button-text text-gray-500 hover:text-gray-700" (click)="closeDialog()"></button>
+            <button pButton type="button" label="Hủy" class="p-button-text text-gray-500 hover:text-gray-700"
+                (click)="closeDialog()"></button>
             <button pButton type="button" label="Lưu" class="p-button-warning" (click)="save()"></button>
         </div>
     </ng-template>

@@ -4,10 +4,10 @@ namespace LMCM_BE.DTOs.ContractorDtos
 {
     public class ContractorCreateDto
     {
-        [Required(ErrorMessage = "Tên nhà thầu là bắt buộc")]
-        [StringLength(100, ErrorMessage = "Tên nhà thầu không được vượt quá 100 ký tự")]
-        [MinLength(3, ErrorMessage = "Tên nhà thầu phải có ít nhất 3 ký tự")]
-        [RegularExpression(@"^\s*\S.*$", ErrorMessage = "Tên nhà thầu không được chỉ chứa khoảng trắng")]
+        [Required(ErrorMessage = "Tên chuyên gia là bắt buộc")]
+        [StringLength(100, ErrorMessage = "Tên chuyên gia không được vượt quá 100 ký tự")]
+        [MinLength(3, ErrorMessage = "Tên chuyên gia phải có ít nhất 3 ký tự")]
+        [RegularExpression(@"^\s*\S.*$", ErrorMessage = "Tên chuyên gia không được chỉ chứa khoảng trắng")]
         public string ContractorName { get; set; } = null!;
 
         public string? Address { get; set; }

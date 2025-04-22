@@ -24,6 +24,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
         private readonly IFileHelper _fileHelper;
         private readonly IUserService _userService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly string _acceptanceRecordFolderId;
 
         public AcceptanceRecordService(
             IAcceptanceRecordRepository 
@@ -33,7 +34,8 @@ namespace LMCM_BE.Services.AcceptanceRecordService
             IGoogleDriveService googleDriveService,
             IFileHelper fileHelper,
             IUserService userService,
-            IUnitOfWork unitOfWork
+            IUnitOfWork unitOfWork,
+            IConfiguration configuration
             )
         {
             _acceptanceRecordRepository = acceptanceRecordRepository;
@@ -43,6 +45,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
             _fileHelper = fileHelper;
             _userService = userService;
             _unitOfWork = unitOfWork;
+            _acceptanceRecordFolderId = configuration["GoogleDriveFolders:AcceptanceRecord"];
         }
         public async Task<PagedResult<AcceptanceRecordListDto>> GetAcceptanceRecordsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
@@ -88,7 +91,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
 
             if (dto.File != null)
             {
-                fileUrl = await _googleDriveService.UploadAcceptanceRecordFileAsync(dto.File);
+                fileUrl = await _googleDriveService.UploadFileAsync(dto.File,_acceptanceRecordFolderId);
 
                 if (string.IsNullOrWhiteSpace(fileUrl))
                 {
@@ -96,7 +99,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
                 }
                 else
                 {
-                    await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
+                    await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email, "reader");
                 }
             }
 
@@ -164,11 +167,11 @@ namespace LMCM_BE.Services.AcceptanceRecordService
 
                 if (uploadedFileHash != existingFileHash)
                 {
-                    fileUrl = await _googleDriveService.UploadAcceptanceRecordFileAsync(dto.File);
+                    fileUrl = await _googleDriveService.UploadFileAsync(dto.File, _acceptanceRecordFolderId);
                     if (string.IsNullOrWhiteSpace(fileUrl))
                         throw new Exception("Tải file thất bại.");
 
-                    await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
+                    await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email,"reader");
 
                     // Update the proposal's file URL **only if a new file was uploaded**
                     acceptanceRecord.Url = fileUrl;
@@ -236,7 +239,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
                 throw new UnauthorizedAccessException("Người dùng không có quyền xem biên bản nghiệm thu này.");
 
             var acceptanceRecordDto = _mapper.Map<AcceptanceRecordDetailDto>(acceptanceRecord);
-            acceptanceRecordDto.DownloadUrl = await _googleDriveService.GetDownloadUrl(acceptanceRecord.Url);
+            acceptanceRecordDto.DownloadUrl = await _googleDriveService.GetDownloadUrlAsync(acceptanceRecord.Url);
             return acceptanceRecordDto;
         }
     }

@@ -17,32 +17,6 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
             _learningMaterialService = learningMaterialService;
         }
 
-        [HttpPost("getPagedMaterialsList")]
-        public async Task<IActionResult> GetMaterialsAsync([FromBody] PagingRequest request)
-        {
-            try
-            {
-                var data = await _learningMaterialService.GetMaterialsBySyllabusIdAsync((Guid)request.Id, request.SearchKey, request.pageIndex, request.PageSize);
-                if (data != null)
-                {
-                    return Ok(data);
-                }
-                return NotFound(new { message = "Dữ liệu không được tìm thấy." });
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-            catch (ArgumentNullException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
-            }
-        }
-
         [HttpGet("getMaterialsList")]
         public async Task<IActionResult> GetMaterialsAsync(Guid syllabusId)
         {

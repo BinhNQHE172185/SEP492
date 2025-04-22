@@ -6,21 +6,30 @@
                 [ngClass]="{'w-2/3': showCalculationPanel, 'w-full': !showCalculationPanel}">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="flex flex-col gap-2">
-                        <label class="block font-semibold text-orange-500">Tên biên bản<span
-                                class="text-red-500">*</span></label>
-                        <input pInputText [(ngModel)]="report.title"
-                            class="w-full p-2 border border-gray-300 rounded" />
+                        <label class="block font-semibold text-orange-500">
+                            Tên biên bản <span class="text-red-500">*</span>
+                        </label>
+                        <input pInputText name="reportTitle" [(ngModel)]="report.title" #reportTitleRef="ngModel"
+                            required minlength="3" maxlength="100" pattern="^\s*\S.*$"
+                            class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập số biên bản" />
+
+                        <small class="text-red-500"
+                            *ngIf="reportTitleRef.invalid && (reportTitleRef.dirty || reportTitleRef.touched)">
+                            <span *ngIf="reportTitleRef.errors?.['required']">Tên biên bản là bắt buộc.</span>
+                            <span *ngIf="reportTitleRef.errors?.['minlength']">Phải có ít nhất 3 ký tự.</span>
+                            <span *ngIf="reportTitleRef.errors?.['maxlength']">Không được quá 100 ký tự.</span>
+                            <span *ngIf="reportTitleRef.errors?.['pattern']">Không được chỉ chứa khoảng trắng.</span>
+                        </small>
                     </div>
                     <div class="flex flex-col gap-2">
-                        <label class="block font-semibold text-orange-500">Giá cả quyết toán<span
-                                class="text-red-500">*</span></label>
+                        <label class="block font-semibold text-orange-500">Giá cả quyết toán</label>
                         <p-inputNumber [(ngModel)]="report.finalPrice" mode="currency" currency="VND" locale="vi-VN" />
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="flex flex-col gap-2">
-                        <label class="block font-semibold text-orange-500">Chọn hợp đồng<span
+                        <label class="block font-semibold text-orange-500">Chọn hợp đồng <span
                                 class="text-red-500">*</span></label>
                         <p-select [options]="contract" [(ngModel)]="report.contractId" optionLabel="title"
                             placeholder="Chọn hợp đồng" [filter]="true" class="w-full border border-gray-300 rounded"
@@ -44,7 +53,8 @@
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <label class="block font-semibold text-orange-500">File đính kèm</label>
+                    <label class="block font-semibold text-orange-500">File đính kèm <span
+                            class="text-red-500">*</span></label>
                     <p-fileupload (onSelect)="onFileSelect($event)" [showUploadButton]="false" [multiple]="false"
                         accept=".pdf, .docx" maxFileSize="5000000" mode="advanced">
                         <ng-template #empty>

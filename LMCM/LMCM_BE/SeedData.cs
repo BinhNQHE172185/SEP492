@@ -69,7 +69,7 @@ namespace LMCM_BE
                         await userManager.AddToRoleAsync(newHOD, "Head of Department");
 
                         // Share Google Drive folders with the Head of Department
-                        bool isShared = await googleDriveService.ShareFoldersWithHeadOfDepartment(hodEmail, "reader");
+                        bool isShared = await googleDriveService.ShareFoldersWithUserAsync(hodEmail, true, "writer");
 
                         if (!isShared)
                         {

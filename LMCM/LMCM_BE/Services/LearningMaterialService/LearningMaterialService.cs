@@ -58,21 +58,6 @@ namespace LMCM_BE.Services.LearningMaterialService
 
             return _mapper.Map<LearningMaterialViewDto>(learningMaterial);
         }
-
-        public async Task<PagedResult<LearningMaterialListDto>> GetMaterialsBySyllabusIdAsync(Guid syllabusId,string? searchKey, int pageIndex = 1, int pageSize = 10)
-        {
-            var (items,totalCount)= await _materialRepository.GetMaterialsBySyllabusIdAsync(syllabusId, searchKey, pageIndex, pageSize);
-            var data = _mapper.Map<List<LearningMaterialListDto>>(items);
-
-            return new PagedResult<LearningMaterialListDto>
-            {
-                Items = data,
-                TotalCount = totalCount,
-                CurrentPage = pageIndex,
-                PageSize = pageSize
-            };
-        }
-
         public async Task<List<LearningMaterialListDto>> GetMaterialsBySyllabusIdAsync(Guid syllabusId)
         {
             var items= await _materialRepository.GetMaterialsBySyllabusIdAsync(syllabusId);

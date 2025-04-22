@@ -19,10 +19,11 @@ namespace LMCM_BE.Services.DocumentTemplateService
         private readonly IMapper _mapper;
         private readonly IFileHelper _fileHelper;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IUserService _userService;   
+        private readonly IUserService _userService;
+        private readonly string _documentTemplateFolderId;
         public DocumentTemplateService(IDocumentTemplateRepository documentTemplateRepository,
             IGoogleDriveService googleDriveService, IMapper mapper, IFileHelper fileHelper,IUnitOfWork unitOfWork,
-            IUserService userService)
+            IUserService userService, IConfiguration configuration)
         {
             _documentTemplateRepository = documentTemplateRepository;
             _googleDriveService = googleDriveService;
@@ -30,6 +31,7 @@ namespace LMCM_BE.Services.DocumentTemplateService
             _fileHelper = fileHelper;
             _unitOfWork = unitOfWork;   
             _userService = userService;
+            _documentTemplateFolderId = configuration["GoogleDriveFolders:DocumentTemplate"];
         }
         public async Task<bool> CreateTemplatelAsync(DocumentTemplateInsertDto template)
         {
@@ -46,7 +48,7 @@ namespace LMCM_BE.Services.DocumentTemplateService
             if (template.File != null)
             {
 
-                fileUrl = await _googleDriveService.UploadDocumentTemplateFileAsync(template.File);
+                fileUrl = await _googleDriveService.UploadFileAsync(template.File,_documentTemplateFolderId);
 
                 if (string.IsNullOrWhiteSpace(fileUrl))
                 {
@@ -54,7 +56,7 @@ namespace LMCM_BE.Services.DocumentTemplateService
                 }
                 else
                 {
-                    await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
+                    await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email, "reader");
                 }
             }
 
@@ -93,7 +95,7 @@ namespace LMCM_BE.Services.DocumentTemplateService
                 throw new KeyNotFoundException($"Không tìm được mẫu với ID: {templateId}");
 
             var templateDto = _mapper.Map<DocumentTemplateDetailDto>(template);
-            templateDto.DownloadUrl = await _googleDriveService.GetDownloadUrl(template.Url);
+            templateDto.DownloadUrl = await _googleDriveService.GetDownloadUrlAsync(template.Url);
 
             return templateDto;
         }
@@ -173,11 +175,11 @@ namespace LMCM_BE.Services.DocumentTemplateService
 
                 if (uploadedFileHash != existingFileHash)
                 {
-                    fileUrl = await _googleDriveService.UploadDocumentTemplateFileAsync(newTemplate.File);
+                    fileUrl = await _googleDriveService.UploadFileAsync(newTemplate.File, _documentTemplateFolderId);
                     if (string.IsNullOrWhiteSpace(fileUrl))
                         throw new Exception("Tải file thất bại.");
 
-                    await _googleDriveService.SharePdfFileWithUser(fileUrl, user.Email);
+                    await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email, "reader");
 
                     // Update the proposal's file URL **only if a new file was uploaded**
                     template.Url = fileUrl;

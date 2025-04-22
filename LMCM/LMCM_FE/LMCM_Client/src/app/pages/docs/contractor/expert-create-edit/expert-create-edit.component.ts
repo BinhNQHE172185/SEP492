@@ -58,6 +58,31 @@ export class ExpertCreateEditComponent {
     }
 
     save() {
+        if (!this.expert.contractorName) {
+            this.messageService.add({ severity: 'warn', summary: 'Cảnh báo', detail: 'Tên nhà thầu không được để trống.' });
+            return;
+        }
+        if (!this.expert.email) {
+            this.messageService.add({ severity: 'warn', summary: 'Cảnh báo', detail: 'Email không được để trống.' });
+            return;
+        }
+        if (!this.expert.phoneNumber) {
+            this.messageService.add({ severity: 'warn', summary: 'Cảnh báo', detail: 'Số điện thoại không được để trống.' });
+            return;
+        }
+        if (!this.expert.taxCode) {
+            this.messageService.add({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mã số thuế không được để trống.' });
+            return;
+        }
+        if (!this.expert.employeeCode) {
+            this.messageService.add({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mã nhân viên không được để trống.' });
+            return;
+        }
+        if (!this.expert.idCardNumber) {
+            this.messageService.add({ severity: 'warn', summary: 'Cảnh báo', detail: 'Số CMND/CCCD không được để trống.' });
+            return;
+        }
+
         this.messageService.add({ severity: 'info', summary: 'Đang tải', detail: 'Vui lòng chờ.' });
         const reportData = {
             contractorName: this.expert.contractorName,
@@ -71,7 +96,6 @@ export class ExpertCreateEditComponent {
             position: this.expert.position,
             bankAccountNumber: this.expert.bankAccountNumber,
             bankName: this.expert.bankName
-           
         };
 
         if (this.selectedId) {

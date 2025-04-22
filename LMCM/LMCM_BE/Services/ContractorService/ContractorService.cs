@@ -52,6 +52,9 @@ namespace LMCM_BE.Services.ContractorService
 
         public async Task<bool> SoftDeleteContractorAsync(Guid contractorId)
         {
+            if (contractorId == Guid.Empty)
+                throw new ArgumentException("ID nhà thầu không được để trống.", nameof(contractorId));
+
             var contractor = await _contractorRepository.GetActiveContractorByIdAsync(contractorId);
 
             if (contractor == null)
@@ -130,6 +133,9 @@ namespace LMCM_BE.Services.ContractorService
 
         public async Task<Guid?> UpdateContractorAsync(Guid contractorId, ContractorUpdateDto dto)
         {
+            if (contractorId == Guid.Empty)
+                throw new ArgumentException("ID nhà thầu không được để trống.", nameof(contractorId));
+
             if (dto == null)
             {
                 throw new ArgumentNullException(nameof(dto), "Dữ liệu nhà thầu là bắt buộc.");

@@ -231,6 +231,10 @@ namespace LMCM_BE.Services.UserService
         public async Task<List<string>> CheckRole()
         {
             var user = await GetProfileFromCookie();
+            if(user == null)
+            {
+                throw new InvalidOperationException("Không tìm thấy người dùng trong cookie.");
+            }
             var role = await _userRepository.getRoleAsync(user.Id.ToString());
             return role;
         }

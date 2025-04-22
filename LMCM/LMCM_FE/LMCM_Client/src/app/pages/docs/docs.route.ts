@@ -6,8 +6,8 @@ import { ListContractComponent } from './contract/list-contract/list-contract.co
 import { ListTemplateComponent } from './template/list-template/list-template.component';
 
 export default [
-    { path: 'expert', component: ListExpertComponent },
-    { path: 'expert/:id', component: ListExpertComponent },
+    { path: 'contractor', component: ListExpertComponent },
+    { path: 'contractor/:id', component: ListExpertComponent },
     { path: 'report', component: ListReportComponent },
     { path: 'report/:id', component: ListReportComponent },
     { path: 'acceptance-report', component: ListAcceptanceReportComponent },

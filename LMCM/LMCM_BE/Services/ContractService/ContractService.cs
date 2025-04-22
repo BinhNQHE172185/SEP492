@@ -72,7 +72,7 @@ namespace LMCM_BE.Services.ContractService
 
             if (await _contractorRepository.GetActiveContractorByIdAsync(contractDto.ContractorId) == null)
             {
-                throw new KeyNotFoundException("Nhà thầu được chọn không tồn tại");
+                throw new KeyNotFoundException("Chuyên gia được chọn không tồn tại");
             }
 
             // Step 1: Upload contract file to Google Drive (if provided)
@@ -230,7 +230,7 @@ namespace LMCM_BE.Services.ContractService
 
             if (await _contractorRepository.GetActiveContractorByIdAsync(newContract.ContractorId) == null)
             {
-                throw new KeyNotFoundException("Nhà thầu được chọn không tồn tại");
+                throw new KeyNotFoundException("Chuyên gia được chọn không tồn tại");
             }
 
             UserProfileResponseDto user = await _userService.GetProfileFromCookie();

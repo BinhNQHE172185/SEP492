@@ -59,7 +59,7 @@ export class ExpertCreateEditComponent {
 
     save() {
         if (!this.expert.contractorName) {
-            this.messageService.add({ severity: 'warn', summary: 'Cảnh báo', detail: 'Tên nhà thầu không được để trống.' });
+            this.messageService.add({ severity: 'warn', summary: 'Cảnh báo', detail: 'Tên chuyên gia không được để trống.' });
             return;
         }
         if (!this.expert.email) {

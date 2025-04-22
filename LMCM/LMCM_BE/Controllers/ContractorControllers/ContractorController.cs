@@ -24,7 +24,7 @@ namespace LMCM_BE.Controllers.ContractorControllers
             try
             {
                 var data = await _contractorService.GetContractorsAsync(request.SearchKey, request.pageIndex, request.PageSize);
-                return data != null ? Ok(data) : NotFound(new { message = "Không tìm thấy dữ liệu nhà thầu." });
+                return data != null ? Ok(data) : NotFound(new { message = "Không tìm thấy dữ liệu chuyên gia." });
             }
             catch (Exception ex)
             {
@@ -38,7 +38,7 @@ namespace LMCM_BE.Controllers.ContractorControllers
             try
             {
                 var data = await _contractorService.GetContractorsListAsync(searchKey);
-                return data != null ? Ok(data) : NotFound(new { message = "Không tìm thấy dữ liệu nhà thầu." });
+                return data != null ? Ok(data) : NotFound(new { message = "Không tìm thấy dữ liệu chuyên gia." });
             }
             catch (Exception ex)
             {
@@ -66,7 +66,7 @@ namespace LMCM_BE.Controllers.ContractorControllers
                 }
 
                 var result = await _contractorService.CreateContractorAsync(request);
-                return result == true ? Ok(new { message = "Tạo nhà thầu thành công." }) : BadRequest(new { message = "Không thể tạo nhà thầu." });
+                return result == true ? Ok(new { message = "Tạo chuyên gia thành công." }) : BadRequest(new { message = "Không thể tạo chuyên gia." });
             }
             catch (ValidationException ex)
             {
@@ -110,7 +110,7 @@ namespace LMCM_BE.Controllers.ContractorControllers
                     });
                 }
                 var result = await _contractorService.UpdateContractorAsync(contractorId, request);
-                return result != null ? Ok(new { message = "Cập nhật nhà thầu thành công.", contractorId = result }) : NotFound(new { message = "Không tìm thấy nhà thầu hoặc cập nhật thất bại." });
+                return result != null ? Ok(new { message = "Cập nhật chuyên gia thành công.", contractorId = result }) : NotFound(new { message = "Không tìm thấy chuyên gia hoặc cập nhật thất bại." });
             }
             catch (InvalidOperationException ex)
             {
@@ -141,7 +141,7 @@ namespace LMCM_BE.Controllers.ContractorControllers
             try
             {
                 var result = await _contractorService.SoftDeleteContractorAsync(contractorId);
-                return result ? Ok(new { message = "Xóa nhà thầu thành công." }) : NotFound(new { message = "Không tìm thấy nhà thầu hoặc đã bị xóa trước đó." });
+                return result ? Ok(new { message = "Xóa chuyên gia thành công." }) : NotFound(new { message = "Không tìm thấy chuyên gia hoặc đã bị xóa trước đó." });
             }
             catch (KeyNotFoundException ex)
             {

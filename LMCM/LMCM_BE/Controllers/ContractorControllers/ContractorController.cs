@@ -143,6 +143,10 @@ namespace LMCM_BE.Controllers.ContractorControllers
                 var result = await _contractorService.SoftDeleteContractorAsync(contractorId);
                 return result ? Ok(new { message = "Xóa chuyên gia thành công." }) : NotFound(new { message = "Không tìm thấy chuyên gia hoặc đã bị xóa trước đó." });
             }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });

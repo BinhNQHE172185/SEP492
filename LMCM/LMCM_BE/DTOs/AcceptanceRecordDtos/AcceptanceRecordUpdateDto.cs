@@ -12,9 +12,10 @@ namespace LMCM_BE.DTOs.AcceptanceRecordDtos
         [MinLength(3, ErrorMessage = "Phải có ít nhất 3 ký tự")]
         [RegularExpression(@"^\s*\S.*$", ErrorMessage = "Tên tiêu đề không được chỉ chứa khoảng trắng")]
         public string Title { get; set; } = null!;
-
+        [DataType(DataType.Date)]
         public DateTime? AcceptanceDate { get; set; }
 
+        [Range(0, double.MaxValue, ErrorMessage = "Giá trị cuối cùng phải là số không âm")]
         public decimal? FinalPrice { get; set; }
 
         [AllowedFileExtensions(new string[] { ".pdf" }, ErrorMessage = "Chỉ chấp nhận các tệp có định dạng .pdf")]

@@ -19,14 +19,15 @@ namespace LMCM_BE.DTOs.ContractDtos
         [RegularExpression(@"^\s*\S.*$", ErrorMessage = "Tiêu đề không được chỉ chứa khoảng trắng")]
         public string Title { get; set; } = null!;
 
+        [DataType(DataType.Date)]
         public DateTime? ContractDate { get; set; }
 
         [Required(ErrorMessage = "Giá trị hợp đồng là bắt buộc")]
         [Range(0, double.MaxValue, ErrorMessage = "Giá trị hợp đồng phải lớn hơn hoặc bằng 0")]
         public decimal ContractValue { get; set; }
-
+        [DataType(DataType.Date)]
         public DateTime? StartDate { get; set; }
-
+        [DataType(DataType.Date)]
         public DateTime? EndDate { get; set; }
 
         [Required(ErrorMessage = "File đính kèm là bắt buộc")]

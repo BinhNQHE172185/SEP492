@@ -173,6 +173,17 @@ namespace LMCM_BE.Controllers.SyllabusControllers
             if (file == null || file.Length == 0)
                 return BadRequest(new { message = "Vui lòng tải lên tệp Excel hợp lệ." });
 
+            // Check file extension
+            var allowedExtensions = new[] { ".xlsx", ".xls" };
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (!allowedExtensions.Contains(extension))
+                return BadRequest(new { message = "Chỉ chấp nhận các tệp Excel có định dạng .xlsx hoặc .xls." });
+
+            // Check file size (max 5MB)
+            const long maxSize = 5 * 1024 * 1024;
+            if (file.Length > maxSize)
+                return BadRequest(new { message = "Dung lượng tệp không được vượt quá 5MB." });
+
             try
             {
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -191,9 +202,10 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                             return BadRequest(new { message = $"Tệp Excel bị thiếu các trang sau: {string.Join(", ", missingSheets)}." });
                         }
 
-                        if(await _syllabusService.ImportSyllabusAsync(package.Workbook,keepUserCreated))
-                        return Ok(new { message = "Nhập vào hệ thống thành công." });
-                        else return BadRequest(new { message = "Nhập vào hệ thống thất bại." });
+                        if (await _syllabusService.ImportSyllabusAsync(package.Workbook, keepUserCreated))
+                            return Ok(new { message = "Nhập vào hệ thống thành công." });
+                        else
+                            return BadRequest(new { message = "Nhập vào hệ thống thất bại." });
                     }
                 }
             }
@@ -218,5 +230,6 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
+
     }
 }

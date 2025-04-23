@@ -21,6 +21,7 @@ import { ExpertCreateEditComponent } from '../expert-create-edit/expert-create-e
 import { ExpertDetailComponent } from '../expert-detail/expert-detail.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 interface PagingRequest {
     searchKey?: string;
@@ -48,7 +49,8 @@ interface PagingRequest {
         TextareaModule,
         CalendarModule,
         ExpertCreateEditComponent,
-        ExpertDetailComponent
+        ExpertDetailComponent,
+        ProgressSpinnerModule
     ],
     providers: [MessageService, ConfirmationService],
     templateUrl: './list-expert.component.html',
@@ -81,6 +83,7 @@ export class ListExpertComponent implements OnInit {
 
     detailExpert: any;
     expertId: string | null = null;
+    isLoading: boolean = false;
 
     ngOnInit() {
         this.route.paramMap.subscribe(params => {
@@ -162,12 +165,15 @@ export class ListExpertComponent implements OnInit {
             acceptLabel: 'Đồng ý',
             rejectLabel: 'Hủy',
             accept: () => {
+                this.isLoading = true;
                 this.ExpertService.deleteContractor(id).subscribe(
                     (response) => {
                         this.loadExpert();
+                        this.isLoading = false;
                         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
                     },
                     (error) => {
+                        this.isLoading = false;
                         this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
                     }
                 );

@@ -12,6 +12,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { ToastModule } from 'primeng/toast';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-report-create-edit',
@@ -26,7 +27,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
     DatePickerModule,
     ToastModule,
     DropdownModule,
-    InputNumberModule
+    InputNumberModule,
+    ProgressSpinnerModule
   ],
   templateUrl: './report-create-edit.component.html',
   styleUrl: './report-create-edit.component.scss',
@@ -51,6 +53,7 @@ export class ReportCreateEditComponent {
   addTitle: string = '';
   addFileName: string = '';
 
+  isLoading: boolean = false;
   report: any;
 
   ngOnChanges() {
@@ -87,10 +90,12 @@ export class ReportCreateEditComponent {
     reportData.append("file", this.file);
 
     if (this.selectedReportId) {
+      this.isLoading = true;
       this.reportService.updateBudget(this.selectedReportId, reportData).subscribe(
         (response) => {
           this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
           this.closeDialog();
+          this.isLoading = false;
         },
         (error) => {
           const errors = error.error.errors;
@@ -105,14 +110,17 @@ export class ReportCreateEditComponent {
           allMessages.forEach(msg => {
             this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg });
           });
+          this.isLoading = false;
         }
       );
     } else {
       this.messageService.add({ severity: 'info', summary: 'Đang tải', detail: 'Vui lòng chờ.' });
+      this.isLoading = true;
       this.reportService.createBudget(reportData).subscribe(
         (response) => {
           this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
           this.closeDialog();
+          this.isLoading = false;
         },
         (error) => {
           const errors = error.error.errors;
@@ -127,6 +135,7 @@ export class ReportCreateEditComponent {
           allMessages.forEach(msg => {
             this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg });
           });
+          this.isLoading = false;
         }
       );
     }

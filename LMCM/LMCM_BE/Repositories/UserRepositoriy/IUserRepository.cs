@@ -17,5 +17,7 @@ namespace LMCM_BE.Repositories.UserRepositoriy
         Task<int> UserCountAsync();
         Task<bool> UpdateStatusAsync(string userId, string status);
         Task<int> CountUserByStatusAsync(UserStatus status);
+        Task<bool> UpdateUserAsync(string userId, string email);
+        Task<bool> RemoveUserAsync(string userId);
     }
 }

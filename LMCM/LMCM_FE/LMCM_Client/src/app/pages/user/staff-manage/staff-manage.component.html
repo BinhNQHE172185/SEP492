@@ -25,12 +25,27 @@
                     <th>Email</th>
                     <th class="text-center">Trạng thái</th>
                     <th>Vai trò</th>
+                    <th>Hành động</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-user>
                 <tr>
                     <td>{{ user.name || '(Đang chờ cập nhật)' }}</td>
-                    <td>{{ user.email }}</td>
+                    <td pEditableColumn pEditableColumnField="email">
+                        <p-cellEditor>
+                            <ng-template pTemplate="input">
+                                <div class="flex items-center gap-1">
+                                    <input pInputText type="text" [(ngModel)]="user.localPart" required maxlength="30"
+                                        style="width: 150px" (keydown.enter)="onUpdateUser(user.id, user.localPart)" />
+                                    <span>&#64;fpt.edu.vn</span>
+                                </div>
+                            </ng-template>
+
+                            <ng-template pTemplate="output">
+                                {{ user.email }}
+                            </ng-template>
+                        </p-cellEditor>
+                    </td>
                     <td [pEditableColumn]="user.status" pEditableColumnField="status"
                         [pEditableColumnDisabled]="user.status === 1">
                         <p-cellEditor>
@@ -61,12 +76,19 @@
                             </ng-template>
                         </p-cellEditor>
                     </td>
+                    <td>
+                        <p-button icon="pi pi-trash" outlined (onClick)="deleteUser(user.id)"></p-button>
+                    </td>
                 </tr>
             </ng-template>
         </p-table>
     </div>
     <div class="mt-1 text-sm text-gray-500 italic">
-        * Nhấn vào <strong>Trạng thái</strong> hoặc <strong>Vai trò</strong> để cập nhật thông tin nhân viên.
+        * Nhấn vào <strong>Trạng thái</strong> hoặc <strong>Vai trò</strong> hoặc <strong>Email</strong> để cập nhật
+        thông tin nhân viên.
+    </div>
+    <div class="mt-1 text-sm text-gray-500 italic">
+        * Nhấn vào <strong>Enter</strong> khi cập nhật <strong>Email</strong> để cập nhật email nhân viên.
     </div>
 </p-card>
 
@@ -74,7 +96,7 @@
     <div class="flex flex-col gap-6">
         <div>
             <label for="email" class="block font-bold mb-3">Email</label>
-            <input type="text" pInputText id="email" [(ngModel)]="staffId" required autofocus /> / fpt&#64;.edu.vn
+            <input type="text" pInputText id="email" [(ngModel)]="staffId" required autofocus /> fpt&#64;.edu.vn
         </div>
     </div>
 
@@ -84,3 +106,6 @@
     </ng-template>
 </p-dialog>
 <p-toast></p-toast>
+<div *ngIf="isLoading" class="overlay-spinner">
+    <p-progressSpinner></p-progressSpinner>
+</div>

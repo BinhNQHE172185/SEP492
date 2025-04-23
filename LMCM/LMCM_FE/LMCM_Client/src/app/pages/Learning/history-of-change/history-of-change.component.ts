@@ -22,10 +22,12 @@ import { SyllabusApiService } from '../../../apis/syllabusAPIs/syllabus-api.serv
 import { HistoryOfChangeApiService } from '../../../apis/historyAPIs/history-api';
 import { searchService } from '../../service/search/search-service.service';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
     standalone: true,
-    imports: [AutoCompleteModule, TextareaModule, ConfirmDialogModule, DatePickerModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, CalendarModule, DropdownModule, InputTextModule],
+    imports: [
+        ProgressSpinnerModule, AutoCompleteModule, TextareaModule, ConfirmDialogModule, DatePickerModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, CalendarModule, DropdownModule, InputTextModule],
     selector: 'app-history-of-change',
     templateUrl: './history-of-change.component.html',
     styleUrls: ['./history-of-change.component.scss'],
@@ -50,6 +52,7 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
     syllabus: any[] = [];
     suggestedStartTerms: string[] = [];
     filteredStartTerms: string[] = [];
+    isLoading: boolean = false;
 
     constructor(
         private searchService: searchService,
@@ -179,12 +182,15 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
     }
 
     deleteItem(id: any) {
+        this.isLoading = true;
         this.historyService.deleteLearningMaterialHistory(id).subscribe({
             next: () => {
+                this.isLoading = false;
                 this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa lịch sử thay đổi' });
                 this.loadHistory();
             },
             error: (error) => {
+                this.isLoading = false;
                 this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể xóa lịch sử thay đổi' });
             }
         });
@@ -224,24 +230,30 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
             courseCode: this.newHistory.syllabus?.courseCode || '',
         };
         if (id) {
+            this.isLoading = true;
             this.historyService.updateLearningMaterialHistory(id, request).subscribe({
                 next: () => {
+                    this.isLoading = false;
                     this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã cập nhật lịch sử thay đổi' });
                     this.displayAddDialog = false;
                     this.loadHistory();
                 },
                 error: (error) => {
+                    this.isLoading = false;
                     this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể cập nhật lịch sử thay đổi' });
                 }
             });
         } else {
+            this.isLoading = true;
             this.historyService.createLearningMaterialHistory(request).subscribe({
                 next: () => {
+                    this.isLoading = false;
                     this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã thêm lịch sử thay đổi' });
                     this.displayAddDialog = false;
                     this.loadHistory();
                 },
                 error: (error) => {
+                    this.isLoading = false;
                     console.error('Lỗi khi thêm lịch sử thay đổi:', error);
                     this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể thêm lịch sử thay đổi' });
                 }

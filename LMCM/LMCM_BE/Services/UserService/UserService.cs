@@ -90,7 +90,7 @@ namespace LMCM_BE.Services.UserService
             var email = request.StaffId + "@fpt.edu.vn";
             if (await _userRepository.CreateStaff(email))
             {
-                bool isShared = await _googleDriveService.ShareFoldersWithUserAsync(email,false, "reader");
+                bool isShared = await _googleDriveService.ShareFoldersWithUserAsync(email, false, "reader");
 
                 if (!isShared)
                 {
@@ -168,13 +168,14 @@ namespace LMCM_BE.Services.UserService
         }
         public async Task<bool> AssignRoleAsync(string userId, string role)
         {
-            var user=await _userRepository.GetProfile(userId);
-            if (user == null||role==null)
+            var user = await _userRepository.GetProfile(userId);
+            if (user == null || role == null)
             {
                 return false;
             }
             var userRole = await _userRepository.getRoleAsync(userId);
-            if (userRole.Contains("Staff") && role.Equals("Head of Department")){
+            if (userRole.Contains("Staff") && role.Equals("Head of Department"))
+            {
                 if (user.Email != null)
                 {
                     bool isShared = await _googleDriveService.ShareFoldersWithUserAsync(user.Email, false, "reader");
@@ -184,9 +185,11 @@ namespace LMCM_BE.Services.UserService
                         Console.WriteLine("Share Google Drive folder with user successfully.");
                     }
                 }
-            }else if (userRole.Contains("Head of Department") && role.Equals("Staff"))
+            }
+            else if (userRole.Contains("Head of Department") && role.Equals("Staff"))
             {
-                if (user.Email != null){
+                if (user.Email != null)
+                {
                     bool isRevoked = await _googleDriveService.RevokePermissionFromFolderAsync(user.Email, true);
 
                     if (isRevoked)
@@ -231,7 +234,7 @@ namespace LMCM_BE.Services.UserService
         public async Task<List<string>> CheckRole()
         {
             var user = await GetProfileFromCookie();
-            if(user == null)
+            if (user == null)
             {
                 throw new InvalidOperationException("Không tìm thấy người dùng trong cookie.");
             }
@@ -246,6 +249,46 @@ namespace LMCM_BE.Services.UserService
                 throw new InvalidOperationException("Không thể thay đổi trạng thái của chính bạn.");
             }
             return await _userRepository.UpdateStatusAsync(userId, status);
+        }
+
+        public async Task<bool> UpdateUserAsync(string userId, string staffId)
+        {
+            var currentUser = await GetProfileFromCookie();
+
+            if (currentUser.Id.ToString() == userId)
+                throw new InvalidOperationException("Không thể thay đổi thông tin của chính bạn.");
+
+            if (currentUser.Roles.Contains("Staff"))
+                throw new InvalidOperationException("Không có quyền thay đổi.");
+
+            var user = await _userRepository.GetProfile(userId);
+
+            if (user == null)
+                throw new InvalidOperationException("Người dùng không tồn tại.");
+
+            if (user.Status != UserStatus.Pending)
+                throw new InvalidOperationException("Chỉ có thể thay đổi thông tin người dùng ở trạng thái Đang chờ.");
+
+            var email = staffId + "@fpt.edu.vn";
+
+            return await _userRepository.UpdateUserAsync(userId, email);
+        }
+
+        public async Task<bool> RemoveUserAsync(string userId)
+        {
+            var currentUser = await GetProfileFromCookie();
+            if (currentUser.Id.ToString() == userId)
+                throw new InvalidOperationException("Không thể xóa chính bạn.");
+
+            if (currentUser.Roles.Contains("Staff"))
+                throw new InvalidOperationException("Không có quyền xóa.");
+
+            var user = await _userRepository.GetProfile(userId);
+
+            if (user == null)
+                throw new InvalidOperationException("Người dùng không tồn tại.");
+
+            return await _userRepository.RemoveUserAsync(userId);
         }
     }
 }

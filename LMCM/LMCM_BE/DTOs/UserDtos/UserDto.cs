@@ -45,5 +45,9 @@ namespace LMCM_BE.DTOs.UserDtos
         public string userId { get; set; }
         public string status { get; set; }
     }
-    
+    public class UpdateUser
+    {
+        public string userId { get; set; }
+        public string staffId { get; set; }
+    }
 }

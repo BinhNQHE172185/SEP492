@@ -1,64 +1,76 @@
 :host {
-    display: block;
-    
-    .section {
-      margin-bottom: 2rem;
-      
-      .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-        
-        h2 {
-          margin: 0;
-        }
-      }
-    }
-    
-    ::ng-deep .custom-dialog .p-dialog-title {
-      color: rgb(233 114 0);
-    }
-    
-    // Table styling enhancements
-    ::ng-deep {
+  display: block;
 
+  .section {
+    margin-bottom: 2rem;
 
-      
-      .p-button-text {
-        &.p-button-warning {
-          color: #e97d23;
-        }
-        
-        &.p-button-danger {
-          color: #dc3545;
-        }
-      }
-      
-      // Form styling
-      .p-float-label {
-        margin-bottom: 0.5rem;
-        
-        label {
-          font-weight: 500;
-        }
-      }
-      
-      .p-error {
-        display: block;
-        margin-top: 0.25rem;
-      }
-      
-      // Dialog styling
-      .p-dialog .p-dialog-header {
-        border-bottom: 1px solid #dee2e6;
-        padding-bottom: 1rem;
-      }
-      
-      .p-dialog .p-dialog-footer {
-        border-top: 1px solid #dee2e6;
-        padding-top: 1rem;
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      h2 {
+        margin: 0;
       }
     }
   }
-  
+
+  ::ng-deep .custom-dialog .p-dialog-title {
+    color: rgb(233 114 0);
+  }
+
+  // Table styling enhancements
+  ::ng-deep {
+
+
+
+    .p-button-text {
+      &.p-button-warning {
+        color: #e97d23;
+      }
+
+      &.p-button-danger {
+        color: #dc3545;
+      }
+    }
+
+    // Form styling
+    .p-float-label {
+      margin-bottom: 0.5rem;
+
+      label {
+        font-weight: 500;
+      }
+    }
+
+    .p-error {
+      display: block;
+      margin-top: 0.25rem;
+    }
+
+    // Dialog styling
+    .p-dialog .p-dialog-header {
+      border-bottom: 1px solid #dee2e6;
+      padding-bottom: 1rem;
+    }
+
+    .p-dialog .p-dialog-footer {
+      border-top: 1px solid #dee2e6;
+      padding-top: 1rem;
+    }
+  }
+}
+
+.overlay-spinner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999 !important;
+}

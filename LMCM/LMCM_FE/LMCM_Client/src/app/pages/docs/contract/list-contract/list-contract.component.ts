@@ -20,6 +20,7 @@ import { ContractApiService } from '../../../../apis/contractAPIs/contract-api.s
 import { ContractCreateEditComponent } from '../contract-create-edit/contract-create-edit.component';
 import { ContractDetailComponent } from '../contract-detail/contract-detail.component';
 import { ActivatedRoute } from '@angular/router';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 interface PagingRequest {
   searchKey?: string;
@@ -46,7 +47,8 @@ interface PagingRequest {
     TextareaModule,
     CalendarModule,
     ContractCreateEditComponent,
-    ContractDetailComponent
+    ContractDetailComponent,
+    ProgressSpinnerModule
   ],
   templateUrl: './list-contract.component.html',
   styleUrls: ['./list-contract.component.scss'],
@@ -80,6 +82,7 @@ export class ListContractComponent implements OnInit {
 
   detailContract: any;
   contractId: string | null = null;
+  isLoading: boolean = false;
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -162,12 +165,15 @@ export class ListContractComponent implements OnInit {
       acceptLabel: 'Đồng ý',
       rejectLabel: 'Hủy',
       accept: () => {
+        this.isLoading = true;
         this.contractService.deleteContract(id!).subscribe(
           (response) => {
             this.loadContract();
+            this.isLoading = false;
             this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
           },
           (error) => {
+            this.isLoading = false;
             this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
           }
         );

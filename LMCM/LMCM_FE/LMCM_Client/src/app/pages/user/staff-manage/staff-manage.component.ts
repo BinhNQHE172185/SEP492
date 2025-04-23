@@ -16,15 +16,23 @@ import { FormsModule } from '@angular/forms';
 import { ProfileStatus } from '../../../../shared/Constants/StatusConstants';
 import { Subscription } from 'rxjs';
 import { searchService } from '../../service/search/search-service.service';
-import { UserApiService } from '../../../apis/userAPIs/user-api.service';
+import { UserApiService } from '../../../apis/userApis/user-api.service';
 import { DropdownModule } from 'primeng/dropdown';
 import { UpdateUserStatusLabels, UserRole, UserStatus, UserStatusLabels } from '../../../../shared/Constants/UserConstants';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 interface PagingRequest {
   searchKey?: string;
   pageNumber: number;
   pageSize: number;
 }
+
+interface UserVm {
+  id: string;
+  email: string;
+  localPart: string;
+}
+
 
 @Component({
   selector: 'app-staff-manage',
@@ -42,7 +50,8 @@ interface PagingRequest {
     DialogModule,
     ToastModule,
     FormsModule,
-    DropdownModule
+    DropdownModule,
+    ProgressSpinnerModule
   ],
   standalone: true,
   templateUrl: './staff-manage.component.html',
@@ -59,6 +68,7 @@ export class StaffManageComponent implements OnInit, OnDestroy {
   searchKey = '';
   userDialog: boolean = false;
   staffId: string = '';
+  isLoading: boolean = false;
 
   cols = [
     { field: 'name', header: 'Tên' },
@@ -96,15 +106,22 @@ export class StaffManageComponent implements OnInit, OnDestroy {
       pageNumber: this.pageNumber,
       pageSize: this.pageSize
     };
-    this.apiService.getListUser(request).subscribe(
-      (response) => {
-        console.log(response)
-        this.users = response.items;
+
+    this.apiService.getListUser(request).subscribe({
+      next: (response) => {
+        this.users = response.items.map(u => ({
+          ...u,
+          localPart: u.email.split('@')[0]
+        }));
       },
-      (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: error.error.message });
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Lỗi',
+          detail: err?.error?.message ?? 'Không thể tải danh sách người dùng'
+        });
       }
-    );
+    });
   }
 
   getStatusLabel(status: number): string {
@@ -149,43 +166,68 @@ export class StaffManageComponent implements OnInit, OnDestroy {
     if (!this.staffId.trim()) {
       return; // Không gửi nếu email trống
     }
-
+    this.isLoading = true;
     this.apiService.createAccount(this.staffId).subscribe(
       (response) => {
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Nhân viên đã được thêm' });
         this.hideDialog(); // Ẩn dialog sau khi thêm thành công
         this.loadUser();
+        this.isLoading = false;
       },
       (error) => {
         this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: error.error.message });
+        this.isLoading = false;
       }
     );
   }
 
   onRoleChange(userId: string, newRole: string) {
+    this.isLoading = true;
     this.apiService.changeRole(userId, newRole).subscribe({
       next: (response) => {
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
         this.loadUser();
+        this.isLoading = false;
       },
       error: (error) => {
         const errMsg = error?.error?.message || `Không có quyền.`;
         this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: errMsg });
         this.loadUser();
+        this.isLoading = false;
       }
     });
   }
 
   onStatusChange(userId: string, status: string) {
+    this.isLoading = true;
     this.apiService.updateStatus(userId, status.toString()).subscribe({
       next: (response) => {
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
         this.loadUser();
+        this.isLoading = false;
       },
       error: (error) => {
         const errMsg = error?.error?.message || `Không có quyền.`;
         this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: errMsg });
         this.loadUser();
+        this.isLoading = false;
+      }
+    });
+  }
+
+  onUpdateUser(userId: string, data: string) {
+    this.isLoading = true;
+    this.apiService.updateUser(userId, data).subscribe({
+      next: (response) => {
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
+        this.loadUser();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        const errMsg = error?.error?.message || `Không có quyền.`;
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: errMsg });
+        this.loadUser();
+        this.isLoading = false;
       }
     });
   }
@@ -199,5 +241,22 @@ export class StaffManageComponent implements OnInit, OnDestroy {
 
   onSearchChange(query: string) {
     this.searchService.updateSearchQuery(query);
+  }
+
+  deleteUser(userId: string) {
+    this.isLoading = true;
+    this.apiService.deleteUser(userId).subscribe({
+      next: (response) => {
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
+        this.loadUser();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        const errMsg = error?.error?.message || `Không có quyền.`;
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: errMsg });
+        this.loadUser();
+        this.isLoading = false;
+      }
+    });
   }
 }

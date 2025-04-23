@@ -12,11 +12,12 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { ToastModule } from 'primeng/toast';
 import { ContractApiService } from '../../../../apis/contractAPIs/contract-api.service';
 import { ContractorApiService } from '../../../../apis/contractorAPIs/contractor-api.service';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
     selector: 'app-expert-create-edit',
     standalone: true,
-    imports: [DialogModule, InputTextModule, ButtonModule, CommonModule, FormsModule, FileUploadModule, DatePickerModule, ToastModule],
+    imports: [ProgressSpinnerModule, DialogModule, InputTextModule, ButtonModule, CommonModule, FormsModule, FileUploadModule, DatePickerModule, ToastModule],
     templateUrl: './expert-create-edit.component.html',
     styleUrl: './expert-create-edit.component.scss',
     providers: [ConfirmationService, MessageService]
@@ -30,6 +31,7 @@ export class ExpertCreateEditComponent {
 
     expert: any;
     budgetProposal: any;
+    isLoading: boolean = false;
 
     constructor(
         private messageService: MessageService,
@@ -99,22 +101,27 @@ export class ExpertCreateEditComponent {
         };
 
         if (this.selectedId) {
+            this.isLoading = true;
             this.expertService.updateContractor(this.selectedId, reportData).subscribe(
                 (response) => {
+                    this.isLoading = false;
                     this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
                     this.closeDialog();
                 },
                 (error) => {
+                    this.isLoading = false;
                     this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
                 }
             );
         } else {
             this.expertService.createContractor(reportData).subscribe(
                 (response) => {
+                    this.isLoading = false;
                     this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
                     this.closeDialog();
                 },
                 (error) => {
+                    this.isLoading = false;
                     this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
                 }
             );

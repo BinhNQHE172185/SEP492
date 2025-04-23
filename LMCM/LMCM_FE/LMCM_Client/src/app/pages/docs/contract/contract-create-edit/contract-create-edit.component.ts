@@ -255,13 +255,16 @@ export class ContractCreateEditComponent implements OnChanges {
     reportData.append("endDate", this.contract.endDate.toLocaleDateString('en-CA'));
     reportData.append("file", this.file);
     if (this.selectedContractId) {
+      this.isLoading = true;
       this.contractService.updateContract(this.selectedContractId, reportData).subscribe(
         (response) => {
           this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
           this.closeDialog();
+          this.isLoading = false;
         },
         (error) => {
           this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+          this.isLoading = false;
         }
       );
     } else {
@@ -275,13 +278,16 @@ export class ContractCreateEditComponent implements OnChanges {
       }
 
       this.messageService.add({ severity: 'info', summary: 'Đang tải', detail: 'Vui lòng chờ.' });
+      this.isLoading = true;
       this.contractService.createContract(reportData).subscribe(
         (response) => {
           this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
           this.closeDialog();
+          this.isLoading = false;
         },
         (error) => {
           this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+          this.isLoading = false;
         }
       );
     }

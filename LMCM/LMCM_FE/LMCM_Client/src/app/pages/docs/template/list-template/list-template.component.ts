@@ -20,6 +20,7 @@ import { ContractApiService } from '../../../../apis/contractAPIs/contract-api.s
 import { TemplateCreateEditComponent } from '../template-create-edit/template-create-edit.component';
 import { TemplateDetailComponent } from '../template-detail/template-detail.component';
 import { DocumentTemplateApiService } from '../../../../apis/templateAPIs/template-api.service';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 interface PagingRequest {
   searchKey?: string;
@@ -46,7 +47,8 @@ interface PagingRequest {
     TextareaModule,
     CalendarModule,
     TemplateCreateEditComponent,
-    TemplateDetailComponent
+    TemplateDetailComponent,
+    ProgressSpinnerModule
   ],
   templateUrl: './list-template.component.html',
   styleUrls: ['./list-template.component.scss'],
@@ -79,6 +81,7 @@ export class ListTemplateComponent implements OnInit {
 
   detailTemplate: any;
   templateId: string | null = null;
+  isLoading: boolean = false;
 
   ngOnInit() {
     this.searchSubscription = this.searchService.searchQuery$.subscribe(
@@ -154,12 +157,15 @@ export class ListTemplateComponent implements OnInit {
       acceptLabel: 'Đồng ý',
       rejectLabel: 'Hủy',
       accept: () => {
+        this.isLoading = true;
         this.templateService.deleteTemplate(id!).subscribe(
           (response) => {
+            this.isLoading = false;
             this.loadTemplate();
             this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
           },
           (error) => {
+            this.isLoading = false;
             this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
           }
         );

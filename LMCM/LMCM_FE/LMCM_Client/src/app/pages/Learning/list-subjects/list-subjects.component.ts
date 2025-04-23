@@ -15,6 +15,7 @@ import { DialogModule } from 'primeng/dialog';
 import { FileUploadModule } from 'primeng/fileupload';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 interface Subject {
   subjectId: string;
@@ -37,7 +38,7 @@ interface PagingRequest {
 @Component({
   standalone: true,
   imports: [
-    ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, TagModule, CardModule, InputTextModule
+    ProgressSpinnerModule, ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, TagModule, CardModule, InputTextModule
   ],
   selector: 'app-list-subjects',
   templateUrl: './list-subjects.component.html',
@@ -56,6 +57,7 @@ export class ListSubjectsComponent implements OnInit, OnDestroy {
 
   displayImportDialog: boolean = false;
   uploadedFiles: any[] = [];
+  isLoading: boolean = false;
 
   private searchSubscription!: Subscription;
 
@@ -107,13 +109,16 @@ export class ListSubjectsComponent implements OnInit, OnDestroy {
     const file = event.files[0];
     const formData = new FormData();
     formData.append('file', file);
-
+    this.isLoading = true;
     this.subjectService.importSubjects(formData).subscribe(
       () => {
+        this.isLoading = false;
+        this.closeDialog();
         this.loadSubjects(); // Load lại dữ liệu sau khi import
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Nhập dữ liệu thành công' });
       },
       (error) => {
+        this.isLoading = false;
         this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
       }
     );
@@ -146,12 +151,15 @@ export class ListSubjectsComponent implements OnInit, OnDestroy {
       acceptLabel: 'Đồng ý',
       rejectLabel: 'Hủy',
       accept: () => {
+        this.isLoading = true;
         this.subjectService.deleteSubjects(id).subscribe(
           (response) => {
             this.loadSubjects();
+            this.isLoading = false;
             this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Xóa dữ liệu thành công' });
           },
           (error) => {
+            this.isLoading = false;
             this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
           }
         );

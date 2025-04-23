@@ -15,6 +15,7 @@ import { ConfirmDialog, ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { FileUploadModule } from 'primeng/fileupload';
 import { DialogModule } from 'primeng/dialog';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 interface Curriculum {
   curriculumId: string;
@@ -34,7 +35,7 @@ interface PagingRequest {
 @Component({
   standalone: true,
   imports: [
-    ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, ConfirmDialog
+    ProgressSpinnerModule, ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, ConfirmDialog
   ],
   selector: 'app-list-curriculum',
   templateUrl: './list-curriculum.component.html',
@@ -50,6 +51,8 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
 
   displayImportDialog: boolean = false;
   uploadedFiles: any[] = [];
+
+  isLoading: boolean = false;
 
   private searchSubscription!: Subscription;
 
@@ -123,13 +126,16 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
     const file = event.files[0];
     const formData = new FormData();
     formData.append('file', file);
-
+    this.isLoading = true;
     this.curriculumService.importCurriculums(formData).subscribe(
       () => {
         this.loadCurriculums();
+        this.isLoading = false;
+        this.closeDialog();
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Nhập dữ liệu thành công' });
       },
       (error) => {
+        this.isLoading = false;
         this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
       }
     );
@@ -153,12 +159,15 @@ export class ListCurriculumComponent implements OnInit, OnDestroy {
       acceptLabel: 'Đồng ý',
       rejectLabel: 'Hủy',
       accept: () => {
+        this.isLoading = true;
         this.curriculumService.deleteCurriculums(id).subscribe(
           (response) => {
             this.loadCurriculums();
+            this.isLoading = false;
             this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Xóa dữ liệu thành công' });
           },
           (error) => {
+            this.isLoading = false;
             this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
           }
         );

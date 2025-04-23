@@ -17,6 +17,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Router } from '@angular/router';
 import { CheckboxModule } from 'primeng/checkbox';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 interface Syllabus {
   courseCode: string;
@@ -36,7 +37,7 @@ interface PagingRequest {
 @Component({
   standalone: true,
   imports: [
-    CheckboxModule, ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, TagModule, CardModule, InputTextModule
+    ProgressSpinnerModule, CheckboxModule, ConfirmDialogModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, TagModule, CardModule, InputTextModule
   ],
   selector: 'app-list-syllabus',
   templateUrl: './list-syllabus.component.html',
@@ -57,6 +58,7 @@ export class ListSyllabusComponent implements OnInit, OnDestroy {
   uploadedFiles: any[] = [];
 
   keepData: boolean = false;
+  isLoading: boolean = false;
 
   private searchSubscription!: Subscription;
 
@@ -130,14 +132,16 @@ export class ListSyllabusComponent implements OnInit, OnDestroy {
     const file = event.files[0];
     const formData = new FormData();
     formData.append('file', file);
-
+    this.isLoading = true;
     this.syllabusService.importSyllabuses(formData, this.keepData).subscribe(
       () => {
         this.loadSyllabuses();
+        this.isLoading = false;
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Nhập dữ liệu thành công' });
         this.closeDialog();
       },
       (error) => {
+        this.isLoading = false;
         this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
       }
     );
@@ -162,8 +166,10 @@ export class ListSyllabusComponent implements OnInit, OnDestroy {
       acceptLabel: 'Đồng ý',
       rejectLabel: 'Hủy',
       accept: () => {
+        this.isLoading = true;
         this.syllabusService.deleteSyllabuses(id).subscribe(
           (response) => {
+            this.isLoading = false;
             this.loadSyllabuses();
             this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Xóa dữ liệu thành công' });
           },

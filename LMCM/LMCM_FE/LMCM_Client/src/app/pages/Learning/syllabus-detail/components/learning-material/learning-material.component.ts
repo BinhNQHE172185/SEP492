@@ -17,6 +17,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ToastModule } from 'primeng/toast';
 import { ChipModule } from 'primeng/chip';
 import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-learning-material',
@@ -34,7 +35,8 @@ import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocompl
     ButtonModule,
     CheckboxModule,
     ToastModule,
-    AutoCompleteModule
+    AutoCompleteModule,
+    ProgressSpinnerModule
   ],
 
   templateUrl: './learning-material.component.html',
@@ -57,6 +59,8 @@ export class LearningMaterialComponent implements OnChanges {
     { name: 'Online', value: MaterialTypeConstant.Online },
     { name: 'Offline', value: MaterialTypeConstant.Offline }
   ];
+
+  isLoading: boolean = false;
 
   constructor(
     private learningMaterialApiService: LearningMaterialApiService,
@@ -116,12 +120,15 @@ export class LearningMaterialComponent implements OnChanges {
   save() {
     this.material.author = this.authors.join(', ');
     if (this.SelectedId) {
+      this.isLoading = true;
       this.learningMaterialApiService.updateLearningMaterial(this.SelectedId, this.material).subscribe(
         (response) => {
+          this.isLoading = false;
           this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
           this.closeDialog();
         },
         (error) => {
+          this.isLoading = false;
           this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
         }
       );
@@ -129,10 +136,12 @@ export class LearningMaterialComponent implements OnChanges {
       this.material.syllabusId = this.route.snapshot.paramMap.get('id') || '';
       this.learningMaterialApiService.createLearningMaterial(this.material).subscribe(
         (response) => {
+          this.isLoading = false;
           this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
           this.closeDialog();
         },
         (error) => {
+          this.isLoading = false;
           this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
         }
       );

@@ -153,5 +153,49 @@ namespace LMCM_BE.Repositories.UserRepositoriy
             var data = await _dbContext.Users.CountAsync();
             return data;
         }
+
+        public async Task<bool> UpdateUserAsync(string userId, string email)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new ArgumentException("Người dùng không tồn tại.");
+            }
+
+            var existingUser = await _userManager.FindByEmailAsync(email.ToLower());
+            if (existingUser != null)
+            {
+                throw new InvalidOperationException("Email đã tồn tại trong hệ thống.");
+            }
+
+            user.Email = email.ToLower();
+            user.UserName = email.ToLower();
+
+            await _userManager.UpdateAsync(user);
+            var result = await _dbContext.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> RemoveUserAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new ArgumentException("Người dùng không tồn tại.");
+            }
+
+            try
+            {
+                _dbContext.Users.Remove(user);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Không thể xóa người dùng: {ex.Message}");
+            }
+            var result = await _dbContext.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

@@ -15,6 +15,7 @@ import { ContractorApiService } from '../../../../apis/contractorAPIs/contractor
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DocumentTemplateApiService } from '../../../../apis/templateAPIs/template-api.service';
 import { TemplateStatus } from '../../../../../shared/Constants/StatusConstants';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-template-create-edit',
@@ -29,6 +30,7 @@ import { TemplateStatus } from '../../../../../shared/Constants/StatusConstants'
     ToastModule,
     DropdownModule,
     InputNumberModule,
+    ProgressSpinnerModule
   ],
   providers: [ConfirmationService, MessageService],
   standalone: true,
@@ -47,6 +49,8 @@ export class TemplateCreateEditComponent implements OnChanges {
   template: any;
   budgetProposal: any;
   contractor: any;
+
+  isLoading: boolean = false;
 
   constructor(
     private messageService: MessageService,
@@ -99,12 +103,15 @@ export class TemplateCreateEditComponent implements OnChanges {
     reportData.append("file", this.file);
 
     if (this.selectedId) {
+      this.isLoading = true;
       this.templateService.updateTemplate(this.selectedId, reportData).subscribe(
         (response) => {
+          this.isLoading = false;
           this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
           this.closeDialog();
         },
         (error) => {
+          this.isLoading = false;
           this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
         }
       );
@@ -113,14 +120,16 @@ export class TemplateCreateEditComponent implements OnChanges {
         this.messageService.add({ severity: 'warn', summary: 'Thất bại', detail: 'Vui lòng tải lên tệp.' });
         return;
       }
-
+      this.isLoading = true;
       this.messageService.add({ severity: 'info', summary: 'Đang tải', detail: 'Vui lòng chờ.' });
       this.templateService.createTemplate(reportData).subscribe(
         (response) => {
+          this.isLoading = false;
           this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
           this.closeDialog();
         },
         (error) => {
+          this.isLoading = false;
           this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
         }
       );

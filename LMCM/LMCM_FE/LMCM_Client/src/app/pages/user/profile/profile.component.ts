@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
-import { UserApiService } from '../../../apis/userAPIs/user-api.service';
+import { UserApiService } from '../../../apis/userApis/user-api.service';
 
 @Component({
   selector: 'app-profile',

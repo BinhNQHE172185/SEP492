@@ -185,7 +185,71 @@ namespace LMCM_BE.Controllers.UserControllers
             }
             catch (ArgumentException ex)
             {
-                return NotFound(new { success = false, message = "Không tìm thấy nhân viên."  });
+                return NotFound(new { success = false, message = "Không tìm thấy nhân viên." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = "Đã xảy ra lỗi.", error = ex.Message });
+            }
+        }
+
+        [HttpDelete("remove-user/{userId}")]
+        public async Task<IActionResult> RemoveUser(string userId)
+        {
+            try
+            {
+                var roles = await _userService.CheckRole();
+                if (!roles.Contains("Head of Department"))
+                {
+                    return Unauthorized(new { success = false, message = "Không có quyền." });
+                }
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return BadRequest(new { success = false, message = "Vui lòng chọn nhân viên." });
+                }
+
+                var result = await _userService.RemoveUserAsync(userId);
+                return Ok(new { success = result, message = "Người dùng đã được xóa." });
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(new { success = false, message = "Không tìm thấy nhân viên." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = "Không thể xóa người dùng do tồn tại dữ liệu liên quan.", error = ex.Message });
+            }
+        }
+
+        [HttpPut("update-user")]
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUser request)
+        {
+            try
+            {
+                var roles = await _userService.CheckRole();
+                if (!roles.Contains("Head of Department"))
+                {
+                    return Unauthorized(new { success = false, message = "Không có quyền." });
+                }
+                if (string.IsNullOrEmpty(request.userId) || string.IsNullOrEmpty(request.staffId))
+                {
+                    return BadRequest(new { success = false, message = "Vui lòng chọn nhân viên." });
+                }
+
+                var result = await _userService.UpdateUserAsync(request.userId, request.staffId);
+                return Ok(new { success = result, message = "Người dùng đã được cập nhật." });
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(new { success = false, message = "Không tìm thấy nhân viên." });
             }
             catch (InvalidOperationException ex)
             {

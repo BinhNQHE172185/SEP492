@@ -22,6 +22,7 @@ import { PanelModule } from 'primeng/panel';
 import { SyllabusApiService } from '../../../apis/syllabusAPIs/syllabus-api.service';
 import { LearningMaterialApiService } from '../../../apis/learning-materialAPIs/learning-material-api.service';
 import { LearningMaterialComponent } from './components/learning-material/learning-material.component';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 interface Material {
   id: number;
   no: number;
@@ -67,7 +68,8 @@ interface MenuItem {
     DividerModule,
     PanelModule,
     TextareaModule,
-    LearningMaterialComponent
+    LearningMaterialComponent,
+    ProgressSpinnerModule
   ],
   providers: [ConfirmationService, MessageService]
 })
@@ -83,6 +85,7 @@ export class SyllabusDetailComponent implements OnInit {
   displayAddDialog: boolean = false;
 
   isDetail: boolean = true;
+  isLoading: boolean = false;
 
   constructor(
     private syllabusService: SyllabusApiService,
@@ -199,13 +202,16 @@ export class SyllabusDetailComponent implements OnInit {
   }
 
   deleteMaterial(id: any): void {
+    this.isLoading = true;  
     this.materialService.deleteLearningMaterial(id).subscribe(
       (response) => {
+        this.isLoading = false;
         this.getLearningMaterial();
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
         this.cancelDialog();
       },
       (error) => {
+        this.isLoading = false;
         this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
       }
     );

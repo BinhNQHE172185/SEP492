@@ -19,6 +19,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { AcceptanceRecordApiService } from '../../../../apis/acceptanceRecordAPIs/acceptance-api.service';
 import { AcceptanceReportDetailComponent } from '../acceptance-report-detail/acceptance-report-detail.component';
 import { AcceptanceReportCreateEditComponent } from '../acceptance-report-create-edit/acceptance-report-create-edit.component';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 interface PagingRequest {
   searchKey?: string;
@@ -45,7 +46,8 @@ interface PagingRequest {
     TextareaModule,
     CalendarModule,
     AcceptanceReportDetailComponent,
-    AcceptanceReportCreateEditComponent
+    AcceptanceReportCreateEditComponent,
+    ProgressSpinnerModule
   ],
   templateUrl: './list-acceptance-report.component.html',
   styleUrls: ['./list-acceptance-report.component.scss'],
@@ -78,6 +80,7 @@ export class ListAcceptanceReportComponent implements OnInit {
 
   detailContract: any;
   acceptanceId: string | null = null;
+  isLoading: boolean = false;
 
   ngOnInit() {
     this.searchSubscription = this.searchService.searchQuery$.subscribe(
@@ -152,12 +155,15 @@ export class ListAcceptanceReportComponent implements OnInit {
       acceptLabel: 'Đồng ý',
       rejectLabel: 'Hủy',
       accept: () => {
+        this.isLoading = true;
         this.acceptanceService.deleteAcceptanceRecord(id!).subscribe(
           (response) => {
             this.loadContract();
+            this.isLoading = false;
             this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
           },
           (error) => {
+            this.isLoading = false;
             this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
           }
         );

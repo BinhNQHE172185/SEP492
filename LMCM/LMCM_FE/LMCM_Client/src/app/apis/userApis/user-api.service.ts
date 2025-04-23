@@ -60,4 +60,11 @@ export class UserApiService {
     const data = { userId, status };
     return this.http.post<any>(`${this.apiUrl}/User/update-status`, data, {withCredentials: true});
   }
+  updateUser(userId: string, staffId: string): Observable<any> {
+    const request = { userId, staffId };
+    return this.http.put<any>(`${this.apiUrl}/User/update-user/`, request, {withCredentials: true});
+  }
+  deleteUser(userId: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/User/remove-user/${userId}`, {withCredentials: true});
+  }
 }

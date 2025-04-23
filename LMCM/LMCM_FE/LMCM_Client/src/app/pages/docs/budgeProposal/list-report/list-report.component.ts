@@ -20,6 +20,7 @@ import { BudgetApiService } from '../../../../apis/budgetProposalAPIs/budget-api
 import { searchService } from '../../../service/search/search-service.service';
 import { ReportCreateEditComponent } from '../report-create-edit/report-create-edit.component';
 import { ActivatedRoute } from '@angular/router';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 interface PagingRequest {
   searchKey?: string;
@@ -48,7 +49,8 @@ interface PagingRequest {
     FormsModule,
     ToastModule,
     ReportDetailComponent,
-    ReportCreateEditComponent
+    ReportCreateEditComponent,
+    ProgressSpinnerModule
   ],
   templateUrl: './list-report.component.html',
   styleUrls: ['./list-report.component.scss'],
@@ -83,6 +85,7 @@ export class ListReportComponent implements OnInit {
 
   detailReport: any;
   proposalId: string | null = null;
+  isLoading: boolean = false;
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -167,12 +170,15 @@ export class ListReportComponent implements OnInit {
       acceptLabel: 'Đồng ý',
       rejectLabel: 'Hủy',
       accept: () => {
+        this.isLoading = true;
         this.reportService.deleteBudget(id, authorId!).subscribe(
           (response) => {
             this.loadBudget();
+            this.isLoading = false;
             this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
           },
           (error) => {
+            this.isLoading = false;
             this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
           }
         );

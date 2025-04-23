@@ -183,7 +183,7 @@ namespace LMCM_BE.Services.ContractService
 
             if (await _acceptanceRecordRepository.HasActiveAcceptanceRecordsAsync(contractId))
             {
-                throw new InvalidOperationException("Không thể xóa do có tờ trình lệ thuộc");
+                throw new InvalidOperationException("Không thể xóa do có biên bản nghiệm thu lệ thuộc");
             }
 
             try

@@ -1,0 +1,2 @@
+export const MIN_CONTRACT_VALUE = 100_000;
+export const MAX_CONTRACT_VALUE = 100_000_000;

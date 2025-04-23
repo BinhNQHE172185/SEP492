@@ -17,6 +17,8 @@ import { TableModule } from 'primeng/table';
 import { SelectModule } from 'primeng/select';
 import { OpenAIApiService } from '../../../../apis/openAIAPIs/openAI-api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { MAX_TODAY_DATE, MIN_COMPLETION_DATE } from '../../../../../shared/Constants/DateConstants';
+import { MAX_CONTRACT_VALUE, MIN_CONTRACT_VALUE } from '../../../../../shared/Constants/PriceConstants';
 
 @Component({
   selector: 'app-contract-create-edit',
@@ -71,6 +73,10 @@ export class ContractCreateEditComponent implements OnChanges {
   showCalculationPanel: boolean = false;
   prompt: string = `Hãy phân tích nội dung hợp đồng và trích xuất các thông tin`
   isLoading: boolean = false;
+  minCompletionDate = MIN_COMPLETION_DATE;
+  maxCompletionDate = MAX_TODAY_DATE;
+  minPriceValue = MIN_CONTRACT_VALUE;
+  maxPriceValue = MAX_CONTRACT_VALUE;
 
   constructor(
     private messageService: MessageService,

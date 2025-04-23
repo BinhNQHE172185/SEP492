@@ -31,7 +31,7 @@
             <ng-template pTemplate="body" let-user>
                 <tr>
                     <td>{{ user.name || '(Đang chờ cập nhật)' }}</td>
-                    <td pEditableColumn pEditableColumnField="email">
+                    <td pEditableColumn pEditableColumnField="email" [pEditableColumnDisabled]="user.status !== 1">
                         <p-cellEditor>
                             <ng-template pTemplate="input">
                                 <div class="flex items-center gap-1">

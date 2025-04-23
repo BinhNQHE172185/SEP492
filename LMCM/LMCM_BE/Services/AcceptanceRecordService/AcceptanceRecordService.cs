@@ -53,7 +53,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
             bool isHod = false;
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new UnauthorizedAccessException("Không tìm thấy người dùng");
-            if (!user.Roles.Contains("Head of Department")) isHod = true;
+            if (user.Roles.Contains("Head of Department")) isHod = true;
 
             var (items, totalCount) = await _acceptanceRecordRepository.GetAcceptanceRecordsAsync(isHod, user.Id, searchKey, pageIndex, pageSize);
             var data = _mapper.Map<List<AcceptanceRecordListDto>>(items);

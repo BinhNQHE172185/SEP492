@@ -226,22 +226,11 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
           this.closeDialog();
         },
         (error) => {
-          const errors = error.error.errors;
-          const allMessages = [];
-
-          for (const key in errors) {
-            if (errors.hasOwnProperty(key)) {
-              allMessages.push(...errors[key]);
-            }
-          }
-
-          allMessages.forEach(msg => {
-            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg });
-          });
+          this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
         }
       );
     } else {
-      if (this.report.file === null || this.report.file === undefined) {
+      if (this.file === null || this.file === undefined) {
         this.messageService.add({
           severity: 'warn',
           summary: 'Cảnh báo',
@@ -257,18 +246,7 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
           this.closeDialog();
         },
         (error) => {
-          const errors = error.error.errors;
-          const allMessages = [];
-
-          for (const key in errors) {
-            if (errors.hasOwnProperty(key)) {
-              allMessages.push(...errors[key]);
-            }
-          }
-
-          allMessages.forEach(msg => {
-            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg });
-          });
+          this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
         }
       );
     }

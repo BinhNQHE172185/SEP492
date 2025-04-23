@@ -94,6 +94,17 @@ namespace LMCM_BE.Controllers.CurriculumControllers
         {
             if (file == null || file.Length == 0)
                 return BadRequest(new { message = "Vui lòng tải lên tệp Excel hợp lệ." });
+            // Check file extension
+            var allowedExtensions = new[] { ".xlsx", ".xls" };
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (!allowedExtensions.Contains(extension))
+                return BadRequest(new { message = "Chỉ chấp nhận các tệp Excel có định dạng .xlsx hoặc .xls." });
+
+            // Check file size (max 5MB)
+            const long maxSize = 5 * 1024 * 1024;
+            if (file.Length > maxSize)
+                return BadRequest(new { message = "Dung lượng tệp không được vượt quá 5MB." });
+
             try
             {
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;

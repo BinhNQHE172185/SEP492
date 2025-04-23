@@ -93,7 +93,7 @@ namespace LMCM_BE.Controllers.UserControllers
                 {
                     return Ok(data);
                 }
-                return NotFound(new { message = "User not found" });
+                return NotFound(new { message = "Không tìm thấy người dùng" });
             }
             catch (Exception ex)
             {
@@ -148,7 +148,7 @@ namespace LMCM_BE.Controllers.UserControllers
             }
             catch (ArgumentException ex)
             {
-                return NotFound(new { success = false, message = ex.Message });
+                return NotFound(new { success = false, message = "Không tìm thấy nhân viên." });
             }
             catch (InvalidOperationException ex)
             {
@@ -185,7 +185,7 @@ namespace LMCM_BE.Controllers.UserControllers
             }
             catch (ArgumentException ex)
             {
-                return NotFound(new { success = false, message = ex.Message });
+                return NotFound(new { success = false, message = "Không tìm thấy nhân viên."  });
             }
             catch (InvalidOperationException ex)
             {

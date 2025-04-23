@@ -10,6 +10,6 @@
 
         public decimal? FinalPrice { get; set; }
         public Guid? contractId { get; set; }
-        public decimal? contractTitle { get; set; }
+        public string? contractTitle { get; set; }
     }
 }

@@ -22,13 +22,6 @@
                         </small>
                     </div>
                     <div class="flex flex-col gap-2">
-                        <label class="block font-semibold text-orange-500">Giá cả quyết toán</label>
-                        <p-inputNumber [(ngModel)]="report.finalPrice" mode="currency" currency="VND" locale="vi-VN" />
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="flex flex-col gap-2">
                         <label class="block font-semibold text-orange-500">Chọn hợp đồng <span
                                 class="text-red-500">*</span></label>
                         <p-select [options]="contract" [(ngModel)]="report.contractId" optionLabel="title"
@@ -44,10 +37,29 @@
                             </ng-template>
                         </p-select>
                     </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex flex-col gap-2">
+                        <label class="block font-semibold text-orange-500">Giá cả quyết toán <span
+                                class="text-red-500">*</span></label>
+                        <p-inputNumber [(ngModel)]="report.finalPrice" name="finalPrice" #contractValueRef="ngModel"
+                            required mode="currency" currency="VND" locale="vi-VN" placeholder="Nhập giá trị"
+                            [min]="minPriceValue" [max]="maxPriceValue">
+                        </p-inputNumber>
+                        <small class="text-red-500"
+                            *ngIf="contractValueRef.invalid && (contractValueRef.dirty || contractValueRef.touched)">
+                            <span *ngIf="contractValueRef.errors?.['required']">Vui lòng điền giá cả quyết toán.</span>
+                        </small>
+                        <div class="mt-1 text-sm text-gray-500 italic">
+                            * Giá trị từ <strong>100.000₫</strong> đến <strong>100.000.000₫</strong>
+                        </div>
+                    </div>
                     <div class="flex flex-col gap-2">
                         <label class="block font-semibold text-orange-500">Ngày nghiệm thu</label>
-                        <p-datepicker [(ngModel)]="report.acceptanceDate" dateFormat="dd/mm/yy" [showIcon]="true"
-                            class="w-full" appendTo="body">
+                        <p-datepicker placeholder="Ngày nghiệm thu" [(ngModel)]="report.acceptanceDate"
+                            dateFormat="dd/mm/yy" [showIcon]="true" class="w-full" appendTo="body"
+                            [minDate]="minCompletionDate" [maxDate]="maxCompletionDate">
                         </p-datepicker>
                     </div>
                 </div>

@@ -20,7 +20,8 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <label class="block font-semibold text-orange-500">Chọn chuyên gia<span class="text-red-500">*</span></label>
+            <label class="block font-semibold text-orange-500">Chọn chuyên gia<span
+                class="text-red-500">*</span></label>
             <p-select [options]="contractor" [(ngModel)]="contract.contractorId" optionLabel="contractorName"
               placeholder="Chọn chuyên gia" [filter]="true" class="w-full border border-gray-300 rounded"
               optionValue="contractorId" appendTo="body">
@@ -57,12 +58,14 @@
           <div class="flex flex-col gap-2">
             <label class="block font-semibold text-orange-500">Ngày bắt đầu </label>
             <p-datepicker [(ngModel)]="contract.startDate" dateFormat="dd-mm-yy" [showIcon]="true" class="w-full"
-              appendTo="body"></p-datepicker>
+              appendTo="body" [minDate]="minCompletionDate" [maxDate]="maxCompletionDate"
+              placeholder="Ngày bắt đầu"></p-datepicker>
           </div>
           <div class="flex flex-col gap-2">
             <label class="block font-semibold text-orange-500">Ngày kết thúc </label>
             <p-datepicker [(ngModel)]="contract.endDate" dateFormat="dd-mm-yy" [showIcon]="true" class="w-full"
-              appendTo="body"></p-datepicker>
+              appendTo="body" [minDate]="minCompletionDate" [maxDate]="maxCompletionDate"
+              placeholder="Ngày kết thúc"></p-datepicker>
           </div>
         </div>
 
@@ -70,23 +73,20 @@
           <label class="block font-semibold text-orange-500">
             Giá trị hợp đồng <span class="text-red-500">*</span>
           </label>
-          <p-inputNumber
-            [(ngModel)]="contract.contractValue"
-            name="contractValue"
-            #contractValueRef="ngModel"
-            required
-            min="0"
-            mode="currency"
-            currency="VND"
-            locale="vi-VN"
-            placeholder="Nhập giá trị">
+          <p-inputNumber [(ngModel)]="contract.contractValue" name="contractValue" #contractValueRef="ngModel" required
+            mode="currency" currency="VND" locale="vi-VN" placeholder="Nhập giá trị" [min]="minPriceValue"
+            [max]="maxPriceValue">
           </p-inputNumber>
-        
-          <small class="text-red-500" *ngIf="contractValueRef.invalid && (contractValueRef.dirty || contractValueRef.touched)">
+
+          <small class="text-red-500"
+            *ngIf="contractValueRef.invalid && (contractValueRef.dirty || contractValueRef.touched)">
             <span *ngIf="contractValueRef.errors?.['required']">Giá trị hợp đồng là bắt buộc.</span>
-            <span *ngIf="contractValueRef.errors?.['min']">Giá trị hợp đồng phải lớn hơn hoặc bằng 0.</span>
           </small>
+          <div class="mt-1 text-sm text-gray-500 italic">
+            * Giá trị từ <strong>100.000₫</strong> đến <strong>100.000.000₫</strong>
+          </div>
         </div>
+
 
         <!-- File đính kèm -->
         <div class="flex flex-col gap-2">

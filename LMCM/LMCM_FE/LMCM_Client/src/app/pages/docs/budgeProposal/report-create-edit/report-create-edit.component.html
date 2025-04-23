@@ -22,18 +22,15 @@
                 <div class="flex gap-4">
                     <div *ngIf="selectedReportId" class="flex flex-col grow gap-2">
                         <label class="block font-semibold"> Người tạo </label>
-                        <input disabled pInputText [(ngModel)]="addAuthor" #addDateRef="ngModel"
-                            class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập tên người viết" />
-                        <small class="text-red-500"
-                            *ngIf="addDateRef.invalid && (addDateRef.dirty || addDateRef.touched)">
-                            <span *ngIf="addDateRef.errors?.['required']">Vui lòng chọn ngày.</span>
-                        </small>
+                        <input disabled pInputText [(ngModel)]="addAuthor"
+                            class="w-full p-2 border border-gray-300 rounded" />
                     </div>
 
                     <div class="flex flex-col grow gap-2">
                         <label class="block font-semibold ">Ngày <span class="text-red-500">*</span></label>
                         <p-datepicker [(ngModel)]="addDate" dateFormat="dd/mm/yy" [showIcon]="true" class="w-full"
-                            appendTo="body"></p-datepicker>
+                            placeholder="Vui lòng chọn ngày" appendTo="body" [minDate]="minCompletionDate"
+                            [maxDate]="maxCompletionDate"></p-datepicker>
                     </div>
                 </div>
                 <div class="flex flex-col gap-2">

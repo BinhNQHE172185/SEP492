@@ -7,7 +7,6 @@ import { TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { Subscription } from 'rxjs';
-import { LearningMaterialApiService } from '../../../apis/learning-materialAPIs/learning-material-api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
@@ -23,11 +22,13 @@ import { HistoryOfChangeApiService } from '../../../apis/historyAPIs/history-api
 import { searchService } from '../../service/search/search-service.service';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { MAX_TODAY_DATE, MIN_COMPLETION_DATE } from '../../../../shared/Constants/DateConstants';
+import { SelectModule } from 'primeng/select';
 
 @Component({
     standalone: true,
     imports: [
-        ProgressSpinnerModule, AutoCompleteModule, TextareaModule, ConfirmDialogModule, DatePickerModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, CalendarModule, DropdownModule, InputTextModule],
+        SelectModule, ProgressSpinnerModule, AutoCompleteModule, TextareaModule, ConfirmDialogModule, DatePickerModule, ToastModule, FileUploadModule, DialogModule, InputGroupModule, FormsModule, CommonModule, TableModule, ButtonModule, CardModule, InputTextModule, CalendarModule, DropdownModule, InputTextModule],
     selector: 'app-history-of-change',
     templateUrl: './history-of-change.component.html',
     styleUrls: ['./history-of-change.component.scss'],
@@ -45,7 +46,8 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
     selectedItem: any = {};
     newHistory: any = {};
     displayEditDialog: boolean = false;
-
+    minCompletionDate = MIN_COMPLETION_DATE;
+    maxCompletionDate = MAX_TODAY_DATE;
     editHistory: any = {};
 
     contract: any[] = [];

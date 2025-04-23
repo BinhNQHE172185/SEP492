@@ -91,15 +91,16 @@
                 <div class="md:w-1/2 flex flex-col gap-4">
                     <div class="flex flex-col gap-2">
                         <label class="text-sm">Mã môn <span class="text-orange-500">*</span></label>
-                        <p-dropdown [options]="syllabus" optionLabel="courseCode" [(ngModel)]="newHistory.syllabus"
+                        <p-select [options]="syllabus" optionLabel="courseCode" [(ngModel)]="newHistory.syllabus"
                             placeholder="Chọn mã môn" [filter]="true" class="w-full">
-                        </p-dropdown>
+                        </p-select>
                     </div>
 
                     <div class="flex flex-col gap-2">
                         <label class="text-sm">Ngày hoàn thành <span class="text-orange-500">*</span></label>
                         <p-datepicker [(ngModel)]="newHistory.completionDate" dateFormat="dd-mm-yy" showIcon="true"
-                            placeholder="Ngày hoàn thành"></p-datepicker>
+                            placeholder="Ngày hoàn thành" [minDate]="minCompletionDate"
+                            [maxDate]="maxCompletionDate"></p-datepicker>
                     </div>
 
                     <div class="flex flex-col gap-2">
@@ -113,16 +114,16 @@
                 <div class="md:w-1/2 flex flex-col gap-4">
                     <div class="flex flex-col gap-2">
                         <label class="text-sm">Hợp đồng <span class="text-orange-500">*</span></label>
-                        <p-dropdown [options]="contract" optionLabel="title" optionValue="contractId"
+                        <p-select [options]="contract" optionLabel="title" optionValue="contractId"
                             [(ngModel)]="newHistory.contractId" placeholder="Hợp đồng" [filter]="true" class="w-full">
-                        </p-dropdown>
+                        </p-select>
                     </div>
 
                     <div class="flex flex-col gap-2">
                         <label class="text-sm">Loại thay đổi <span class="text-orange-500">*</span></label>
-                        <p-dropdown [options]="changeTypeOptions" [(ngModel)]="newHistory.changeType"
+                        <p-select [options]="changeTypeOptions" [(ngModel)]="newHistory.changeType"
                             optionLabel="label" optionValue="value" placeholder="Chọn loại thay đổi" class="w-full">
-                        </p-dropdown>
+                        </p-select>
                     </div>
                 </div>
             </div>

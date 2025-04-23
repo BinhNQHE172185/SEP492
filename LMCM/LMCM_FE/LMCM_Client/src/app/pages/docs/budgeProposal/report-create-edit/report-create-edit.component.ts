@@ -13,6 +13,7 @@ import { ToastModule } from 'primeng/toast';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { MAX_TODAY_DATE, MIN_COMPLETION_DATE } from '../../../../../shared/Constants/DateConstants';
 
 @Component({
   selector: 'app-report-create-edit',
@@ -42,6 +43,9 @@ export class ReportCreateEditComponent {
   uploadedFiles: any[] = [];
   file: any;
   calendarValue: any = null;
+
+  minCompletionDate = MIN_COMPLETION_DATE;
+  maxCompletionDate = MAX_TODAY_DATE;
 
   constructor(
     private messageService: MessageService,
@@ -83,7 +87,7 @@ export class ReportCreateEditComponent {
   }
 
   saveReport() {
-    
+
     const reportData = new FormData();
     reportData.append("title", this.addTitle);
     reportData.append("proposalDate", this.addDate ? this.addDate.toLocaleDateString('en-CA') : '');
@@ -100,13 +104,13 @@ export class ReportCreateEditComponent {
         (error) => {
           const errors = error.error.errors;
           const allMessages = [];
-        
+
           for (const key in errors) {
             if (errors.hasOwnProperty(key)) {
               allMessages.push(...errors[key]);
             }
           }
-        
+
           allMessages.forEach(msg => {
             this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg });
           });
@@ -125,13 +129,13 @@ export class ReportCreateEditComponent {
         (error) => {
           const errors = error.error.errors;
           const allMessages = [];
-        
+
           for (const key in errors) {
             if (errors.hasOwnProperty(key)) {
               allMessages.push(...errors[key]);
             }
           }
-        
+
           allMessages.forEach(msg => {
             this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg });
           });
@@ -151,7 +155,7 @@ export class ReportCreateEditComponent {
   downloadFile(url: string) {
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', 'file'); 
+    link.setAttribute('download', 'file');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

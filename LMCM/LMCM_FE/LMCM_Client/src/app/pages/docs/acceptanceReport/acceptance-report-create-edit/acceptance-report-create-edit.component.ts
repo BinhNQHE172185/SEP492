@@ -16,6 +16,8 @@ import { TableModule } from 'primeng/table';
 import { SelectModule } from 'primeng/select';
 import { OpenAIApiService } from '../../../../apis/openAIAPIs/openAI-api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { MAX_TODAY_DATE, MIN_COMPLETION_DATE } from '../../../../../shared/Constants/DateConstants';
+import { MAX_CONTRACT_VALUE, MIN_CONTRACT_VALUE } from '../../../../../shared/Constants/PriceConstants';
 
 @Component({
   selector: 'app-acceptance-report-create-edit',
@@ -68,8 +70,13 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
   prompt: string = `Hãy phân tích nội dung biên bản nghiệm thu và trích xuất các thông tin`
   isLoading: boolean = false;
 
+  minCompletionDate = MIN_COMPLETION_DATE;
+  maxCompletionDate = MAX_TODAY_DATE;
+  minPriceValue = MIN_CONTRACT_VALUE;
+  maxPriceValue = MAX_CONTRACT_VALUE;
+
   report: any;
-  contract: { contractId: string; contractValue: string }[] = [];
+  contract: { contractId: string; contractValue: string; startDate: Date }[] = [];
 
   constructor(
     private messageService: MessageService,
@@ -210,7 +217,14 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
       return;
     }
 
-
+    if (selectedContract && this.report.acceptanceDate.toLocaleDateString('en-CA') < selectedContract.startDate) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Cảnh báo',
+        detail: `Ngày nghiệm thu không được nhỏ hơn ngày bắt đầu hợp đồng.`
+      });
+      return;
+    }
 
     const reportData = new FormData();
     reportData.append("title", this.report.title);

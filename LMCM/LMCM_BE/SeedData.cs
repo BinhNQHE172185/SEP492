@@ -59,7 +59,7 @@ namespace LMCM_BE
                     {
                         UserName = hodEmail,
                         Email = hodEmail,
-                        Status = UserStatus.Active,
+                        Status = UserStatus.Pending,
                     };
 
                     var result = await userManager.CreateAsync(newHOD);

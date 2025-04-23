@@ -11,6 +11,7 @@ namespace LMCM_BE.DTOs.AcceptanceRecordDtos
         public DateTime? AcceptanceDate { get; set; }
 
         public decimal? FinalPrice { get; set; }
+
         public virtual ContractDetailDto Contract { get; set; } = null!;
     }
 }

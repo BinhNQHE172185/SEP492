@@ -12,6 +12,7 @@ using LMCM_BE.Shared.Constant;
 using LMCM_BE.UnitOfWork;
 using LMCM_BE.Utilities;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Concurrent;
 
 namespace LMCM_BE.Services.BudgetPropasalService
 {
@@ -25,7 +26,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
         private readonly string _budgetProposalFolderId;
-
+        private static readonly ConcurrentDictionary<string, bool> _fileLocks = new();
         public BudgetProposalService(IBudgetProposalRepository budgetPropasalRepository, IContractRepository contractRepository,
             IGoogleDriveService googleDriveService, IMapper mapper, IFileHelper fileHelper,
             IUnitOfWork unitOfWork,IUserService userService, IConfiguration configuration)
@@ -45,7 +46,6 @@ namespace LMCM_BE.Services.BudgetPropasalService
             {
                 throw new ArgumentNullException(nameof(proposal), "Dữ liệu tờ trình là bắt buộc.");
             }
-
             if (await _budgetProposalRepository.GetDuplicatedTitleIdAsync(proposal.Title) != null)
             {
                 throw new InvalidOperationException("Tiêu đề đã tồn tại.");
@@ -54,6 +54,16 @@ namespace LMCM_BE.Services.BudgetPropasalService
             UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new UnauthorizedAccessException("Không tìm thấy người dùng");
+
+            // Generate a unique lock key for the user and contract title combination
+            var lockKey = $"{user.Id}_{proposal.Title}";
+
+            // Check if the contract is being processed already
+            if (!_fileLocks.TryAdd(lockKey, true))  // Try to add a lock
+            {
+                throw new InvalidOperationException("Tờ trình này đang được xử lý. Vui lòng đợi.");
+            }
+
             // Step 1: Upload contract file to Google Drive (if provided)
             string? fileUrl = null;
 

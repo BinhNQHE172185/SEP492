@@ -12,6 +12,7 @@ using LMCM_BE.Services.UserService;
 using LMCM_BE.Shared.Constant;
 using LMCM_BE.UnitOfWork;
 using LMCM_BE.Utilities;
+using System.Collections.Concurrent;
 
 namespace LMCM_BE.Services.ContractService
 {
@@ -27,6 +28,8 @@ namespace LMCM_BE.Services.ContractService
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
         private readonly string _contractFolderId;
+        private static readonly ConcurrentDictionary<string, bool> _fileLocks = new();
+
         public ContractService(IContractRepository contractRepository, 
             IGoogleDriveService googleDriveService,
             IMapper mapper, 
@@ -73,6 +76,15 @@ namespace LMCM_BE.Services.ContractService
             if (await _contractorRepository.GetActiveContractorByIdAsync(contractDto.ContractorId) == null)
             {
                 throw new KeyNotFoundException("Chuyên gia được chọn không tồn tại");
+            }
+
+            // Generate a unique lock key for the user and contract title combination
+            var lockKey = $"{user.Id}_{contractDto.Title}";
+
+            // Check if the contract is being processed already
+            if (!_fileLocks.TryAdd(lockKey, true))  // Try to add a lock
+            {
+                throw new InvalidOperationException("Hợp đồng này đang được xử lý. Vui lòng đợi.");
             }
 
             // Step 1: Upload contract file to Google Drive (if provided)

@@ -12,6 +12,7 @@ using LMCM_BE.Services.UserService;
 using LMCM_BE.Shared.Constant;
 using LMCM_BE.UnitOfWork;
 using LMCM_BE.Utilities;
+using System.Collections.Concurrent;
 
 namespace LMCM_BE.Services.AcceptanceRecordService
 {
@@ -25,7 +26,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
         private readonly IUserService _userService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly string _acceptanceRecordFolderId;
-
+        private static readonly ConcurrentDictionary<string, bool> _fileLocks = new();
         public AcceptanceRecordService(
             IAcceptanceRecordRepository 
             acceptanceRecordRepository, 
@@ -85,6 +86,15 @@ namespace LMCM_BE.Services.AcceptanceRecordService
             if (await _contractRepository.GetActiveContractByIdAsync(dto.ContractId) == null)
             {
                 throw new KeyNotFoundException("Hợp đồng được chọn không tồn tại");
+            }
+
+            // Generate a unique lock key for the user and contract title combination
+            var lockKey = $"{user.Id}_{dto.Title}";
+
+            // Check if the contract is being processed already
+            if (!_fileLocks.TryAdd(lockKey, true))  // Try to add a lock
+            {
+                throw new InvalidOperationException("Biên bản nghiệm thu này đang được xử lý. Vui lòng đợi.");
             }
 
             string? fileUrl = null;

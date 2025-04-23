@@ -9,6 +9,7 @@ using LMCM_BE.Services.UserService;
 using LMCM_BE.Shared.Constant;
 using LMCM_BE.UnitOfWork;
 using LMCM_BE.Utilities;
+using System.Collections.Concurrent;
 
 namespace LMCM_BE.Services.DocumentTemplateService
 {
@@ -21,6 +22,7 @@ namespace LMCM_BE.Services.DocumentTemplateService
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
         private readonly string _documentTemplateFolderId;
+        private static readonly ConcurrentDictionary<string, bool> _fileLocks = new();
         public DocumentTemplateService(IDocumentTemplateRepository documentTemplateRepository,
             IGoogleDriveService googleDriveService, IMapper mapper, IFileHelper fileHelper,IUnitOfWork unitOfWork,
             IUserService userService, IConfiguration configuration)
@@ -42,6 +44,15 @@ namespace LMCM_BE.Services.DocumentTemplateService
             UserProfileResponseDto user =await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
+            // Generate a unique lock key for the user and template name combination
+            var lockKey = $"{user.Id}_{template.TemplateName}";
+
+            // Check if the contract is being processed already
+            if (!_fileLocks.TryAdd(lockKey, true))  // Try to add a lock
+            {
+                throw new InvalidOperationException("Hợp đồng này đang được xử lý. Vui lòng đợi.");
+            }
+
             // Step 1: Upload template file to Google Drive (if provided)
             string? fileUrl = null;
 

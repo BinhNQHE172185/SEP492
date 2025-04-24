@@ -11,7 +11,6 @@ using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Services.UserService;
 using LMCM_BE.Shared.Constant;
 using LMCM_BE.UnitOfWork;
-using LMCM_BE.Utilities;
 
 namespace LMCM_BE.Services.ContractService
 {
@@ -20,7 +19,6 @@ namespace LMCM_BE.Services.ContractService
         private readonly IContractRepository _contractRepository;
         private readonly IGoogleDriveService _googleDriveService;
         private readonly IMapper _mapper;
-        private readonly IFileHelper _fileHelper;
         private readonly IAcceptanceRecordRepository _acceptanceRecordRepository;
         private readonly IBudgetProposalRepository _budgetProposalRepository;
         private readonly IContractorRepository _contractorRepository;
@@ -30,7 +28,6 @@ namespace LMCM_BE.Services.ContractService
         public ContractService(IContractRepository contractRepository, 
             IGoogleDriveService googleDriveService,
             IMapper mapper, 
-            IFileHelper fileHelper, 
             IAcceptanceRecordRepository acceptanceRecordRepository,
             IBudgetProposalRepository budgetProposalRepository,
             IContractorRepository contractorRepository,
@@ -41,7 +38,6 @@ namespace LMCM_BE.Services.ContractService
             _contractRepository = contractRepository;
             _googleDriveService = googleDriveService;
             _mapper = mapper;
-            _fileHelper = fileHelper;
             _acceptanceRecordRepository = acceptanceRecordRepository;
             _budgetProposalRepository = budgetProposalRepository;
             _contractorRepository = contractorRepository;
@@ -246,12 +242,6 @@ namespace LMCM_BE.Services.ContractService
 
             if (newContract.File != null)
             {
-                // Validate if the new file is different from the existing one
-                var uploadedFileHash = await _fileHelper.ComputeFileHashAsync(newContract.File);
-                var existingFileHash = await _googleDriveService.ComputeGoogleDriveFileHashAsync(contract.Url);
-
-                if (uploadedFileHash != existingFileHash)
-                {
                     fileUrl = await _googleDriveService.UploadFileAsync(newContract.File,_contractFolderId);
                     if (string.IsNullOrWhiteSpace(fileUrl))
                         throw new Exception("Tải file thất bại.");
@@ -260,7 +250,6 @@ namespace LMCM_BE.Services.ContractService
 
                     // Update the proposal's file URL **only if a new file was uploaded**
                     contract.Url = fileUrl;
-                }
             }
             try
             {

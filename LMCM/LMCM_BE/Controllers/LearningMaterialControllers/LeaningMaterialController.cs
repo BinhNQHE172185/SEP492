@@ -73,6 +73,20 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
         {
             try
             {
+                // Check if ModelState is valid (DTO validation will catch issues)
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                  .Select(e => e.ErrorMessage)
+                                                  .ToList();
+
+                    return BadRequest(new
+                    {
+                        Success = false,
+                        Message = "Dữ liệu đầu vào không hợp lệ.",
+                        Errors = errors
+                    });
+                }
                 bool isSuccess = await _learningMaterialService.InsertLearningMaterialAsync(material);
                 if (isSuccess)
                     return Ok(new
@@ -105,6 +119,20 @@ namespace LMCM_BE.Controllers.LearningMaterialControllers
         {
             try
             {
+                // Check if ModelState is valid (DTO validation will catch issues)
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                  .Select(e => e.ErrorMessage)
+                                                  .ToList();
+
+                    return BadRequest(new
+                    {
+                        Success = false,
+                        Message = "Dữ liệu đầu vào không hợp lệ.",
+                        Errors = errors
+                    });
+                }
                 bool isSuccess = await _learningMaterialService.UpdateLearningMaterialAsync(id, material);
                 if (isSuccess)
                     return Ok(new

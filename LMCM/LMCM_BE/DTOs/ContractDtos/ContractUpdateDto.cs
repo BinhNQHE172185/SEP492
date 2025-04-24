@@ -29,7 +29,7 @@ namespace LMCM_BE.DTOs.ContractDtos
         [DataType(DataType.Date)]
         public DateTime? EndDate { get; set; }
 
-        [AllowedFileExtensions(new string[] { ".pdf" }, ErrorMessage = "Chỉ chấp nhận các tệp có định dạng .pdf")]
+        [AllowedFileExtensions(new string[] { ".pdf", ".docx" }, ErrorMessage = "Chỉ chấp nhận các tệp có định dạng .pdf hoặc .docx")]
         [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Dung lượng tệp không được vượt quá 5MB")]
         public IFormFile? File { get; set; }
     }

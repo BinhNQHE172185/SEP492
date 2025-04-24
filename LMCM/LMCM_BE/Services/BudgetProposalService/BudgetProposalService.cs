@@ -5,13 +5,10 @@ using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.BudgetPropasalRepository;
 using LMCM_BE.Repositories.ContractRepository;
-using LMCM_BE.Repositories.UserRepositoriy;
 using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Services.UserService;
 using LMCM_BE.Shared.Constant;
 using LMCM_BE.UnitOfWork;
-using LMCM_BE.Utilities;
-using Microsoft.EntityFrameworkCore;
 
 namespace LMCM_BE.Services.BudgetPropasalService
 {
@@ -21,25 +18,23 @@ namespace LMCM_BE.Services.BudgetPropasalService
         private readonly IContractRepository _contractRepository;
         private readonly IGoogleDriveService _googleDriveService;
         private readonly IMapper _mapper;
-        private readonly IFileHelper _fileHelper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
         private readonly string _budgetProposalFolderId;
 
         public BudgetProposalService(IBudgetProposalRepository budgetPropasalRepository, IContractRepository contractRepository,
-            IGoogleDriveService googleDriveService, IMapper mapper, IFileHelper fileHelper,
-            IUnitOfWork unitOfWork,IUserService userService, IConfiguration configuration)
+            IGoogleDriveService googleDriveService, IMapper mapper,
+            IUnitOfWork unitOfWork, IUserService userService, IConfiguration configuration)
         {
             _budgetProposalRepository = budgetPropasalRepository;
             _contractRepository = contractRepository;
             _googleDriveService = googleDriveService;
             _mapper = mapper;
-            _fileHelper = fileHelper;
             _unitOfWork = unitOfWork;
             _userService = userService;
             _budgetProposalFolderId = configuration["GoogleDriveFolders:BudgetProposal"];
         }
-        public async Task<bool> CreateBudgetProposalAsync( BudgetProposalInsertDto proposal)
+        public async Task<bool> CreateBudgetProposalAsync(BudgetProposalInsertDto proposal)
         {
             if (proposal == null)
             {
@@ -59,7 +54,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
 
             if (proposal.File != null)
             {
-                fileUrl = await _googleDriveService.UploadFileAsync(proposal.File,_budgetProposalFolderId);
+                fileUrl = await _googleDriveService.UploadFileAsync(proposal.File, _budgetProposalFolderId);
 
                 if (string.IsNullOrWhiteSpace(fileUrl))
                 {
@@ -99,7 +94,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
             if (proposalId == Guid.Empty)
                 throw new ArgumentNullException("Proposal ID bị trống.", nameof(proposalId));
 
-            var budgetProposal= await _budgetProposalRepository.GetBudgetProposalByIdAsync(proposalId);
+            var budgetProposal = await _budgetProposalRepository.GetBudgetProposalByIdAsync(proposalId);
 
             if (budgetProposal == null)
                 throw new KeyNotFoundException($"Không tìm thấy tờ trình với ID: {proposalId}");
@@ -115,13 +110,13 @@ namespace LMCM_BE.Services.BudgetPropasalService
             return budgetProposalDto;
         }
 
-        public async Task<PagedResult<BudgetProposalListDto>> GetBudgetProposalsAsync( string? searchKey, int pageIndex = 1, int pageSize = 10)
+        public async Task<PagedResult<BudgetProposalListDto>> GetBudgetProposalsAsync(string? searchKey, int pageIndex = 1, int pageSize = 10)
         {
-            bool isHod=false;
+            bool isHod = false;
             UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("Không tìm thấy người dùng");
-            if (user.Roles.Contains("Head of Department")) isHod=true;
+            if (user.Roles.Contains("Head of Department")) isHod = true;
 
             var (items, totalCount) = await _budgetProposalRepository.GetBudgetProposalsAsync(isHod, user.Id, searchKey, pageIndex, pageSize);
             var data = _mapper.Map<List<BudgetProposalListDto>>(items);
@@ -135,7 +130,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
             };
         }
 
-        public async Task<List<BudgetProposalListDto>> GetBudgetProposalsAsync( string? searchKey)
+        public async Task<List<BudgetProposalListDto>> GetBudgetProposalsAsync(string? searchKey)
         {
             bool isHod = false;
             UserProfileResponseDto user = await _userService.GetProfileFromCookie();
@@ -143,14 +138,14 @@ namespace LMCM_BE.Services.BudgetPropasalService
                 throw new Exception("Không tìm thấy người dùng");
             if (user.Roles.Contains("Head of Department")) isHod = true;
 
-            var items= await _budgetProposalRepository.GetBudgetProposalsAsync(isHod,user.Id,searchKey);
+            var items = await _budgetProposalRepository.GetBudgetProposalsAsync(isHod, user.Id, searchKey);
 
             var data = _mapper.Map<List<BudgetProposalListDto>>(items);
 
             return data;
         }
 
-        public async Task<bool> SoftDeleteBudgetProposalAsync( Guid proposalId)
+        public async Task<bool> SoftDeleteBudgetProposalAsync(Guid proposalId)
         {
             var budgetProposal = await _budgetProposalRepository.GetActiveBudgetProposalByIdAsync(proposalId);
 
@@ -173,19 +168,20 @@ namespace LMCM_BE.Services.BudgetPropasalService
                 await _unitOfWork.BeginTransactionAsync();
 
                 budgetProposal.Status = GenericStatus.Inactive;
-                budgetProposal.UpdatedAt = DateTime.UtcNow; 
+                budgetProposal.UpdatedAt = DateTime.UtcNow;
 
                 await _budgetProposalRepository.UpdateBudgetProposalAsync(budgetProposal);
                 await _unitOfWork.CommitAsync();
                 return true;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 await _unitOfWork.RollbackAsync();
                 throw new Exception(ex.Message);
             }
         }
 
-        public async Task<bool> UpdateBudgetProposalAsync( Guid proposalId, BudgetProposalUpdateDto newProposal)
+        public async Task<bool> UpdateBudgetProposalAsync(Guid proposalId, BudgetProposalUpdateDto newProposal)
         {
             if (proposalId == Guid.Empty)
                 throw new ArgumentNullException("Id không được trống.", nameof(proposalId));
@@ -217,21 +213,15 @@ namespace LMCM_BE.Services.BudgetPropasalService
 
             if (newProposal.File != null)
             {
-                // Validate if the new file is different from the existing one
-                var uploadedFileHash = await _fileHelper.ComputeFileHashAsync(newProposal.File);
-                var existingFileHash = await _googleDriveService.ComputeGoogleDriveFileHashAsync(proposal.Url);
+                fileUrl = await _googleDriveService.UploadFileAsync(newProposal.File, _budgetProposalFolderId);
+                if (string.IsNullOrWhiteSpace(fileUrl))
+                    throw new Exception("Tải file thất bại.");
 
-                if (uploadedFileHash != existingFileHash)
-                {
-                    fileUrl = await _googleDriveService.UploadFileAsync(newProposal.File,_budgetProposalFolderId);
-                    if (string.IsNullOrWhiteSpace(fileUrl))
-                        throw new Exception("Tải file thất bại.");
+                await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email, "reader");
 
-                    await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email, "reader");
+                // Update the proposal's file URL **only if a new file was uploaded**
+                proposal.Url = fileUrl;
 
-                    // Update the proposal's file URL **only if a new file was uploaded**
-                    proposal.Url = fileUrl;
-                }
             }
             try
             {

@@ -8,7 +8,6 @@ using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Services.UserService;
 using LMCM_BE.Shared.Constant;
 using LMCM_BE.UnitOfWork;
-using LMCM_BE.Utilities;
 
 namespace LMCM_BE.Services.DocumentTemplateService
 {
@@ -17,19 +16,17 @@ namespace LMCM_BE.Services.DocumentTemplateService
         private readonly IDocumentTemplateRepository _documentTemplateRepository;
         private readonly IGoogleDriveService _googleDriveService;
         private readonly IMapper _mapper;
-        private readonly IFileHelper _fileHelper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
         private readonly string _documentTemplateFolderId;
         public DocumentTemplateService(IDocumentTemplateRepository documentTemplateRepository,
-            IGoogleDriveService googleDriveService, IMapper mapper, IFileHelper fileHelper,IUnitOfWork unitOfWork,
+            IGoogleDriveService googleDriveService, IMapper mapper, IUnitOfWork unitOfWork,
             IUserService userService, IConfiguration configuration)
         {
             _documentTemplateRepository = documentTemplateRepository;
             _googleDriveService = googleDriveService;
             _mapper = mapper;
-            _fileHelper = fileHelper;
-            _unitOfWork = unitOfWork;   
+            _unitOfWork = unitOfWork;
             _userService = userService;
             _documentTemplateFolderId = configuration["GoogleDriveFolders:DocumentTemplate"];
         }
@@ -39,7 +36,7 @@ namespace LMCM_BE.Services.DocumentTemplateService
             {
                 throw new ArgumentNullException(nameof(template), "Template data is required.");
             }
-            UserProfileResponseDto user =await _userService.GetProfileFromCookie();
+            UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
                 throw new Exception("User not found");
             // Step 1: Upload template file to Google Drive (if provided)
@@ -48,7 +45,7 @@ namespace LMCM_BE.Services.DocumentTemplateService
             if (template.File != null)
             {
 
-                fileUrl = await _googleDriveService.UploadFileAsync(template.File,_documentTemplateFolderId);
+                fileUrl = await _googleDriveService.UploadFileAsync(template.File, _documentTemplateFolderId);
 
                 if (string.IsNullOrWhiteSpace(fileUrl))
                 {
@@ -66,7 +63,7 @@ namespace LMCM_BE.Services.DocumentTemplateService
             newTemplate.TemplateId = Guid.NewGuid();
             newTemplate.Url = fileUrl;
             newTemplate.AuthorId = user.Id;
-            newTemplate.Status=DocumentTemplateStatus.Active;
+            newTemplate.Status = DocumentTemplateStatus.Active;
             newTemplate.CreatedAt = DateTime.UtcNow;
             newTemplate.UpdatedAt = DateTime.UtcNow;
 
@@ -88,8 +85,8 @@ namespace LMCM_BE.Services.DocumentTemplateService
         {
             if (templateId == Guid.Empty)
                 throw new ArgumentException("ID bị trống.", nameof(templateId));
-            
-            var template= await _documentTemplateRepository.GetTemplateByIdAsync(templateId);
+
+            var template = await _documentTemplateRepository.GetTemplateByIdAsync(templateId);
 
             if (template == null)
                 throw new KeyNotFoundException($"Không tìm được mẫu với ID: {templateId}");
@@ -131,7 +128,7 @@ namespace LMCM_BE.Services.DocumentTemplateService
             {
                 await _unitOfWork.BeginTransactionAsync();
                 template.Status = DocumentTemplateStatus.Inactive;
-                template.UpdatedAt = DateTime.UtcNow;  
+                template.UpdatedAt = DateTime.UtcNow;
                 await _documentTemplateRepository.UpdateTemplateAsync(template);
                 await _unitOfWork.CommitAsync();
                 return true;
@@ -169,21 +166,14 @@ namespace LMCM_BE.Services.DocumentTemplateService
 
             if (newTemplate.File != null)
             {
-                // Validate if the new file is different from the existing one
-                var uploadedFileHash = await _fileHelper.ComputeFileHashAsync(newTemplate.File);
-                var existingFileHash = await _googleDriveService.ComputeGoogleDriveFileHashAsync(template.Url);
+                fileUrl = await _googleDriveService.UploadFileAsync(newTemplate.File, _documentTemplateFolderId);
+                if (string.IsNullOrWhiteSpace(fileUrl))
+                    throw new Exception("Tải file thất bại.");
 
-                if (uploadedFileHash != existingFileHash)
-                {
-                    fileUrl = await _googleDriveService.UploadFileAsync(newTemplate.File, _documentTemplateFolderId);
-                    if (string.IsNullOrWhiteSpace(fileUrl))
-                        throw new Exception("Tải file thất bại.");
+                await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email, "reader");
 
-                    await _googleDriveService.SharePdfFileWithUserAsync(fileUrl, user.Email, "reader");
-
-                    // Update the proposal's file URL **only if a new file was uploaded**
-                    template.Url = fileUrl;
-                }
+                // Update the proposal's file URL **only if a new file was uploaded**
+                template.Url = fileUrl;
             }
             try
             {

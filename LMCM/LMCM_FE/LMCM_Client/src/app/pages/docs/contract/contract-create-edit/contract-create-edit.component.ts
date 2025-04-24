@@ -205,6 +205,7 @@ export class ContractCreateEditComponent implements OnChanges {
   }
 
   save() {
+    const selectedProposal = this.budgetProposal.find((c: { proposalId: string }) => c.proposalId === this.contract.proposalId);
     if (this.contract.startDate > this.contract.endDate) {
       this.messageService.add({
         severity: 'warn',
@@ -250,7 +251,14 @@ export class ContractCreateEditComponent implements OnChanges {
       return;
     }
 
-
+    if (selectedProposal && this.contract.startDate.toLocaleDateString('en-CA') < selectedProposal.proposalDate) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Cảnh báo',
+        detail: 'Ngày bắt đầu hợp đồng không được nhỏ hơn ngày trong tờ trình.'
+      });
+      return;
+    }
 
     const reportData = new FormData();
     reportData.append("proposalId", this.contract.proposalId);

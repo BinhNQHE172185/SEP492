@@ -1,8 +1,6 @@
 ﻿using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
 using Google.Apis.Upload;
-using LMCM_BE.DTOs.UserDtos;
-using LMCM_BE.Services.UserService;
 using LMCM_BE.Utilities;
 using System.Text.RegularExpressions;
 
@@ -16,7 +14,6 @@ namespace LMCM_BE.Services.GoogleDriveService
         private readonly string _budgetProposalFolderId;
         private readonly string _acceptanceRecordFolderId;
         private readonly string _documentTemplateFolderId;
-        private readonly string _hodEmail;
 
         public GoogleDriveService(DriveService driveService, IFileHelper fileHelper, IConfiguration configuration)
         {
@@ -26,144 +23,32 @@ namespace LMCM_BE.Services.GoogleDriveService
             _budgetProposalFolderId = configuration["GoogleDriveFolders:BudgetProposal"];
             _acceptanceRecordFolderId = configuration["GoogleDriveFolders:AcceptanceRecord"];
             _documentTemplateFolderId = configuration["GoogleDriveFolders:DocumentTemplate"];
-            _hodEmail= configuration["HeadOfDepartment:Email"];
         }
         private async Task<string> ExtractFileIdAsync(string url)
         {
             var match = Regex.Match(url, @"(?:/d/|id=)([a-zA-Z0-9_-]+)");
             return match.Success ? match.Groups[1].Value : null;
         }
-        private async Task<string?> CreateFolderAsync(string folderName, string parentFolderId)
-        {
-            try
-            {
-                var fileMetadata = new Google.Apis.Drive.v3.Data.File
-                {
-                    Name = folderName,
-                    MimeType = "application/vnd.google-apps.folder",
-                    Parents = new List<string> { parentFolderId }
-                };
-
-                var request = _driveService.Files.Create(fileMetadata);
-                request.Fields = "id,webViewLink";
-
-                var folder = await request.ExecuteAsync();
-
-                Console.WriteLine($"Created folder '{folderName}' with ID: {folder.Id}");
-
-                return folder.Id;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error creating folder: {ex.Message}");
-                return null;
-            }
-        }
-        private async Task ShareFolderWithUserAsync(string folderId, string email, string role)
-        {
-            var permission = new Permission
-            {
-                Type = "user",
-                Role = role, // "reader" or "writer"
-                EmailAddress = email
-            };
-
-            await _driveService.Permissions.Create(permission, folderId).ExecuteAsync();
-        }
-
-        public async Task<Dictionary<string, string>> CreateDefaultFoldersAsync(string rootFolderName = "LMCM")
-        {
-            var createdFolders = new Dictionary<string, string>();
-
-            try
-            {
-                // Step 1: Create the root folder
-                var rootId = await CreateFolderAsync(rootFolderName, null);
-                if (rootId == null)
-                    throw new Exception("Failed to create root folder.");
-
-                // Step 2: Create subfolders under root
-                var subfolders = new List<string>
-                {
-                    "Contract",
-                    "BudgetProposal",
-                    "AcceptanceRecord",
-                    "DocumentTemplate"
-                };
-
-                foreach (var name in subfolders)
-                {
-                    var folderId = await CreateFolderAsync(name, rootId);
-                    if (folderId != null)
-                    {
-                        createdFolders[name] = folderId;
-                    }
-                    await ShareFolderWithUserAsync(folderId, _hodEmail,"writer");
-                }
-
-                Console.WriteLine("Folder structure created:");
-                foreach (var kvp in createdFolders)
-                {
-                    Console.WriteLine($"{kvp.Key}: {kvp.Value}");
-                }
-
-                return createdFolders;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error creating folder structure: {ex.Message}");
-                return createdFolders;
-            }
-        }
-        public async Task<List<string>> ListFolderPermissionsAsync(string folderId)
-        {
-            var emails = new List<string>();
-
-            try
-            {
-                var request = _driveService.Permissions.List(folderId);
-                request.Fields = "permissions(id,emailAddress,role,type)";
-                var response = await request.ExecuteAsync();
-
-                if (response.Permissions != null)
-                {
-                    foreach (var permission in response.Permissions)
-                    {
-                        if (permission.Type == "user" && !string.IsNullOrEmpty(permission.EmailAddress))
-                        {
-                            emails.Add($"{permission.EmailAddress} ({permission.Role})");
-                        }
-                    }
-                }
-
-                return emails;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error listing permissions: {ex.Message}");
-                return emails;
-            }
-        }
-
-        public async Task<string> ComputeGoogleDriveFileHashAsync(string fileUrl)
-        {
-            string fileId = await _fileHelper.ExtractFileIdFromUrl(fileUrl);
-
-            var request = _driveService.Files.Get(fileId);
-            request.Fields = "md5Checksum";  // Request only the MD5 checksum
-
-            var file = await request.ExecuteAsync();
-
-            if (file.Md5Checksum == null)
-                throw new Exception("MD5 checksum not available for this file.");
-
-            return file.Md5Checksum.ToLower();
-        }
-        public async Task<string?> UploadFileAsync(IFormFile file,string folderId)
+        public async Task<string?> UploadFileAsync(IFormFile file, string folderId)
         {
             if (file == null || file.Length == 0)
                 return null;
 
+            // Step 1: Check if file already exists in the folder
+            string query = $"name = '{file.FileName}' and '{folderId}' in parents and trashed = false";
+            var listRequest = _driveService.Files.List();
+            listRequest.Q = query;
+            listRequest.Fields = "files(id, webViewLink)";
+            var fileList = await listRequest.ExecuteAsync();
+
+            var existingFile = fileList.Files.FirstOrDefault();
+            if (existingFile != null)
+            {
+                // File already exists, return the existing link
+                return existingFile.WebViewLink;
+            }
+
+            // Step 2: Upload the file
             var fileMetadata = new Google.Apis.Drive.v3.Data.File
             {
                 Name = file.FileName,
@@ -179,7 +64,7 @@ namespace LMCM_BE.Services.GoogleDriveService
                 return null;
 
             var uploadedFile = request.ResponseBody;
-            return uploadedFile.WebViewLink; // Return Google Drive File URL
+            return uploadedFile.WebViewLink;
         }
         public async Task<bool> ShareFoldersWithUserAsync(string email, bool isHod, string role)
         {
@@ -263,20 +148,39 @@ namespace LMCM_BE.Services.GoogleDriveService
         {
             try
             {
+                string fileId = await ExtractFileIdAsync(url);
+                if (fileId == null)
+                    return false;
+
+                // Check existing permissions
+                var request = _driveService.Permissions.List(fileId);
+                request.Fields = "permissions(id,emailAddress,type,role)";
+                var permissionsList = await request.ExecuteAsync();
+
+                Console.WriteLine("Current permissions for file:");
+                foreach (var pm in permissionsList.Permissions)
+                {
+                    Console.WriteLine($"ID: {pm.Id}, Type: {pm.Type}, Role: {pm.Role}, Email: {pm.EmailAddress}");
+                }
+
+                var existingPermission = permissionsList.Permissions
+                    .FirstOrDefault(p => p.EmailAddress != null && p.EmailAddress.Equals(email, StringComparison.OrdinalIgnoreCase));
+
+                if (existingPermission != null)
+                {
+                    Console.WriteLine("User already has permission.");
+                    return true; // No need to share again
+                }
+
+                // Create new permission
                 var permission = new Permission
                 {
                     Type = "user",
-                    Role = role, // "reader" (view-only) or "writer" (edit)
+                    Role = role,
                     EmailAddress = email,
                 };
 
-                string fileId = await ExtractFileIdAsync(url);
-
-                Console.WriteLine(fileId);
-                // Share the specific PDF file
-                if (fileId != null)
-                    await _driveService.Permissions.Create(permission, fileId).ExecuteAsync();
-
+                await _driveService.Permissions.Create(permission, fileId).ExecuteAsync();
                 return true;
             }
             catch (Exception ex)

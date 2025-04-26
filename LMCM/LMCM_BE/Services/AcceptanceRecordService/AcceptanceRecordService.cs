@@ -1,17 +1,14 @@
 ﻿using AutoMapper;
 using LMCM_BE.DTOs.AcceptanceRecordDtos;
-using LMCM_BE.DTOs.BudgetProposalDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.AcceptanceRecordRepository;
 using LMCM_BE.Repositories.ContractRepository;
-using LMCM_BE.Repositories.UserRepositoriy;
 using LMCM_BE.Services.GoogleDriveService;
 using LMCM_BE.Services.UserService;
 using LMCM_BE.Shared.Constant;
 using LMCM_BE.UnitOfWork;
-using LMCM_BE.Utilities;
 
 namespace LMCM_BE.Services.AcceptanceRecordService
 {
@@ -21,7 +18,6 @@ namespace LMCM_BE.Services.AcceptanceRecordService
         private readonly IMapper _mapper;
         private readonly IContractRepository _contractRepository;
         private readonly IGoogleDriveService _googleDriveService;
-        private readonly IFileHelper _fileHelper;
         private readonly IUserService _userService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly string _acceptanceRecordFolderId;
@@ -32,7 +28,6 @@ namespace LMCM_BE.Services.AcceptanceRecordService
             IMapper mapper,
             IContractRepository contractRepository,
             IGoogleDriveService googleDriveService,
-            IFileHelper fileHelper,
             IUserService userService,
             IUnitOfWork unitOfWork,
             IConfiguration configuration
@@ -42,7 +37,6 @@ namespace LMCM_BE.Services.AcceptanceRecordService
             _mapper = mapper;
             _contractRepository = contractRepository;
             _googleDriveService = googleDriveService;
-            _fileHelper = fileHelper;
             _userService = userService;
             _unitOfWork = unitOfWork;
             _acceptanceRecordFolderId = configuration["GoogleDriveFolders:AcceptanceRecord"];
@@ -161,12 +155,6 @@ namespace LMCM_BE.Services.AcceptanceRecordService
 
             if (dto.File != null)
             {
-                // Validate if the new file is different from the existing one
-                var uploadedFileHash = await _fileHelper.ComputeFileHashAsync(dto.File);
-                var existingFileHash = await _googleDriveService.ComputeGoogleDriveFileHashAsync(acceptanceRecord.Url);
-
-                if (uploadedFileHash != existingFileHash)
-                {
                     fileUrl = await _googleDriveService.UploadFileAsync(dto.File, _acceptanceRecordFolderId);
                     if (string.IsNullOrWhiteSpace(fileUrl))
                         throw new Exception("Tải file thất bại.");
@@ -175,7 +163,7 @@ namespace LMCM_BE.Services.AcceptanceRecordService
 
                     // Update the proposal's file URL **only if a new file was uploaded**
                     acceptanceRecord.Url = fileUrl;
-                }
+                
             }
             try
             {

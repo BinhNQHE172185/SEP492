@@ -173,6 +173,12 @@ namespace LMCM_BE.Services.UserService
             {
                 return false;
             }
+
+            if (user.Id.ToString() == userId)
+            {
+                throw new InvalidOperationException("Không thể thay đổi trạng thái của chính bạn.");
+            }
+
             var userRole = await _userRepository.getRoleAsync(userId);
             if (userRole.Contains("Staff") && role.Equals("Head of Department"))
             {

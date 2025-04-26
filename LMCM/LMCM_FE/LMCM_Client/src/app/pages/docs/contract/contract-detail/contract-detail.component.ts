@@ -80,4 +80,9 @@ export class ContractDetailComponent {
     const url = `/document/report/${id}`;
     window.open(url, '_blank');
   }
+
+  goToContractorDetail(id: string) {
+    const url = `/document/contractor/${id}`;
+    window.open(url, '_blank');
+  }
 }

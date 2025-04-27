@@ -14,6 +14,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
+import { MessageModule } from 'primeng/message';
 
 @Component({
   selector: 'app-contract-value',
@@ -30,7 +31,8 @@ import { DialogModule } from 'primeng/dialog';
     InputTextModule,
     TextareaModule,
     ConfirmDialogModule,
-    DialogModule
+    DialogModule,
+    MessageModule
   ],
   standalone: true,
   templateUrl: './contract-value.component.html',
@@ -126,6 +128,7 @@ export class ContractValueComponent {
       contractValue: null,
       qualityRequirements: ''
     };
+    console.log(this.newContractValue);
   }
 
   saveContractValue() {

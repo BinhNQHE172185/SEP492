@@ -208,11 +208,21 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
         });
       }
     }
-    if (this.report.contractId === '') {
+
+    if (this.report.contractId === '' || this.report.contractId === null || this.report.contractId === undefined) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Cảnh báo',
         detail: 'Vui lòng chọn hợp đồng.'
+      });
+      return;
+    }
+
+    if (this.report.finalPrice === '' || this.report.finalPrice === null || this.report.finalPrice === undefined) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Cảnh báo',
+        detail: 'Vui lòng điền giá cả quyết toán.'
       });
       return;
     }

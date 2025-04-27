@@ -19,9 +19,9 @@ import { CookieService } from 'ngx-cookie-service';
 export class AppMenu {
     model: MenuItem[] = [];
     constructor(
-            private router: Router,
-            private cookieService: CookieService
-        ) { }
+        private router: Router,
+        private cookieService: CookieService
+    ) { }
 
     ngOnInit() {
         this.model = [
@@ -100,6 +100,12 @@ export class AppMenu {
                         icon: 'pi pi-fw pi-print',
                         routerLink: ['document/template']
                     },
+                ]
+            },
+            {
+                label: 'Khác',
+                items: [
+                    { label: 'Bảng tính giá trị', icon: 'pi pi-fw pi-dollar', routerLink: ['/others/contract-value'] },
                 ]
             },
             {

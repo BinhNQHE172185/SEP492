@@ -2,6 +2,7 @@
 using LMCM_BE.DTOs.ContractValueItemDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.ContractValueItemRepository;
+using LMCM_BE.Services.UserService;
 using LMCM_BE.UnitOfWork;
 
 namespace LMCM_BE.Services.ContractValueItemService
@@ -9,16 +10,19 @@ namespace LMCM_BE.Services.ContractValueItemService
     public class ContractValueItemService : IContractValueItemService
     {
         private readonly IContractValueItemRepository _contractValueItemRepository;
+        private readonly IUserService _userService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
         public ContractValueItemService(
             IContractValueItemRepository contractValueItemRepository,
+            IUserService userService,
             IUnitOfWork unitOfWork,
             IMapper mapper
             )
         {
             _contractValueItemRepository = contractValueItemRepository;
+            _userService = userService;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }

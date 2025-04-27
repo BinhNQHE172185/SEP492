@@ -244,8 +244,7 @@ namespace LMCM_BE.Services.UserService
             {
                 throw new InvalidOperationException("Không tìm thấy người dùng trong cookie.");
             }
-            var role = await _userRepository.getRoleAsync(user.Id.ToString());
-            return role;
+            return user.Roles;
         }
         public async Task<bool> UpdateStatus(string userId, string status)
         {

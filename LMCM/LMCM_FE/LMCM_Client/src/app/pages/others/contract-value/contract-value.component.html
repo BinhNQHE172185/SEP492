@@ -1,7 +1,10 @@
 <p-card>
     <div class="flex justify-between items-center">
         <h2 class="text-xl font-bold text-orange-500">Đơn vị bảng tính giá trị hợp đồng</h2>
-        <p-button label="Lưu" class="p-button-warning" (click)="updateContractValue()"></p-button>
+        <div class="flex gap-2">
+            <p-button label="Lưu" class="p-button-warning" icon="pi pi-save" (click)="updateContractValue()"></p-button>
+            <p-button label="Thêm" class="p-button-warning" icon="pi pi-plus" (click)="showAddDialog()"></p-button>
+        </div>
     </div>
 
     <div class="mt-4">
@@ -14,6 +17,7 @@
                     <th>Tỷ lệ chuẩn</th>
                     <th>Giá trị hợp đồng</th>
                     <th>Yêu cầu chất lượng</th>
+                    <th>Xóa</th>
                 </tr>
             </ng-template>
 
@@ -77,6 +81,10 @@
                             </ng-template>
                         </p-cellEditor>
                     </td>
+                    <td>
+                        <p-button icon="pi pi-trash" outlined (click)="deleteContractValue(item)"
+                            [disabled]="isLoading"></p-button>
+                    </td>
                 </tr>
             </ng-template>
         </p-table>
@@ -89,55 +97,61 @@
     </div>
 </p-card>
 
-<!-- <p-dialog [(visible)]="displayImportDialog" [header]="'Nhập Dữ Liệu'" [modal]="true" [closable]="true">
-    <ng-template pTemplate="content">
-        <section class="p-8 w-full bg-white rounded-xl shadow max-md:p-6 max-sm:p-4">
-            <div class="flex justify-center">
-                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"
-                    class="w-[40px] h-[40px] mb-[16px]">
-                    <path
-                        d="M11.6667 16.6665V14.9998C11.6667 10.3975 15.3976 6.6665 20 6.6665C24.6023 6.6665 28.3333 10.3975 28.3333 14.9998V16.6665C32.0152 16.6665 35 19.6513 35 23.3332C35 25.8008 33.6593 28.0138 31.6667 29.1665M11.6667 16.6665C7.98477 16.6665 5 19.6513 5 23.3332C5 25.8008 6.34067 28.0138 8.33333 29.1665M11.6667 16.6665C12.3881 16.6665 13.0827 16.7812 13.7334 16.993M20 19.9998V34.9998M20 19.9998L25 24.9998M20 19.9998L15 24.9998"
-                        stroke="#FF6B00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
+<p-dialog header="Thêm đơn vị" [(visible)]="displayAddDialog" [modal]="true" [closable]="true"
+    [style]="{width: '50vw', 'min-height': '300px'}">
+    <div class="p-fluid">
+        <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-2">
+                <label class="block font-semibold text-orange-500">Danh mục <span class="text-red-500">*</span></label>
+                <input id="category" [(ngModel)]="newContractValue.category"
+                    class="w-full p-2 border border-gray-300 rounded" placeholder="Điền danh mục" pInputText />
             </div>
 
-            <p-fileupload name="demo[]" [customUpload]="true" (uploadHandler)="onUpload($event)" [multiple]="false"
-                accept=".xls, .xlsx" maxFileSize="1000000" mode="advanced">
-                <ng-template #empty>
-                    <div>Kéo và thả file vào đây để tải lên.</div>
-                </ng-template>
-                <ng-template #content>
-                    <ul *ngIf="uploadedFiles.length">
-                        <li *ngFor="let file of uploadedFiles">{{ file.name }} - {{ file.size }} bytes</li>
-                    </ul>
-                </ng-template>
-            </p-fileupload>
-        </section>
+            <div class="flex gap-4">
+                <div class="flex flex-col gap-2 w-1/2">
+                    <label class="block font-semibold text-orange-500">Đơn vị đo lường <span
+                            class="text-red-500">*</span></label>
+                    <input id="measurementUnit" [(ngModel)]="newContractValue.measurementUnit"
+                        class="w-full p-2 border border-gray-300 rounded" placeholder="Điền đơn vị đo lường" pInputText />
+                </div>
 
-        <section class="mt-8">
-            <h3 class="mb-4 text-base font-semibold text-zinc-900">Hướng dẫn</h3>
-            <div class="p-4 bg-gray-50 rounded-md">
-                <p class="flex gap-1 mb-2">
-                    <span class="text-sm text-stone-500">1. Sử dụng đúng</span>
-                    <a href="#" class="text-sm text-orange-500">mẫu Excel</a>
-                    <span class="text-sm text-stone-500">theo yêu cầu.</span>
-                </p>
-                <p class="mb-2 text-sm text-stone-500">
-                    <span>2. Kiểm tra lại </span>
-                    <strong class="font-bold">tài liệu đã nhập.</strong>
-                </p>
-                <p class="mb-2 text-sm text-stone-500">
-                    3. Tải lên tệp Excel đã chọn.
-                </p>
-                <p class="text-sm text-stone-500">
-                    4. Hệ thống sẽ tự động xử lý và nhập dữ liệu.
-                </p>
+                <div class="flex flex-col gap-2 w-1/2">
+                    <label class="block font-semibold text-orange-500">Tỷ lệ chuẩn <span
+                            class="text-red-500">*</span></label>
+                    <input id="standardRate" [(ngModel)]="newContractValue.standardRate"
+                        class="w-full p-2 border border-gray-300 rounded" placeholder="Điền tỷ lệ chuẩn" pInputText type="text" />
+                </div>
             </div>
-        </section>
+
+            <div class="flex flex-col gap-2">
+                <label class="block font-semibold text-orange-500">Giá trị hợp đồng <span
+                        class="text-red-500">*</span></label>
+                <p-inputNumber id="contractValue" [(ngModel)]="newContractValue.contractValue" type="text"
+                    mode="currency" currency="VND" locale="vi-VN" placeholder="Nhập giá trị" [min]="0"
+                    [max]="100000000" />
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label class="block font-semibold text-orange-500">Yêu cầu chất lượng <span
+                        class="text-red-500">*</span></label>
+                <textarea id="qualityRequirements" [(ngModel)]="newContractValue.qualityRequirements"
+                    class="w-full p-2 border border-gray-300 rounded" placeholder="Điền yêu cầu chất lượng" pTextarea></textarea>
+            </div>
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <div class="flex justify-end gap-2">
+            <p-button label="Hủy" icon="pi pi-times" (click)="closeAddDialog()" outlined></p-button>
+            <p-button label="Lưu" icon="pi pi-check" (click)="saveContractValue()"></p-button>
+        </div>
     </ng-template>
-</p-dialog> -->
+</p-dialog>
+
+
 
 <p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
 <div *ngIf="isLoading" class="overlay-spinner">
     <p-progressSpinner></p-progressSpinner>
 </div>

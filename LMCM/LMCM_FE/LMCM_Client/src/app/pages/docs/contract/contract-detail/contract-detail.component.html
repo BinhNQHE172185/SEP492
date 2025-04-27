@@ -16,7 +16,7 @@
 
                 <div class="flex flex-col gap-2">
                     <label class="block font-semibold text-orange-500">Chuyên gia</label>
-                    <p>{{ contract.contractor.contractorName }}</p>
+                    <a (click)="goToContractorDetail(contract.contractor.contractorId)" class="text-blue-600 hover:underline cursor-pointer"><p>{{ contract.contractor.contractorName }}</p></a>
                 </div>
 
                 <div class="flex flex-col gap-2">

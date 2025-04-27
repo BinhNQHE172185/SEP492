@@ -10,12 +10,10 @@ namespace LMCM_BE.Controllers.ContractValueItemControllers
     public class ContractValueItemController : ControllerBase
     {
         private readonly IContractValueItemService _contractValueItemService;
-        private readonly IUserService _userService;
 
         public ContractValueItemController(IContractValueItemService contractValueItemService, IUserService userService)
         {
             _contractValueItemService = contractValueItemService;
-            _userService = userService;
         }
 
         [HttpGet("list")]
@@ -50,17 +48,21 @@ namespace LMCM_BE.Controllers.ContractValueItemControllers
                         Errors = errors
                     });
                 }
-                var user = await _userService.CheckRole();
-                if (!user.Contains("Head of Department"))
-                {
-                    return Unauthorized(new { message = "Bạn không có quyền thực hiện hành động này." });
-                }
                 var result = await _contractValueItemService.UpdateAsync(newItems);
-                return result != null ? Ok(result) : BadRequest(new { message = "Không thể cập nhật danh sách giá trị hợp đồng." });
+                return result ? Ok(new { success = true }) : BadRequest(new { message = "Không thể cập nhật danh sách giá trị hợp đồng." });
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(new { message = ex.Message });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Error = ex.Message
+                });
             }
             catch (Exception ex)
             {

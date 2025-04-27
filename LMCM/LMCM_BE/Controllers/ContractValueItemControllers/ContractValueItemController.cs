@@ -51,7 +51,7 @@ namespace LMCM_BE.Controllers.ContractValueItemControllers
                     });
                 }
                 var user = await _userService.CheckRole();
-                if (user == null || !user.Contains("Head Of Deparment"))
+                if (!user.Contains("Head of Department"))
                 {
                     return Unauthorized(new { message = "Bạn không có quyền thực hiện hành động này." });
                 }

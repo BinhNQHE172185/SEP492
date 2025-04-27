@@ -18,6 +18,7 @@ export const appRoutes: Routes = [
             { path: 'user', loadChildren: () => import('./app/pages/user/user.route') },
             { path: 'learning', loadChildren: () => import('./app/pages/Learning/learning.route') },
             { path: 'document', loadChildren: () => import('./app/pages/docs/docs.route') },
+            { path: 'others', loadChildren: () => import('./app/pages/others/other.route') },
         ]
     },
     { path: 'landing', component: Landing },

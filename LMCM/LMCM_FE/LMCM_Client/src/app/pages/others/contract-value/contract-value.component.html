@@ -104,7 +104,8 @@
             <div class="flex flex-col gap-2">
                 <label class="block font-semibold text-orange-500">Danh mục <span class="text-red-500">*</span></label>
                 <input id="category" [(ngModel)]="newContractValue.category"
-                    class="w-full p-2 border border-gray-300 rounded" placeholder="Điền danh mục" pInputText />
+                    class="w-full p-2 border border-gray-300 rounded" placeholder="Điền danh mục"
+                    pInputText />
             </div>
 
             <div class="flex gap-4">
@@ -112,14 +113,15 @@
                     <label class="block font-semibold text-orange-500">Đơn vị đo lường <span
                             class="text-red-500">*</span></label>
                     <input id="measurementUnit" [(ngModel)]="newContractValue.measurementUnit"
-                        class="w-full p-2 border border-gray-300 rounded" placeholder="Điền đơn vị đo lường" pInputText />
+                        class="w-full p-2 border border-gray-300 rounded" #addUnitRef="ngModel"
+                        placeholder="Điền đơn vị đo lường" pInputText />
                 </div>
 
                 <div class="flex flex-col gap-2 w-1/2">
-                    <label class="block font-semibold text-orange-500">Tỷ lệ chuẩn <span
-                            class="text-red-500">*</span></label>
-                    <input id="standardRate" [(ngModel)]="newContractValue.standardRate"
-                        class="w-full p-2 border border-gray-300 rounded" placeholder="Điền tỷ lệ chuẩn" pInputText type="text" />
+                    <label class="block font-semibold text-orange-500">Tỷ lệ chuẩn <span class="text-red-500">*</span></label>
+                    <p-inputNumber id="standardRate" [(ngModel)]="newContractValue.standardRate"
+                        class="w-full" placeholder="Điền tỷ lệ chuẩn" mode="decimal" [minFractionDigits]="1" [maxFractionDigits]="2"
+                        [min]="0" [max]="1"></p-inputNumber>
                 </div>
             </div>
 
@@ -127,15 +129,16 @@
                 <label class="block font-semibold text-orange-500">Giá trị hợp đồng <span
                         class="text-red-500">*</span></label>
                 <p-inputNumber id="contractValue" [(ngModel)]="newContractValue.contractValue" type="text"
-                    mode="currency" currency="VND" locale="vi-VN" placeholder="Nhập giá trị" [min]="0"
-                    [max]="100000000" />
+                    mode="currency" currency="VND" locale="vi-VN" placeholder="Nhập giá trị" [min]="0" [max]="100000000"
+                    #addValueRef="ngModel" />
             </div>
 
             <div class="flex flex-col gap-2">
                 <label class="block font-semibold text-orange-500">Yêu cầu chất lượng <span
                         class="text-red-500">*</span></label>
                 <textarea id="qualityRequirements" [(ngModel)]="newContractValue.qualityRequirements"
-                    class="w-full p-2 border border-gray-300 rounded" placeholder="Điền yêu cầu chất lượng" pTextarea></textarea>
+                    class="w-full p-2 border border-gray-300 rounded" placeholder="Điền yêu cầu chất lượng" pTextarea
+                    #addReqRef="ngModel"></textarea>
             </div>
         </div>
     </div>

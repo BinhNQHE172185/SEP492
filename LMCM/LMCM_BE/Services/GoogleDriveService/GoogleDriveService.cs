@@ -34,21 +34,25 @@ namespace LMCM_BE.Services.GoogleDriveService
             if (file == null || file.Length == 0)
                 return null;
 
-            // Step 1: Check if file already exists in the folder
-            string query = $"name = '{file.FileName}' and '{folderId}' in parents and trashed = false";
+            // Step 1: Calculate the MD5 checksum of the uploaded file
+            string fileMd5Checksum = await _fileHelper.ComputeFileHashAsync(file);
+
+            // Step 2: List all files in the folder and check by MD5 checksum
             var listRequest = _driveService.Files.List();
-            listRequest.Q = query;
-            listRequest.Fields = "files(id, webViewLink)";
+            listRequest.Q = $"'{folderId}' in parents and trashed = false";
+            listRequest.Fields = "files(id, name, md5Checksum, webViewLink)";
             var fileList = await listRequest.ExecuteAsync();
 
-            var existingFile = fileList.Files.FirstOrDefault();
+            var existingFile = fileList.Files
+                .FirstOrDefault(f => f.Md5Checksum != null && f.Md5Checksum.Equals(fileMd5Checksum, StringComparison.OrdinalIgnoreCase));
+
             if (existingFile != null)
             {
-                // File already exists, return the existing link
+                // File with the same content already exists
                 return existingFile.WebViewLink;
             }
 
-            // Step 2: Upload the file
+            // Step 3: Upload the new file
             var fileMetadata = new Google.Apis.Drive.v3.Data.File
             {
                 Name = file.FileName,
@@ -56,14 +60,14 @@ namespace LMCM_BE.Services.GoogleDriveService
             };
 
             using var stream = file.OpenReadStream();
-            var request = _driveService.Files.Create(fileMetadata, stream, file.ContentType);
-            request.Fields = "id,webViewLink";
+            var uploadRequest = _driveService.Files.Create(fileMetadata, stream, file.ContentType);
+            uploadRequest.Fields = "id, webViewLink";
 
-            var result = await request.UploadAsync();
-            if (result.Status != UploadStatus.Completed)
+            var uploadResult = await uploadRequest.UploadAsync();
+            if (uploadResult.Status != Google.Apis.Upload.UploadStatus.Completed)
                 return null;
 
-            var uploadedFile = request.ResponseBody;
+            var uploadedFile = uploadRequest.ResponseBody;
             return uploadedFile.WebViewLink;
         }
         public async Task<bool> ShareFoldersWithUserAsync(string email, bool isHod, string role)

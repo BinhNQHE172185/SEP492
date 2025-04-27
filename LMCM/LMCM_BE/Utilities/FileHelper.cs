@@ -10,7 +10,7 @@ namespace LMCM_BE.Utilities
             using var md5 = MD5.Create();
             using var stream = file.OpenReadStream();
             var hashBytes = await md5.ComputeHashAsync(stream);
-            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+            return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
         }
         public async Task<string> ExtractFileIdFromUrl(string fileUrl)
         {
@@ -25,6 +25,5 @@ namespace LMCM_BE.Utilities
 
             throw new Exception("Invalid Google Drive URL format.");
         }
-
     }
 }

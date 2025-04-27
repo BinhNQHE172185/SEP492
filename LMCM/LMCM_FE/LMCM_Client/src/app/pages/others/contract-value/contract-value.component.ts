@@ -4,7 +4,7 @@ import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { TagModule } from 'primeng/tag';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CommonModule } from '@angular/common';
@@ -12,6 +12,8 @@ import { FormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'app-contract-value',
@@ -26,22 +28,35 @@ import { TextareaModule } from 'primeng/textarea';
     FormsModule,
     InputNumberModule,
     InputTextModule,
-    TextareaModule
+    TextareaModule,
+    ConfirmDialogModule,
+    DialogModule
   ],
   standalone: true,
   templateUrl: './contract-value.component.html',
   styleUrl: './contract-value.component.scss',
   providers: [
     MessageService,
+    ConfirmationService
   ]
 })
 export class ContractValueComponent {
   contractValues: any[] = [];
+  displayAddDialog: boolean = false;
   isLoading: boolean = false;
+  newContractValue: any = {
+    category: '',
+    measurementUnit: '',
+    standardRate: null,
+    contractValue: null,
+    qualityRequirements: '',
+    valueId: null,
+  };
 
   constructor(
     private contractValueService: ContractValueApiComponent,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService
   ) { }
 
   ngOnInit() {
@@ -94,4 +109,57 @@ export class ContractValueComponent {
     });
   }
 
+  showAddDialog() {
+    this.displayAddDialog = true;
+  }
+
+  closeAddDialog() {
+    this.displayAddDialog = false;
+    this.resetNewContractValue();
+  }
+
+  resetNewContractValue() {
+    this.newContractValue = {
+      category: '',
+      measurementUnit: '',
+      standardRate: null,
+      contractValue: null,
+      qualityRequirements: ''
+    };
+  }
+
+  saveContractValue() {
+    if (this.isFormValid()) {
+      this.contractValues.push({ ...this.newContractValue });
+      this.updateContractValue();
+      this.closeAddDialog();
+    } else {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Cảnh báo',
+        detail: 'Vui lòng điền đầy đủ thông tin trước khi lưu.',
+      });
+    }
+  }
+
+  isFormValid() {
+    return this.newContractValue.category && this.newContractValue.measurementUnit && this.newContractValue.contractValue;
+  }
+
+  deleteContractValue(item: any) {
+    this.confirmationService.confirm({
+      header: 'Xóa dữ liệu',
+      message: 'Bạn có chắc chắn muốn xóa? Hành động này là không thể hoàn tác.',
+      acceptLabel: 'Đồng ý',
+      rejectLabel: 'Hủy',
+      accept: () => {
+        this.isLoading = true;
+        const index = this.contractValues.findIndex(c => c.valueId === item.valueId);
+        if (index > -1) {
+          this.contractValues.splice(index, 1);
+        }
+        this.updateContractValue();
+      }
+    });
+  }
 }

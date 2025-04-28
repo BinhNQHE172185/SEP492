@@ -10,12 +10,13 @@ export enum ChangeType {
 
 
 export enum MaterialCategory {
-  PublishedBook = 'Sách xuất bản chính thức',
-  InternalBook = 'Sách xuất bản nội bộ',
-  LicensedEbook = 'e-book có bản quyền',
-  OpenSourceBook = 'Sách nguồn mở',
-  OnlineResource = 'Tài nguyên trên mạng (website, youtube, ...)',
-  UdemyCourse = 'Khóa học Udemy'
+  PublishedBook = 0,
+  InternalBook = 1,
+  LicensedEbook = 2,
+  OpenSourceBook = 3,
+  OnlineResource = 4,
+  UdemyCourse = 5,
+  LearningMaterial = 6
 }
 
 export enum Publisher {

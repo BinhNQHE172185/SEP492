@@ -54,6 +54,8 @@ export class LearningMaterialComponent implements OnChanges {
   publishersList: string[] = [];
   filteredPublishersList: string[] = [];
   material: any;
+  book: any;
+  prefernce: any;
 
   type = [
     { name: 'Online', value: MaterialTypeConstant.Online },
@@ -119,34 +121,76 @@ export class LearningMaterialComponent implements OnChanges {
 
   save() {
     this.material.author = this.authors.join(', ');
+    this.isLoading = true;
+  
     if (this.SelectedId) {
-      this.isLoading = true;
-      this.learningMaterialApiService.updateLearningMaterial(this.SelectedId, this.material).subscribe(
-        (response) => {
-          this.isLoading = false;
-          this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
-          this.closeDialog();
-        },
-        (error) => {
-          this.isLoading = false;
-          this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
-        }
-      );
+      // Update
+      this.learningMaterialApiService.updateLearningMaterial(this.SelectedId, this.material)
+        .subscribe({
+          next: (response) => this.handleSuccess(response),
+          error: (error) => this.handleError(error)
+        });
     } else {
-      this.material.syllabusId = this.route.snapshot.paramMap.get('id') || '';
-      this.learningMaterialApiService.createLearningMaterial(this.material).subscribe(
-        (response) => {
-          this.isLoading = false;
-          this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
-          this.closeDialog();
-        },
-        (error) => {
-          this.isLoading = false;
-          this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
-        }
-      );
+      const materialToSave = this.buildMaterialForCreate();
+  
+      this.learningMaterialApiService.createLearningMaterial(materialToSave)
+        .subscribe({
+          next: (response) => this.handleSuccess(response),
+          error: (error) => this.handleError(error)
+        });
     }
   }
+  
+  buildMaterialForCreate() {
+    const syllabusId = this.route.snapshot.paramMap.get('id') || '';
+  
+    if (this.isLearningMaterial()) {
+      return {
+        syllabusId,
+        materialName: this.material.materialName,
+        isbn: this.material.isbn,
+        publisher: this.material.publisher,
+        publishedDate: this.material.publishedDate,
+        edition: this.material.edition,
+        author: this.material.author,
+        materialType: this.material.materialType,
+      };
+    } else {
+      return {
+        syllabusId,
+        materialName: this.material.materialName,
+        purpose: this.material.purpose,
+        learningType: this.material.learningType,
+        isMainMaterial: this.material.isMainMaterial,
+        url: this.material.url,
+        note: this.material.note,
+      };
+    }
+  }
+  
+  isLearningMaterial(): boolean {
+    return !this.material.learningType || !this.material.purpose;
+  }
+  
+  handleSuccess(response: any) {
+    this.isLoading = false;
+    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
+    this.closeDialog();
+  }
+  
+  handleError(error: any) {
+    this.isLoading = false;
+    const errors = error.error?.errors;
+    if (errors) {
+      const allMessages = Object.values(errors).flat();
+      allMessages.forEach(msg => {
+        this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg as string });
+      });
+    } else {
+      this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error?.message || 'Đã có lỗi xảy ra.' });
+    }
+  }
+  
 
   search(event: AutoCompleteCompleteEvent) {
     this.items = [...Array(1).keys()].map(() => event.query);

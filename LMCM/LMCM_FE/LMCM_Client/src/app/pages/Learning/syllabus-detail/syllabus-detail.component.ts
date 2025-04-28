@@ -195,6 +195,8 @@ export class SyllabusDetailComponent implements OnInit {
     this.confirmationService.confirm({
       message: `Bạn có chắc chắn muốn xóa học liệu này không?`,
       header: 'Xác nhận xóa',
+      acceptLabel: 'Đồng ý',
+      rejectLabel: 'Hủy',
       accept: () => {
         this.deleteMaterial(id);
       }

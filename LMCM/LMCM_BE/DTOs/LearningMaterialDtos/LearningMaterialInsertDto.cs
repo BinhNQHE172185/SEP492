@@ -18,7 +18,7 @@ namespace LMCM_BE.DTOs.LearningMaterialDtos
         [StringLength(50, ErrorMessage = "Tên học liệu không được vượt quá 50 ký tự")]
         public string? MaterialName { get; set; }
 
-        [RegularExpression(@"^\d{9}[\d|X]|\d{13}$", ErrorMessage = "ISBN không hợp lệ")]
+        [RegularExpression(@"^(\d{9}[\dX]|\d{13})$", ErrorMessage = "ISBN không hợp lệ")]
         public string? Isbn { get; set; }
 
         [StringLength(100, ErrorMessage = "Tên tác giả không được vượt quá 100 ký tự")]

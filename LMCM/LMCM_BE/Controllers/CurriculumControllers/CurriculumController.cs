@@ -27,7 +27,7 @@ namespace LMCM_BE.Controllers.CurriculumControllers
             {
                 var data = await _curriculumService.GetCurriculumsAsync(request.SearchKey, request.pageIndex, request.PageSize);
 
-                if (data != null)
+                if (data.Items != null)
                 {
                     return Ok(data);
                 }

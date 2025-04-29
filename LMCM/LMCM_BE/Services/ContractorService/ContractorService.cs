@@ -53,7 +53,7 @@ namespace LMCM_BE.Services.ContractorService
         public async Task<bool> SoftDeleteContractorAsync(Guid contractorId)
         {
             if (contractorId == Guid.Empty)
-                throw new ArgumentException("ID nhà thầu không được để trống.", nameof(contractorId));
+                throw new ArgumentException("ID chuyên gia không được để trống.", nameof(contractorId));
 
             var contractor = await _contractorRepository.GetActiveContractorByIdAsync(contractorId);
 

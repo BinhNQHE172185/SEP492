@@ -16,7 +16,7 @@ namespace LMCM_BE.DTOs.LearningMaterialDtos
 
         [StringLength(200, ErrorMessage = "Loại thay đổi không được vượt quá 200 ký tự.")]
         public string? ChangeDescription { get; set; }
-
+        [DataType(DataType.Date)]
         public DateTime? CompletionDate { get; set; }
 
         public string? StartTerm { get; set; }

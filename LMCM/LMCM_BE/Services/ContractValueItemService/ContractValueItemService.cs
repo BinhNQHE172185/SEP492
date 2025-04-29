@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LMCM_BE.DTOs.ContractValueItemDtos;
+using LMCM_BE.DTOs.UserDtos;
 using LMCM_BE.Models;
 using LMCM_BE.Repositories.ContractValueItemRepository;
 using LMCM_BE.Services.UserService;
@@ -38,6 +39,13 @@ namespace LMCM_BE.Services.ContractValueItemService
             {
                 throw new ArgumentException("Danh sách không được để trống.");
             }
+
+            UserProfileResponseDto user = await _userService.GetProfileFromCookie();
+            if (user == null || string.IsNullOrEmpty(user.Email))
+                throw new UnauthorizedAccessException("Không tìm thấy người dùng");
+            if (!user.Roles.Contains("Head of Department"))
+                throw new UnauthorizedAccessException("Người dùng không có quyền cập nhật giá trị hợp đồng.");
+
             var existingItems = await _contractValueItemRepository.GetListAsync();
 
             var toDelete = existingItems.Where(e => !newItems.Any(n => n.ValueId == e.ValueId)).ToList();

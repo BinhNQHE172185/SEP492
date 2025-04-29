@@ -135,7 +135,7 @@ namespace LMCM_BE.Services.BudgetPropasalService
             bool isHod = false;
             UserProfileResponseDto user = await _userService.GetProfileFromCookie();
             if (user == null || string.IsNullOrEmpty(user.Email))
-                throw new Exception("Không tìm thấy người dùng");
+                throw new UnauthorizedAccessException("Không tìm thấy người dùng");
             if (user.Roles.Contains("Head of Department")) isHod = true;
 
             var items = await _budgetProposalRepository.GetBudgetProposalsAsync(isHod, user.Id, searchKey);

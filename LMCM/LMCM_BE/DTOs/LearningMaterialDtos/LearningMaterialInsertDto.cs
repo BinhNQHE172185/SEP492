@@ -1,5 +1,6 @@
 ﻿using LMCM_BE.Shared.Constant;
 using System.ComponentModel.DataAnnotations;
+using static LMCM_BE.DTOs.Validators.SharedValidationAtributes;
 
 namespace LMCM_BE.DTOs.LearningMaterialDtos
 {
@@ -33,7 +34,7 @@ namespace LMCM_BE.DTOs.LearningMaterialDtos
         [StringLength(50, ErrorMessage = "Phiên bản không được vượt quá 50 ký tự")]
         public string? Edition { get; set; }
 
-        [Url(ErrorMessage = "Địa chỉ URL không hợp lệ")]
+        [NullableUrl(ErrorMessage = "Địa chỉ URL không hợp lệ")]
         public string? Url { get; set; }
 
         [StringLength(200, ErrorMessage = "Mục đích không được vượt quá 200 ký tự")]

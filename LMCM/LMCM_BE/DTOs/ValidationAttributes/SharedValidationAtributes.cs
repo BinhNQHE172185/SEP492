@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace LMCM_BE.DTOs.Validators
 {
@@ -55,6 +56,21 @@ namespace LMCM_BE.DTOs.Validators
                     return new ValidationResult($"Dung lượng tệp không được vượt quá {_maxSizeInBytes / (1024 * 1024)}MB");
                 }
                 return ValidationResult.Success;
+            }
+        }
+        public class NullableUrlAttribute : ValidationAttribute
+        {
+            private static readonly Regex _urlRegex = new Regex(@"^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+            protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+            {
+                if (value == null) return ValidationResult.Success;
+                if (value is string str)
+                {
+                    if (string.IsNullOrWhiteSpace(str)) return ValidationResult.Success; // Empty = OK
+                    if (_urlRegex.IsMatch(str)) return ValidationResult.Success; // Valid URL
+                }
+                return new ValidationResult(ErrorMessage ?? "Địa chỉ URL không hợp lệ");
             }
         }
     }

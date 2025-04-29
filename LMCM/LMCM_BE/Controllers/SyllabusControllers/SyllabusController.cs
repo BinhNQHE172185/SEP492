@@ -1,6 +1,8 @@
 ﻿using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Services.SubjectService;
 using LMCM_BE.Services.SyllabusService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 
@@ -15,7 +17,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
         {
             _syllabusService = syllabusService;
         }
-
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("getSyllabusesList")]
         public async Task<IActionResult> GetSyllabusesAsync([FromBody] PagingRequest request)
         {
@@ -41,6 +43,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("getSyllabusesListNoPaging")]
         public async Task<IActionResult> GetSyllabusesNoPagingAsync(string? searchKey)
         {

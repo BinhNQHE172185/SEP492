@@ -208,30 +208,45 @@ namespace LMCM_BE.Services.UserService
         }
         private async Task<string> GenerateJwtToken(User user)
         {
-            var roles = await _userRepository.getRoleAsync(user.Id.ToString());
-
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString(), ClaimValueTypes.String, "utf-8"),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email, ClaimValueTypes.String, "utf-8"),
-                new Claim(JwtRegisteredClaimNames.Name, user.Name ?? "", ClaimValueTypes.String, "utf-8"),
-            };
-
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim("role", role));
-            }
-
+            var issuer = _configuration["Jwt:Issuer"];
+            var audience = _configuration["Jwt:Audience"];
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var tokenExpiryTimeStamp=DateTime.UtcNow.AddMinutes(60);
 
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(3),
-                signingCredentials: creds
-            );
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+        new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString(), ClaimValueTypes.String, "utf-8"),
+        new Claim(JwtRegisteredClaimNames.Email, user.Email, ClaimValueTypes.String, "utf-8"),
+        new Claim(JwtRegisteredClaimNames.Name, user.Name ?? "", ClaimValueTypes.String, "utf-8"),
+                }),
+                Expires = tokenExpiryTimeStamp,
+                Issuer = issuer,
+                Audience = audience,
+                SigningCredentials = creds,
+            };
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            var roles = await _userRepository.getRoleAsync(user.Id.ToString());
+
+
+            //foreach (var role in roles)
+            //{
+            //    claims.Add(new Claim("role", role));
+            //}
+            //var token = new JwtSecurityToken(
+            //    issuer: issuer,
+            //    audience: audience,
+            //    claims: claims,
+            //    expires: DateTime.UtcNow.AddHours(3),
+            //    signingCredentials: creds
+            //);
+
+            var tokenHandler=new JwtSecurityTokenHandler();
+            var securityToken=tokenHandler.CreateToken(tokenDescriptor);
+            var accessToken=tokenHandler.WriteToken(securityToken);
+            return accessToken;
         }
         public async Task<int> UserCountAsync()
         {

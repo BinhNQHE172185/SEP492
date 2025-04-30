@@ -1,4 +1,6 @@
 ﻿using LMCM_BE.Services.OpenAIService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static LMCM_BE.DTOs.OpenAIDtos.OpenAIDto;
@@ -7,6 +9,7 @@ namespace LMCM_BE.Controllers.OpenAIController
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class OpenAIController : ControllerBase
     {
         private readonly IOpenAIService _openAIService;

@@ -10,6 +10,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SyllabusController : ControllerBase
     {
         private readonly ISyllabusService _syllabusService;
@@ -17,7 +18,6 @@ namespace LMCM_BE.Controllers.SyllabusControllers
         {
             _syllabusService = syllabusService;
         }
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("getSyllabusesList")]
         public async Task<IActionResult> GetSyllabusesAsync([FromBody] PagingRequest request)
         {
@@ -43,7 +43,6 @@ namespace LMCM_BE.Controllers.SyllabusControllers
                 return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("getSyllabusesListNoPaging")]
         public async Task<IActionResult> GetSyllabusesNoPagingAsync(string? searchKey)
         {

@@ -1,4 +1,6 @@
 ﻿using LMCM_BE.Services.DashboardService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,6 +8,7 @@ namespace LMCM_BE.Controllers.DashboardControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class DashboardController : ControllerBase
     {
         private readonly IDashboardService _dashboardService;

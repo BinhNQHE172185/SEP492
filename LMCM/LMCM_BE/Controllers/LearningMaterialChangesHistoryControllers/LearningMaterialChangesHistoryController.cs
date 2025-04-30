@@ -1,12 +1,15 @@
 ﻿using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Services.LearningMaterialChangesHistoryService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMCM_BE.Controllers.LearningMaterialChangesHistoryControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class LearningMaterialChangesHistoryController : ControllerBase
     {
         private readonly ILearningMaterialChangesHistorySerivce _changesService;

@@ -1,12 +1,15 @@
 ﻿using LMCM_BE.DTOs.ContractValueItemDtos;
 using LMCM_BE.Services.ContractValueItemService;
 using LMCM_BE.Services.UserService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMCM_BE.Controllers.ContractValueItemControllers
 {
     [Route("api/contract-value-items")]
     [ApiController]
+    [Authorize(Roles ="Head of Department",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ContractValueItemController : ControllerBase
     {
         private readonly IContractValueItemService _contractValueItemService;

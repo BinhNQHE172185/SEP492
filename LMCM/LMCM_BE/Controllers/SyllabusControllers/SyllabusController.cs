@@ -1,6 +1,8 @@
 ﻿using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Services.SubjectService;
 using LMCM_BE.Services.SyllabusService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 
@@ -8,6 +10,7 @@ namespace LMCM_BE.Controllers.SyllabusControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SyllabusController : ControllerBase
     {
         private readonly ISyllabusService _syllabusService;
@@ -15,7 +18,6 @@ namespace LMCM_BE.Controllers.SyllabusControllers
         {
             _syllabusService = syllabusService;
         }
-
         [HttpPost("getSyllabusesList")]
         public async Task<IActionResult> GetSyllabusesAsync([FromBody] PagingRequest request)
         {

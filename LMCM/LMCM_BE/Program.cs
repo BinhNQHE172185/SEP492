@@ -64,6 +64,7 @@ using LMCM_BE.Services.PloSubjectService;
 using LMCM_BE.Services.DashboardService;
 using LMCM_BE.AutoMapper.ContractValueItemProfiles;
 using LMCM_BE.Services.OpenAIService;
+using Microsoft.OpenApi.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -75,11 +76,34 @@ builder.Services.AddDbContext<LMCM_DBContext>(options =>
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Add Swagger services
+builder.Services.AddSwaggerGen(options =>
+{
+    var jwtSecurityScheme = new OpenApiSecurityScheme
+    {
+        BearerFormat = "JWT",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme =JwtBearerDefaults.AuthenticationScheme,
+        Description = "Enter jwt token",
+        Reference = new OpenApiReference
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme
+        }
+    };
+    options.AddSecurityDefinition("Bearer",jwtSecurityScheme);
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {jwtSecurityScheme,Array.Empty<string>() }
+    });
+});
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
     options.RequireHttpsMetadata = false;
@@ -95,12 +119,11 @@ builder.Services.AddAuthentication(options =>
 
         ValidateAudience = true,
         ValidAudience = builder.Configuration["Jwt:Audience"],
-
         RequireExpirationTime = true,
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero,
     };
 });
+builder.Services.AddAuthorization();
 builder.Services.AddDistributedMemoryCache(); // Required for session
 builder.Services.AddSession(options =>
 {
@@ -203,8 +226,6 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IOpenAIService, OpenAIService>();
 builder.Services.AddScoped<IGoogleDriveService, GoogleDriveService>();
-
-builder.Services.AddAuthorization();
 
 var app = builder.Build();
 

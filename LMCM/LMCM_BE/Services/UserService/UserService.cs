@@ -138,13 +138,7 @@ namespace LMCM_BE.Services.UserService
                         ClockSkew = TimeSpan.Zero
                     }, out SecurityToken validatedToken);
 
-                    Console.WriteLine("Token validated successfully.");
-                    foreach (var claim in principal.Claims)
-                    {
-                        Console.WriteLine($"🔹 Decoded Claim: {claim.Type} = {claim.Value}");
-                    }
                     var userId = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-                    Console.WriteLine($"Extracted User ID: {userId}");
 
                     if (string.IsNullOrEmpty(userId))
                     {
@@ -168,7 +162,7 @@ namespace LMCM_BE.Services.UserService
         }
         public async Task<bool> AssignRoleAsync(string userId, string role)
         {
-            var user = await _userRepository.GetProfile(userId);
+            var user = await GetProfileFromCookie();
             if (user == null || role == null)
             {
                 return false;
@@ -180,11 +174,16 @@ namespace LMCM_BE.Services.UserService
             }
 
             var userRole = await _userRepository.getRoleAsync(userId);
+            var sharedUser=await _userRepository.GetProfile(userId);
+            if (sharedUser == null)
+            {
+                return false;
+            }
             if (userRole.Contains("Staff") && role.Equals("Head of Department"))
             {
-                if (user.Email != null)
+                if (sharedUser.Email != null)
                 {
-                    bool isShared = await _googleDriveService.ShareFoldersWithUserAsync(user.Email, false, "reader");
+                    bool isShared = await _googleDriveService.ShareFoldersWithUserAsync(sharedUser.Email, true, "reader");
 
                     if (isShared)
                     {
@@ -194,9 +193,9 @@ namespace LMCM_BE.Services.UserService
             }
             else if (userRole.Contains("Head of Department") && role.Equals("Staff"))
             {
-                if (user.Email != null)
+                if (sharedUser.Email != null)
                 {
-                    bool isRevoked = await _googleDriveService.RevokePermissionFromFolderAsync(user.Email, true);
+                    bool isRevoked = await _googleDriveService.RevokePermissionFromFolderAsync(sharedUser.Email, true);
 
                     if (isRevoked)
                     {
@@ -208,30 +207,42 @@ namespace LMCM_BE.Services.UserService
         }
         private async Task<string> GenerateJwtToken(User user)
         {
-            var roles = await _userRepository.getRoleAsync(user.Id.ToString());
-
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString(), ClaimValueTypes.String, "utf-8"),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email, ClaimValueTypes.String, "utf-8"),
-                new Claim(JwtRegisteredClaimNames.Name, user.Name ?? "", ClaimValueTypes.String, "utf-8"),
-            };
-
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim("role", role));
-            }
-
+            var issuer = _configuration["Jwt:Issuer"];
+            var audience = _configuration["Jwt:Audience"];
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var tokenExpiryTimeStamp = DateTime.UtcNow.AddMinutes(60);
 
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(3),
-                signingCredentials: creds
-            );
+            // Get user roles
+            var roles = await _userRepository.getRoleAsync(user.Id.ToString());
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            // Prepare claims
+            var claims = new List<Claim>
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString(), ClaimValueTypes.String, "utf-8"),
+        new Claim(JwtRegisteredClaimNames.Email, user.Email, ClaimValueTypes.String, "utf-8"),
+        new Claim(JwtRegisteredClaimNames.Name, user.Name ?? "", ClaimValueTypes.String, "utf-8")
+    };
+
+            // Add role claims
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role)); 
+            }
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = tokenExpiryTimeStamp,
+                Issuer = issuer,
+                Audience = audience,
+                SigningCredentials = creds,
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+            var accessToken = tokenHandler.WriteToken(securityToken);
+            return accessToken;
         }
         public async Task<int> UserCountAsync()
         {

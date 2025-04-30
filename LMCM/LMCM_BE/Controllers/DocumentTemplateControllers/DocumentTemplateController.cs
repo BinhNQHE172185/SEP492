@@ -1,12 +1,15 @@
 ﻿using LMCM_BE.DTOs.DocumentTemplateDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Services.DocumentTemplateService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMCM_BE.Controllers.DocumentTemplateControllers
 {
     [Route("api/documentTemplate")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class DocumentTemplateController : Controller
     {
         private readonly IDocumentTemplateService _documentTemplateService;

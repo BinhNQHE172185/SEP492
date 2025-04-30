@@ -4,11 +4,14 @@ using LMCM_BE.Services.ContractorService;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LMCM_BE.Controllers.ContractorControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ContractorController : ControllerBase
     {
         private readonly IContractorService _contractorService;

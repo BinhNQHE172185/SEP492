@@ -12,6 +12,7 @@ using LMCM_BE.Services.UserService;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using LMCM_BE.DTOs.ShareDtos;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace LMCM_BE.Controllers.UserControllers
 {
@@ -60,6 +61,7 @@ namespace LMCM_BE.Controllers.UserControllers
         /// <param name="email"></param>
         /// <returns></returns>
         [HttpPost("create-account")]
+        [Authorize(Roles ="Head of Department",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> CreateAccount([FromBody] StaffRequest request)
         {
             try
@@ -84,6 +86,7 @@ namespace LMCM_BE.Controllers.UserControllers
         /// <param name="email"></param>
         /// <returns></returns>
         [HttpGet("profile")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> ProfileAsync()
         {
             try
@@ -106,6 +109,7 @@ namespace LMCM_BE.Controllers.UserControllers
         /// <param name="staffId"></param>
         /// <returns></returns>
         [HttpPost("list-user")]
+        [Authorize(Roles = "Head of Department", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetListUser([FromBody] PagingRequest request)
         {
             try
@@ -129,6 +133,7 @@ namespace LMCM_BE.Controllers.UserControllers
         /// <param name="newRole"></param>
         /// <returns></returns>
         [HttpPost("assign-role")]
+        [Authorize(Roles = "Head of Department", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> AssignRole([FromBody] AssignRole request)
         {
             try
@@ -166,6 +171,7 @@ namespace LMCM_BE.Controllers.UserControllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("update-status")]
+        [Authorize(Roles = "Head of Department", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatus request)
         {
             try
@@ -198,6 +204,7 @@ namespace LMCM_BE.Controllers.UserControllers
         }
 
         [HttpDelete("remove-user/{userId}")]
+        [Authorize(Roles = "Head of Department", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> RemoveUser(string userId)
         {
             try
@@ -230,6 +237,7 @@ namespace LMCM_BE.Controllers.UserControllers
         }
 
         [HttpPut("update-user")]
+        [Authorize(Roles = "Head of Department", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUser request)
         {
             try

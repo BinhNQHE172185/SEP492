@@ -1,6 +1,8 @@
 ﻿using LMCM_BE.DTOs.AcceptanceRecordDtos;
 using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Services.AcceptanceRecordService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -9,6 +11,7 @@ namespace LMCM_BE.Controllers.AcceptanceRecordControllers
 {
     [Route("api/acceptance-records")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AcceptanceRecordController : ControllerBase
     {
         private readonly IAcceptanceRecordService _acceptanceRecordService;

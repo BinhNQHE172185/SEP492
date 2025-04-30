@@ -1,6 +1,8 @@
 ﻿using LMCM_BE.DTOs.ShareDtos;
 using LMCM_BE.Services.CurriculumService;
 using LMCM_BE.Services.PloService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -9,6 +11,7 @@ namespace LMCM_BE.Controllers.CurriculumControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CurriculumController : ControllerBase
     {
         private readonly ICurriculumService _curriculumService;

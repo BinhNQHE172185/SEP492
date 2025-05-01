@@ -15,7 +15,7 @@ namespace LMCM_BE.Services.LearningMaterialService
         private readonly ISyllabusRepository _syllabusRepository;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
-        public LearningMaterialService(ILearningMaterialRepository materialRepository, ISyllabusRepository syllabusRepository, IMapper mapper,IUnitOfWork unitOfWork)
+        public LearningMaterialService(ILearningMaterialRepository materialRepository, ISyllabusRepository syllabusRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _materialRepository = materialRepository;
             _syllabusRepository = syllabusRepository;
@@ -29,7 +29,7 @@ namespace LMCM_BE.Services.LearningMaterialService
                 throw new ArgumentException("Id bị trống.", nameof(materialId));
             var learningMaterial = await _materialRepository.GetLearningMaterialByIdAsync(materialId);
 
-            if (learningMaterial == null)
+            if (learningMaterial == null || (learningMaterial!=null && learningMaterial.Status==LearningMaterialStatus.Inactive))
                 throw new KeyNotFoundException("Không tìm thấy dữ liệu.");
             try
             {
@@ -51,7 +51,7 @@ namespace LMCM_BE.Services.LearningMaterialService
         {
             if (materialId == Guid.Empty)
                 throw new ArgumentException("Id bị trống.", nameof(materialId));
-            var learningMaterial= await _materialRepository.GetLearningMaterialByIdAsync(materialId);
+            var learningMaterial = await _materialRepository.GetLearningMaterialByIdAsync(materialId);
 
             if (learningMaterial == null)
                 throw new KeyNotFoundException("Không tìm thấy dữ liệu.");
@@ -60,7 +60,7 @@ namespace LMCM_BE.Services.LearningMaterialService
         }
         public async Task<List<LearningMaterialListDto>> GetMaterialsBySyllabusIdAsync(Guid syllabusId)
         {
-            var items= await _materialRepository.GetMaterialsBySyllabusIdAsync(syllabusId);
+            var items = await _materialRepository.GetMaterialsBySyllabusIdAsync(syllabusId);
             var data = _mapper.Map<List<LearningMaterialListDto>>(items);
             return data;
         }
@@ -70,7 +70,7 @@ namespace LMCM_BE.Services.LearningMaterialService
             if (material == null)
                 throw new ArgumentNullException(nameof(material));
             var syllabus = await _syllabusRepository.GetSyllabusByIdAsync(material.SyllabusId);
-            if (syllabus == null)
+            if (syllabus == null || (syllabus != null && syllabus.Status == GenericStatus.Inactive))
                 throw new KeyNotFoundException($"Không tìm thấy đề cương với ID: {material.SyllabusId}");
             var newMaterial = _mapper.Map<LearningMaterial>(material);
             newMaterial.MaterialId = Guid.NewGuid();
@@ -102,8 +102,17 @@ namespace LMCM_BE.Services.LearningMaterialService
                 material.SyllabusId = newSyllabusId;
                 material.MaterialId = Guid.NewGuid();
                 material.IsMainMaterial = false;
-                material.IsImportedMaterial = true;
-                material.MaterialType = MaterialType.HocLieu;
+                if (!string.IsNullOrEmpty(material.Isbn) || !string.IsNullOrEmpty(material.Author)
+                    || !string.IsNullOrEmpty(material.Edition) || material.PublishedDate != null)
+                {
+                    material.IsImportedMaterial = false;
+                    material.MaterialType = MaterialType.SachNguonMo;
+                }
+                else
+                {
+                    material.IsImportedMaterial = true;
+                    material.MaterialType = MaterialType.HocLieu;
+                }
                 material.Status = LearningMaterialStatus.Active;
                 material.CreatedAt = DateTime.UtcNow;
                 material.UpdatedAt = DateTime.UtcNow;
@@ -155,7 +164,7 @@ namespace LMCM_BE.Services.LearningMaterialService
 
             var learningMaterial = await _materialRepository.GetLearningMaterialByIdAsync(materialId);
 
-            if (learningMaterial == null)
+            if (learningMaterial == null || (learningMaterial != null && learningMaterial.Status == LearningMaterialStatus.Inactive))
                 throw new KeyNotFoundException($"Không tìm thấy học liệu với ID: {materialId}");
 
             // Use AutoMapper to update existing entity

@@ -9,7 +9,6 @@ namespace LMCM_BE.Controllers.ContractValueItemControllers
 {
     [Route("api/contract-value-items")]
     [ApiController]
-    [Authorize(Roles ="Head of Department",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ContractValueItemController : ControllerBase
     {
         private readonly IContractValueItemService _contractValueItemService;
@@ -18,7 +17,7 @@ namespace LMCM_BE.Controllers.ContractValueItemControllers
         {
             _contractValueItemService = contractValueItemService;
         }
-
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("list")]
         public async Task<IActionResult> GetContractValueItems()
         {
@@ -32,7 +31,7 @@ namespace LMCM_BE.Controllers.ContractValueItemControllers
                 return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
-
+        [Authorize(Roles = "Head of Department", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("update")]
         public async Task<IActionResult> UpdateContractValueItems([FromBody] List<ContractValueItemDto> newItems)
         {

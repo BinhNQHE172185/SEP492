@@ -1,4 +1,5 @@
-﻿using LMCM_BE.Shared.Constant;
+﻿using LMCM_BE.DTOs.Validators;
+using LMCM_BE.Shared.Constant;
 using System.ComponentModel.DataAnnotations;
 using static LMCM_BE.DTOs.Validators.SharedValidationAtributes;
 
@@ -17,7 +18,7 @@ namespace LMCM_BE.DTOs.LearningMaterialDtos
         [StringLength(50, ErrorMessage = "Tên học liệu không được vượt quá 50 ký tự")]
         public string? MaterialName { get; set; }
 
-        [RegularExpression(@"^\d{9}[\d|X]|\d{13}$", ErrorMessage = "ISBN không hợp lệ")]
+        [Isbn(ErrorMessage = "ISBN không hợp lệ")]
         public string? Isbn { get; set; }
 
         [StringLength(100, ErrorMessage = "Tên tác giả không được vượt quá 100 ký tự")]
@@ -26,7 +27,7 @@ namespace LMCM_BE.DTOs.LearningMaterialDtos
         [StringLength(100, ErrorMessage = "Tên nhà xuất bản không được vượt quá 100 ký tự")]
         public string? Publisher { get; set; }
 
-        [DataType(DataType.Date)]
+        [DateMustBePresentOrPast(ErrorMessage = "Ngày không hợp lệ")]
         public DateTime? PublishedDate { get; set; }
 
         [StringLength(50, ErrorMessage = "Phiên bản không được vượt quá 50 ký tự")]

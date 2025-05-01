@@ -29,7 +29,7 @@ namespace LMCM_BE.DTOs.ContractDtos
         public DateTime? StartDate { get; set; }
 
         [DateMustBePresentOrPast(ErrorMessage = "Ngày không hợp lệ")]
-        [DateRangeValidation("StartDate", ErrorMessage = "Ngày kết thúc phải trước ngày bắt đầu.")]
+        [DateRangeValidation("StartDate", ErrorMessage = "Ngày kết thúc phải sau ngày bắt đầu.")]
         public DateTime? EndDate { get; set; }
 
         [Required(ErrorMessage = "File đính kèm là bắt buộc")]

@@ -50,7 +50,7 @@ namespace LMCM_BE.DTOs.Validators
                 if (startDate.HasValue && endDate.HasValue)
                 {
                     if (endDate.Value < startDate.Value)
-                        return new ValidationResult("Ngày kết thúc phải trước ngày bắt đầu.");
+                        return new ValidationResult("Ngày kết thúc phải sau ngày bắt đầu.");
                 }
 
                 return ValidationResult.Success;

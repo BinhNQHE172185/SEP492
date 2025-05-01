@@ -27,6 +27,35 @@ namespace LMCM_BE.DTOs.Validators
                 return ValidationResult.Success;
             }
         }
+
+        public class DateRangeValidationAttribute : ValidationAttribute
+        {
+            private readonly string _startDatePropertyName;
+
+            public DateRangeValidationAttribute(string startDatePropertyName)
+            {
+                _startDatePropertyName = startDatePropertyName;
+            }
+
+            protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+            {
+                var endDate = value as DateTime?;
+                var startDateProperty = validationContext.ObjectType.GetProperty(_startDatePropertyName);
+
+                if (startDateProperty == null)
+                    return new ValidationResult($"Unknown property: {_startDatePropertyName}");
+
+                var startDate = startDateProperty.GetValue(validationContext.ObjectInstance) as DateTime?;
+
+                if (startDate.HasValue && endDate.HasValue)
+                {
+                    if (endDate.Value < startDate.Value)
+                        return new ValidationResult("Ngày kết thúc phải trước ngày bắt đầu.");
+                }
+
+                return ValidationResult.Success;
+            }
+        }
         public class AllowedFileExtensions : ValidationAttribute
         {
             private readonly string[] _allowedExtensions;

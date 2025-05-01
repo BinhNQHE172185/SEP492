@@ -13,7 +13,6 @@ namespace LMCM_BE.DTOs.ContractorDtos
         public string? Address { get; set; }
 
         [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
-        [StringLength(20, ErrorMessage = "Số điện thoại không được vượt quá 20 ký tự")]
         public string? PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Mã số thuế là bắt buộc")]

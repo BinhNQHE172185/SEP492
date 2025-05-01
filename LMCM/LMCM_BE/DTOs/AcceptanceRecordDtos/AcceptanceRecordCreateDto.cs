@@ -12,7 +12,7 @@ namespace LMCM_BE.DTOs.AcceptanceRecordDtos
         [MinLength(3, ErrorMessage = "Phải có ít nhất 3 ký tự")]
         [RegularExpression(@"^\s*\S.*$", ErrorMessage = "Tên tiêu đề không được chỉ chứa khoảng trắng")]
         public string Title { get; set; } = null!;
-        [DataType(DataType.Date)]
+        [DateMustBePresentOrPast(ErrorMessage = "Ngày không hợp lệ")]
         public DateTime? AcceptanceDate { get; set; }
 
         [Range(0, double.MaxValue, ErrorMessage = "Giá trị cuối cùng phải là số không âm")]

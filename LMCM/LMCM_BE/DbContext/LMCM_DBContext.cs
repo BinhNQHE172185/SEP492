@@ -476,7 +476,7 @@ public partial class LMCM_DBContext : IdentityDbContext<User, IdentityRole<Guid>
                 .HasColumnName("is_Imported_Material");
 
             entity.Property(e => e.MaterialName)
-                .HasMaxLength(255)
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("Material_Name");
 
             entity.Property(e => e.Isbn)

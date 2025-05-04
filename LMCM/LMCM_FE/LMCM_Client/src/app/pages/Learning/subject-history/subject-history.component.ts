@@ -142,6 +142,11 @@ export class SubjectHistoryComponent {
     window.open(url, '_blank');
   }
   goToContractDetail(id: string) {
+    if(!id) {
+      this.messageService.add({ severity: 'warn', summary: 'Thông báo', detail: 'Không tìm thấy hợp đồng' });
+    return;
+    }
+
     const url = `/document/contract/${id}`;
     window.open(url, '_blank');
   }

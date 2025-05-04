@@ -1,5 +1,5 @@
 <p-dialog header="Chỉnh sửa tài liệu" [(visible)]="displayAddDialog" [modal]="true" [draggable]="false"
-    [resizable]="false" class="custom-dialog" (onHide)="closeDialog()">
+    [resizable]="false" class="custom-dialog" (onHide)="closeDialog()" [style]="{width: '400px', height: '600px'}">
     <ng-template pTemplate="content">
         <section class="p-8 w-full bg-white rounded-xl" *ngIf="template">
             <div class="flex flex-wrap gap-4 w-full">

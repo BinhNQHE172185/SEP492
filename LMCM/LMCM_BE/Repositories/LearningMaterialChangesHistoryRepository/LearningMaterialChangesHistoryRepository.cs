@@ -51,6 +51,7 @@ namespace LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository
                 .Include(h => h.Contract)
                 .Include(h => h.Syllabus)
                 .Where(h => syllabuses.Contains(h.Syllabus))
+                .Where(h => h.Status == GenericStatus.Active)
                 .OrderByDescending(h => h.Syllabus.UpdatedAt ?? h.Syllabus.CreatedAt)  // Newest syllabus first
                 .ThenByDescending(h => h.CompletionDate ?? DateTime.MinValue)  // Then by CompletionDate if not null
                 .ToListAsync();

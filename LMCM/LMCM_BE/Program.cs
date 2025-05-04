@@ -143,7 +143,7 @@ builder.Services.AddIdentity<User, IdentityRole<Guid>>()
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp",
-        policy => policy.WithOrigins("http://localhost:4200")
+        policy => policy.WithOrigins("https://lmcm.edu.vn")
                         .AllowCredentials()
                         .AllowAnyHeader()
                         .AllowAnyMethod());

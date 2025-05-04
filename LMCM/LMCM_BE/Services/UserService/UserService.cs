@@ -211,7 +211,7 @@ namespace LMCM_BE.Services.UserService
             var audience = _configuration["Jwt:Audience"];
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var tokenExpiryTimeStamp = DateTime.UtcNow.AddMinutes(60);
+            var tokenExpiryTimeStamp = DateTime.UtcNow.AddMinutes(120);
 
             // Get user roles
             var roles = await _userRepository.getRoleAsync(user.Id.ToString());

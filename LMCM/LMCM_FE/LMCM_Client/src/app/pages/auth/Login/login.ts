@@ -117,7 +117,8 @@ export class Login implements OnInit, AfterViewInit {
                     expires,
                     path: '/',
                     secure: true,
-                    sameSite: 'Strict'
+                    domain: '.lmcm.edu.vn',
+                    sameSite: 'None'
                 });
 
                 setTimeout(() => {

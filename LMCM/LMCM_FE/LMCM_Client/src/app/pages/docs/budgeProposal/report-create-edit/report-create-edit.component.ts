@@ -102,19 +102,16 @@ export class ReportCreateEditComponent {
           this.isLoading = false;
         },
         (error) => {
-          const errors = error.error.errors;
-          const allMessages = [];
-
-          for (const key in errors) {
-            if (errors.hasOwnProperty(key)) {
-              allMessages.push(...errors[key]);
-            }
-          }
-
-          allMessages.forEach(msg => {
-            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg });
-          });
           this.isLoading = false;
+          const errors = error.error?.errors;
+          if (errors) {
+            const allMessages = Object.values(errors).flat();
+            allMessages.forEach(msg => {
+              this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg as string });
+            });
+          } else {
+            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error?.message || 'Đã có lỗi xảy ra.' });
+          }
         }
       );
     } else {
@@ -127,19 +124,16 @@ export class ReportCreateEditComponent {
           this.isLoading = false;
         },
         (error) => {
-          const errors = error.error.errors;
-          const allMessages = [];
-
-          for (const key in errors) {
-            if (errors.hasOwnProperty(key)) {
-              allMessages.push(...errors[key]);
-            }
-          }
-
-          allMessages.forEach(msg => {
-            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg });
-          });
           this.isLoading = false;
+          const errors = error.error?.errors;
+          if (errors) {
+            const allMessages = Object.values(errors).flat();
+            allMessages.forEach(msg => {
+              this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg as string });
+            });
+          } else {
+            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error?.message || 'Đã có lỗi xảy ra.' });
+          }
         }
       );
     }

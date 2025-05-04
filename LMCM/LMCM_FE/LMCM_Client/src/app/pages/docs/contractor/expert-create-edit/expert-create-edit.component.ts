@@ -36,7 +36,7 @@ export class ExpertCreateEditComponent {
     constructor(
         private messageService: MessageService,
         private expertService: ContractorApiService
-    ) {}
+    ) { }
 
     ngOnChanges() {
         if (this.selectedId) {
@@ -110,7 +110,15 @@ export class ExpertCreateEditComponent {
                 },
                 (error) => {
                     this.isLoading = false;
-                    this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+                    const errors = error.error?.errors;
+                    if (errors) {
+                        const allMessages = Object.values(errors).flat();
+                        allMessages.forEach(msg => {
+                            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg as string });
+                        });
+                    } else {
+                        this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error?.message || 'Đã có lỗi xảy ra.' });
+                    }
                 }
             );
         } else {
@@ -122,7 +130,15 @@ export class ExpertCreateEditComponent {
                 },
                 (error) => {
                     this.isLoading = false;
-                    this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error.message });
+                    const errors = error.error?.errors;
+                    if (errors) {
+                        const allMessages = Object.values(errors).flat();
+                        allMessages.forEach(msg => {
+                            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg as string });
+                        });
+                    } else {
+                        this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error?.message || 'Đã có lỗi xảy ra.' });
+                    }
                 }
             );
         }

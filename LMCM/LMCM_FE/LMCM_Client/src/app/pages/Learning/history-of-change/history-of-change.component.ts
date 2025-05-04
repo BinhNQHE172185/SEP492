@@ -259,7 +259,15 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
                 },
                 error: (error) => {
                     this.isLoading = false;
-                    this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể cập nhật lịch sử thay đổi' });
+                    const errors = error.error?.errors;
+                    if (errors) {
+                        const allMessages = Object.values(errors).flat();
+                        allMessages.forEach(msg => {
+                            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg as string });
+                        });
+                    } else {
+                        this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error?.message || 'Đã có lỗi xảy ra.' });
+                    }
                 }
             });
         } else {
@@ -273,8 +281,15 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
                 },
                 error: (error) => {
                     this.isLoading = false;
-                    console.error('Lỗi khi thêm lịch sử thay đổi:', error);
-                    this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: 'Không thể thêm lịch sử thay đổi' });
+                    const errors = error.error?.errors;
+                    if (errors) {
+                        const allMessages = Object.values(errors).flat();
+                        allMessages.forEach(msg => {
+                            this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: msg as string });
+                        });
+                    } else {
+                        this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error?.message || 'Đã có lỗi xảy ra.' });
+                    }
                 }
             });
         }

@@ -34,7 +34,7 @@
                         </a>
                     </td>
                     <td>{{ item.description | slice:0:100 }}...</td>
-                    <td>{{ item.decisionNo }}</td>
+                    <td>{{ item.decisionNo ? item.decisionNo : 'N/A' }}</td>
                     <td>{{ item.approvedDate | date:'dd/MM/yyyy' }}</td>
                     <td>
                         <p-button label="Xóa" (onClick)="deleteCurriculumn(item.curriculumId)" outlined></p-button>

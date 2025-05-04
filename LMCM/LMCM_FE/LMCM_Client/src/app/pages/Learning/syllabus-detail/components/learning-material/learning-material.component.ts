@@ -56,6 +56,9 @@ export class LearningMaterialComponent implements OnChanges {
   material: any;
   book: any;
   prefernce: any;
+  learningMaterialName: string = '';
+  bookName: string = '';
+  tabIndex: number = 0;
 
   type = [
     { name: 'Online', value: MaterialTypeConstant.Online },
@@ -91,6 +94,7 @@ export class LearningMaterialComponent implements OnChanges {
             this.material.publishedDate = new Date(response.publishedDate);
             this.authors = response.author ? response.author.split(',').map((author: string) => author.trim()) : [];
             this.isImported = response.isImportedMaterial;
+            this.tabIndex = this.SelectedId ? ((this.isImported || this.material.learningType) ? 0 : 1) : 0;
           }
         },
         (error) => {
@@ -102,6 +106,7 @@ export class LearningMaterialComponent implements OnChanges {
         }
       );
     }
+    this.material.learningType = MaterialTypeConstant.Online;
     this.learningMaterialApiService.getPublishers().subscribe(
       (response) => {
         if (response) {
@@ -122,9 +127,8 @@ export class LearningMaterialComponent implements OnChanges {
   save() {
     this.material.author = this.authors.join(', ');
     this.isLoading = true;
-  
+
     if (this.SelectedId) {
-      // Update
       this.learningMaterialApiService.updateLearningMaterial(this.SelectedId, this.material)
         .subscribe({
           next: (response) => this.handleSuccess(response),
@@ -132,7 +136,10 @@ export class LearningMaterialComponent implements OnChanges {
         });
     } else {
       const materialToSave = this.buildMaterialForCreate();
-  
+      if (!materialToSave) {
+        this.isLoading = false;
+        return;
+      }
       this.learningMaterialApiService.createLearningMaterial(materialToSave)
         .subscribe({
           next: (response) => this.handleSuccess(response),
@@ -140,11 +147,59 @@ export class LearningMaterialComponent implements OnChanges {
         });
     }
   }
-  
+
   buildMaterialForCreate() {
+    debugger
     const syllabusId = this.route.snapshot.paramMap.get('id') || '';
-  
+
     if (this.isLearningMaterial()) {
+      if (!this.material.materialName.trim()) {
+        this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Tên không được để trống.' });
+        return;
+      }
+      if (this.material.learningType === null || this.material.learningType === undefined) {
+        this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Loại hình học tập không được để trống.' });
+        return;
+      }
+      return {
+        syllabusId,
+        materialName: this.material.materialName,
+        purpose: this.material.purpose,
+        learningType: this.material.learningType,
+        isMainMaterial: this.material.isMainMaterial,
+        url: this.material.url,
+        note: this.material.note,
+      };
+    } else {
+      if (!this.material.materialName.trim()) {
+        this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Tên không được để trống.' });
+        return;
+      }
+      if (!this.material.publisher.trim()) {
+        this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Nhà xuất bản không được để trống.' });
+        return;
+      }
+      if (!this.material.edition.trim()) {
+        this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Phiên bản không được để trống.' });
+        return;
+      }
+      if (!this.material.isbn.trim()) {
+        this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'ISBN không được để trống.' });
+        return;
+      }
+      if (!this.material.author.trim()) {
+        this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Tác giả không được để trống.' });
+        return;
+      }
+      if (!this.material.publishedDate) {
+        this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Ngày xuất bản không được để trống.' });
+        return;
+      }
+      if (this.material.materialType === null || this.material.materialType === undefined) {
+        this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Loại giáo trình không được để trống.' });
+        return;
+      }
+
       return {
         syllabusId,
         materialName: this.material.materialName,
@@ -155,29 +210,19 @@ export class LearningMaterialComponent implements OnChanges {
         author: this.material.author,
         materialType: this.material.materialType,
       };
-    } else {
-      return {
-        syllabusId,
-        materialName: this.material.materialName,
-        purpose: this.material.purpose,
-        learningType: this.material.learningType,
-        isMainMaterial: this.material.isMainMaterial,
-        url: this.material.url,
-        note: this.material.note,
-      };
     }
   }
-  
+
   isLearningMaterial(): boolean {
-    return !this.material.learningType || !this.material.purpose;
+    return this.material.learningType;
   }
-  
+
   handleSuccess(response: any) {
     this.isLoading = false;
     this.messageService.add({ severity: 'success', summary: 'Thành công', detail: response.message });
     this.closeDialog();
   }
-  
+
   handleError(error: any) {
     this.isLoading = false;
     const errors = error.error?.errors;
@@ -190,8 +235,6 @@ export class LearningMaterialComponent implements OnChanges {
       this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: error.error?.message || 'Đã có lỗi xảy ra.' });
     }
   }
-  
-
   search(event: AutoCompleteCompleteEvent) {
     this.items = [...Array(1).keys()].map(() => event.query);
   }
@@ -205,13 +248,11 @@ export class LearningMaterialComponent implements OnChanges {
         publisher.toLowerCase().includes(query)
       );
     }
-
-    console.log(this.filteredPublishersList);
-    console.log(query);
   }
 
   resetForm(): void {
     this.isImported = false;
+    this.authors = [];
     this.material = {
       syllabusId: '',
       learningType: '',
@@ -225,7 +266,6 @@ export class LearningMaterialComponent implements OnChanges {
       url: '',
       purpose: '',
       note: '',
-      author: ''
     };
   }
 
@@ -233,5 +273,16 @@ export class LearningMaterialComponent implements OnChanges {
     this.resetForm();
     this.displayAddDialog = false;
     this.closeDialogEvent.emit();
+  }
+
+
+  onTabChange(index: number | string): void {
+    this.tabIndex = Number(index);
+    this.resetForm();
+    if (this.tabIndex === 1) {
+      this.material.learningType = '';
+    } else if (this.tabIndex === 0) {
+      this.material.learningType = MaterialTypeConstant.Online;
+    }
   }
 }

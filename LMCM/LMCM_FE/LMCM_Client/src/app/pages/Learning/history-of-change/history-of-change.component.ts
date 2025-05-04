@@ -222,6 +222,23 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
     }
 
     addHistory(id?: string) {
+        if (!this.newHistory.syllabus) {
+            this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Vui lòng chọn môn' });
+            return;
+        }
+        if (!this.newHistory.completionDate) {
+            this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Vui lòng chọn ngày hoàn thành' });
+            return;
+        }
+        if (!this.newHistory.changeType) {
+            this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Vui lòng chọn loại thay đổi' });
+            return;
+        }
+        if (!this.newHistory.startTerm) {
+            this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Vui lòng nhập kỳ áp dụng' });
+            return;
+        }
+
         const request = {
             contractId: this.newHistory.contractId || null,
             changeType: this.newHistory.changeType.toString(),

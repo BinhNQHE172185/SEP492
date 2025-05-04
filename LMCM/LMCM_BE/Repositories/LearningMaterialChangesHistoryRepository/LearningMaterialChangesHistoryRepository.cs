@@ -95,7 +95,7 @@ namespace LMCM_BE.Repositories.LearningMaterialChangesHistoryRepository
         public async Task<List<LearningMaterialChangesHistory>> GetAllWithCompletionDateAsync()
         {
             return await _dbContext.LearningMaterialChangesHistories
-                .Where(h => h.CompletionDate.HasValue && h.ChangeType.Contains("Xây mới"))
+                .Where(h => h.CompletionDate.HasValue && h.ChangeType.Contains("Xây mới") &&h.Status == GenericStatus.Active)
                 .ToListAsync();
         }
     }

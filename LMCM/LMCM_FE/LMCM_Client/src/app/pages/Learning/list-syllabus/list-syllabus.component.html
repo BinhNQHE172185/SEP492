@@ -41,7 +41,7 @@
                         </a>
                     </td>
                     <td>{{ syllabus?.courseNameEnglish }}</td>
-                    <td>{{ syllabus?.decisionNo }}</td>
+                    <td>{{ syllabus?.decisionNo ? syllabus?.decisionNo : 'N/A' }}</td>
                     <td>
                         <p-tag [value]="syllabus?.isActive ? 'Hoạt động' : 'Không hoạt động'"
                             [severity]="syllabus?.isActive ? 'success' : 'danger'"></p-tag>

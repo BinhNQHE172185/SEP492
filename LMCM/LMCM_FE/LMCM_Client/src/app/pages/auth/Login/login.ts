@@ -111,7 +111,7 @@ export class Login implements OnInit, AfterViewInit {
                 console.log(response);
 
                 const expires = new Date();
-                expires.setHours(expires.getHours() + 1);
+                expires.setHours(expires.getHours() + 2);
 
                 this.cookieService.set('AuthToken', response.data.token, {
                     expires,

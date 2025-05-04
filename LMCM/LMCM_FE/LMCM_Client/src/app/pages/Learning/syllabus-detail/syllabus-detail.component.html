@@ -36,7 +36,7 @@
       <div class="flex-1 pl-0 md:pl-4">
         <ng-template ngFor let-field [ngForOf]="[
           { label: 'Trình Độ', value: syllabusDetail.degreeLevel },
-          { label: 'Ngày Phê Duyệt', value: syllabusDetail.approvedDate },
+          { label: 'Ngày Phê Duyệt', value: syllabusDetail.approvedDate | date: 'dd/MM/yyyy' },
           { label: 'Điều Kiện Tiên Quyết', value: syllabusDetail.preRequisite },
           { label: 'Điểm GPA Tối Thiểu Để Qua', value: syllabusDetail.minGpaToPass },
           { label: 'Thang Điểm', value: syllabusDetail.scoringScale },

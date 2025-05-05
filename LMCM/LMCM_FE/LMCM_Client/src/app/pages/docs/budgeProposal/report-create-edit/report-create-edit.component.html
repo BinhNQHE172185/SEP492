@@ -44,7 +44,7 @@
                         </p-fileupload>
                     </div>
                     <div *ngIf="file && selectedReportId" class="flex items-center gap-4">
-                        <p-button icon="pi pi-file" label="Xem file đính kèm" (click)="viewFile(file)" outlined>
+                        <p-button icon="pi pi-file" label="Xem file đính kèm" (click)="viewFile(report.url)" outlined>
                         </p-button>
                         <p-button icon="pi pi-download" text (click)="downloadFile(file)">
                         </p-button>

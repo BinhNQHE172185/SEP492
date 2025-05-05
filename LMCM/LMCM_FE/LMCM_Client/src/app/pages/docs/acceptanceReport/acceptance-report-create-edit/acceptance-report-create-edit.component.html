@@ -82,7 +82,7 @@
                     <div *ngIf="file && selectedId" class="flex items-center gap-4 mt-2">
                         <p-button icon="pi pi-file" label="Xem file đính kèm" (click)="viewFile(file)" outlined>
                         </p-button>
-                        <p-button icon="pi pi-download" text (click)="downloadFile(file)">
+                        <p-button icon="pi pi-download" text (click)="downloadFile(report.downloadUrl)">
                         </p-button>
                     </div>
                 </div>

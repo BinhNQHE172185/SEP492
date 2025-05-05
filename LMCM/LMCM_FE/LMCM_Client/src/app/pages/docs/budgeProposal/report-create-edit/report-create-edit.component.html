@@ -1,14 +1,13 @@
 <p-dialog header="Thêm tờ trình" [(visible)]="displayAddDialog" [modal]="true" class="custom-dialog"
-    (onHide)="closeDialog()">
+    (onHide)="closeDialog()" [style]="{width: '580px'}">
     <ng-template pTemplate="content">
         <section class="p-8 w-full bg-white rounded-xl">
             <div class="flex flex-col gap-4">
                 <div class="flex flex-col gap-2">
-                    <label class="block font-semibold">Tiêu đề <span class="text-red-500">*</span></label>
+                    <label class="block font-semibold">Số tờ trình <span class="text-red-500">*</span></label>
                     <input pInputText name="addTitle" [(ngModel)]="addTitle" #addTitleRef="ngModel" required
                         minlength="3" maxlength="100" pattern="^\s*\S.*$"
-                        class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập tiêu đề" />
-
+                        class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập số" />
                     <small class="text-red-500"
                         *ngIf="addTitleRef.invalid && (addTitleRef.dirty || addTitleRef.touched)">
                         <span *ngIf="addTitleRef.errors?.['required']">Tên tiêu đề là bắt buộc.</span>

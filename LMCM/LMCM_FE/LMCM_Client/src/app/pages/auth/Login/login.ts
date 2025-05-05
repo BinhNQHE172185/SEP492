@@ -14,12 +14,13 @@ import { ToastModule } from 'primeng/toast';
 import { MessageModule } from 'primeng/message';
 import { environment } from '../../../../environments/environment';
 import { CookieService } from 'ngx-cookie-service';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 declare const google: any;
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [ToastModule, MessageModule, CommonModule, ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator],
+    imports: [ProgressSpinnerModule, ToastModule, MessageModule, CommonModule, ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator],
     template: `
         <app-floating-configurator />
         <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
@@ -53,9 +54,28 @@ declare const google: any;
             </div>
         </div>
         <p-toast></p-toast>
+        <div *ngIf="isLoading" class="overlay-spinner">
+            <p-progressSpinner></p-progressSpinner>
+        </div>
     `, providers: [
         MessageService,
-    ]
+    ],
+    styles: [
+        `
+        .overlay-spinner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999 !important;
+        }
+        `
+    ],
 })
 export class Login implements OnInit, AfterViewInit {
 
@@ -70,6 +90,7 @@ export class Login implements OnInit, AfterViewInit {
     password: string = '';
 
     checked: boolean = false;
+    isLoading: boolean = false;
 
     ngOnInit(): void {
         const token = localStorage.getItem('data.token');
@@ -104,9 +125,10 @@ export class Login implements OnInit, AfterViewInit {
 
     handleCredentialResponse(token: any): void {
         this.service.add({ severity: 'info', summary: 'Đăng nhập', detail: 'Vui lòng chờ.' });
-
+        this.isLoading = true;
         this.apiService.login(token.credential).subscribe(
             (response) => {
+                this.isLoading = false;
                 this.service.add({ severity: 'success', summary: 'Đăng nhập thành công', detail: 'Đang chuyển hướng...' });
                 console.log(response);
 
@@ -120,10 +142,7 @@ export class Login implements OnInit, AfterViewInit {
                     domain: '.lmcm.edu.vn',
                     sameSite: 'None'
                 });
-
-                setTimeout(() => {
-                    window.location.href = '';
-                }, 1000);
+                window.location.href = '';
             },
             (error) => {
                 this.service.add({ severity: 'error', summary: 'Đã xảy ra lỗi', detail: error.error.message });

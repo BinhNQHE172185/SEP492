@@ -32,7 +32,7 @@
                     <label class="block font-semibold ">File đính kèm</label>
                     <div class="flex flex-col gap-2">
                         <p-fileupload (onSelect)="onFileSelect($event)" [showUploadButton]="false" [multiple]="false"
-                            accept=".pdf, .docx" maxFileSize="5000000" mode="advanced">
+                            accept=".pdf, .docx, .doc" maxFileSize="5000000" mode="advanced">
                             <ng-template #empty>
                                 <div>Kéo thả file để đăng tải.</div>
                             </ng-template>

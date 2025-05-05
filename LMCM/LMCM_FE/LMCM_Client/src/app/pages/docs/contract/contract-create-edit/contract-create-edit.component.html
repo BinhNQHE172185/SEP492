@@ -93,7 +93,7 @@
           <label class="block font-semibold text-orange-500">File đính kèm <span class="text-red-500">*</span></label>
           <!-- Upload File -->
           <p-fileupload (onSelect)="onFileSelect($event)" [showUploadButton]="false" [multiple]="false"
-            accept=".pdf, .docx" maxFileSize="5000000" mode="advanced">
+            accept=".pdf, .docx, .doc" maxFileSize="5000000" mode="advanced">
             <ng-template #empty>
               <div>Kéo thả file để đăng tải. Có thể đăng tải file trước để tự điền thông tin.</div>
             </ng-template>

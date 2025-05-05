@@ -24,10 +24,8 @@ namespace LMCM_BE.DTOs.ContractDtos
         [Required(ErrorMessage = "Giá trị hợp đồng là bắt buộc")]
         [Range(0, double.MaxValue, ErrorMessage = "Giá trị hợp đồng phải lớn hơn hoặc bằng 0")]
         public decimal ContractValue { get; set; }
-        [DateMustBePresentOrPast(ErrorMessage = "Ngày không hợp lệ")]
         public DateTime? StartDate { get; set; }
 
-        [DateMustBePresentOrPast(ErrorMessage = "Ngày không hợp lệ")]
         [DateRangeValidation("StartDate", ErrorMessage = "Ngày kết thúc phải sau ngày bắt đầu.")]
         public DateTime? EndDate { get; set; }
 

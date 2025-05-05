@@ -1,4 +1,4 @@
-<p-dialog [(visible)]="displayAddDialog" header="Cập nhật học liệu" [modal]="true" [draggable]="false"
+<p-dialog [(visible)]="displayAddDialog" [header]="isDetail ? 'Chi tiết học liệu' : 'Thêm/Sửa học liệu'" [modal]="true" [draggable]="false"
     [resizable]="false" (onHide)="closeDialog()">
     <p-tabs [(value)]="tabIndex" (valueChange)="onTabChange($event)">
         <p-tablist>
@@ -12,38 +12,38 @@
                         <div class="flex flex-col grow basis-0 gap-2">
                             <label for="materialName">Tên tài liệu <span class="text-red-500">*</span></label>
                             <input id="materialName" type="text" pInputText [(ngModel)]="material.materialName"
-                                class="w-full" placeholder="Nhập tên tài liệu" />
+                                class="w-full" placeholder="Nhập tên tài liệu" [disabled]="isDetail"/>
                         </div>
                     </div>
                     <div class="flex flex-wrap gap-4">
                         <div class="flex flex-col grow basis-0 gap-2">
                             <label for="purpose">Mục đích</label>
                             <input id="purpose" type="text" pInputText [(ngModel)]="material.purpose" class="w-full"
-                                placeholder="Nhập mục đích" />
+                                placeholder="Nhập mục đích" [disabled]="isDetail"/>
                         </div>
                         <div class="flex flex-col grow basis-0 gap-2">
                             <label for="type">Loại <span class="text-red-500">*</span></label>
                             <p-select id="type" [options]="type" [(ngModel)]="material.learningType" optionLabel="name"
-                                optionValue="value" placeholder="Chọn loại" class="w-full md:w-56">
+                                optionValue="value" placeholder="Chọn loại" class="w-full md:w-56" [disabled]="isDetail">
                             </p-select>
                         </div>
                     </div>
                     <div class="flex flex-row items-center gap-2">
-                        <p-checkbox id="isMainMaterial" [(ngModel)]="material.isMainMaterial" value="true"></p-checkbox>
+                        <p-checkbox id="isMainMaterial" [(ngModel)]="material.isMainMaterial" value="true" [disabled]="isDetail"></p-checkbox>
                         <label for="isMainMaterial">Là học liệu chính</label>
                     </div>
                     <div class="flex flex-wrap gap-4">
                         <div class="flex flex-col grow basis-0 gap-2">
                             <label for="url"> URL </label>
                             <input id="url" type="text" pInputText [(ngModel)]="material.url" class="w-full"
-                                placeholder="Nhập URL" />
+                                placeholder="Nhập URL" [disabled]="isDetail"/>
                         </div>
                     </div>
                     <div class="flex flex-wrap gap-4">
                         <div class="flex flex-col grow basis-0 gap-2">
                             <label for="note"> Ghi chú </label>
                             <textarea id="note" type="text" pTextarea [(ngModel)]="material.note" class="w-full"
-                                placeholder="Ghi chú"></textarea>
+                                placeholder="Ghi chú" [disabled]="isDetail"></textarea>
                         </div>
                     </div>
                 </div>
@@ -55,14 +55,14 @@
                             <div class="flex flex-col gap-2">
                                 <label for="materialName">Tên giáo trình <span class="text-red-500">*</span></label>
                                 <input id="materialName" type="text" pInputText [(ngModel)]="material.materialName"
-                                    name="materialName" class="w-full" placeholder="Nhập tên giáo trình" />
+                                    name="materialName" class="w-full" placeholder="Nhập tên giáo trình" [disabled]="isDetail"/>
                             </div>
                         </div>
                         <div class="flex flex-col grow basis-0 gap-2">
                             <label for="type">Loại giáo trình <span class="text-red-500">*</span></label>
                             <p-select id="type" [options]="materialTypes" [filter]="true"
                                 [(ngModel)]="material.materialType" optionLabel="name" optionValue="value"
-                                placeholder="Chọn loại giáo trình" class="w-full" appendTo="body">
+                                placeholder="Chọn loại giáo trình" class="w-full" appendTo="body" [disabled]="isDetail">
                                 <ng-template let-materialType pTemplate="item">
                                     {{ materialType.name.length > 30 ? (materialType.name | slice:0:30) + '...' :
                                     materialType.name }}
@@ -80,12 +80,12 @@
                             <label for="publishedDate">Năm xuất bản giáo trình <span
                                     class="text-red-500">*</span></label>
                             <p-datepicker id="publishedDate" [(ngModel)]="material.publishedDate" class="w-full"
-                                [showIcon]="true" appendTo="body" placeholder="Nhập năm xuất bản"></p-datepicker>
+                                [showIcon]="true" appendTo="body" placeholder="Nhập năm xuất bản" [disabled]="isDetail"></p-datepicker>
                         </div>
                         <div class="flex flex-col grow basis-0 gap-2">
                             <label for="isbn">ISBN <span class="text-red-500">*</span></label>
                             <input id="isbn" type="text" pInputText [(ngModel)]="material.isbn" class="w-full"
-                                placeholder="Nhập ISBN" />
+                                placeholder="Nhập ISBN" [disabled]="isDetail"/>
                         </div>
                     </div>
 
@@ -93,13 +93,13 @@
                         <div class="flex flex-col grow basis-0 gap-2">
                             <label for="edition">Sách gốc <span class="text-red-500">*</span></label>
                             <input id="edition" type="text" pInputText [(ngModel)]="material.edition" class="w-full"
-                                placeholder="Nhập sách gốc" />
+                                placeholder="Nhập sách gốc" [disabled]="isDetail"/>
                         </div>
                         <div class="flex flex-col grow basis-0 gap-2">
                             <label for="publisher">Nhà xuất bản sách gốc <span class="text-red-500">*</span></label>
                             <p-autoComplete [(ngModel)]="material.publisher" [suggestions]="filteredPublishersList"
                                 (completeMethod)="searchPublisher($event)" fluid placeholder="Nhập tên nhà xuất bản"
-                                fluid appendTo="body">
+                                fluid appendTo="body" [disabled]="isDetail">
                             </p-autoComplete>
                         </div>
                     </div>
@@ -109,7 +109,7 @@
                             <label>Tác giả <span class="text-red-500">*</span></label>
                             <p-autoComplete [(ngModel)]="authors" [suggestions]="items"
                                 (completeMethod)="search($event)" multiple placeholder="Nhập tên tác giả"
-                                [typeahead]="false" fluid class="w-full"></p-autoComplete>
+                                [typeahead]="false" fluid class="w-full" [disabled]="isDetail"></p-autoComplete>
                         </div>
                     </div>
                 </div>
@@ -118,7 +118,7 @@
     </p-tabs>
 
     <ng-template pTemplate="footer">
-        <div class="flex justify-content-end gap-2">
+        <div  *ngIf="isDetail == false" class="flex justify-content-end gap-2">
             <button pButton outlined label="Hủy" class="p-button-text" (click)="closeDialog()"></button>
             <button pButton pRipple label="Lưu thay đổi" class="p-button-warning" (click)="save()"></button>
         </div>

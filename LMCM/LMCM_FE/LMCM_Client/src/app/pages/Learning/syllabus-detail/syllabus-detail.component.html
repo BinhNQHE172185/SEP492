@@ -112,7 +112,8 @@
             <td>{{ material.note }}</td>
             <td>
               <div class="flex gap-1">
-                <p-button label="Sửa" outlined (click)="openAddDialog(material.materialId)" [disabled]="syllabusDetail.status===0"></p-button>
+                <p-button icon="pi pi-eye" outlined (click)="openAddDialog(isDetail, material.materialId)" [disabled]="syllabusDetail.status===0"></p-button>
+                <p-button label="Sửa" outlined (click)="openAddDialog(!isDetail, material.materialId)" [disabled]="syllabusDetail.status===0"></p-button>
                 <p-button label="Xóa" outlined (click)="confirmDeleteMaterial(material.materialId)" [disabled]="syllabusDetail.status===0"></p-button>
               </div>
             </td>
@@ -261,8 +262,8 @@
   </div>
 </p-card>
 
-<app-learning-material [displayAddDialog]="displayAddDialog" [SelectedId]="SelectedId!"
-  (closeDialogEvent)="handleCloseDialog(!isDetail)">
+<app-learning-material [displayAddDialog]="displayAddDialog" [SelectedId]="SelectedId!" [isDetail]="isDetail"
+  (closeDialogEvent)="handleCloseDialog()">
 </app-learning-material>
 
 <!-- Confirmation Dialog -->

@@ -93,7 +93,7 @@ export class ReportCreateEditComponent {
     }
 
     if (this.addTitle.trim().length < 3) {
-      this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Số tờ trình không hợp lệ' });
+      this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: ' Số tờ trình cần ít nhất 3 ký tự không bao gồm khoảng trắng' });
       return;
     }
     

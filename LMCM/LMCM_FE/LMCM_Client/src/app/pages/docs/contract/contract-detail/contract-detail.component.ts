@@ -17,7 +17,7 @@ import { ToastModule } from 'primeng/toast';
     CommonModule,
     ButtonModule,
     ToastModule,
-    
+
   ],
   templateUrl: './contract-detail.component.html',
   styleUrl: './contract-detail.component.scss',

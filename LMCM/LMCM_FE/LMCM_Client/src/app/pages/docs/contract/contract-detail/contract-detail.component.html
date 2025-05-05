@@ -2,7 +2,7 @@
     [resizable]="false" class="custom-dialog" (onHide)="closeDialog()"
     [style]="{width: '600px', height: 'auto', 'max-width': '90vw', 'max-height': '80vh'}">
     <ng-template pTemplate="content">
-        <section class="p-8 w-full bg-white rounded-xl" *ngIf="contract">
+        <section class="p-8 w-full bg-white rounded-xl" *ngIf="contract;  else emptyContract">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                 <div class="flex flex-col gap-2 md:col-span-2">
                     <label class="block font-semibold text-orange-500">Số hợp đồng</label>
@@ -16,12 +16,18 @@
 
                 <div class="flex flex-col gap-2">
                     <label class="block font-semibold text-orange-500">Chuyên gia</label>
-                    <a (click)="goToContractorDetail(contract.contractor.contractorId)" class="text-blue-600 hover:underline cursor-pointer"><p>{{ contract.contractor.contractorName }}</p></a>
+                    <a (click)="goToContractorDetail(contract.contractor.contractorId)"
+                        class="text-blue-600 hover:underline cursor-pointer">
+                        <p>{{ contract.contractor.contractorName }}</p>
+                    </a>
                 </div>
 
                 <div class="flex flex-col gap-2">
                     <label class="block font-semibold text-orange-500">Tờ trình</label>
-                    <a (click)="goToProposalDetail(contract.proposal.proposalId)" class="text-blue-600 hover:underline cursor-pointer"><p>{{ contract.proposal.title }}</p></a>
+                    <a (click)="goToProposalDetail(contract.proposal.proposalId)"
+                        class="text-blue-600 hover:underline cursor-pointer">
+                        <p>{{ contract.proposal.title }}</p>
+                    </a>
                 </div>
 
                 <div class="flex flex-col gap-2">
@@ -55,6 +61,11 @@
                 </div>
             </div>
         </section>
+        <ng-template #emptyContract>
+            <div class="text-center text-gray-500 p-8 italic">
+                Không có dữ liệu hợp đồng.
+            </div>
+        </ng-template>
     </ng-template>
 </p-dialog>
 

@@ -97,6 +97,11 @@ export class TemplateCreateEditComponent implements OnChanges {
       return;
     }
 
+    if(this.template.templateName.trim().length <3) {
+      this.messageService.add({ severity: 'warn', summary: 'Thất bại', detail: 'Tên mẫu tài liệu phải có ít nhất 3 ký tự không bao gồm khoảng trắng.' });
+      return;
+    }
+
     const reportData = new FormData();
     reportData.append("templateName", this.template.templateName!);
     reportData.append("templateType", this.template.templateType!);

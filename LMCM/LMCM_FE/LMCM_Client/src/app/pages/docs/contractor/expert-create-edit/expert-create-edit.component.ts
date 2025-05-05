@@ -60,6 +60,11 @@ export class ExpertCreateEditComponent {
     }
 
     save() {
+        if(this.expert.contractorName.trim().length < 3) {
+            this.messageService.add({ severity: 'warn', summary: 'Cảnh báo', detail: 'Tên chuyên gia phải có ít nhất 3 ký tự không bao gồm khoảng trắng.' });
+            return;
+        }
+
         if (!this.expert.contractorName) {
             this.messageService.add({ severity: 'warn', summary: 'Cảnh báo', detail: 'Tên chuyên gia không được để trống.' });
             return;

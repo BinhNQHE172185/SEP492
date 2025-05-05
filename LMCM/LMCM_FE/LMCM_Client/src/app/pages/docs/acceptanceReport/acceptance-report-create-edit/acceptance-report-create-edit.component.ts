@@ -209,6 +209,15 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
       }
     }
 
+    if(this.report.title.trim().length < 3) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Cảnh báo',
+        detail: 'Số biên bản nghiệm thu cần ít nhất 3 ký tự không bao gồm khoảng trắng.'
+      });
+      return;
+    }
+
     if (this.report.contractId === '' || this.report.contractId === null || this.report.contractId === undefined) {
       this.messageService.add({
         severity: 'warn',

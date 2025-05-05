@@ -3,33 +3,29 @@
     <ng-template pTemplate="content">
         <section class="p-8 w-full bg-white rounded-xl">
             <div class="flex flex-col gap-4">
-                <div class="flex flex-col gap-2">
-                    <label class="block font-semibold">Số tờ trình <span class="text-red-500">*</span></label>
-                    <input pInputText name="addTitle" [(ngModel)]="addTitle" #addTitleRef="ngModel" required
-                        minlength="3" maxlength="100" pattern="^\s*\S.*$"
-                        class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập số" />
-                    <small class="text-red-500"
-                        *ngIf="addTitleRef.invalid && (addTitleRef.dirty || addTitleRef.touched)">
-                        <span *ngIf="addTitleRef.errors?.['required']">Tên tiêu đề là bắt buộc.</span>
-                        <span *ngIf="addTitleRef.errors?.['minlength']">Phải có ít nhất 3 ký tự.</span>
-                        <span *ngIf="addTitleRef.errors?.['maxlength']">Không được quá 100 ký tự.</span>
-                        <span *ngIf="addTitleRef.errors?.['pattern']">Tên tiêu đề không được chỉ chứa khoảng
-                            trắng.</span>
-                    </small>
-                </div>
-
                 <div class="flex gap-4">
-                    <div *ngIf="selectedReportId" class="flex flex-col grow gap-2">
-                        <label class="block font-semibold"> Người tạo </label>
-                        <input disabled pInputText [(ngModel)]="addAuthor"
-                            class="w-full p-2 border border-gray-300 rounded" />
+                    <div class="flex flex-col gap-2">
+                        <label class="block font-semibold">Số tờ trình <span class="text-red-500">*</span></label>
+                        <input pInputText name="addTitle" [(ngModel)]="addTitle" #addTitleRef="ngModel" required
+                            minlength="3" maxlength="100" pattern="^\s*\S.*$"
+                            class="w-full p-2 border border-gray-300 rounded" placeholder="Nhập số" />
+                        <small class="text-red-500"
+                            *ngIf="addTitleRef.invalid && (addTitleRef.dirty || addTitleRef.touched)">
+                            <span *ngIf="addTitleRef.errors?.['required']">Tên tiêu đề là bắt buộc.</span>
+                            <span *ngIf="addTitleRef.errors?.['minlength']">Phải có ít nhất 3 ký tự.</span>
+                            <span *ngIf="addTitleRef.errors?.['maxlength']">Không được quá 100 ký tự.</span>
+                            <span *ngIf="addTitleRef.errors?.['pattern']">Tên tiêu đề không được chỉ chứa khoảng
+                                trắng.</span>
+                        </small>
                     </div>
 
-                    <div class="flex flex-col grow gap-2">
-                        <label class="block font-semibold ">Ngày <span class="text-red-500">*</span></label>
-                        <p-datepicker [(ngModel)]="addDate" dateFormat="dd/mm/yy" [showIcon]="true" class="w-full"
-                            placeholder="Vui lòng chọn ngày" appendTo="body" [minDate]="minCompletionDate"
-                            [maxDate]="maxCompletionDate"></p-datepicker>
+                    <div class="flex gap-4">
+                        <div class="flex flex-col grow gap-2">
+                            <label class="block font-semibold ">Ngày <span class="text-red-500">*</span></label>
+                            <p-datepicker [(ngModel)]="addDate" dateFormat="dd/mm/yy" [showIcon]="true" class="w-full"
+                                placeholder="Vui lòng chọn ngày" appendTo="body" [minDate]="minCompletionDate"
+                                [maxDate]="maxCompletionDate"></p-datepicker>
+                        </div>
                     </div>
                 </div>
                 <div class="flex flex-col gap-2">

@@ -206,6 +206,15 @@ export class ContractCreateEditComponent implements OnChanges {
 
   save() {
     const selectedProposal = this.budgetProposal.find((c: { proposalId: string }) => c.proposalId === this.contract.proposalId);
+    if(this.contract.title.trim().length < 3){
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Cảnh báo',
+        detail: 'Số hợp đồng cần ít nhất 3 ký tự không bao gồm khoảng trắng.'
+      });
+      return;
+    }
+
     if (this.contract.startDate > this.contract.endDate) {
       this.messageService.add({
         severity: 'warn',

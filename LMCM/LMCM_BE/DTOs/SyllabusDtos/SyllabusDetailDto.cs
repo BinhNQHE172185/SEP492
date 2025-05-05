@@ -4,6 +4,7 @@ using LMCM_BE.DTOs.GradingStructureDtos;
 using LMCM_BE.DTOs.LearningMaterialDtos;
 using LMCM_BE.DTOs.ScheduleDtos;
 using LMCM_BE.Models;
+using LMCM_BE.Shared.Constant;
 
 namespace LMCM_BE.DTOs.SyllabusDtos
 {
@@ -45,6 +46,7 @@ namespace LMCM_BE.DTOs.SyllabusDtos
         public decimal? ScoringScale { get; set; }
 
         public DateTime? ApprovedDate { get; set; }
+        public GenericStatus Status { get; set; }
         public List<CLODto> Clos { get; set; } = new();
         public List<ConstructivistQuestionDto> ConstructivistQuestions { get; set; } = new();
         public List<GradingStructureDto> GradingStructures { get; set; } = new();

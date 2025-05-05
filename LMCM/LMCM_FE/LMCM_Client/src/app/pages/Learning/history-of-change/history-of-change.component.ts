@@ -300,4 +300,13 @@ export class HistoryOfChangeComponent implements OnInit, OnDestroy {
             this.searchSubscription.unsubscribe();
         }
     }
+
+    goToContractDetail(id: string) {
+        if(!id){
+            this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Không có hợp đồng' });
+            return;
+        }
+        const url = `/document/contract/${id}`;
+        window.open(url, '_blank');
+    }
 }

@@ -1,5 +1,5 @@
-<p-dialog header="Thêm hợp đồng" [(visible)]="displayAddDialog" [modal]="true" [draggable]="false" [resizable]="false"
-  addAddress class="custom-dialog" (onHide)="closeDialog()">
+<p-dialog header="Thêm/Sửa hợp đồng" [(visible)]="displayAddDialog" [modal]="true" [draggable]="false"
+  [resizable]="false" addAddress class="custom-dialog" (onHide)="closeDialog()">
   <ng-template pTemplate="content" #formContent>
     <section class="p-8 w-full bg-white rounded-xl flex">
       <div class="flex flex-col gap-6 w-full"
@@ -56,16 +56,14 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <label class="block font-semibold text-orange-500">Ngày bắt đầu </label>
+            <label class="block font-semibold text-orange-500">Ngày bắt đầu <span class="text-red-500">*</span></label>
             <p-datepicker [(ngModel)]="contract.startDate" dateFormat="dd-mm-yy" [showIcon]="true" class="w-full"
-              appendTo="body" [minDate]="minCompletionDate" [maxDate]="maxCompletionDate"
-              placeholder="Ngày bắt đầu"></p-datepicker>
+              appendTo="body" [minDate]="minCompletionDate" placeholder="Ngày bắt đầu"></p-datepicker>
           </div>
           <div class="flex flex-col gap-2">
-            <label class="block font-semibold text-orange-500">Ngày kết thúc </label>
+            <label class="block font-semibold text-orange-500">Ngày kết thúc <span class="text-red-500">*</span></label>
             <p-datepicker [(ngModel)]="contract.endDate" dateFormat="dd-mm-yy" [showIcon]="true" class="w-full"
-              appendTo="body" [minDate]="minCompletionDate" [maxDate]="maxCompletionDate"
-              placeholder="Ngày kết thúc"></p-datepicker>
+              appendTo="body" [minDate]="minCompletionDate" placeholder="Ngày kết thúc"></p-datepicker>
           </div>
         </div>
 

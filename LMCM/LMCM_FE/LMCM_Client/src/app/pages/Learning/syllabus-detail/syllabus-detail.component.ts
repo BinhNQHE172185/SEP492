@@ -110,7 +110,7 @@ export class SyllabusDetailComponent implements OnInit {
       this.syllabusService.getSyllabusDetail(id).subscribe({
         next: (data) => {
           this.syllabusDetail = data,
-          this.subjectId = data.subjectId
+            this.subjectId = data.subjectId
         },
         error: (err) => {
           console.error('Error fetching curriculum detail:', err);
@@ -166,26 +166,24 @@ export class SyllabusDetailComponent implements OnInit {
   currentMaterialId: number | null = null;
   authors: string[] = [];
 
-  openDetailDialog(id: string) {
-    this.SelectedId = id;
-    this.displayDetailDialog = true;
+  handleCloseDialog() {
+    this.isDetail = true;
+    this.displayAddDialog = false;
+    this.SelectedId = null;
+    this.getLearningMaterial();
   }
 
-  handleCloseDialog(isDetail: boolean) {
-    if (isDetail) {
-      this.displayDetailDialog = false;
-    } else {
-      this.displayAddDialog = false;
-      this.SelectedId = null;
-      this.getLearningMaterial();
+  openAddDialog(isDetail?: boolean, id?: string) {
+    if (id && isDetail) {
+      this.SelectedId = id;
+      this.isDetail = true;
     }
-  }
-
-  openAddDialog(id?: string) {
-    if (id) {
+    else if (id && !isDetail) {
+      this.isDetail = false;
       this.SelectedId = id;
     }
     else {
+      this.isDetail = false;
       this.SelectedId = null;
     }
     this.displayAddDialog = true;
@@ -204,7 +202,7 @@ export class SyllabusDetailComponent implements OnInit {
   }
 
   deleteMaterial(id: any): void {
-    this.isLoading = true;  
+    this.isLoading = true;
     this.materialService.deleteLearningMaterial(id).subscribe(
       (response) => {
         this.isLoading = false;

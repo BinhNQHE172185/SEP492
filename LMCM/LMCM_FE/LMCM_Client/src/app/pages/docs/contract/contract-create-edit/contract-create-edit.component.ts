@@ -269,6 +269,24 @@ export class ContractCreateEditComponent implements OnChanges {
       return;
     }
 
+    if(!this.contract.startDate){
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Cảnh báo',
+        detail: 'Vui lòng chọn ngày bắt đầu hợp đồng.'
+      });
+      return;
+    }
+
+    if(!this.contract.endDate){
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Cảnh báo',
+        detail: 'Vui lòng chọn ngày bắt đầu hợp đồng.'
+      });
+      return;
+    }
+
     const reportData = new FormData();
     reportData.append("proposalId", this.contract.proposalId);
     reportData.append("contractorId", this.contract.contractorId);
@@ -402,8 +420,8 @@ export class ContractCreateEditComponent implements OnChanges {
     this.contract = {
       courseCode: '',
       courseName: '',
-      startDate: new Date(),
-      endDate: new Date(),
+      startDate: '',
+      endDate: '',
       contractor: '',
       cost: '',
       contractNo: '',

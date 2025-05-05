@@ -46,6 +46,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 export class LearningMaterialComponent implements OnChanges {
   @Input() SelectedId: any;
   @Input() displayAddDialog: boolean = false;
+  @Input() isDetail: boolean = false;
   @Output() closeDialogEvent = new EventEmitter<void>();
 
   isImported: boolean = false;
@@ -85,6 +86,7 @@ export class LearningMaterialComponent implements OnChanges {
   ];
 
   ngOnChanges() {
+    console.log(this.isDetail);
     this.resetForm();
     if (this.SelectedId) {
       this.learningMaterialApiService.getLearningMaterialDetail(this.SelectedId).subscribe(

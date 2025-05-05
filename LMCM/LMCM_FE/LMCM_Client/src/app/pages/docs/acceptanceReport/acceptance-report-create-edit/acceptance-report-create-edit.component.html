@@ -1,4 +1,4 @@
-<p-dialog header="Cập nhật biên bản nghiệm thu" [(visible)]="displayAddDialog" [modal]="true" [draggable]="false"
+<p-dialog header="Thêm/sửa biên bản nghiệm thu" [(visible)]="displayAddDialog" [modal]="true" [draggable]="false"
     [resizable]="false" class="custom-dialog" (onHide)="closeDialog()">
     <ng-template pTemplate="content">
         <section class="p-8 w-full bg-white rounded-xl flex">
@@ -56,7 +56,7 @@
                         </div>
                     </div>
                     <div class="flex flex-col gap-2">
-                        <label class="block font-semibold text-orange-500">Ngày nghiệm thu</label>
+                        <label class="block font-semibold text-orange-500">Ngày nghiệm thu <span class="text-red-500">*</span></label>
                         <p-datepicker placeholder="Ngày nghiệm thu" [(ngModel)]="report.acceptanceDate"
                             dateFormat="dd/mm/yy" [showIcon]="true" class="w-full" appendTo="body"
                             [minDate]="minCompletionDate" [maxDate]="maxCompletionDate">

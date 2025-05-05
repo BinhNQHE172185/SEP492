@@ -226,6 +226,15 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
       });
       return;
     }
+    
+    if(!this.report.acceptanceDate) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Cảnh báo',
+        detail: 'Vui lòng chọn ngày nghiệm thu.'
+      });
+      return;
+    }
 
     if (this.report.finalPrice === '' || this.report.finalPrice === null || this.report.finalPrice === undefined) {
       this.messageService.add({
@@ -244,6 +253,7 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
       });
       return;
     }
+
 
     const reportData = new FormData();
     reportData.append("title", this.report.title);
@@ -368,7 +378,7 @@ export class AcceptanceReportCreateEditComponent implements OnChanges {
       title: '',
       contract: '',
       finalPrice: '',
-      acceptanceDate: new Date(),
+      acceptanceDate: '',
     };
     this.file = null;
     this.selectedItems = [

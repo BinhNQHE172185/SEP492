@@ -87,6 +87,20 @@ export class ReportCreateEditComponent {
   }
 
   saveReport() {
+    if (!this.addTitle) {
+      this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Vui lòng nhập số tờ trình.' });
+      return;
+    }
+
+    if (this.addTitle.trim().length < 3) {
+      this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Số tờ trình không hợp lệ' });
+      return;
+    }
+    
+    if (!this.addDate) {
+      this.messageService.add({ severity: 'warn', summary: 'Chú ý', detail: 'Vui lòng chọn ngày.' });
+      return;
+    }
 
     const reportData = new FormData();
     reportData.append("title", this.addTitle);

@@ -75,8 +75,8 @@
       <div class="section-header">
         <h2 class="text-orange-500 m-0">Học Liệu</h2>
         <div>
-          <button pButton icon="pi pi-plus" label="Thêm Học Liệu" class="p-button-warning"
-            (click)="openAddDialog()" [disabled]="syllabusDetail.status===0"></button>
+          <button pButton icon="pi pi-plus" label="Thêm Học Liệu" class="p-button-warning" (click)="openAddDialog()"
+            [disabled]="syllabusDetail.status===0"></button>
         </div>
       </div>
 
@@ -112,9 +112,11 @@
             <td>{{ material.note }}</td>
             <td>
               <div class="flex gap-1">
-                <p-button icon="pi pi-eye" outlined (click)="openAddDialog(isDetail, material.materialId)" [disabled]="syllabusDetail.status===0"></p-button>
-                <p-button label="Sửa" outlined (click)="openAddDialog(!isDetail, material.materialId)" [disabled]="syllabusDetail.status===0"></p-button>
-                <p-button label="Xóa" outlined (click)="confirmDeleteMaterial(material.materialId)" [disabled]="syllabusDetail.status===0"></p-button>
+                <p-button icon="pi pi-eye" outlined (click)="openAddDialog(isDetail, material.materialId)"></p-button>
+                <p-button label="Sửa" outlined (click)="openAddDialog(!isDetail, material.materialId)"
+                  [disabled]="syllabusDetail.status===0"></p-button>
+                <p-button label="Xóa" outlined (click)="confirmDeleteMaterial(material.materialId)"
+                  [disabled]="syllabusDetail.status===0"></p-button>
               </div>
             </td>
           </tr>
